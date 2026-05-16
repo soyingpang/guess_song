@@ -30,7 +30,7 @@ https://soyingpang.github.io/guess_song/display.html
 - 可填分類、詩歌集 / 來源、編號、提示、可接受答案
 - 可揀全部分類或只玩某一類
 - 可用輸入答案或四選一
-- 可揀初級 12 秒、中級 8 秒、高手 5 秒
+- 可揀初級 30 秒、中級 20 秒、高手 15 秒
 - 題目用隨機抽袋，出晒先會重洗，減少連續重複
 - 未開估 / 未答完之前，題庫列表會鎖住歌名，主持人都唔會預先見到答案
 - `index.html` 是主持人後台控制台；`display.html` 是前台投影畫面
@@ -59,7 +59,7 @@ http://localhost:5173
     "aliases": ["可接受別名", "英文名或簡稱"],
     "videoId": "dQw4w9WgXcQ",
     "start": 43,
-    "duration": 12,
+    "duration": 30,
     "category": "敬拜",
     "source": "詩歌集 / 來源",
     "hint": "提示文字",

@@ -4,9 +4,9 @@ const CLOUD_LIBRARY_URL = "./hymns.json";
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 
 const difficultyDurations = {
-  easy: 12,
-  normal: 8,
-  hard: 5,
+  easy: 30,
+  normal: 20,
+  hard: 15,
 };
 
 const state = {
@@ -157,7 +157,7 @@ function cleanSong(song) {
     aliases: toList(song.aliases),
     videoId,
     start: clampNumber(song.start, 0, 24 * 60 * 60, 0),
-    duration: clampNumber(song.duration, 3, 60, 12),
+    duration: clampNumber(song.duration, 3, 60, 30),
     category: String(song.category || "").trim(),
     source: String(song.source || "").trim(),
     hint: String(song.hint || "").trim(),
@@ -459,7 +459,7 @@ function deleteSong(songId) {
 function resetForm() {
   els.songForm.reset();
   els.songStart.value = 30;
-  els.songDuration.value = 12;
+  els.songDuration.value = 30;
   els.songSubmitButton.textContent = "加入詩歌";
 }
 
