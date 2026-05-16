@@ -172,6 +172,12 @@ h2 {
   border: 0;
 }
 
+#playerHost.is-masked,
+#stagePlayerHost.is-masked {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .player-mask {
   position: absolute;
   inset: 0;
@@ -180,7 +186,7 @@ h2 {
   gap: 18px;
   background:
     radial-gradient(circle at center, rgba(246, 196, 83, 0.16), transparent 36%),
-    linear-gradient(135deg, rgba(16, 17, 20, 0.94), rgba(16, 17, 20, 0.82));
+    linear-gradient(135deg, #101114, #08090b);
   color: var(--text);
   font-weight: 900;
   text-align: center;
@@ -634,7 +640,7 @@ select:focus {
   padding: 28px;
   background:
     radial-gradient(circle at center, rgba(246, 196, 83, 0.18), transparent 36%),
-    linear-gradient(135deg, rgba(8, 9, 11, 0.96), rgba(8, 9, 11, 0.86));
+    linear-gradient(135deg, #08090b, #050608);
   text-align: center;
 }
 

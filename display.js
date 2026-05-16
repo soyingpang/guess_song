@@ -49,6 +49,7 @@ function renderFromStorage() {
     : "答案未公開，請留心聽";
 
   els.mask.classList.toggle("is-hidden", Boolean(state.revealed));
+  els.playerHost.classList.toggle("is-masked", !state.revealed);
   document.body.classList.toggle("is-revealed", Boolean(state.revealed));
   document.body.classList.toggle("is-playing", Boolean(state.isPlaying));
 
@@ -81,6 +82,7 @@ function renderWaiting() {
   els.choices.replaceChildren();
   els.leaderboard.replaceChildren();
   els.qrPanel.hidden = true;
+  els.playerHost.classList.add("is-masked");
   els.playerHost.replaceChildren();
   latestFrameKey = "";
 }

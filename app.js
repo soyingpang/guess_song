@@ -752,6 +752,7 @@ function renderQuiz() {
 
   els.maskLabel.textContent = state.revealed ? "影片已顯示" : "聽前奏，估詩歌";
   els.playerMask.classList.toggle("is-hidden", state.revealed);
+  els.playerHost.classList.toggle("is-masked", !state.revealed);
   els.toggleVideoButton.textContent = state.revealed ? "隱藏影片" : "顯示影片";
 
   els.easyModeButton.classList.toggle("is-active", state.difficulty === "easy");
