@@ -1,4 +1,4 @@
-const STORAGE_KEY = "cantonese-hymn-quiz-library-v3";
+const STORAGE_KEY = "chinese-hymn-quiz-library-v4";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const CLOUD_LIBRARY_URL = "./hymns.json";
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
@@ -422,7 +422,7 @@ function normalizeSource(source) {
 }
 
 function emptyPoolMessage() {
-  if (!state.songs.length) return "先加入粵語詩歌";
+  if (!state.songs.length) return "先加入詩歌";
   if (!approvedSongs().length) return "未有已批准來源詩歌";
   return "呢個分類未有已批准詩歌";
 }
@@ -448,7 +448,7 @@ function loadCurrentVideo() {
 
 function playCurrentClip() {
   if (!state.currentSong) {
-    setResult("先加入一首粵語詩歌", "", "");
+    setResult("先加入一首詩歌", "", "");
     return;
   }
 
@@ -757,7 +757,7 @@ async function loadCloudLibrary({ silent }) {
 
     state.songs = dedupeSongs(songs);
     saveSongs();
-    setResult("已載入純粵語線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題`, "");
+    setResult("已載入經典詩歌線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題`, "");
     render();
     startRound();
   } catch {
@@ -835,10 +835,10 @@ function renderQuiz() {
   els.quizTitle.textContent = hasSong
     ? state.answered
       ? state.currentSong.title
-      : "估呢首粵語詩歌"
+      : "估呢首詩歌"
     : state.songs.length
       ? emptyPoolMessage()
-      : "先加入粵語詩歌";
+      : "先加入詩歌";
 
   els.maskLabel.textContent = hasSong ? "後台影片已顯示，可先跳過廣告" : "聽前奏，估詩歌";
   els.playerMask.classList.toggle("is-hidden", hasSong);
@@ -889,7 +889,7 @@ function renderLibrary() {
   if (!state.songs.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
-    empty.textContent = "未有題目。貼一條粵語詩歌 YouTube 連結，就可以開始建立題庫。";
+    empty.textContent = "未有題目。貼一條詩歌 YouTube 連結，就可以開始建立題庫。";
     els.songList.append(empty);
     return;
   }
@@ -1030,7 +1030,7 @@ function buildDisplayState() {
     prompt: hasSong ? "聽前奏，估詩歌" : "等候主持開始",
     status: els.resultText.textContent || "",
     answer: revealed ? answerLabel(song) : "",
-    title: revealed ? song.title : "估呢首粵語詩歌",
+    title: revealed ? song.title : "估呢首詩歌",
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
     start: song ? clipStart(song) : 0,
@@ -1054,7 +1054,7 @@ function buildPlayerState(player) {
     mode: state.mode,
     hasSong: Boolean(song),
     revealed,
-    title: revealed ? song.title : "估呢首粵語詩歌",
+    title: revealed ? song.title : "估呢首詩歌",
     status: els.resultText.textContent || "",
     score: player.score,
     choices: state.mode === "choice" && song && !revealed ? state.currentChoices : [],
