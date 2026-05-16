@@ -1,6 +1,7 @@
 const STORAGE_KEY = "cantonese-hymn-quiz-library-v2";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const CLOUD_LIBRARY_URL = "./hymns.json";
+const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 
 const difficultyDurations = {
   easy: 12,
@@ -20,6 +21,7 @@ const state = {
   revealed: false,
   answered: false,
   hintLevel: 0,
+  isPlaying: false,
   clipTimer: null,
   editingId: null,
   questionBag: [],
@@ -66,6 +68,7 @@ const els = {
   songAliases: document.querySelector("#songAliases"),
   songSubmitButton: document.querySelector("#songSubmitButton"),
   songList: document.querySelector("#songList"),
+  openDisplayButton: document.querySelector("#openDisplayButton"),
   cloudButton: document.querySelector("#cloudButton"),
   exportButton: document.querySelector("#exportButton"),
   importInput: document.querySelector("#importInput"),
@@ -114,6 +117,7 @@ function bindEvents() {
   });
 
   els.exportButton.addEventListener("click", exportSongs);
+  els.openDisplayButton.addEventListener("click", openDisplayWindow);
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
@@ -180,6 +184,7 @@ function startRound(preferredSongId) {
     state.revealed = false;
     state.answered = false;
     state.hintLevel = 0;
+    state.isPlaying = false;
     els.guessInput.value = "";
     els.playerHost.replaceChildren();
     setResult(state.songs.length ? "呢個分類未有詩歌" : "先加入粵語詩歌", "", "");
@@ -199,6 +204,7 @@ function startRound(preferredSongId) {
   state.revealed = false;
   state.answered = false;
   state.hintLevel = 0;
+  state.isPlaying = false;
   els.guessInput.value = "";
   setResult("聽前奏，估詩歌名", "", "");
   render();
@@ -236,13 +242,17 @@ function playCurrentClip() {
   }
 
   clearClipTimer();
+  state.isPlaying = true;
   renderYouTubeFrame({ autoplay: true });
 
   state.clipTimer = window.setTimeout(() => {
+    state.isPlaying = false;
     renderYouTubeFrame({ autoplay: false });
+    publishDisplayState();
   }, clipDuration(state.currentSong) * 1000);
 
   setResult(`播放中：${clipDuration(state.currentSong)} 秒`, "", "");
+  publishDisplayState();
 }
 
 function checkGuess(value) {
@@ -266,6 +276,7 @@ function finishRound(isCorrect, label = null) {
 
   state.answered = true;
   state.revealed = true;
+  state.isPlaying = false;
   state.score.total += 1;
   if (isCorrect) {
     state.score.correct += 1;
@@ -310,6 +321,7 @@ function showNextHint() {
   state.hintLevel += 1;
   setResult(`提示 ${state.hintLevel}/${hints.length}`, "", "");
   renderHints();
+  publishDisplayState();
 }
 
 function getHints(song) {
@@ -532,6 +544,7 @@ function render() {
   renderQuiz();
   renderHints();
   renderLibrary();
+  publishDisplayState();
 }
 
 function renderScore() {
@@ -672,6 +685,50 @@ function setResult(message, answer, tone = "") {
   els.answerText.textContent = answer;
   els.resultBar.classList.toggle("is-correct", tone === "correct");
   els.resultBar.classList.toggle("is-wrong", tone === "wrong");
+}
+
+function openDisplayWindow() {
+  publishDisplayState();
+  window.open("./display.html", "hymnQuizDisplay");
+}
+
+function publishDisplayState() {
+  const payload = buildDisplayState();
+  localStorage.setItem(DISPLAY_STATE_KEY, JSON.stringify(payload));
+}
+
+function buildDisplayState() {
+  const song = state.currentSong;
+  const hasSong = Boolean(song);
+  const revealed = Boolean(song && state.answered);
+  const hints = song ? getHints(song).slice(0, state.hintLevel) : [];
+
+  return {
+    updatedAt: Date.now(),
+    round: state.round,
+    correct: state.score.correct,
+    total: state.score.total,
+    streak: state.score.streak,
+    category: state.category,
+    difficulty: state.difficulty,
+    mode: state.mode,
+    hasSong,
+    revealed,
+    isPlaying: state.isPlaying,
+    clipDuration: song ? clipDuration(song) : 0,
+    prompt: hasSong ? "聽前奏，估詩歌" : "等候主持開始",
+    status: els.resultText.textContent || "",
+    answer: revealed ? answerLabel(song) : "",
+    title: revealed ? song.title : "估呢首粵語詩歌",
+    videoId: song?.videoId || "",
+    start: song?.start || 0,
+    end: song ? song.start + clipDuration(song) : 0,
+    hints,
+    choices: state.mode === "choice" && song ? state.currentChoices : [],
+    meta: revealed && song
+      ? [song.category, song.source, song.number ? `#${song.number}` : ""].filter(Boolean)
+      : [],
+  };
 }
 
 function miniButton(text, title, onClick) {

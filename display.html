@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>粵語詩歌估歌仔 · 前台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="display-body">
+    <main class="stage-shell">
+      <section class="stage-hero" aria-live="polite">
+        <div class="stage-top">
+          <div>
+            <p class="eyebrow">Cantonese Worship Quiz</p>
+            <h1>粵語詩歌估歌仔</h1>
+          </div>
+          <div class="stage-score">
+            <span id="stageRound">第 0 題</span>
+            <span id="stageScore">0 / 0</span>
+          </div>
+        </div>
+
+        <div class="stage-player">
+          <div id="stagePlayerHost"></div>
+          <div class="stage-mask" id="stageMask">
+            <div class="pulse-disc stage-disc" aria-hidden="true"></div>
+            <strong id="stagePrompt">等候主持開始</strong>
+            <span id="stageSubPrompt">請望住大畫面，聽片段估詩歌</span>
+          </div>
+        </div>
+
+        <div class="stage-info">
+          <p id="stageStatus">未有題目</p>
+          <h2 id="stageTitle">準備開始</h2>
+          <div class="stage-answer-meta" id="stageMeta"></div>
+        </div>
+
+        <div class="stage-hints" id="stageHints"></div>
+        <div class="stage-choices" id="stageChoices"></div>
+      </section>
+    </main>
+
+    <script src="./display.js"></script>
+  </body>
+</html>

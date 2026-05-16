@@ -15,6 +15,14 @@
 
 之後用手機、街外電腦都可以用個 GitHub Pages URL 開。
 
+前台畫面網址：
+
+```text
+https://soyingpang.github.io/guess_song/display.html
+```
+
+前台同步使用同一部機 / 同一個瀏覽器 profile 的 localStorage，適合一部電腦開兩個視窗：一個後台控制，一個拖去投影或大電視。
+
 ## 玩法
 
 - 逐首加入粵語詩歌 YouTube 連結
@@ -25,6 +33,8 @@
 - 可揀初級 12 秒、中級 8 秒、高手 5 秒
 - 題目用隨機抽袋，出晒先會重洗，減少連續重複
 - 未開估 / 未答完之前，題庫列表會鎖住歌名，主持人都唔會預先見到答案
+- `index.html` 是主持人後台控制台；`display.html` 是前台投影畫面
+- 後台按「開前台」後，播放、提示、開估、下一題會同步到前台
 - 題庫會存在同一部裝置嘅瀏覽器 localStorage
 - `hymns.json` 可以做 GitHub Pages 線上題庫，所有裝置都可以一鍵載入
 
