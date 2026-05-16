@@ -28,6 +28,57 @@ const APPROVED_SOURCE_RULES = [
   "建道神學院",
   "新祢呈",
   "alliance bible seminary",
+  "redsea music",
+  "milk&honey worship",
+  "milk and honey worship",
+  "gsus music ministry",
+  "天弦音樂事工",
+  "tbm",
+  "thebridgemusic",
+  "the bridge music",
+  "敬拜計劃",
+  "worship project",
+  "promist",
+  "flow music",
+  "saddleback church hong kong",
+  "saddleback worship hk",
+  "新心音樂事工",
+  "new heart music ministries",
+  "我心旋律",
+  "melody of my heart",
+  "天韻合唱團",
+  "heavenly melody",
+  "泥土音樂",
+  "clay music",
+  "約書亞樂團",
+  "joshua band",
+  "asia for jesus",
+  "生命河",
+  "river of life worship",
+  "river of life christian church",
+  "son music",
+  "song of songs",
+  "revelator worship",
+  "photic",
+  "endless worship",
+  "無盡敬拜",
+  "ywam gateway",
+  "sharehymns",
+  "共享詩歌",
+  "gladness rain",
+  "悅雨音樂",
+  "kings & priests",
+  "singforgod",
+  "薪火敬拜",
+  "sunset worship",
+];
+
+const BLOCKED_SOURCE_RULES = [
+  "hkacm",
+  "香港基督徒音樂事工協會",
+  "cantonworship",
+  "halleluya media",
+  "讚美的時刻",
 ];
 
 const difficultyDurations = {
@@ -401,12 +452,25 @@ function playableSongs() {
 }
 
 function approvedSongs() {
-  return state.songs.filter((song) => isApprovedSource(song.source));
+  return state.songs.filter((song) => isApprovedSong(song));
+}
+
+function isApprovedSong(song) {
+  return isApprovedSource(song.source) && !isBlockedSong(song);
 }
 
 function isApprovedSource(source) {
   const normalizedSource = normalizeSource(source);
   return APPROVED_SOURCE_RULES.some((rule) => normalizedSource.includes(normalizeSource(rule)));
+}
+
+function isBlockedSong(song) {
+  const searchableText = normalizeSource([
+    song.title,
+    song.source,
+    ...(song.aliases || []),
+  ].join(" "));
+  return BLOCKED_SOURCE_RULES.some((rule) => searchableText.includes(normalizeSource(rule)));
 }
 
 function normalizeSource(source) {
@@ -889,7 +953,7 @@ function renderLibrary() {
   const blindRound = Boolean(state.currentSong && !state.answered);
 
   state.songs.forEach((song, index) => {
-    const approved = isApprovedSource(song.source);
+    const approved = isApprovedSong(song);
     const item = document.createElement("article");
     item.className = "song-item";
     item.classList.toggle("is-locked", blindRound);

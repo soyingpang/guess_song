@@ -89,4 +89,4 @@ http://localhost:5173
 
 目前線上題庫已預載 93 首公開 YouTube 粵語詩歌影片；按「線上題庫」會替換成官方純粵語題庫，避免舊普通話歌曲留在瀏覽器。
 
-目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、玻璃海樂團 Worship Nations、讚美之泉 Stream of Praise、建道神學院新祢呈敬拜隊。其他來源會先標示為「待審」。
+目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、玻璃海樂團 Worship Nations、讚美之泉 Stream of Praise、建道神學院新祢呈敬拜隊、RedSea Music、Milk&Honey Worship、Gsus Music Ministry 天弦音樂事工、The Bridge Music / TBM、敬拜計劃 Worship Project、Promist、flow music、Saddleback Worship HK、新心音樂事工 New Heart、我心旋律 Melody of My Heart、天韻合唱團 Heavenly Melody、泥土音樂 Clay Music、約書亞樂團 Joshua Band、生命河敬拜 River of Life Worship、SON Music、SONG of SONGS、Revelator Worship、Photic、Endless Worship 無盡敬拜、YWAM Gateway、共享詩歌 ShareHymns、悅雨音樂 Gladness Rain、Kings & Priests、SingforGod 薪火敬拜、Sunset Worship。其他來源會先標示為「待審」。HKACM、CantonWorship、HALLELUYA MEDIA、讚美的時刻會保留為不自動出題來源。
