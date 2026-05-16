@@ -174,7 +174,12 @@ h2 {
 
 #playerHost.is-masked,
 #stagePlayerHost.is-masked {
-  opacity: 0;
+  position: fixed;
+  left: -100vw;
+  top: -100vh;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -184,9 +189,7 @@ h2 {
   display: grid;
   place-items: center;
   gap: 18px;
-  background:
-    radial-gradient(circle at center, rgba(246, 196, 83, 0.16), transparent 36%),
-    linear-gradient(135deg, #101114, #08090b);
+  background: #08090b;
   color: var(--text);
   font-weight: 900;
   text-align: center;
@@ -638,9 +641,7 @@ select:focus {
   align-content: center;
   gap: 18px;
   padding: 28px;
-  background:
-    radial-gradient(circle at center, rgba(246, 196, 83, 0.18), transparent 36%),
-    linear-gradient(135deg, #08090b, #050608);
+  background: #050608;
   text-align: center;
 }
 
