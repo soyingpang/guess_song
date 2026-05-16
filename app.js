@@ -3,6 +3,8 @@ const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const CLOUD_LIBRARY_URL = "./hymns.json";
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
+const CLIP_START_SECONDS = 0;
+const CLIP_DURATION_SECONDS = 60;
 
 const APPROVED_SOURCE_RULES = [
   "小羊詩歌",
@@ -27,9 +29,9 @@ const APPROVED_SOURCE_RULES = [
 ];
 
 const difficultyDurations = {
-  easy: 30,
-  normal: 20,
-  hard: 15,
+  easy: CLIP_DURATION_SECONDS,
+  normal: CLIP_DURATION_SECONDS,
+  hard: CLIP_DURATION_SECONDS,
 };
 
 const state = {
@@ -150,8 +152,8 @@ function bindEvents() {
   });
 
   els.songUrl.addEventListener("change", () => {
-    const seconds = parseYouTubeStart(els.songUrl.value);
-    if (seconds !== null) els.songStart.value = seconds;
+    els.songStart.value = CLIP_START_SECONDS;
+    els.songDuration.value = CLIP_DURATION_SECONDS;
   });
 
   els.exportButton.addEventListener("click", exportSongs);
@@ -325,8 +327,8 @@ function cleanSong(song) {
     title,
     aliases: toList(song.aliases),
     videoId,
-    start: clampNumber(song.start, 0, 24 * 60 * 60, 0),
-    duration: clampNumber(song.duration, 3, 60, 30),
+    start: CLIP_START_SECONDS,
+    duration: CLIP_DURATION_SECONDS,
     category: String(song.category || "").trim(),
     source: String(song.source || "").trim(),
     hint: String(song.hint || "").trim(),
@@ -550,18 +552,24 @@ function renderYouTubeFrame({ autoplay }) {
 
 function buildEmbedUrl(song, autoplay) {
   const url = new URL(`https://www.youtube-nocookie.com/embed/${song.videoId}`);
-  url.searchParams.set("start", String(song.start));
-  url.searchParams.set("end", String(song.start + clipDuration(song)));
+  url.searchParams.set("start", String(clipStart(song)));
+  url.searchParams.set("end", String(clipStart(song) + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
   url.searchParams.set("controls", "1");
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
+  url.searchParams.set("mute", "1");
+  url.searchParams.set("volume", "0");
   return url.toString();
 }
 
 function clipDuration(song) {
-  return Math.min(song.duration, difficultyDurations[state.difficulty]);
+  return Math.min(CLIP_DURATION_SECONDS, difficultyDurations[state.difficulty], song?.duration || CLIP_DURATION_SECONDS);
+}
+
+function clipStart() {
+  return CLIP_START_SECONDS;
 }
 
 function toggleVideo() {
@@ -659,8 +667,8 @@ function deleteSong(songId) {
 
 function resetForm() {
   els.songForm.reset();
-  els.songStart.value = 30;
-  els.songDuration.value = 30;
+  els.songStart.value = CLIP_START_SECONDS;
+  els.songDuration.value = CLIP_DURATION_SECONDS;
   els.songSubmitButton.textContent = "加入詩歌";
 }
 
@@ -866,7 +874,7 @@ function renderLibrary() {
           song.category || "未分類",
           song.source,
           song.number ? `#${song.number}` : "",
-          `${song.start}s / ${song.duration}s`,
+          `${clipStart(song)}s / ${clipDuration(song)}s`,
         ]
           .filter(Boolean)
           .join(" · ");
@@ -983,8 +991,8 @@ function buildDisplayState() {
     answer: revealed ? answerLabel(song) : "",
     title: revealed ? song.title : "估呢首粵語詩歌",
     videoId: song?.videoId || "",
-    start: song?.start || 0,
-    end: song ? song.start + clipDuration(song) : 0,
+    start: song ? clipStart(song) : 0,
+    end: song ? clipStart(song) + clipDuration(song) : 0,
     hints,
     choices: state.mode === "choice" && song ? state.currentChoices : [],
     meta: revealed && song

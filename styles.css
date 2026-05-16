@@ -406,6 +406,10 @@ h2 {
   grid-template-columns: repeat(3, 1fr);
 }
 
+.mode-row.single {
+  grid-template-columns: 1fr;
+}
+
 .segmented {
   min-height: 42px;
   border: 0;
@@ -934,35 +938,79 @@ select:focus {
 .player-body {
   min-height: 100vh;
   background:
-    linear-gradient(130deg, rgba(155, 199, 170, 0.15), transparent 38%),
-    linear-gradient(310deg, rgba(142, 74, 72, 0.18), transparent 35%),
+    linear-gradient(130deg, rgba(155, 199, 170, 0.16), transparent 40%),
+    linear-gradient(310deg, rgba(142, 74, 72, 0.22), transparent 36%),
+    repeating-linear-gradient(0deg, rgba(255, 248, 236, 0.018) 0 1px, transparent 1px 58px),
     #120f12;
 }
 
 .player-shell {
-  width: min(720px, calc(100% - 24px));
+  width: min(620px, calc(100% - 24px));
   margin: 0 auto;
-  padding: 20px 0;
+  padding: 14px 0 26px;
+}
+
+.player-body .player-card {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 40px);
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), transparent 170px),
+    linear-gradient(130deg, rgba(155, 199, 170, 0.09), transparent 42%),
+    var(--panel);
+}
+
+.player-body .player-card::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 7px;
+  content: "";
+  background: linear-gradient(90deg, var(--wine), var(--accent), var(--cool));
+}
+
+.player-body .player-card::after {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 46px;
+  height: 34px;
+  border: 1px solid #c99a4d;
+  border-radius: 6px;
+  content: "";
+  background:
+    linear-gradient(90deg, #f0d9a4 0 48%, #b88338 48% 52%, #ffe7b6 52% 100%);
+  box-shadow: inset 0 0 0 1px #fff1cf;
 }
 
 .player-card h1 {
-  margin-bottom: 18px;
-  font-size: 2.7rem;
+  max-width: calc(100% - 60px);
+  margin-bottom: 20px;
+  font-size: 2.45rem;
 }
 
 .join-form {
   display: grid;
   gap: 8px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .player-status,
 .phone-result {
   margin-top: 14px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(155, 199, 170, 0.34);
   border-radius: 8px;
-  background: #181214;
+  background: #171d17;
   color: var(--soft);
   padding: 10px 12px;
+  font-weight: 850;
+}
+
+.phone-result:empty {
+  display: none;
 }
 
 .player-scoreline {
@@ -973,6 +1021,9 @@ select:focus {
 }
 
 .player-scoreline span {
+  display: grid;
+  min-height: 58px;
+  align-items: center;
   padding: 13px;
   color: var(--accent-2);
   text-align: center;
@@ -981,7 +1032,9 @@ select:focus {
 
 .phone-question,
 .phone-leaderboard {
-  margin-top: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
 }
 
 .phone-question p {
@@ -992,7 +1045,7 @@ select:focus {
 
 .phone-question h2,
 .phone-leaderboard h2 {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
 }
 
 .phone-hints,
@@ -1005,19 +1058,26 @@ select:focus {
 
 .phone-choice {
   width: 100%;
-  text-align: center;
+  min-height: 66px;
+  border-color: #5a443d;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.08), transparent),
+    #241a1c;
+  text-align: left;
 }
 
 .buzz-button {
   width: 100%;
-  min-height: 166px;
+  min-height: 188px;
   margin-top: 12px;
   border: 0;
   border-radius: 8px;
-  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  background:
+    linear-gradient(180deg, var(--accent-2), var(--accent)),
+    #e8b95c;
   color: var(--accent-ink);
   box-shadow: 0 18px 50px rgba(241, 184, 75, 0.22);
-  font-size: 4rem;
+  font-size: 4.3rem;
   font-weight: 1000;
 }
 
@@ -1029,13 +1089,29 @@ select:focus {
 
 .phone-rank {
   display: flex;
+  min-height: 46px;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #1a1415;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.045), transparent),
+    #1a1415;
   padding: 10px 12px;
   font-weight: 950;
+}
+
+.phone-empty {
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.04), transparent),
+    #181214;
+  color: var(--muted);
+  padding: 13px 12px;
+  font-weight: 850;
+  text-align: center;
 }
 
 .phone-rank strong {

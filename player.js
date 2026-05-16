@@ -166,6 +166,14 @@ function renderChoices(game) {
 
 function renderLeaderboard(players) {
   els.phoneLeaderboard.replaceChildren();
+  if (!players.length) {
+    const empty = document.createElement("div");
+    empty.className = "phone-empty";
+    empty.textContent = "等候排行榜";
+    els.phoneLeaderboard.append(empty);
+    return;
+  }
+
   players.slice(0, 10).forEach((player, index) => {
     const item = document.createElement("div");
     item.className = "phone-rank";

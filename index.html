@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>粵語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=source-whitelist-2" />
+    <link rel="stylesheet" href="./styles.css?v=one-minute-front-audio-2" />
   </head>
   <body>
     <div class="app-shell">
@@ -69,10 +69,10 @@
             <button class="ghost-button" id="nextButton" type="button">下一題</button>
           </div>
 
-          <div class="mode-row three" role="group" aria-label="片段難度">
-            <button class="segmented is-active" id="easyModeButton" type="button">初級 30 秒</button>
-            <button class="segmented" id="normalModeButton" type="button">中級 20 秒</button>
-            <button class="segmented" id="hardModeButton" type="button">高手 15 秒</button>
+          <div class="mode-row single" role="group" aria-label="片段長度">
+            <button class="segmented is-active" id="easyModeButton" type="button">固定 60 秒</button>
+            <button class="segmented" id="normalModeButton" type="button" hidden>固定 60 秒</button>
+            <button class="segmented" id="hardModeButton" type="button" hidden>固定 60 秒</button>
           </div>
 
           <div class="mode-row three" role="group" aria-label="答題模式">
@@ -116,12 +116,12 @@
 
             <div class="form-grid">
               <div>
-                <label for="songStart">開始秒數</label>
-                <input id="songStart" type="number" min="0" step="1" value="30" />
+                <label for="songStart">開始秒數（固定 0）</label>
+                <input id="songStart" type="number" min="0" step="1" value="0" readonly />
               </div>
               <div>
-                <label for="songDuration">預設長度</label>
-                <input id="songDuration" type="number" min="3" max="60" step="1" value="30" />
+                <label for="songDuration">播放長度（固定 60 秒）</label>
+                <input id="songDuration" type="number" min="60" max="60" step="1" value="60" readonly />
               </div>
             </div>
 
@@ -176,6 +176,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=source-whitelist-2"></script>
+    <script src="./app.js?v=one-minute-front-audio-2"></script>
   </body>
 </html>
