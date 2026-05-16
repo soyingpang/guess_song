@@ -227,7 +227,7 @@ function setupPlayerConnection(connection) {
       player.connected = false;
       player.connection = null;
       renderPlayers();
-      publishDisplayState();
+      syncSurfaces();
     }
   });
 }
@@ -459,11 +459,11 @@ function playCurrentClip() {
   state.clipTimer = window.setTimeout(() => {
     state.isPlaying = false;
     renderYouTubeFrame({ autoplay: false });
-    publishDisplayState();
+    syncSurfaces();
   }, clipDuration(state.currentSong) * 1000);
 
   setResult(`播放中：${clipDuration(state.currentSong)} 秒`, "", "");
-  publishDisplayState();
+  syncSurfaces();
 }
 
 function checkGuess(value) {
@@ -532,7 +532,7 @@ function showNextHint() {
   state.hintLevel += 1;
   setResult(`提示 ${state.hintLevel}/${hints.length}`, "", "");
   renderHints();
-  publishDisplayState();
+  syncSurfaces();
 }
 
 function getHints(song) {
@@ -1002,6 +1002,11 @@ function publishDisplayState() {
   localStorage.setItem(DISPLAY_STATE_KEY, JSON.stringify(payload));
 }
 
+function syncSurfaces(extraMessage = null) {
+  publishDisplayState();
+  broadcastToPlayers(extraMessage);
+}
+
 function buildDisplayState() {
   const song = state.currentSong;
   const hasSong = Boolean(song);
@@ -1054,6 +1059,8 @@ function buildPlayerState(player) {
     mode: state.mode,
     hasSong: Boolean(song),
     revealed,
+    isPlaying: state.isPlaying,
+    clipDuration: song ? clipDuration(song) : 0,
     title: revealed ? song.title : "估呢首詩歌",
     status: els.resultText.textContent || "",
     score: player.score,

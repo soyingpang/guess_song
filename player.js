@@ -116,8 +116,10 @@ function renderGame() {
 
   els.playerScore.textContent = `${game.score || 0} 分`;
   els.playerRound.textContent = game.hasSong ? `第 ${game.round} 題` : "未開始";
-  els.phoneStatus.textContent = game.status || "聽片段，估詩歌";
-  els.phoneTitle.textContent = game.revealed ? game.title : "估呢首粵語詩歌";
+  els.phoneStatus.textContent = game.isPlaying
+    ? `播放中：${game.clipDuration || 60} 秒`
+    : game.status || "聽片段，估詩歌";
+  els.phoneTitle.textContent = game.revealed ? game.title : "估呢首詩歌";
   els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `${game.buzzWinner.name} 搶答成功` : "");
 
   renderHints(game.hints || []);
