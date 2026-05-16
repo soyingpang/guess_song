@@ -21,11 +21,13 @@ const APPROVED_SOURCE_RULES = [
   "evangel seminary",
   "鹹蛋音樂事工",
   "salted egg",
-  "hkacm",
-  "香港基督徒音樂事工協會",
-  "cantonworship",
-  "halleluya media",
-  "讚美的時刻",
+  "玻璃海樂團",
+  "worship nations",
+  "讚美之泉",
+  "stream of praise",
+  "建道神學院",
+  "新祢呈",
+  "alliance bible seminary",
 ];
 
 const difficultyDurations = {
