@@ -4,6 +4,28 @@ const CLOUD_LIBRARY_URL = "./hymns.json";
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 
+const APPROVED_SOURCE_RULES = [
+  "小羊詩歌",
+  "lamb music",
+  "同心圓敬拜福音平台",
+  "one circle",
+  "角聲使團",
+  "the heralders",
+  "原始和聲",
+  "raw harmony",
+  "基恩敬拜",
+  "amazing grace worship",
+  "播道神學院",
+  "evangel seminary",
+  "鹹蛋音樂事工",
+  "salted egg",
+  "hkacm",
+  "香港基督徒音樂事工協會",
+  "cantonworship",
+  "halleluya media",
+  "讚美的時刻",
+];
+
 const difficultyDurations = {
   easy: 30,
   normal: 20,
@@ -338,7 +360,7 @@ function startRound(preferredSongId) {
     state.showLeaderboard = false;
     els.guessInput.value = "";
     els.playerHost.replaceChildren();
-    setResult(state.songs.length ? "呢個分類未有詩歌" : "先加入粵語詩歌", "", "");
+    setResult(emptyPoolMessage(), "", "");
     render();
     return;
   }
@@ -366,8 +388,28 @@ function startRound(preferredSongId) {
 }
 
 function playableSongs() {
-  if (state.category === "all") return state.songs;
-  return state.songs.filter((song) => song.category === state.category);
+  const approved = approvedSongs();
+  if (state.category === "all") return approved;
+  return approved.filter((song) => song.category === state.category);
+}
+
+function approvedSongs() {
+  return state.songs.filter((song) => isApprovedSource(song.source));
+}
+
+function isApprovedSource(source) {
+  const normalizedSource = normalizeSource(source);
+  return APPROVED_SOURCE_RULES.some((rule) => normalizedSource.includes(normalizeSource(rule)));
+}
+
+function normalizeSource(source) {
+  return String(source || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function emptyPoolMessage() {
+  if (!state.songs.length) return "先加入粵語詩歌";
+  if (!approvedSongs().length) return "未有已批准來源詩歌";
+  return "呢個分類未有已批准詩歌";
 }
 
 function takeNextSong(pool) {
@@ -643,7 +685,7 @@ async function importSongs(event) {
 
     mergeSongs(songs);
     saveSongs();
-    setResult("已匯入題庫", `${songs.length} 首`, "");
+    setResult("已匯入題庫", `${approvedSongs().length}/${state.songs.length} 首可出題`, "");
     render();
     startRound();
   } catch {
@@ -667,7 +709,7 @@ async function loadCloudLibrary({ silent }) {
 
     state.songs = dedupeSongs(songs);
     saveSongs();
-    setResult("已載入純粵語線上題庫", `${songs.length} 首`, "");
+    setResult("已載入純粵語線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題`, "");
     render();
     startRound();
   } catch {
@@ -719,7 +761,7 @@ function renderScore() {
 }
 
 function renderCategoryFilter() {
-  const categories = Array.from(new Set(state.songs.map((song) => song.category).filter(Boolean))).sort();
+  const categories = Array.from(new Set(approvedSongs().map((song) => song.category).filter(Boolean))).sort();
   const previous = els.categoryFilter.value || state.category;
   els.categoryFilter.innerHTML = "";
 
@@ -747,7 +789,7 @@ function renderQuiz() {
       ? state.currentSong.title
       : "估呢首粵語詩歌"
     : state.songs.length
-      ? "呢個分類未有詩歌"
+      ? emptyPoolMessage()
       : "先加入粵語詩歌";
 
   els.maskLabel.textContent = state.revealed ? "影片已顯示" : "聽前奏，估詩歌";
@@ -792,7 +834,8 @@ function renderHints() {
 }
 
 function renderLibrary() {
-  els.songCount.textContent = `${state.songs.length} 首`;
+  const approvedCount = approvedSongs().length;
+  els.songCount.textContent = `${approvedCount}/${state.songs.length} 可出題`;
   els.songList.innerHTML = "";
 
   if (!state.songs.length) {
@@ -806,9 +849,11 @@ function renderLibrary() {
   const blindRound = Boolean(state.currentSong && !state.answered);
 
   state.songs.forEach((song, index) => {
+    const approved = isApprovedSource(song.source);
     const item = document.createElement("article");
     item.className = "song-item";
     item.classList.toggle("is-locked", blindRound);
+    item.classList.toggle("is-pending-source", !approved);
 
     const info = document.createElement("div");
     const title = document.createElement("strong");
@@ -817,6 +862,7 @@ function renderLibrary() {
     meta.textContent = blindRound
       ? "答案已隱藏，開估後先顯示"
       : [
+          approved ? "已批准來源" : "待審來源",
           song.category || "未分類",
           song.source,
           song.number ? `#${song.number}` : "",
@@ -835,11 +881,18 @@ function renderLibrary() {
       locked.textContent = "鎖定";
       actions.append(locked);
     } else {
-      const play = miniButton("播", "用呢首出題", () => startRound(song.id));
+      const status = document.createElement("span");
+      status.className = approved ? "locked-note approved-note" : "locked-note pending-note";
+      status.textContent = approved ? "已批" : "待審";
       const edit = miniButton("改", "編輯", () => editSong(song.id));
       const remove = miniButton("刪", "刪除", () => deleteSong(song.id));
       remove.classList.add("delete");
-      actions.append(play, edit, remove);
+      if (approved) {
+        const play = miniButton("播", "用呢首出題", () => startRound(song.id));
+        actions.append(play, status, edit, remove);
+      } else {
+        actions.append(status, edit, remove);
+      }
     }
 
     item.append(info, actions);

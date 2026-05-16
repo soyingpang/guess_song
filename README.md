@@ -39,6 +39,7 @@ https://soyingpang.github.io/guess_song/display.html
 - 四選一答中加 1 分；搶答題最快搶答加 2 分
 - 後台可按「排行榜」，前台會顯示即時排名
 - 線上題庫已按粵語 / 廣東話詩歌來源篩選，剔走未能確認粵語的普通話來源
+- 隨機抽題只會使用已批准來源；待審來源會保留在題庫，但不會被抽中
 - 題庫會存在同一部裝置嘅瀏覽器 localStorage
 - `hymns.json` 可以做 GitHub Pages 線上題庫，所有裝置都可以一鍵載入
 
@@ -85,3 +86,5 @@ http://localhost:5173
 想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 `hymns.json`。格式同上面一樣。更新後 push 到 GitHub，網站入面按「線上題庫」就會載入最新題庫。
 
 目前線上題庫已預載 93 首公開 YouTube 粵語詩歌影片；按「線上題庫」會替換成官方純粵語題庫，避免舊普通話歌曲留在瀏覽器。
+
+目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、HKACM、cantonworship、HALLELUYA MEDIA、讚美的時刻。其他來源會先標示為「待審」。
