@@ -1,6 +1,6 @@
-# 估歌仔
+# 粵語詩歌估歌仔
 
-一個用 YouTube 影片片段做題目嘅估歌仔小 web app。
+一個用 YouTube 影片片段做題目嘅粵語詩歌估歌仔 web app，適合團契、小組、主日學、詩班遊戲或營會破冰。
 
 ## 出街用
 
@@ -15,6 +15,17 @@
 
 之後用手機、街外電腦都可以用個 GitHub Pages URL 開。
 
+## 玩法
+
+- 逐首加入粵語詩歌 YouTube 連結
+- 設定前奏 / 副歌開始秒數同片段長度
+- 可填分類、詩歌集 / 來源、編號、提示、可接受答案
+- 可揀全部分類或只玩某一類
+- 可用輸入答案或四選一
+- 可揀初級 12 秒、中級 8 秒、高手 5 秒
+- 題庫會存在同一部裝置嘅瀏覽器 localStorage
+- `hymns.json` 可以做 GitHub Pages 線上題庫，所有裝置都可以一鍵載入
+
 ## 本機開始
 
 ```powershell
@@ -27,18 +38,26 @@ node server.js
 http://localhost:5173
 ```
 
-## 歌庫 JSON 格式
+## 題庫 JSON 格式
 
 ```json
 [
   {
-    "title": "Song title",
-    "aliases": ["Artist name", "Other accepted answer"],
+    "title": "詩歌名",
+    "aliases": ["可接受別名", "英文名或簡稱"],
     "videoId": "dQw4w9WgXcQ",
     "start": 43,
-    "duration": 12
+    "duration": 12,
+    "category": "敬拜",
+    "source": "詩歌集 / 來源",
+    "hint": "提示文字",
+    "number": "詩歌編號"
   }
 ]
 ```
 
 `videoId` 可以係 YouTube ID，亦可以喺 app 入面直接貼 YouTube URL。
+
+## 線上題庫
+
+想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 `hymns.json`。格式同上面一樣。更新後 push 到 GitHub，網站入面按「線上題庫」就會載入最新題庫。

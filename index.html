@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>估歌仔</title>
+    <title>粵語詩歌估歌仔</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">YouTube Song Quiz</p>
-          <h1>估歌仔</h1>
+          <p class="eyebrow">Cantonese Worship Quiz</p>
+          <h1>粵語詩歌估歌仔</h1>
         </div>
         <div class="score-strip" aria-label="分數">
           <div>
@@ -20,7 +20,7 @@
           </div>
           <div>
             <span id="scoreTotal">0</span>
-            <small>題目</small>
+            <small>題數</small>
           </div>
           <div>
             <span id="scoreStreak">0</span>
@@ -35,25 +35,39 @@
             <div id="playerHost"></div>
             <div class="player-mask" id="playerMask">
               <div class="pulse-disc" aria-hidden="true"></div>
-              <span id="maskLabel">準備開始</span>
+              <span id="maskLabel">聽前奏，估詩歌</span>
             </div>
           </div>
 
           <div class="quiz-head">
             <div>
-              <p class="round-label" id="roundLabel">第 0 題</p>
-              <h2 id="quizTitle">揀一首歌開始</h2>
+              <p class="round-label" id="roundLabel">未有題目</p>
+              <h2 id="quizTitle">先加入粵語詩歌</h2>
             </div>
-            <button class="icon-button" id="toggleVideoButton" type="button" title="顯示/隱藏影片">
+            <button class="icon-button" id="toggleVideoButton" type="button" title="顯示或隱藏影片">
               顯示影片
             </button>
+          </div>
+
+          <div class="filter-row">
+            <label for="categoryFilter">只玩分類</label>
+            <select id="categoryFilter">
+              <option value="all">全部分類</option>
+            </select>
           </div>
 
           <div class="transport-grid">
             <button class="primary-button" id="playButton" type="button">播放片段</button>
             <button class="ghost-button" id="replayButton" type="button">重播</button>
-            <button class="ghost-button" id="skipButton" type="button">跳過</button>
+            <button class="ghost-button" id="hintButton" type="button">提示</button>
+            <button class="ghost-button" id="skipButton" type="button">開估</button>
             <button class="ghost-button" id="nextButton" type="button">下一題</button>
+          </div>
+
+          <div class="mode-row three" role="group" aria-label="片段難度">
+            <button class="segmented is-active" id="easyModeButton" type="button">初級 12 秒</button>
+            <button class="segmented" id="normalModeButton" type="button">中級 8 秒</button>
+            <button class="segmented" id="hardModeButton" type="button">高手 5 秒</button>
           </div>
 
           <div class="mode-row" role="group" aria-label="答題模式">
@@ -64,15 +78,16 @@
           <form class="guess-form" id="guessForm">
             <label for="guessInput">答案</label>
             <div class="guess-line">
-              <input id="guessInput" autocomplete="off" placeholder="歌名 / 歌手" />
+              <input id="guessInput" autocomplete="off" placeholder="輸入詩歌名 / 別名 / 編號" />
               <button class="primary-button" type="submit">提交</button>
             </div>
           </form>
 
           <div class="choices" id="choices" aria-label="選項"></div>
+          <div class="hint-stack" id="hintStack" aria-live="polite"></div>
 
           <div class="result-bar" id="resultBar" role="status" aria-live="polite">
-            <span id="resultText">未開始</span>
+            <span id="resultText">加入詩歌後就可以開始</span>
             <strong id="answerText"></strong>
           </div>
         </section>
@@ -80,18 +95,18 @@
         <aside class="library-panel" aria-labelledby="libraryTitle">
           <div class="library-head">
             <div>
-              <p class="eyebrow">Library</p>
-              <h2 id="libraryTitle">歌庫</h2>
+              <p class="eyebrow">Hymn Library</p>
+              <h2 id="libraryTitle">詩歌題庫</h2>
             </div>
             <span id="songCount">0 首</span>
           </div>
 
           <form class="song-form" id="songForm">
-            <label for="songTitle">歌名</label>
-            <input id="songTitle" required placeholder="例如：海闊天空" />
+            <label for="songTitle">詩歌名</label>
+            <input id="songTitle" required placeholder="例如：全因為祢" />
 
             <label for="songUrl">YouTube URL / ID</label>
-            <input id="songUrl" required placeholder="https://youtu.be/..." />
+            <input id="songUrl" required placeholder="貼 YouTube 連結，最好直接跳到前奏秒數" />
 
             <div class="form-grid">
               <div>
@@ -99,22 +114,42 @@
                 <input id="songStart" type="number" min="0" step="1" value="30" />
               </div>
               <div>
-                <label for="songDuration">長度</label>
+                <label for="songDuration">預設長度</label>
                 <input id="songDuration" type="number" min="3" max="60" step="1" value="12" />
               </div>
             </div>
 
-            <label for="songAliases">別名</label>
-            <input id="songAliases" placeholder="逗號分隔，可空白" />
+            <div class="form-grid">
+              <div>
+                <label for="songCategory">分類</label>
+                <input id="songCategory" placeholder="敬拜 / 兒童 / 佈道 / 聖誕" />
+              </div>
+              <div>
+                <label for="songNumber">編號</label>
+                <input id="songNumber" placeholder="可空白" />
+              </div>
+            </div>
 
-            <button class="primary-button full-width" type="submit">加入歌庫</button>
+            <label for="songSource">詩歌集 / 來源</label>
+            <input id="songSource" placeholder="例如：生命聖詩 / ACM / 小組常唱" />
+
+            <label for="songHint">提示</label>
+            <input id="songHint" placeholder="例如：副歌好多人一聽就識，可空白" />
+
+            <label for="songAliases">可接受答案</label>
+            <input id="songAliases" placeholder="別名、英文名、常用簡稱，用逗號分隔" />
+
+            <button class="primary-button full-width" id="songSubmitButton" type="submit">
+              加入詩歌
+            </button>
           </form>
 
           <div class="library-tools">
+            <button class="ghost-button" id="cloudButton" type="button">線上題庫</button>
             <button class="ghost-button" id="exportButton" type="button">匯出</button>
             <label class="file-button" for="importInput">匯入</label>
             <input id="importInput" type="file" accept="application/json" />
-            <button class="danger-button" id="resetButton" type="button">重設</button>
+            <button class="danger-button" id="resetButton" type="button">清空</button>
           </div>
 
           <div class="song-list" id="songList"></div>
