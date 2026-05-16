@@ -42,7 +42,7 @@ function renderFromStorage() {
   els.prompt.textContent = state.revealed
     ? "答案"
     : state.isPlaying
-      ? `播放中 · ${state.clipDuration || 0} 秒`
+      ? "播放中 · 可播完整首"
       : "聽前奏，估詩歌";
   els.subPrompt.textContent = state.revealed
     ? state.answer
@@ -94,7 +94,7 @@ function renderFrame(state) {
     return;
   }
 
-  const frameKey = [state.audioUrl || state.videoId, state.start, state.end, state.isPlaying ? "play" : "cue"].join(":");
+  const frameKey = [state.audioUrl || state.videoId, state.start, state.isPlaying ? "play" : "cue"].join(":");
   if (frameKey === latestFrameKey) return;
   latestFrameKey = frameKey;
 
@@ -122,16 +122,12 @@ function renderAudio(state) {
     audio.currentTime = Number(state.start || 0);
     if (state.isPlaying) audio.play().catch(() => {});
   }, { once: true });
-  audio.addEventListener("timeupdate", () => {
-    if (state.end && audio.currentTime >= state.end) audio.pause();
-  });
   els.playerHost.replaceChildren(audio);
 }
 
 function buildEmbedUrl(state) {
   const url = new URL(`https://www.youtube-nocookie.com/embed/${state.videoId}`);
   url.searchParams.set("start", String(state.start || 0));
-  url.searchParams.set("end", String(state.end || state.start || 0));
   url.searchParams.set("autoplay", state.isPlaying ? "1" : "0");
   url.searchParams.set("controls", "0");
   url.searchParams.set("rel", "0");

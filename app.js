@@ -135,7 +135,7 @@ function bindEvents() {
   els.replayButton.addEventListener("click", () => playCurrentClip());
   els.hintButton.addEventListener("click", () => showNextHint());
   els.skipButton.addEventListener("click", () => finishRound(false, "開估"));
-  els.nextButton.addEventListener("click", () => startRound());
+  els.nextButton.addEventListener("click", () => startRound(null, { autoplay: true }));
   els.toggleVideoButton.addEventListener("click", () => toggleVideo());
 
   els.easyModeButton.addEventListener("click", () => setDifficulty("easy"));
@@ -358,7 +358,8 @@ function saveScore() {
   localStorage.setItem(SCORE_KEY, JSON.stringify(state.score));
 }
 
-function startRound(preferredSongId) {
+function startRound(preferredSongId, options = {}) {
+  const { autoplay = false } = options;
   const pool = playableSongs();
 
   if (!pool.length) {
@@ -392,14 +393,14 @@ function startRound(preferredSongId) {
   state.revealed = false;
   state.answered = false;
   state.hintLevel = 0;
-  state.isPlaying = false;
+  state.isPlaying = Boolean(autoplay);
   state.currentQuestionId = `${song.id}:${Date.now()}`;
   state.buzzWinnerId = "";
   state.showLeaderboard = false;
   els.guessInput.value = "";
-  setResult("聽前奏，估詩歌名", "", "");
+  setResult(autoplay ? "播放中：可播完整首" : "聽前奏，估詩歌名", "", "");
   render();
-  loadCurrentVideo();
+  renderYouTubeFrame({ autoplay });
 }
 
 function playableSongs() {
@@ -456,13 +457,7 @@ function playCurrentClip() {
   state.isPlaying = true;
   renderYouTubeFrame({ autoplay: true });
 
-  state.clipTimer = window.setTimeout(() => {
-    state.isPlaying = false;
-    renderYouTubeFrame({ autoplay: false });
-    syncSurfaces();
-  }, clipDuration(state.currentSong) * 1000);
-
-  setResult(`播放中：${clipDuration(state.currentSong)} 秒`, "", "");
+  setResult("播放中：可播完整首", "", "");
   syncSurfaces();
 }
 
@@ -485,9 +480,10 @@ function chooseAnswer(title) {
 function finishRound(isCorrect, label = null) {
   if (!state.currentSong || state.answered) return;
 
+  const shouldAutoplayReveal = label === "開估" && !state.isPlaying;
   state.answered = true;
   state.revealed = true;
-  state.isPlaying = false;
+  if (shouldAutoplayReveal) state.isPlaying = true;
   state.score.total += 1;
   if (isCorrect) {
     state.score.correct += 1;
@@ -500,6 +496,7 @@ function finishRound(isCorrect, label = null) {
   saveScore();
   setResult(label || (isCorrect ? "答中" : "未中"), answerLabel(state.currentSong), isCorrect ? "correct" : "wrong");
   render();
+  if (shouldAutoplayReveal) renderYouTubeFrame({ autoplay: true });
 }
 
 function isCorrectGuess(normalizedGuess) {
@@ -572,8 +569,8 @@ function renderHostAudio({ autoplay }) {
   const audio = document.createElement("audio");
   audio.src = state.currentSong.audioUrl;
   audio.controls = true;
-  audio.muted = true;
-  audio.volume = 0;
+  audio.muted = false;
+  audio.volume = 1;
   audio.preload = "metadata";
   audio.addEventListener(
     "loadedmetadata",
@@ -589,14 +586,11 @@ function renderHostAudio({ autoplay }) {
 function buildEmbedUrl(song, autoplay) {
   const url = new URL(`https://www.youtube-nocookie.com/embed/${song.videoId}`);
   url.searchParams.set("start", String(clipStart(song)));
-  url.searchParams.set("end", String(clipStart(song) + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
   url.searchParams.set("controls", "1");
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
-  url.searchParams.set("mute", "1");
-  url.searchParams.set("volume", "0");
   return url.toString();
 }
 
@@ -915,7 +909,7 @@ function renderLibrary() {
           song.category || "未分類",
           song.source,
           song.number ? `#${song.number}` : "",
-          `${clipStart(song)}s / ${clipDuration(song)}s`,
+          "由開頭播放 / 全首",
         ]
           .filter(Boolean)
           .join(" · ");
@@ -1025,7 +1019,7 @@ function buildDisplayState() {
     hasSong,
     revealed,
     isPlaying: state.isPlaying,
-    clipDuration: song ? clipDuration(song) : 0,
+    clipDuration: 0,
     roomReady: state.roomReady,
     roomId: state.roomId,
     playerUrl: state.playerUrl,
@@ -1039,7 +1033,7 @@ function buildDisplayState() {
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
     start: song ? clipStart(song) : 0,
-    end: song ? clipStart(song) + clipDuration(song) : 0,
+    end: 0,
     hints,
     choices: state.mode === "choice" && song ? state.currentChoices : [],
     meta: revealed && song
@@ -1060,7 +1054,7 @@ function buildPlayerState(player) {
     hasSong: Boolean(song),
     revealed,
     isPlaying: state.isPlaying,
-    clipDuration: song ? clipDuration(song) : 0,
+    clipDuration: 0,
     title: revealed ? song.title : "估呢首詩歌",
     status: els.resultText.textContent || "",
     score: player.score,

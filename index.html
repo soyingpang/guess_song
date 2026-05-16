@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=surface-sync-1" />
+    <link rel="stylesheet" href="./styles.css?v=full-song-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -62,17 +62,17 @@
           </div>
 
           <div class="transport-grid">
-            <button class="primary-button" id="playButton" type="button">播放片段</button>
+            <button class="primary-button" id="playButton" type="button">播放全首</button>
             <button class="ghost-button" id="replayButton" type="button">重播</button>
             <button class="ghost-button" id="hintButton" type="button">提示</button>
             <button class="ghost-button" id="skipButton" type="button">開估</button>
             <button class="ghost-button" id="nextButton" type="button">下一題</button>
           </div>
 
-          <div class="mode-row single" role="group" aria-label="片段長度">
-            <button class="segmented is-active" id="easyModeButton" type="button">固定 60 秒</button>
-            <button class="segmented" id="normalModeButton" type="button" hidden>固定 60 秒</button>
-            <button class="segmented" id="hardModeButton" type="button" hidden>固定 60 秒</button>
+          <div class="mode-row single" role="group" aria-label="播放方式">
+            <button class="segmented is-active" id="easyModeButton" type="button">全首播放</button>
+            <button class="segmented" id="normalModeButton" type="button" hidden>全首播放</button>
+            <button class="segmented" id="hardModeButton" type="button" hidden>全首播放</button>
           </div>
 
           <div class="mode-row three" role="group" aria-label="答題模式">
@@ -123,7 +123,7 @@
                 <input id="songStart" type="number" min="0" step="1" value="0" readonly />
               </div>
               <div>
-                <label for="songDuration">播放長度（固定 60 秒）</label>
+                <label for="songDuration">估時參考（固定 60 秒，不截停）</label>
                 <input id="songDuration" type="number" min="60" max="60" step="1" value="60" readonly />
               </div>
             </div>
@@ -179,6 +179,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=surface-sync-1"></script>
+    <script src="./app.js?v=full-song-1"></script>
   </body>
 </html>
