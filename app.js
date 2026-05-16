@@ -2,6 +2,7 @@ const STORAGE_KEY = "cantonese-hymn-quiz-library-v2";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const CLOUD_LIBRARY_URL = "./hymns.json";
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
+const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 
 const difficultyDurations = {
   easy: 30,
@@ -22,9 +23,17 @@ const state = {
   answered: false,
   hintLevel: 0,
   isPlaying: false,
+  currentQuestionId: "",
+  buzzWinnerId: "",
+  showLeaderboard: false,
   clipTimer: null,
   editingId: null,
   questionBag: [],
+  roomReady: false,
+  roomId: "",
+  playerUrl: "",
+  peer: null,
+  players: {},
 };
 
 const els = {
@@ -44,6 +53,7 @@ const els = {
   hardModeButton: document.querySelector("#hardModeButton"),
   typedModeButton: document.querySelector("#typedModeButton"),
   choiceModeButton: document.querySelector("#choiceModeButton"),
+  buzzModeButton: document.querySelector("#buzzModeButton"),
   categoryFilter: document.querySelector("#categoryFilter"),
   guessForm: document.querySelector("#guessForm"),
   guessInput: document.querySelector("#guessInput"),
@@ -69,13 +79,18 @@ const els = {
   songSubmitButton: document.querySelector("#songSubmitButton"),
   songList: document.querySelector("#songList"),
   openDisplayButton: document.querySelector("#openDisplayButton"),
+  showLeaderboardButton: document.querySelector("#showLeaderboardButton"),
   cloudButton: document.querySelector("#cloudButton"),
   exportButton: document.querySelector("#exportButton"),
   importInput: document.querySelector("#importInput"),
   resetButton: document.querySelector("#resetButton"),
+  playerCount: document.querySelector("#playerCount"),
+  roomStatus: document.querySelector("#roomStatus"),
+  playerList: document.querySelector("#playerList"),
 };
 
 bindEvents();
+initMultiplayer();
 render();
 startRound();
 if (!state.songs.length) loadCloudLibrary({ silent: true });
@@ -94,6 +109,7 @@ function bindEvents() {
 
   els.typedModeButton.addEventListener("click", () => setMode("typed"));
   els.choiceModeButton.addEventListener("click", () => setMode("choice"));
+  els.buzzModeButton.addEventListener("click", () => setMode("buzz"));
 
   els.categoryFilter.addEventListener("change", () => {
     state.category = els.categoryFilter.value;
@@ -118,9 +134,140 @@ function bindEvents() {
 
   els.exportButton.addEventListener("click", exportSongs);
   els.openDisplayButton.addEventListener("click", openDisplayWindow);
+  els.showLeaderboardButton.addEventListener("click", showLeaderboard);
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
+}
+
+function initMultiplayer() {
+  if (!window.Peer) {
+    state.roomReady = false;
+    state.roomId = "";
+    state.playerUrl = "";
+    renderPlayers();
+    return;
+  }
+
+  const savedRoomId = localStorage.getItem(ROOM_ID_KEY) || makeRoomId();
+  createRoomPeer(savedRoomId);
+}
+
+function createRoomPeer(roomId) {
+  state.peer = new Peer(roomId, { debug: 0 });
+
+  state.peer.on("open", (id) => {
+    state.roomReady = true;
+    state.roomId = id;
+    state.playerUrl = buildPlayerUrl(id);
+    localStorage.setItem(ROOM_ID_KEY, id);
+    renderPlayers();
+    publishDisplayState();
+    broadcastToPlayers();
+  });
+
+  state.peer.on("connection", (connection) => {
+    setupPlayerConnection(connection);
+  });
+
+  state.peer.on("error", (error) => {
+    if (error.type === "unavailable-id") {
+      const nextId = makeRoomId();
+      localStorage.setItem(ROOM_ID_KEY, nextId);
+      createRoomPeer(nextId);
+      return;
+    }
+
+    state.roomReady = false;
+    renderPlayers();
+    publishDisplayState();
+  });
+}
+
+function setupPlayerConnection(connection) {
+  connection.on("data", (message) => handlePlayerMessage(connection, message));
+  connection.on("close", () => {
+    const player = findPlayerByConnection(connection);
+    if (player) {
+      player.connected = false;
+      player.connection = null;
+      renderPlayers();
+      publishDisplayState();
+    }
+  });
+}
+
+function handlePlayerMessage(connection, message) {
+  if (!message || typeof message !== "object") return;
+
+  if (message.type === "join") {
+    const playerId = String(message.playerId || connection.peer || crypto.randomUUID());
+    const name = cleanPlayerName(message.name);
+    const existing = state.players[playerId] || {
+      id: playerId,
+      name,
+      score: 0,
+      answers: {},
+    };
+
+    existing.name = name;
+    existing.connected = true;
+    existing.connection = connection;
+    state.players[playerId] = existing;
+    connection.playerId = playerId;
+    sendPlayerState(existing);
+    renderPlayers();
+    publishDisplayState();
+    broadcastToPlayers();
+    return;
+  }
+
+  const player = state.players[connection.playerId];
+  if (!player || !state.currentSong || message.questionId !== state.currentQuestionId) return;
+
+  if (message.type === "answer") {
+    handleChoiceAnswer(player, message.answer);
+  }
+
+  if (message.type === "buzz") {
+    handleBuzz(player);
+  }
+}
+
+function handleChoiceAnswer(player, answer) {
+  if (state.mode !== "choice" || player.answers[state.currentQuestionId]) return;
+
+  const correct = normalize(answer) === normalize(state.currentSong.title);
+  const points = correct ? 1 : 0;
+  player.score += points;
+  player.answers[state.currentQuestionId] = { answer, correct, points };
+  sendToPlayer(player, {
+    type: "result",
+    questionId: state.currentQuestionId,
+    correct,
+    points,
+    message: correct ? "答中 +1" : "未中",
+  });
+  renderPlayers();
+  publishDisplayState();
+  broadcastToPlayers();
+}
+
+function handleBuzz(player) {
+  if (state.mode !== "buzz" || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
+
+  state.buzzWinnerId = player.id;
+  player.score += 2;
+  player.answers[state.currentQuestionId] = { answer: "buzz", correct: true, points: 2 };
+  broadcastToPlayers({
+    type: "result",
+    questionId: state.currentQuestionId,
+    winnerId: player.id,
+    message: `${player.name} 搶答成功 +2`,
+  });
+  renderPlayers();
+  publishDisplayState();
+  broadcastToPlayers();
 }
 
 function loadSongs() {
@@ -185,6 +332,9 @@ function startRound(preferredSongId) {
     state.answered = false;
     state.hintLevel = 0;
     state.isPlaying = false;
+    state.currentQuestionId = "";
+    state.buzzWinnerId = "";
+    state.showLeaderboard = false;
     els.guessInput.value = "";
     els.playerHost.replaceChildren();
     setResult(state.songs.length ? "呢個分類未有詩歌" : "先加入粵語詩歌", "", "");
@@ -205,6 +355,9 @@ function startRound(preferredSongId) {
   state.answered = false;
   state.hintLevel = 0;
   state.isPlaying = false;
+  state.currentQuestionId = `${song.id}:${Date.now()}`;
+  state.buzzWinnerId = "";
+  state.showLeaderboard = false;
   els.guessInput.value = "";
   setResult("聽前奏，估詩歌名", "", "");
   render();
@@ -385,6 +538,11 @@ function setMode(mode) {
   render();
 }
 
+function showLeaderboard() {
+  state.showLeaderboard = true;
+  render();
+}
+
 function saveSongFromForm() {
   const videoId = parseYouTubeId(els.songUrl.value);
   if (!videoId) {
@@ -544,7 +702,9 @@ function render() {
   renderQuiz();
   renderHints();
   renderLibrary();
+  renderPlayers();
   publishDisplayState();
+  broadcastToPlayers();
 }
 
 function renderScore() {
@@ -594,6 +754,7 @@ function renderQuiz() {
   els.hardModeButton.classList.toggle("is-active", state.difficulty === "hard");
   els.typedModeButton.classList.toggle("is-active", state.mode === "typed");
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
+  els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
 
   els.guessForm.hidden = state.mode !== "typed";
   els.choices.hidden = state.mode !== "choice";
@@ -680,6 +841,42 @@ function renderLibrary() {
   });
 }
 
+function renderPlayers() {
+  const players = leaderboardPlayers();
+  els.playerCount.textContent = `${players.length} 位`;
+  els.roomStatus.textContent = state.roomReady
+    ? `房間已開：${state.roomId}`
+    : "房間建立中，請保持此頁開住";
+  els.playerList.innerHTML = "";
+
+  if (!players.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = state.roomReady ? "等待玩家掃 QR 加入" : "多人連線準備中";
+    els.playerList.append(empty);
+    return;
+  }
+
+  players.forEach((player, index) => {
+    const item = document.createElement("article");
+    item.className = "player-item";
+
+    const info = document.createElement("div");
+    const name = document.createElement("strong");
+    const meta = document.createElement("span");
+    name.textContent = `${index + 1}. ${player.name}`;
+    meta.textContent = player.connected ? "已連線" : "離線";
+    info.append(name, meta);
+
+    const score = document.createElement("strong");
+    score.className = "player-score";
+    score.textContent = `${player.score} 分`;
+
+    item.append(info, score);
+    els.playerList.append(item);
+  });
+}
+
 function setResult(message, answer, tone = "") {
   els.resultText.textContent = message;
   els.answerText.textContent = answer;
@@ -716,6 +913,12 @@ function buildDisplayState() {
     revealed,
     isPlaying: state.isPlaying,
     clipDuration: song ? clipDuration(song) : 0,
+    roomReady: state.roomReady,
+    roomId: state.roomId,
+    playerUrl: state.playerUrl,
+    showLeaderboard: state.showLeaderboard,
+    leaderboard: leaderboardPlayers().map(stripPlayer),
+    buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
     prompt: hasSong ? "聽前奏，估詩歌" : "等候主持開始",
     status: els.resultText.textContent || "",
     answer: revealed ? answerLabel(song) : "",
@@ -729,6 +932,78 @@ function buildDisplayState() {
       ? [song.category, song.source, song.number ? `#${song.number}` : ""].filter(Boolean)
       : [],
   };
+}
+
+function buildPlayerState(player) {
+  const song = state.currentSong;
+  const revealed = Boolean(song && state.answered);
+
+  return {
+    type: "state",
+    questionId: state.currentQuestionId,
+    round: state.round,
+    mode: state.mode,
+    hasSong: Boolean(song),
+    revealed,
+    title: revealed ? song.title : "估呢首粵語詩歌",
+    status: els.resultText.textContent || "",
+    score: player.score,
+    choices: state.mode === "choice" && song && !revealed ? state.currentChoices : [],
+    hints: song ? getHints(song).slice(0, state.hintLevel) : [],
+    leaderboard: leaderboardPlayers().map(stripPlayer),
+    buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
+    answered: Boolean(player.answers[state.currentQuestionId]),
+  };
+}
+
+function broadcastToPlayers(extraMessage = null) {
+  Object.values(state.players).forEach((player) => {
+    if (extraMessage) sendToPlayer(player, extraMessage);
+    sendPlayerState(player);
+  });
+}
+
+function sendPlayerState(player) {
+  sendToPlayer(player, buildPlayerState(player));
+}
+
+function sendToPlayer(player, message) {
+  if (player?.connection?.open) {
+    player.connection.send(message);
+  }
+}
+
+function leaderboardPlayers() {
+  return Object.values(state.players).sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+}
+
+function stripPlayer(player) {
+  if (!player) return null;
+  return {
+    id: player.id,
+    name: player.name,
+    score: player.score,
+    connected: Boolean(player.connected),
+  };
+}
+
+function findPlayerByConnection(connection) {
+  return Object.values(state.players).find((player) => player.connection === connection) || null;
+}
+
+function buildPlayerUrl(roomId) {
+  const url = new URL("./player.html", window.location.href);
+  url.searchParams.set("room", roomId);
+  return url.toString();
+}
+
+function makeRoomId() {
+  return `hymn-${Math.random().toString(36).slice(2, 8)}-${Date.now().toString(36).slice(-4)}`;
+}
+
+function cleanPlayerName(name) {
+  const cleaned = String(name || "").trim().replace(/\s+/g, " ").slice(0, 18);
+  return cleaned || "無名玩家";
 }
 
 function miniButton(text, title, onClick) {

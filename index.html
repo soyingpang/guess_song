@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>粵語詩歌估歌仔</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -15,6 +16,7 @@
         </div>
         <div class="topbar-actions">
           <button class="ghost-button" id="openDisplayButton" type="button">開前台</button>
+          <button class="ghost-button" id="showLeaderboardButton" type="button">排行榜</button>
           <div class="score-strip" aria-label="分數">
             <div>
               <span id="scoreCorrect">0</span>
@@ -73,9 +75,10 @@
             <button class="segmented" id="hardModeButton" type="button">高手 15 秒</button>
           </div>
 
-          <div class="mode-row" role="group" aria-label="答題模式">
-            <button class="segmented is-active" id="typedModeButton" type="button">輸入答案</button>
+          <div class="mode-row three" role="group" aria-label="答題模式">
+            <button class="segmented is-active" id="typedModeButton" type="button">主持輸入</button>
             <button class="segmented" id="choiceModeButton" type="button">四選一</button>
+            <button class="segmented" id="buzzModeButton" type="button">搶答</button>
           </div>
 
           <form class="guess-form" id="guessForm">
@@ -156,10 +159,23 @@
           </div>
 
           <div class="song-list" id="songList"></div>
+
+          <section class="players-panel" aria-labelledby="playersTitle">
+            <div class="library-head">
+              <div>
+                <p class="eyebrow">Players</p>
+                <h2 id="playersTitle">玩家</h2>
+              </div>
+              <span id="playerCount">0 位</span>
+            </div>
+            <div class="room-status" id="roomStatus">房間建立中</div>
+            <div class="player-list" id="playerList"></div>
+          </section>
         </aside>
       </main>
     </div>
 
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>粵語詩歌估歌仔 · 前台</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body class="display-body">
@@ -37,7 +38,16 @@
 
         <div class="stage-hints" id="stageHints"></div>
         <div class="stage-choices" id="stageChoices"></div>
+        <div class="stage-leaderboard" id="stageLeaderboard"></div>
       </section>
+
+      <aside class="stage-qr" id="stageQrPanel">
+        <img id="stageQr" alt="玩家加入 QR code" />
+        <div>
+          <strong>掃碼加入</strong>
+          <span id="stageRoom">等待房間</span>
+        </div>
+      </aside>
     </main>
 
     <script src="./display.js"></script>

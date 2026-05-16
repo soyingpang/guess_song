@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>粵語詩歌估歌仔 · 玩家</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="player-body">
+    <main class="player-shell">
+      <section class="player-card">
+        <p class="eyebrow">Join Game</p>
+        <h1>粵語詩歌估歌仔</h1>
+
+        <form class="join-form" id="joinForm">
+          <label for="playerName">你的名字</label>
+          <div class="guess-line">
+            <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
+            <button class="primary-button" type="submit">加入</button>
+          </div>
+        </form>
+
+        <div class="player-status" id="playerStatus">掃 QR 後輸入名字加入</div>
+        <div class="player-scoreline">
+          <span id="playerScore">0 分</span>
+          <span id="playerRound">未開始</span>
+        </div>
+
+        <section class="phone-question">
+          <p id="phoneStatus">等候主持開始</p>
+          <h2 id="phoneTitle">準備中</h2>
+          <div class="phone-hints" id="phoneHints"></div>
+          <div class="phone-choices" id="phoneChoices"></div>
+          <button class="buzz-button" id="buzzButton" type="button" hidden>搶答</button>
+          <div class="phone-result" id="phoneResult"></div>
+        </section>
+
+        <section class="phone-leaderboard">
+          <h2>排行榜</h2>
+          <div id="phoneLeaderboard"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+    <script src="./player.js"></script>
+  </body>
+</html>

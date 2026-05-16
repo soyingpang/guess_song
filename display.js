@@ -12,6 +12,10 @@ const els = {
   meta: document.querySelector("#stageMeta"),
   hints: document.querySelector("#stageHints"),
   choices: document.querySelector("#stageChoices"),
+  leaderboard: document.querySelector("#stageLeaderboard"),
+  qrPanel: document.querySelector("#stageQrPanel"),
+  qr: document.querySelector("#stageQr"),
+  room: document.querySelector("#stageRoom"),
 };
 
 let latestFrameKey = "";
@@ -52,6 +56,8 @@ function renderFromStorage() {
   renderMeta(state);
   renderHints(state.hints || []);
   renderChoices(state);
+  renderLeaderboard(state);
+  renderQr(state);
 }
 
 function readDisplayState() {
@@ -73,6 +79,8 @@ function renderWaiting() {
   els.meta.replaceChildren();
   els.hints.replaceChildren();
   els.choices.replaceChildren();
+  els.leaderboard.replaceChildren();
+  els.qrPanel.hidden = true;
   els.playerHost.replaceChildren();
   latestFrameKey = "";
 }
@@ -137,7 +145,19 @@ function renderHints(hints) {
 
 function renderChoices(state) {
   els.choices.replaceChildren();
-  if (state.revealed || state.mode !== "choice") return;
+  if (state.revealed) return;
+
+  if (state.mode === "buzz") {
+    const item = document.createElement("div");
+    item.className = "stage-choice buzz-live";
+    item.textContent = state.buzzWinner
+      ? `${state.buzzWinner.name} 搶答成功`
+      : "搶答題：準備按手機搶答";
+    els.choices.append(item);
+    return;
+  }
+
+  if (state.mode !== "choice") return;
 
   (state.choices || []).forEach((choice, index) => {
     const item = document.createElement("div");
@@ -145,4 +165,41 @@ function renderChoices(state) {
     item.textContent = `${index + 1}. ${choice}`;
     els.choices.append(item);
   });
+}
+
+function renderLeaderboard(state) {
+  els.leaderboard.replaceChildren();
+  if (!state.showLeaderboard && !state.buzzWinner) return;
+
+  const title = document.createElement("h2");
+  title.textContent = state.showLeaderboard ? "排行榜" : "搶答結果";
+  els.leaderboard.append(title);
+
+  const players = state.buzzWinner ? [state.buzzWinner, ...(state.leaderboard || []).filter((p) => p.id !== state.buzzWinner.id)] : state.leaderboard || [];
+  players.slice(0, 10).forEach((player, index) => {
+    const item = document.createElement("div");
+    item.className = "stage-rank";
+    item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${player.score} 分</strong>`;
+    els.leaderboard.append(item);
+  });
+}
+
+function renderQr(state) {
+  if (!state.playerUrl) {
+    els.qrPanel.hidden = true;
+    return;
+  }
+
+  els.qrPanel.hidden = false;
+  els.qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(state.playerUrl)}`;
+  els.room.textContent = state.roomReady ? `房間：${state.roomId}` : "房間建立中";
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
