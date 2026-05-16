@@ -22,6 +22,7 @@ const state = {
   hintLevel: 0,
   clipTimer: null,
   editingId: null,
+  questionBag: [],
 };
 
 const els = {
@@ -93,6 +94,7 @@ function bindEvents() {
 
   els.categoryFilter.addEventListener("change", () => {
     state.category = els.categoryFilter.value;
+    state.questionBag = [];
     startRound();
   });
 
@@ -185,10 +187,9 @@ function startRound(preferredSongId) {
     return;
   }
 
-  const previousId = state.currentSong?.id;
   const song =
     pool.find((item) => item.id === preferredSongId) ||
-    pickRandom(pool.filter((item) => item.id !== previousId)) ||
+    takeNextSong(pool) ||
     pool[0];
 
   clearClipTimer();
@@ -207,6 +208,20 @@ function startRound(preferredSongId) {
 function playableSongs() {
   if (state.category === "all") return state.songs;
   return state.songs.filter((song) => song.category === state.category);
+}
+
+function takeNextSong(pool) {
+  const availableIds = new Set(pool.map((song) => song.id));
+  state.questionBag = state.questionBag.filter((id) => availableIds.has(id));
+
+  if (!state.questionBag.length) {
+    state.questionBag = shuffle(pool.map((song) => song.id));
+  }
+
+  const previousId = state.currentSong?.id;
+  const nextId = state.questionBag.find((id) => id !== previousId) || state.questionBag[0];
+  state.questionBag = state.questionBag.filter((id) => id !== nextId);
+  return pool.find((song) => song.id === nextId) || null;
 }
 
 function loadCurrentVideo() {
@@ -608,33 +623,45 @@ function renderLibrary() {
     return;
   }
 
-  state.songs.forEach((song) => {
+  const blindRound = Boolean(state.currentSong && !state.answered);
+
+  state.songs.forEach((song, index) => {
     const item = document.createElement("article");
     item.className = "song-item";
+    item.classList.toggle("is-locked", blindRound);
 
     const info = document.createElement("div");
     const title = document.createElement("strong");
     const meta = document.createElement("span");
-    title.textContent = song.title;
-    meta.textContent = [
-      song.category || "未分類",
-      song.source,
-      song.number ? `#${song.number}` : "",
-      `${song.start}s / ${song.duration}s`,
-    ]
-      .filter(Boolean)
-      .join(" · ");
+    title.textContent = blindRound ? `盲抽中 · 詩歌 ${index + 1}` : song.title;
+    meta.textContent = blindRound
+      ? "答案已隱藏，開估後先顯示"
+      : [
+          song.category || "未分類",
+          song.source,
+          song.number ? `#${song.number}` : "",
+          `${song.start}s / ${song.duration}s`,
+        ]
+          .filter(Boolean)
+          .join(" · ");
     info.append(title, meta);
 
     const actions = document.createElement("div");
     actions.className = "song-actions";
 
-    const play = miniButton("播", "用呢首出題", () => startRound(song.id));
-    const edit = miniButton("改", "編輯", () => editSong(song.id));
-    const remove = miniButton("刪", "刪除", () => deleteSong(song.id));
-    remove.classList.add("delete");
+    if (blindRound) {
+      const locked = document.createElement("span");
+      locked.className = "locked-note";
+      locked.textContent = "鎖定";
+      actions.append(locked);
+    } else {
+      const play = miniButton("播", "用呢首出題", () => startRound(song.id));
+      const edit = miniButton("改", "編輯", () => editSong(song.id));
+      const remove = miniButton("刪", "刪除", () => deleteSong(song.id));
+      remove.classList.add("delete");
+      actions.append(play, edit, remove);
+    }
 
-    actions.append(play, edit, remove);
     item.append(info, actions);
     els.songList.append(item);
   });

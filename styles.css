@@ -469,6 +469,22 @@ select:focus {
   gap: 6px;
 }
 
+.song-item.is-locked {
+  border-color: rgba(246, 196, 83, 0.26);
+}
+
+.locked-note {
+  display: inline-grid;
+  place-items: center;
+  min-width: 48px;
+  height: 38px;
+  border: 1px solid rgba(246, 196, 83, 0.34);
+  border-radius: 6px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
 .mini-button {
   width: 38px;
   height: 38px;
