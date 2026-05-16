@@ -8,10 +8,11 @@
     "videoId": "lxf0GZI1XB0",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "敬拜計劃 Worship Project",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "001"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "001",
+    "language": "粵語"
   },
   {
     "title": "我的生命獻給祢",
@@ -23,8 +24,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "MariaKYLee家怡",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "002"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "002",
+    "language": "粵語"
   },
   {
     "title": "一無",
@@ -35,10 +37,11 @@
     "videoId": "ScKWWVp9nCI",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "003"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "003",
+    "language": "粵語"
   },
   {
     "title": "透著祢的榮光",
@@ -50,8 +53,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "flow music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "004"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "004",
+    "language": "粵語"
   },
   {
     "title": "求祢榮耀吸引我",
@@ -61,10 +65,11 @@
     "videoId": "nud70CrlIuY",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "005"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "005",
+    "language": "粵語"
   },
   {
     "title": "在那裏祢手必引導",
@@ -75,10 +80,11 @@
     "videoId": "eZ37VzoK6i4",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "006"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "006",
+    "language": "粵語"
   },
   {
     "title": "四面環繞的恩惠",
@@ -88,10 +94,11 @@
     "videoId": "z7C1DDoEbEk",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "007"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "007",
+    "language": "粵語"
   },
   {
     "title": "客西馬尼園",
@@ -101,75 +108,11 @@
     "videoId": "9VG3CcNmv7w",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "008"
-  },
-  {
-    "title": "回到愛你的最初",
-    "aliases": [
-      "回到愛你的最初 // 台港青年團契聚會現場版 // 玻璃海2025年度主題 //"
-    ],
-    "videoId": "wZV2H5x3lS8",
-    "start": 25,
-    "duration": 30,
-    "category": "粵語詩歌",
-    "source": "WN X 玻璃海樂團 X PHOTIC",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "009"
-  },
-  {
-    "title": "祢使我勇敢",
-    "aliases": [
-      "【祢使我勇敢 / You Make Me Courageous 】Acoustic Live - 約書亞樂團、謝思穎 Panay Isak"
-    ],
-    "videoId": "dCF3RyClugc",
-    "start": 25,
-    "duration": 30,
-    "category": "粵語詩歌",
-    "source": "Joshua Band 約書亞樂團",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "010"
-  },
-  {
-    "title": "投靠",
-    "aliases": [
-      "投靠 (Offical Lyric MV) // Worship Nations // 玻璃海"
-    ],
-    "videoId": "-1SDu-a2ENo",
-    "start": 25,
-    "duration": 30,
-    "category": "敬拜讚美",
-    "source": "WN X 玻璃海樂團 X PHOTIC",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "011"
-  },
-  {
-    "title": "我們都是這樣靠主走過的",
-    "aliases": [
-      "我們都是這樣靠主走過的 (Official Lyric MV) // Hope城 // 玻璃海樂團"
-    ],
-    "videoId": "bq1mHOoXU9M",
-    "start": 25,
-    "duration": 30,
-    "category": "粵語詩歌",
-    "source": "WN X 玻璃海樂團 X PHOTIC",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "012"
-  },
-  {
-    "title": "願你公義降臨",
-    "aliases": [
-      "願你公義降臨  (Official Lyric MV) // Worship Nations // 玻璃海樂團"
-    ],
-    "videoId": "QxDccKsJJhI",
-    "start": 25,
-    "duration": 30,
-    "category": "敬拜讚美",
-    "source": "WN X 玻璃海樂團 X PHOTIC",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "013"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "008",
+    "language": "粵語"
   },
   {
     "title": "進入敬拜裡",
@@ -179,10 +122,11 @@
     "videoId": "6XyLROHuhAo",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "014"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "009",
+    "language": "粵語"
   },
   {
     "title": "隱密之處",
@@ -193,10 +137,11 @@
     "videoId": "zeH33pGz3Tw",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "015"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "010",
+    "language": "粵語"
   },
   {
     "title": "唯獨救主的寶血",
@@ -208,8 +153,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "016"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "011",
+    "language": "粵語"
   },
   {
     "title": "轉回（何西阿書十一）",
@@ -219,8 +165,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "017"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "012",
+    "language": "粵語"
   },
   {
     "title": "一生的滿足",
@@ -232,8 +179,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "018"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "013",
+    "language": "粵語"
   },
   {
     "title": "漩渦",
@@ -246,8 +194,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "019"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "014",
+    "language": "粵語"
   },
   {
     "title": "主超過我在面對的紅海",
@@ -259,21 +208,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "020"
-  },
-  {
-    "title": "耶穌我感謝你",
-    "aliases": [
-      "耶穌我感謝你  - 玻璃海 Psalm.5 (Official Lyric MV)  // Worship Nations // 玻璃海樂團"
-    ],
-    "videoId": "123L18Fq8S8",
-    "start": 25,
-    "duration": 30,
-    "category": "敬拜讚美",
-    "source": "WN X 玻璃海樂團 X PHOTIC",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "021"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "015",
+    "language": "粵語"
   },
   {
     "title": "憑信跨過",
@@ -285,21 +222,24 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "022"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "016",
+    "language": "粵語"
   },
   {
-    "title": "刻在祢心底的名字",
+    "title": "恩惠隨著我",
     "aliases": [
-      "恩惠隨著我 - 鹹蛋音樂事工SEMM🍳//《刻在祢心底的名字》 Mini-Album 7th Track"
+      "恩惠隨著我 - 鹹蛋音樂事工SEMM",
+      "刻在祢心底的名字 Mini-Album 7th Track"
     ],
     "videoId": "4MqHMYPs1ac",
     "start": 25,
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "023"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "017",
+    "language": "粵語"
   },
   {
     "title": "有祢同行",
@@ -309,10 +249,11 @@
     "videoId": "2KM6F_vQSD0",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "基恩敬拜 Amazing Grace Worship",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "024"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "018",
+    "language": "粵語"
   },
   {
     "title": "主愛如繁星",
@@ -324,21 +265,24 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "Kennex in Jesus",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "025"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "019",
+    "language": "粵語"
   },
   {
-    "title": "刻在祢心底的名字",
+    "title": "我的名字在祢心上",
     "aliases": [
-      "我的名字在祢心上 - 鹹蛋音樂事工SEMM🍳//《刻在祢心底的名字》 Mini-Album 6th Track"
+      "我的名字在祢心上 - 鹹蛋音樂事工SEMM",
+      "刻在祢心底的名字 Mini-Album 6th Track"
     ],
     "videoId": "uiEYQz1JY2U",
     "start": 25,
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "026"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "020",
+    "language": "粵語"
   },
   {
     "title": "王的應許",
@@ -350,8 +294,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "flow music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "027"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "021",
+    "language": "粵語"
   },
   {
     "title": "我們的神",
@@ -363,8 +308,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "MariaKYLee家怡",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "028"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "022",
+    "language": "粵語"
   },
   {
     "title": "詩90 (求教導我怎數算自己的日子)",
@@ -374,10 +320,11 @@
     "videoId": "rPBIATKkn18",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "029"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "023",
+    "language": "粵語"
   },
   {
     "title": "儘管我尚未看見 (ft. Sunset Worship)",
@@ -387,10 +334,11 @@
     "videoId": "PtJLd5GEyb4",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "030"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "024",
+    "language": "粵語"
   },
   {
     "title": "晨星",
@@ -400,10 +348,11 @@
     "videoId": "hJ60_wJM2aE",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "Milk&Honey Worship",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "031"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "025",
+    "language": "粵語"
   },
   {
     "title": "是為祢預備",
@@ -413,10 +362,11 @@
     "videoId": "0iCvxLUstno",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "Milk&Honey Worship",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "032"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "026",
+    "language": "粵語"
   },
   {
     "title": "主禱文・約書亞",
@@ -427,10 +377,11 @@
     "videoId": "tAaNPTUZMDo",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "033"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "027",
+    "language": "粵語"
   },
   {
     "title": "真愛",
@@ -441,10 +392,11 @@
     "videoId": "Htz3o37cx9w",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "034"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "028",
+    "language": "粵語"
   },
   {
     "title": "仍然相信祢",
@@ -454,10 +406,11 @@
     "videoId": "VzmM9I0KqUM",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "035"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "029",
+    "language": "粵語"
   },
   {
     "title": "如果世界再沒神蹟",
@@ -469,8 +422,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "角聲使團 The Heralders",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "036"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "030",
+    "language": "粵語"
   },
   {
     "title": "晨曦盼望",
@@ -482,8 +436,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "角聲使團 The Heralders",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "037"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "031",
+    "language": "粵語"
   },
   {
     "title": "仍然相信祢",
@@ -493,10 +448,11 @@
     "videoId": "vuFoTqmUizs",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "038"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "032",
+    "language": "粵語"
   },
   {
     "title": "同載同在",
@@ -507,10 +463,11 @@
     "videoId": "2IZi6iSHTm0",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "039"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "033",
+    "language": "粵語"
   },
   {
     "title": "聖潔主",
@@ -521,10 +478,11 @@
     "videoId": "wj1F0nj2Txg",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "040"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "034",
+    "language": "粵語"
   },
   {
     "title": "再次將我更新",
@@ -537,8 +495,9 @@
     "duration": 30,
     "category": "傳統聖詩",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "041"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "035",
+    "language": "粵語"
   },
   {
     "title": "我也不定你的罪",
@@ -551,21 +510,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "042"
-  },
-  {
-    "title": "透光",
-    "aliases": [
-      "透光 (Official MV) // PHOTIC //"
-    ],
-    "videoId": "m3xsy67dlIk",
-    "start": 25,
-    "duration": 30,
-    "category": "粵語詩歌",
-    "source": "WN X 玻璃海樂團 X PHOTIC",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "043"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "036",
+    "language": "粵語"
   },
   {
     "title": "一無",
@@ -578,8 +525,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "044"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "037",
+    "language": "粵語"
   },
   {
     "title": "顯現",
@@ -589,10 +537,11 @@
     "videoId": "ocV-Xik5APo",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "Milk&Honey Worship",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "045"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "038",
+    "language": "粵語"
   },
   {
     "title": "來到主祭壇前",
@@ -602,10 +551,11 @@
     "videoId": "JosenZkC--4",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "046"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "039",
+    "language": "粵語"
   },
   {
     "title": "行在地上的福音",
@@ -617,8 +567,9 @@
     "duration": 30,
     "category": "福音詩歌",
     "source": "播道神學院 Evangel Seminary",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "047"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "040",
+    "language": "粵語"
   },
   {
     "title": "我屬祢",
@@ -630,8 +581,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "048"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "041",
+    "language": "粵語"
   },
   {
     "title": "福音叫人有活著的勇氣",
@@ -643,8 +595,9 @@
     "duration": 30,
     "category": "福音詩歌",
     "source": "巿井音樂 C# Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "049"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "042",
+    "language": "粵語"
   },
   {
     "title": "耶和華尼西",
@@ -655,10 +608,11 @@
     "videoId": "9-CYe9EK5bM",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "050"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "043",
+    "language": "粵語"
   },
   {
     "title": "登耶和華的山",
@@ -668,10 +622,11 @@
     "videoId": "mOmO9VqtUjA",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "051"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "044",
+    "language": "粵語"
   },
   {
     "title": "祢愛超過一切",
@@ -683,8 +638,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "Immersio",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "052"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "045",
+    "language": "粵語"
   },
   {
     "title": "到那日",
@@ -696,8 +652,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "Gsus Music Ministry    天弦音樂事工",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "053"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "046",
+    "language": "粵語"
   },
   {
     "title": "最好的路徑",
@@ -707,10 +664,11 @@
     "videoId": "wfAmoadlCo0",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "054"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "047",
+    "language": "粵語"
   },
   {
     "title": "被愛",
@@ -722,8 +680,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "055"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "048",
+    "language": "粵語"
   },
   {
     "title": "心生敬畏",
@@ -733,10 +692,11 @@
     "videoId": "Ijm5FXxBWL8",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "056"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "049",
+    "language": "粵語"
   },
   {
     "title": "世上最好的愛",
@@ -746,10 +706,11 @@
     "videoId": "5RWH8V8hMdY",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "057"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "050",
+    "language": "粵語"
   },
   {
     "title": "一千次頌讚",
@@ -762,8 +723,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "Promist",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "058"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "051",
+    "language": "粵語"
   },
   {
     "title": "在祢座前",
@@ -773,10 +735,11 @@
     "videoId": "VA7cUGj1K88",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "059"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "052",
+    "language": "粵語"
   },
   {
     "title": "因祢堅持",
@@ -788,8 +751,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "鹹蛋音樂事工Salted Egg Music Ministry",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "060"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "053",
+    "language": "粵語"
   },
   {
     "title": "在那裏祢手必引導",
@@ -802,8 +766,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "061"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "054",
+    "language": "粵語"
   },
   {
     "title": "Living Hope",
@@ -813,10 +778,11 @@
     "videoId": "LzJP04JZ0z4",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "Saddleback Church Hong Kong",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "062"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "055",
+    "language": "粵語"
   },
   {
     "title": "至聖君王",
@@ -826,10 +792,11 @@
     "videoId": "A2xGf7nMN50",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "063"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "056",
+    "language": "粵語"
   },
   {
     "title": "唯有主基督",
@@ -842,8 +809,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "原始和聲 Raw Harmony",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "064"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "057",
+    "language": "粵語"
   },
   {
     "title": "當你走到無力",
@@ -856,8 +824,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "065"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "058",
+    "language": "粵語"
   },
   {
     "title": "只見耶穌",
@@ -870,8 +839,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "066"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "059",
+    "language": "粵語"
   },
   {
     "title": "神我屬祢",
@@ -882,10 +852,11 @@
     "videoId": "OsVuY9VEF9s",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "067"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "060",
+    "language": "粵語"
   },
   {
     "title": "更深愛祢",
@@ -898,8 +869,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "RedSea Music",
-    "hint": "粵語詩歌 playlist 影片",
-    "number": "068"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "061",
+    "language": "粵語"
   },
   {
     "title": "愛是不保留",
@@ -911,8 +883,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "HALLELUYA MEDIA",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "069"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "062",
+    "language": "粵語"
   },
   {
     "title": "如此認識我",
@@ -924,8 +897,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "角聲使團 The Heralders",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "070"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "063",
+    "language": "粵語"
   },
   {
     "title": "最好的福氣",
@@ -937,21 +911,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "角聲使團 The Heralders",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "071"
-  },
-  {
-    "title": "誰曾應許",
-    "aliases": [
-      "『誰曾應許 』 團契遊樂園5 應許（基督教詩歌）"
-    ],
-    "videoId": "McixlPUGPzI",
-    "start": 25,
-    "duration": 30,
-    "category": "粵語詩歌",
-    "source": "m2kmusic",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "072"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "064",
+    "language": "粵語"
   },
   {
     "title": "誰曾應許",
@@ -963,8 +925,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "cantonworship",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "073"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "065",
+    "language": "粵語"
   },
   {
     "title": "陪我走過春夏秋冬",
@@ -974,10 +937,11 @@
     "videoId": "d2IP-JO2ueM",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "小羊詩歌",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "074"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "066",
+    "language": "粵語"
   },
   {
     "title": "晴天雨天",
@@ -989,8 +953,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "TBM TheBridgeMusic",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "075"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "067",
+    "language": "粵語"
   },
   {
     "title": "凡事謝恩",
@@ -1000,10 +965,11 @@
     "videoId": "ZcCktEPqo0Y",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "Ivy Yip 原創詩歌@Worship Island",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "076"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "068",
+    "language": "粵語"
   },
   {
     "title": "一首讚美的詩歌",
@@ -1013,10 +979,11 @@
     "videoId": "s13FhDcibuc",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "cantonworship",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "077"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "069",
+    "language": "粵語"
   },
   {
     "title": "普天頌讚",
@@ -1026,10 +993,11 @@
     "videoId": "m0MPMPJ9cwM",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "基恩敬拜 Amazing Grace Worship",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "078"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "070",
+    "language": "粵語"
   },
   {
     "title": "更新我心",
@@ -1039,10 +1007,11 @@
     "videoId": "TYUpFlASmes",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "基恩敬拜 Amazing Grace Worship",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "079"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "071",
+    "language": "粵語"
   },
   {
     "title": "祢是我神",
@@ -1052,10 +1021,11 @@
     "videoId": "3ne_YTWSacU",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "同心圓敬拜福音平台 One Circle",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "080"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "072",
+    "language": "粵語"
   },
   {
     "title": "我們的神（粵語版）",
@@ -1063,10 +1033,11 @@
     "videoId": "C23TE-kCI1A",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "如此我信後製音樂事工 | The HOPE Music Ministry ",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "081"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "073",
+    "language": "粵語"
   },
   {
     "title": "因著信",
@@ -1078,8 +1049,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "角聲使團 The Heralders",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "082"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "074",
+    "language": "粵語"
   },
   {
     "title": "讓我親近祢",
@@ -1091,8 +1063,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "讚美的時刻",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "083"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "075",
+    "language": "粵語"
   },
   {
     "title": "主祢知道",
@@ -1102,10 +1075,11 @@
     "videoId": "H0B6KPHYbSQ",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "084"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "076",
+    "language": "粵語"
   },
   {
     "title": "恩典太美麗",
@@ -1117,8 +1091,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "cantonworship",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "085"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "077",
+    "language": "粵語"
   },
   {
     "title": "一生榮耀真神",
@@ -1128,10 +1103,11 @@
     "videoId": "YLYVeA2EEHA",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "Kenneth Ng",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "086"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "078",
+    "language": "粵語"
   },
   {
     "title": "Goodness Of God",
@@ -1141,10 +1117,11 @@
     "videoId": "-xnl6izHYWo",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "Saddleback Church Hong Kong",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "087"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "079",
+    "language": "粵語"
   },
   {
     "title": "當你走到無力",
@@ -1156,8 +1133,9 @@
     "duration": 30,
     "category": "粵語詩歌",
     "source": "HALLELUYA MEDIA",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "088"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "080",
+    "language": "粵語"
   },
   {
     "title": "安穩在主裡",
@@ -1167,10 +1145,11 @@
     "videoId": "CheR2TDaHrY",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "089"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "081",
+    "language": "粵語"
   },
   {
     "title": "耶穌恩光",
@@ -1180,10 +1159,11 @@
     "videoId": "ylJ8K9Cvp_U",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "090"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "082",
+    "language": "粵語"
   },
   {
     "title": "既然出於祢",
@@ -1193,10 +1173,11 @@
     "videoId": "trUYFxgZ26g",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "091"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "083",
+    "language": "粵語"
   },
   {
     "title": "耶穌恩光",
@@ -1208,8 +1189,9 @@
     "duration": 30,
     "category": "兒童詩歌",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "092"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "084",
+    "language": "粵語"
   },
   {
     "title": "一首讚美的詩歌",
@@ -1217,10 +1199,11 @@
     "videoId": "SciZRNOaOSA",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM - Topic",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "093"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "085",
+    "language": "粵語"
   },
   {
     "title": "祢成就救恩",
@@ -1234,8 +1217,9 @@
     "duration": 30,
     "category": "福音詩歌",
     "source": "RedSea Music",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "094"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "086",
+    "language": "粵語"
   },
   {
     "title": "祢讓我生命改變",
@@ -1245,23 +1229,26 @@
     "videoId": "vzl0xsUV8CM",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "095"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "087",
+    "language": "粵語"
   },
   {
-    "title": "全是祢的",
+    "title": "神是我這生供應者",
     "aliases": [
+      "全是祢的",
       "神是我這生供應者－ACM 2012《全是祢的》敬拜讚美專輯"
     ],
     "videoId": "r6in4nCBcbA",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "096"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "088",
+    "language": "粵語"
   },
   {
     "title": "聖潔的祢",
@@ -1271,10 +1258,11 @@
     "videoId": "RGbw2Nxh5dk",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "097"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "089",
+    "language": "粵語"
   },
   {
     "title": "跟主天際飛",
@@ -1286,8 +1274,9 @@
     "duration": 30,
     "category": "兒童詩歌",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "098"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "090",
+    "language": "粵語"
   },
   {
     "title": "黑暗終必過去",
@@ -1297,10 +1286,11 @@
     "videoId": "S--IP6hEiSM",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "099"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "091",
+    "language": "粵語"
   },
   {
     "title": "最美好的仗",
@@ -1310,10 +1300,11 @@
     "videoId": "p3M4V2Q0FUc",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "100"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "092",
+    "language": "粵語"
   },
   {
     "title": "在祢跟前",
@@ -1323,9 +1314,10 @@
     "videoId": "FiaCi5a6cfk",
     "start": 25,
     "duration": 30,
-    "category": "敬拜讚美",
+    "category": "粵語敬拜",
     "source": "HKACM Official 香港基督徒音樂事工協會",
-    "hint": "公開 YouTube 粵語詩歌影片",
-    "number": "101"
+    "hint": "已按粵語/廣東話詩歌來源篩選",
+    "number": "093",
+    "language": "粵語"
   }
 ]

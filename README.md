@@ -38,6 +38,7 @@ https://soyingpang.github.io/guess_song/display.html
 - 前台右下會顯示 QR code，玩家手機掃碼後輸入名字加入
 - 四選一答中加 1 分；搶答題最快搶答加 2 分
 - 後台可按「排行榜」，前台會顯示即時排名
+- 線上題庫已按粵語 / 廣東話詩歌來源篩選，剔走未能確認粵語的普通話來源
 - 題庫會存在同一部裝置嘅瀏覽器 localStorage
 - `hymns.json` 可以做 GitHub Pages 線上題庫，所有裝置都可以一鍵載入
 
@@ -83,4 +84,4 @@ http://localhost:5173
 
 想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 `hymns.json`。格式同上面一樣。更新後 push 到 GitHub，網站入面按「線上題庫」就會載入最新題庫。
 
-目前線上題庫已預載 101 首公開 YouTube 粵語詩歌影片。
+目前線上題庫已預載 93 首公開 YouTube 粵語詩歌影片；按「線上題庫」會替換成官方純粵語題庫，避免舊普通話歌曲留在瀏覽器。

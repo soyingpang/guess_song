@@ -1,4 +1,4 @@
-const STORAGE_KEY = "cantonese-hymn-quiz-library-v2";
+const STORAGE_KEY = "cantonese-hymn-quiz-library-v3";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const CLOUD_LIBRARY_URL = "./hymns.json";
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
@@ -309,6 +309,7 @@ function cleanSong(song) {
     source: String(song.source || "").trim(),
     hint: String(song.hint || "").trim(),
     number: String(song.number || "").trim(),
+    language: String(song.language || "粵語").trim(),
   };
 }
 
@@ -664,9 +665,9 @@ async function loadCloudLibrary({ silent }) {
       return;
     }
 
-    mergeSongs(songs);
+    state.songs = dedupeSongs(songs);
     saveSongs();
-    setResult("已載入線上題庫", `${songs.length} 首`, "");
+    setResult("已載入純粵語線上題庫", `${songs.length} 首`, "");
     render();
     startRound();
   } catch {
@@ -675,9 +676,13 @@ async function loadCloudLibrary({ silent }) {
 }
 
 function mergeSongs(songs) {
-  const existing = new Map(state.songs.map((song) => [`${song.videoId}:${song.title}`, song]));
+  state.songs = dedupeSongs([...state.songs, ...songs]);
+}
+
+function dedupeSongs(songs) {
+  const existing = new Map();
   songs.forEach((song) => existing.set(`${song.videoId}:${song.title}`, song));
-  state.songs = Array.from(existing.values());
+  return Array.from(existing.values());
 }
 
 function clearLibrary() {
