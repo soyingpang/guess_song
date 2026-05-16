@@ -792,10 +792,10 @@ function renderQuiz() {
       ? emptyPoolMessage()
       : "先加入粵語詩歌";
 
-  els.maskLabel.textContent = state.revealed ? "影片已顯示" : "聽前奏，估詩歌";
-  els.playerMask.classList.toggle("is-hidden", state.revealed);
-  els.playerHost.classList.toggle("is-masked", !state.revealed);
-  els.toggleVideoButton.textContent = state.revealed ? "隱藏影片" : "顯示影片";
+  els.maskLabel.textContent = hasSong ? "後台影片已顯示，可先跳過廣告" : "聽前奏，估詩歌";
+  els.playerMask.classList.toggle("is-hidden", hasSong);
+  els.playerHost.classList.remove("is-masked");
+  els.toggleVideoButton.textContent = state.revealed ? "前台隱藏" : "前台開估";
 
   els.easyModeButton.classList.toggle("is-active", state.difficulty === "easy");
   els.normalModeButton.classList.toggle("is-active", state.difficulty === "normal");
