@@ -93,6 +93,7 @@ const els = {
   songForm: document.querySelector("#songForm"),
   songTitle: document.querySelector("#songTitle"),
   songUrl: document.querySelector("#songUrl"),
+  songAudioUrl: document.querySelector("#songAudioUrl"),
   songStart: document.querySelector("#songStart"),
   songDuration: document.querySelector("#songDuration"),
   songCategory: document.querySelector("#songCategory"),
@@ -319,14 +320,16 @@ function loadScore() {
 
 function cleanSong(song) {
   const videoId = parseYouTubeId(song.videoId || song.url || song.youtube || "");
+  const audioUrl = String(song.audioUrl || song.audio || "").trim();
   const title = String(song.title || "").trim();
-  if (!videoId || !title) return null;
+  if ((!videoId && !audioUrl) || !title) return null;
 
   return {
     id: song.id || crypto.randomUUID(),
     title,
     aliases: toList(song.aliases),
     videoId,
+    audioUrl,
     start: CLIP_START_SECONDS,
     duration: CLIP_DURATION_SECONDS,
     category: String(song.category || "").trim(),
@@ -540,6 +543,11 @@ function answerLabel(song) {
 }
 
 function renderYouTubeFrame({ autoplay }) {
+  if (state.currentSong.audioUrl) {
+    renderHostAudio({ autoplay });
+    return;
+  }
+
   const iframe = document.createElement("iframe");
   iframe.src = buildEmbedUrl(state.currentSong, autoplay);
   iframe.title = "YouTube 詩歌片段";
@@ -548,6 +556,24 @@ function renderYouTubeFrame({ autoplay }) {
   iframe.allowFullscreen = true;
   iframe.referrerPolicy = "strict-origin-when-cross-origin";
   els.playerHost.replaceChildren(iframe);
+}
+
+function renderHostAudio({ autoplay }) {
+  const audio = document.createElement("audio");
+  audio.src = state.currentSong.audioUrl;
+  audio.controls = true;
+  audio.muted = true;
+  audio.volume = 0;
+  audio.preload = "metadata";
+  audio.addEventListener(
+    "loadedmetadata",
+    () => {
+      audio.currentTime = clipStart(state.currentSong);
+      if (autoplay) audio.play().catch(() => {});
+    },
+    { once: true }
+  );
+  els.playerHost.replaceChildren(audio);
 }
 
 function buildEmbedUrl(song, autoplay) {
@@ -596,8 +622,9 @@ function showLeaderboard() {
 
 function saveSongFromForm() {
   const videoId = parseYouTubeId(els.songUrl.value);
-  if (!videoId) {
-    setResult("YouTube URL / ID 唔正確", "", "wrong");
+  const audioUrl = els.songAudioUrl.value.trim();
+  if (!videoId && !audioUrl) {
+    setResult("請填 YouTube URL / ID 或已授權音訊 URL", "", "wrong");
     els.songUrl.focus();
     return;
   }
@@ -606,6 +633,7 @@ function saveSongFromForm() {
     id: state.editingId || crypto.randomUUID(),
     title: els.songTitle.value,
     videoId,
+    audioUrl,
     start: Number(els.songStart.value),
     duration: Number(els.songDuration.value),
     category: els.songCategory.value,
@@ -646,6 +674,7 @@ function editSong(songId) {
   state.editingId = song.id;
   els.songTitle.value = song.title;
   els.songUrl.value = song.videoId;
+  els.songAudioUrl.value = song.audioUrl || "";
   els.songStart.value = song.start;
   els.songDuration.value = song.duration;
   els.songCategory.value = song.category;
@@ -667,6 +696,7 @@ function deleteSong(songId) {
 
 function resetForm() {
   els.songForm.reset();
+  els.songAudioUrl.value = "";
   els.songStart.value = CLIP_START_SECONDS;
   els.songDuration.value = CLIP_DURATION_SECONDS;
   els.songSubmitButton.textContent = "加入詩歌";
@@ -871,6 +901,7 @@ function renderLibrary() {
       ? "答案已隱藏，開估後先顯示"
       : [
           approved ? "已批准來源" : "待審來源",
+          song.audioUrl ? "授權音訊" : "YouTube",
           song.category || "未分類",
           song.source,
           song.number ? `#${song.number}` : "",
@@ -991,6 +1022,7 @@ function buildDisplayState() {
     answer: revealed ? answerLabel(song) : "",
     title: revealed ? song.title : "估呢首粵語詩歌",
     videoId: song?.videoId || "",
+    audioUrl: song?.audioUrl || "",
     start: song ? clipStart(song) : 0,
     end: song ? clipStart(song) + clipDuration(song) : 0,
     hints,

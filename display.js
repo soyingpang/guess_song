@@ -88,15 +88,20 @@ function renderWaiting() {
 }
 
 function renderFrame(state) {
-  if (!state.hasSong || !state.videoId) {
+  if (!state.hasSong || (!state.videoId && !state.audioUrl)) {
     els.playerHost.replaceChildren();
     latestFrameKey = "";
     return;
   }
 
-  const frameKey = [state.videoId, state.start, state.end, state.isPlaying ? "play" : "cue"].join(":");
+  const frameKey = [state.audioUrl || state.videoId, state.start, state.end, state.isPlaying ? "play" : "cue"].join(":");
   if (frameKey === latestFrameKey) return;
   latestFrameKey = frameKey;
+
+  if (state.audioUrl) {
+    renderAudio(state);
+    return;
+  }
 
   const iframe = document.createElement("iframe");
   iframe.src = buildEmbedUrl(state);
@@ -106,6 +111,21 @@ function renderFrame(state) {
   iframe.allowFullscreen = true;
   iframe.referrerPolicy = "strict-origin-when-cross-origin";
   els.playerHost.replaceChildren(iframe);
+}
+
+function renderAudio(state) {
+  const audio = document.createElement("audio");
+  audio.src = state.audioUrl;
+  audio.autoplay = Boolean(state.isPlaying);
+  audio.preload = "metadata";
+  audio.addEventListener("loadedmetadata", () => {
+    audio.currentTime = Number(state.start || 0);
+    if (state.isPlaying) audio.play().catch(() => {});
+  }, { once: true });
+  audio.addEventListener("timeupdate", () => {
+    if (state.end && audio.currentTime >= state.end) audio.pause();
+  });
+  els.playerHost.replaceChildren(audio);
 }
 
 function buildEmbedUrl(state) {

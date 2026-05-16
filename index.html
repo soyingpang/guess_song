@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>粵語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=one-minute-front-audio-2" />
+    <link rel="stylesheet" href="./styles.css?v=local-audio-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -112,7 +112,10 @@
             <input id="songTitle" required placeholder="例如：全因為祢" />
 
             <label for="songUrl">YouTube URL / ID</label>
-            <input id="songUrl" required placeholder="貼 YouTube 連結，最好直接跳到前奏秒數" />
+            <input id="songUrl" placeholder="貼 YouTube 連結；如使用授權音訊可留空" />
+
+            <label for="songAudioUrl">本地 / 已授權音訊 URL</label>
+            <input id="songAudioUrl" placeholder="例如：./audio/song.mp3；有填就優先使用，無廣告" />
 
             <div class="form-grid">
               <div>
@@ -176,6 +179,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=one-minute-front-audio-2"></script>
+    <script src="./app.js?v=local-audio-1"></script>
   </body>
 </html>
