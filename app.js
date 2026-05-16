@@ -28,6 +28,14 @@ const APPROVED_SOURCE_RULES = [
   "建道神學院",
   "新祢呈",
   "alliance bible seminary",
+  "泥土音樂",
+  "clay music",
+  "約書亞樂團",
+  "joshua band",
+  "團契遊樂園",
+  "playground ministry",
+  "hkacm",
+  "香港基督徒音樂事工協會",
 ];
 
 const difficultyDurations = {
