@@ -138,6 +138,7 @@ const els = {
   songList: document.querySelector("#songList"),
   openDisplayButton: document.querySelector("#openDisplayButton"),
   showLeaderboardButton: document.querySelector("#showLeaderboardButton"),
+  resetGameButton: document.querySelector("#resetGameButton"),
   cloudButton: document.querySelector("#cloudButton"),
   exportButton: document.querySelector("#exportButton"),
   importInput: document.querySelector("#importInput"),
@@ -206,6 +207,7 @@ function bindEvents() {
   els.exportButton.addEventListener("click", exportSongs);
   els.openDisplayButton.addEventListener("click", openDisplayWindow);
   els.showLeaderboardButton.addEventListener("click", showLeaderboard);
+  els.resetGameButton.addEventListener("click", resetGameSession);
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
@@ -822,6 +824,39 @@ function scheduleClipStop() {
 
 function showLeaderboard() {
   state.showLeaderboard = true;
+  render();
+}
+
+function resetGameSession() {
+  if (!confirm("重設本場分數同題目？題庫、房間同已加入玩家會保留。")) return;
+
+  clearClipTimer();
+  state.score = { correct: 0, total: 0, streak: 0 };
+  state.teamScores = { A: 0, B: 0 };
+  state.currentSong = null;
+  state.currentChoices = [];
+  state.currentWord = "";
+  state.round = 0;
+  state.revealed = false;
+  state.answered = false;
+  state.hintLevel = 0;
+  state.isPlaying = false;
+  state.playEndsAt = 0;
+  state.currentQuestionId = "";
+  state.buzzWinnerId = "";
+  state.buzzOpen = false;
+  state.showLeaderboard = false;
+  state.questionBag = [];
+  els.guessInput.value = "";
+  els.playerHost.replaceChildren();
+
+  Object.values(state.players).forEach((player) => {
+    player.score = 0;
+    player.answers = {};
+  });
+
+  saveScore();
+  setResult("本場已重設", "玩家同題庫保留，按下一題開始", "");
   render();
 }
 
