@@ -280,21 +280,25 @@ function handlePlayerMessage(connection, message) {
     const playerId = String(message.playerId || connection.peer || crypto.randomUUID());
     const name = cleanPlayerName(message.name);
     const team = normalizeTeam(message.team);
-    const existing = state.players[playerId] || {
-      id: playerId,
-      name,
-      team,
-      score: 0,
-      answers: {},
-    };
+    const player = resolveJoiningPlayer(playerId, name);
+    const previousConnection = player.connection;
 
-    existing.name = name;
-    existing.team = team;
-    existing.connected = true;
-    existing.connection = connection;
-    state.players[playerId] = existing;
-    connection.playerId = playerId;
-    sendPlayerState(existing);
+    player.name = uniquePlayerName(name, player.id);
+    player.team = team;
+    player.connected = true;
+    player.connection = connection;
+    state.players[player.id] = player;
+    connection.playerId = player.id;
+
+    if (previousConnection && previousConnection !== connection) {
+      try {
+        previousConnection.close();
+      } catch {
+        // If the previous phone tab is already gone, PeerJS may throw. The new connection is still valid.
+      }
+    }
+
+    sendPlayerState(player);
     renderPlayers();
     publishDisplayState();
     broadcastToPlayers();
@@ -1353,6 +1357,7 @@ function buildPlayerState(player) {
     playEndsAt: state.playEndsAt,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
+    playerName: player.name,
     team: normalizeTeam(player.team),
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
@@ -1403,6 +1408,41 @@ function findPlayerByConnection(connection) {
   return Object.values(state.players).find((player) => player.connection === connection) || null;
 }
 
+function resolveJoiningPlayer(playerId, name) {
+  const existingById = state.players[playerId];
+  if (existingById) return existingById;
+
+  const offlineSameName = Object.values(state.players).find(
+    (player) => !player.connected && normalizePlayerName(player.name) === normalizePlayerName(name)
+  );
+  if (offlineSameName) return offlineSameName;
+
+  return {
+    id: playerId,
+    name,
+    team: "A",
+    score: 0,
+    answers: {},
+  };
+}
+
+function uniquePlayerName(name, playerId) {
+  const usedNames = new Set(
+    Object.values(state.players)
+      .filter((player) => player.id !== playerId)
+      .map((player) => normalizePlayerName(player.name))
+  );
+
+  if (!usedNames.has(normalizePlayerName(name))) return name;
+
+  for (let index = 2; index < 100; index += 1) {
+    const candidate = `${name}（${index}）`;
+    if (!usedNames.has(normalizePlayerName(candidate))) return candidate;
+  }
+
+  return `${name}（新）`;
+}
+
 function buildPlayerUrl(roomId) {
   const url = new URL("./player.html", window.location.href);
   url.searchParams.set("room", roomId);
@@ -1416,6 +1456,10 @@ function makeRoomId() {
 function cleanPlayerName(name) {
   const cleaned = String(name || "").trim().replace(/\s+/g, " ").slice(0, 18);
   return cleaned || "無名玩家";
+}
+
+function normalizePlayerName(name) {
+  return String(name || "").trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 function normalizeTeam(team) {

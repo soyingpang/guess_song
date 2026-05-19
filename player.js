@@ -1,6 +1,8 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
 const PLAYER_TEAM_KEY = "cantonese-hymn-quiz-player-team-v1";
+const RECONNECT_BASE_DELAY = 1200;
+const RECONNECT_MAX_DELAY = 8000;
 
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room") || "";
@@ -11,8 +13,13 @@ const state = {
   connection: null,
   playerId: localStorage.getItem(PLAYER_ID_KEY) || crypto.randomUUID(),
   name: urlName || localStorage.getItem(PLAYER_NAME_KEY) || "",
+  displayName: "",
   team: localStorage.getItem(PLAYER_TEAM_KEY) || "A",
   joined: false,
+  connecting: false,
+  reconnectAttempts: 0,
+  reconnectTimer: null,
+  connectionToken: "",
   game: null,
   lastResult: "",
 };
@@ -48,6 +55,16 @@ els.buzzButton.addEventListener("click", () => {
   els.phoneResult.textContent = "已送出搶答";
 });
 
+window.addEventListener("online", () => {
+  if (state.joined && !state.connection?.open) scheduleReconnect("網絡已恢復");
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && state.joined && !state.connection?.open && !state.connecting) {
+    scheduleReconnect("正在恢復連線");
+  }
+});
+
 if (!roomId) {
   setStatus("QR 連結缺少房間碼，請重新掃描");
 } else if (state.name) {
@@ -63,38 +80,124 @@ function joinGame() {
 
   state.name = name.slice(0, 18);
   state.team = normalizeTeam(els.playerTeam.value);
+  state.displayName = "";
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
   localStorage.setItem(PLAYER_TEAM_KEY, state.team);
   els.joinForm.hidden = true;
-  setStatus("連線中...");
+  connectToRoom({ resetAttempts: true });
+}
 
+function connectToRoom({ resetAttempts = false } = {}) {
   if (!window.Peer) {
     setStatus("未能載入連線工具，請重新整理");
+    els.joinForm.hidden = false;
     return;
   }
 
-  state.peer = new Peer(undefined, { debug: 0 });
-  state.peer.on("open", () => {
-    state.connection = state.peer.connect(roomId, { reliable: true });
-    state.connection.on("open", () => {
-      state.joined = true;
-      send({ type: "join", playerId: state.playerId, name: state.name, team: state.team });
-      setStatus("已加入，等候題目");
-    });
-    state.connection.on("data", handleMessage);
-    state.connection.on("close", () => setStatus("連線中斷，請重新整理"));
-    state.connection.on("error", () => {
-      if (state.joined) return;
-      setStatus("連線失敗，請確認主持人後台仍然開住");
-      els.joinForm.hidden = false;
-    });
+  clearTimeout(state.reconnectTimer);
+  state.reconnectTimer = null;
+  if (resetAttempts) state.reconnectAttempts = 0;
+
+  const token = crypto.randomUUID();
+  state.connectionToken = token;
+  state.connecting = true;
+  closeCurrentPeer();
+  setStatus(state.reconnectAttempts ? "重新連線中..." : "連線中...");
+
+  const peer = new Peer(undefined, { debug: 0 });
+  state.peer = peer;
+
+  peer.on("open", () => {
+    if (state.connectionToken !== token) return;
+    const connection = peer.connect(roomId, { reliable: true });
+    state.connection = connection;
+    bindRoomConnection(connection, token);
   });
 
-  state.peer.on("error", () => {
-    if (state.joined || state.connection?.open) return;
-    setStatus("連線失敗，請確認主持人後台仍然開住");
-    els.joinForm.hidden = false;
+  peer.on("error", () => {
+    if (state.connectionToken !== token) return;
+    handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
   });
+}
+
+function bindRoomConnection(connection, token) {
+  connection.on("open", () => {
+    if (state.connectionToken !== token) return;
+    state.joined = true;
+    state.connecting = false;
+    state.reconnectAttempts = 0;
+    send({ type: "join", playerId: state.playerId, name: state.name, team: state.team });
+    setStatus("已連線，等候同步");
+  });
+
+  connection.on("data", (message) => {
+    if (state.connectionToken !== token) return;
+    handleMessage(message);
+  });
+
+  connection.on("close", () => {
+    if (state.connectionToken !== token) return;
+    state.connection = null;
+    state.connecting = false;
+    if (state.joined) scheduleReconnect("連線中斷");
+    else handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
+  });
+
+  connection.on("error", () => {
+    if (state.connectionToken !== token) return;
+    handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
+  });
+}
+
+function closeCurrentPeer() {
+  try {
+    state.connection?.close();
+  } catch {
+    // The connection may already be closed by the browser or network.
+  }
+
+  try {
+    state.peer?.destroy();
+  } catch {
+    // PeerJS can throw if the peer has already torn itself down.
+  }
+
+  state.connection = null;
+  state.peer = null;
+}
+
+function handleConnectionFailure(message) {
+  state.connecting = false;
+  if (state.joined) {
+    scheduleReconnect(message);
+    return;
+  }
+
+  setStatus(message);
+  els.joinForm.hidden = false;
+}
+
+function scheduleReconnect(message) {
+  if (!roomId || !state.name) {
+    setStatus(`${message}，請重新掃 QR 加入`);
+    els.joinForm.hidden = false;
+    return;
+  }
+
+  if (navigator.onLine === false) {
+    setStatus(`${message}，等候網絡恢復`);
+    return;
+  }
+
+  clearTimeout(state.reconnectTimer);
+  state.connecting = false;
+  state.reconnectAttempts += 1;
+  const delay = Math.min(RECONNECT_MAX_DELAY, RECONNECT_BASE_DELAY * state.reconnectAttempts);
+  setStatus(`${message}，${Math.ceil(delay / 1000)} 秒後自動重連`);
+  state.reconnectTimer = window.setTimeout(() => {
+    state.reconnectTimer = null;
+    connectToRoom();
+  }, delay);
 }
 
 function handleMessage(message) {
@@ -103,9 +206,12 @@ function handleMessage(message) {
   if (message.type === "state") {
     const previousQuestionId = state.game?.questionId;
     state.game = message;
+    state.displayName = message.playerName || state.name;
     state.joined = true;
+    state.connecting = false;
+    state.reconnectAttempts = 0;
     els.joinForm.hidden = true;
-    setStatus("已加入，等候題目");
+    setStatus(joinedStatus());
     if (previousQuestionId !== message.questionId) state.lastResult = "";
     renderGame();
   }
@@ -212,6 +318,18 @@ function send(message) {
 
 function setStatus(message) {
   els.playerStatus.textContent = message;
+}
+
+function joinedStatus() {
+  if (state.displayName && normalizePlayerName(state.displayName) !== normalizePlayerName(state.name)) {
+    return `已加入：${state.displayName}`;
+  }
+
+  return "已加入，等候題目";
+}
+
+function normalizePlayerName(name) {
+  return String(name || "").trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 function normalizeTeam(team) {
