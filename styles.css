@@ -687,9 +687,53 @@ select:focus {
 }
 
 .players-panel {
-  margin-top: 18px;
+  margin: 0;
+}
+
+.library-drawer {
+  margin-top: 16px;
   border-top: 1px solid var(--line);
-  padding-top: 14px;
+  padding-top: 12px;
+}
+
+.library-drawer summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: #1a1415;
+  padding: 12px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.library-drawer summary::-webkit-details-marker {
+  display: none;
+}
+
+.library-drawer summary::after {
+  content: "展開";
+  border: 1px solid rgba(232, 185, 92, 0.35);
+  border-radius: 999px;
+  color: var(--accent-2);
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.library-drawer[open] summary::after {
+  content: "收起";
+}
+
+.library-drawer summary > span {
+  color: var(--accent-2);
+  font-weight: 1000;
+}
+
+.library-drawer .song-form {
+  margin-top: 14px;
 }
 
 .room-status {

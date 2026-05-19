@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=free-control-1" />
+    <link rel="stylesheet" href="./styles.css?v=host-layout-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -119,71 +119,7 @@
           </div>
         </section>
 
-        <aside class="library-panel" aria-labelledby="libraryTitle">
-          <div class="library-head">
-            <div>
-              <p class="eyebrow">詩歌題庫</p>
-              <h2 id="libraryTitle">詩歌題庫</h2>
-            </div>
-            <span id="songCount">0 首</span>
-          </div>
-
-          <form class="song-form" id="songForm">
-            <label for="songTitle">詩歌名</label>
-            <input id="songTitle" required placeholder="例如：全因為祢" />
-
-            <label for="songUrl">YouTube URL / ID</label>
-            <input id="songUrl" placeholder="貼 YouTube 連結；如使用授權音訊可留空" />
-
-            <label for="songAudioUrl">本地 / 已授權音訊 URL</label>
-            <input id="songAudioUrl" placeholder="例如：./audio/song.mp3；有填就優先使用，無廣告" />
-
-            <div class="form-grid">
-              <div>
-                <label for="songStart">開始秒數（固定 0）</label>
-                <input id="songStart" type="number" min="0" step="1" value="0" readonly />
-              </div>
-              <div>
-                <label for="songDuration">估時參考（固定 60 秒，不截停）</label>
-                <input id="songDuration" type="number" min="60" max="60" step="1" value="60" readonly />
-              </div>
-            </div>
-
-            <div class="form-grid">
-              <div>
-                <label for="songCategory">分類</label>
-                <input id="songCategory" placeholder="敬拜 / 兒童 / 佈道 / 聖誕" />
-              </div>
-              <div>
-                <label for="songNumber">編號</label>
-                <input id="songNumber" placeholder="可空白" />
-              </div>
-            </div>
-
-            <label for="songSource">詩歌集 / 來源</label>
-            <input id="songSource" placeholder="例如：生命聖詩 / ACM / 小組常唱" />
-
-            <label for="songHint">提示</label>
-            <input id="songHint" placeholder="例如：副歌好多人一聽就識，可空白" />
-
-            <label for="songAliases">可接受答案</label>
-            <input id="songAliases" placeholder="別名、英文名、常用簡稱，用逗號分隔" />
-
-            <button class="primary-button full-width" id="songSubmitButton" type="submit">
-              加入詩歌
-            </button>
-          </form>
-
-          <div class="library-tools">
-            <button class="ghost-button" id="cloudButton" type="button">線上題庫</button>
-            <button class="ghost-button" id="exportButton" type="button">匯出</button>
-            <label class="file-button" for="importInput">匯入</label>
-            <input id="importInput" type="file" accept="application/json" />
-            <button class="danger-button" id="resetButton" type="button">清空</button>
-          </div>
-
-          <div class="song-list" id="songList"></div>
-
+        <aside class="library-panel control-sidebar" aria-label="主持側欄">
           <section class="players-panel" aria-labelledby="playersTitle">
             <div class="library-head">
               <div>
@@ -195,6 +131,72 @@
             <div class="room-status" id="roomStatus">房間建立中</div>
             <div class="player-list" id="playerList"></div>
           </section>
+
+          <details class="library-drawer">
+            <summary>
+              <div>
+                <p class="eyebrow">詩歌題庫</p>
+                <h2 id="libraryTitle">題庫管理</h2>
+              </div>
+              <span id="songCount">0 首</span>
+            </summary>
+
+            <form class="song-form" id="songForm">
+              <label for="songTitle">詩歌名</label>
+              <input id="songTitle" required placeholder="例如：全因為祢" />
+
+              <label for="songUrl">YouTube URL / ID</label>
+              <input id="songUrl" placeholder="貼 YouTube 連結；如使用授權音訊可留空" />
+
+              <label for="songAudioUrl">本地 / 已授權音訊 URL</label>
+              <input id="songAudioUrl" placeholder="例如：./audio/song.mp3；有填就優先使用，無廣告" />
+
+              <div class="form-grid">
+                <div>
+                  <label for="songStart">開始秒數（固定 0）</label>
+                  <input id="songStart" type="number" min="0" step="1" value="0" readonly />
+                </div>
+                <div>
+                  <label for="songDuration">估時參考（固定 60 秒，不截停）</label>
+                  <input id="songDuration" type="number" min="60" max="60" step="1" value="60" readonly />
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div>
+                  <label for="songCategory">分類</label>
+                  <input id="songCategory" placeholder="敬拜 / 兒童 / 佈道 / 聖誕" />
+                </div>
+                <div>
+                  <label for="songNumber">編號</label>
+                  <input id="songNumber" placeholder="可空白" />
+                </div>
+              </div>
+
+              <label for="songSource">詩歌集 / 來源</label>
+              <input id="songSource" placeholder="例如：生命聖詩 / ACM / 小組常唱" />
+
+              <label for="songHint">提示</label>
+              <input id="songHint" placeholder="例如：副歌好多人一聽就識，可空白" />
+
+              <label for="songAliases">可接受答案</label>
+              <input id="songAliases" placeholder="別名、英文名、常用簡稱，用逗號分隔" />
+
+              <button class="primary-button full-width" id="songSubmitButton" type="submit">
+                加入詩歌
+              </button>
+            </form>
+
+            <div class="library-tools">
+              <button class="ghost-button" id="cloudButton" type="button">線上題庫</button>
+              <button class="ghost-button" id="exportButton" type="button">匯出</button>
+              <label class="file-button" for="importInput">匯入</label>
+              <input id="importInput" type="file" accept="application/json" />
+              <button class="danger-button" id="resetButton" type="button">清空</button>
+            </div>
+
+            <div class="song-list" id="songList"></div>
+          </details>
         </aside>
       </main>
     </div>
