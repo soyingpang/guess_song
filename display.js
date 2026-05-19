@@ -338,12 +338,25 @@ function teamScoreBlock(label, score, leading) {
 function renderQr(state) {
   if (!state.playerUrl) {
     els.qrPanel.hidden = true;
+    els.qr.removeAttribute("src");
+    delete els.qr.dataset.qrValue;
     return;
   }
 
   els.qrPanel.hidden = false;
-  els.qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(state.playerUrl)}`;
+  if (els.qr.dataset.qrValue !== state.playerUrl) {
+    els.qr.dataset.qrValue = state.playerUrl;
+    els.qr.src = createQrImageSource(state.playerUrl);
+  }
   els.room.textContent = state.roomReady ? `房間：${state.roomId}` : "房間建立中";
+}
+
+function createQrImageSource(playerUrl) {
+  try {
+    return window.createLocalQrCodeDataUrl(playerUrl);
+  } catch {
+    return "";
+  }
 }
 
 function escapeHtml(value) {

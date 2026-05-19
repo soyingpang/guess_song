@@ -1165,10 +1165,10 @@ select:focus {
   right: 22px;
   bottom: 22px;
   display: grid;
-  grid-template-columns: 104px minmax(0, 1fr);
+  grid-template-columns: 126px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
-  max-width: min(372px, calc(100vw - 44px));
+  max-width: min(424px, calc(100vw - 44px));
   border: 1px solid rgba(241, 184, 75, 0.44);
   border-radius: 8px;
   background: #171113;
@@ -1177,8 +1177,8 @@ select:focus {
 }
 
 .stage-qr img {
-  width: 104px;
-  height: 104px;
+  width: 126px;
+  height: 126px;
   border: 6px solid #fff;
   border-radius: 6px;
   background: white;
@@ -1547,14 +1547,14 @@ select:focus {
   }
 
   .stage-qr {
-    grid-template-columns: 82px minmax(0, 1fr);
-    max-width: min(302px, calc(100vw - 44px));
+    grid-template-columns: 92px minmax(0, 1fr);
+    max-width: min(322px, calc(100vw - 44px));
     padding: 10px;
   }
 
   .stage-qr img {
-    width: 82px;
-    height: 82px;
+    width: 92px;
+    height: 92px;
     border-width: 5px;
   }
 }
@@ -1636,13 +1636,13 @@ select:focus {
   .stage-qr {
     right: 10px;
     bottom: 10px;
-    grid-template-columns: 78px minmax(0, 1fr);
+    grid-template-columns: 82px minmax(0, 1fr);
     padding: 8px;
   }
 
   .stage-qr img {
-    width: 78px;
-    height: 78px;
+    width: 82px;
+    height: 82px;
     border-width: 4px;
   }
 

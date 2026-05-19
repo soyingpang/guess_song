@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-20 01:09 HKT
+
+類型：程式 / 現場穩定性
+
+摘要：
+- 加入 `local-qr.js`，前台改為本地生成 QR code SVG。
+- 移除前台對 `api.qrserver.com` 的依賴。
+- 前台 QR code 圖片來源改為 `data:image/svg+xml`，只由本機 JavaScript 產生。
+- 略為放大大螢幕 QR code，方便團友在投影或電視上掃碼。
+- 更新 cache version 至 `qr-local-1`。
+
+影響：
+- 現場不會因第三方 QR 圖片服務慢、封鎖或斷線而無法掃碼加入。
+- GitHub Pages 靜態部署仍然可以直接使用，不需要後端服務。
+
+已測試：
+- `node --check local-qr.js`
+- `node --check display.js`
+- `node --check app.js`
+- `node --check player.js`
+- `git diff --check`
+- 本機瀏覽器確認前台 QR panel 顯示。
+- 本機瀏覽器確認 QR 圖片 `src` 是 `data:image/svg+xml`。
+- 本機瀏覽器確認 QR 圖片沒有再使用 `api.qrserver.com`。
+
+後續：
+- 可繼續處理玩家同名 / 斷線重連。
+- 可加入主持端「複製玩家連結」作後備方案。
+
+---
+
 ## 2026-05-20 00:59 HKT
 
 類型：介面 / 完場公布
