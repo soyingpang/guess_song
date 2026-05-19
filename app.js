@@ -71,6 +71,7 @@ const state = {
   buzzWinnerId: "",
   buzzOpen: false,
   showLeaderboard: false,
+  showWinner: false,
   clipTimer: null,
   editingId: null,
   questionBag: [],
@@ -138,6 +139,7 @@ const els = {
   songList: document.querySelector("#songList"),
   openDisplayButton: document.querySelector("#openDisplayButton"),
   showLeaderboardButton: document.querySelector("#showLeaderboardButton"),
+  showWinnerButton: document.querySelector("#showWinnerButton"),
   resetGameButton: document.querySelector("#resetGameButton"),
   cloudButton: document.querySelector("#cloudButton"),
   exportButton: document.querySelector("#exportButton"),
@@ -207,6 +209,7 @@ function bindEvents() {
   els.exportButton.addEventListener("click", exportSongs);
   els.openDisplayButton.addEventListener("click", openDisplayWindow);
   els.showLeaderboardButton.addEventListener("click", showLeaderboard);
+  els.showWinnerButton.addEventListener("click", showWinner);
   els.resetGameButton.addEventListener("click", resetGameSession);
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
@@ -412,6 +415,8 @@ function reopenBuzz() {
 
   state.buzzWinnerId = "";
   state.buzzOpen = true;
+  state.showLeaderboard = false;
+  state.showWinner = false;
   setResult(state.mode === "word" ? "已開放搶唱" : "已開放搶答", state.mode === "word" ? `今題字：${state.currentWord}` : "", "");
   render();
 }
@@ -497,6 +502,7 @@ function startRound(preferredSongId, options = {}) {
     state.buzzWinnerId = "";
     state.buzzOpen = false;
     state.showLeaderboard = false;
+    state.showWinner = false;
     els.guessInput.value = "";
     els.playerHost.replaceChildren();
     setResult(emptyPoolMessage(), "", "");
@@ -523,6 +529,7 @@ function startRound(preferredSongId, options = {}) {
   state.buzzWinnerId = "";
   state.buzzOpen = false;
   state.showLeaderboard = false;
+  state.showWinner = false;
   els.guessInput.value = "";
   setResult(autoplay ? `前台播放中：${clipDuration(song)} 秒` : "題目已載入，按前台播放", "", "");
   render();
@@ -546,6 +553,7 @@ function startWordRound(preferredWord = "") {
   state.buzzWinnerId = "";
   state.buzzOpen = false;
   state.showLeaderboard = false;
+  state.showWinner = false;
   els.wordInput.value = word;
   els.playerHost.replaceChildren();
   setResult("一字搶唱：已準備", `今題字：${word}，按開放搶唱開始`, "");
@@ -610,6 +618,8 @@ function playCurrentClip() {
   clearClipTimer();
   state.isPlaying = true;
   state.playEndsAt = Date.now() + clipDuration(state.currentSong) * 1000;
+  state.showLeaderboard = false;
+  state.showWinner = false;
   renderYouTubeFrame({ autoplay: true });
 
   setResult(`前台播放中：${clipDuration(state.currentSong)} 秒`, "", "");
@@ -802,6 +812,8 @@ function setMode(mode) {
   }
   state.buzzWinnerId = "";
   state.buzzOpen = false;
+  state.showLeaderboard = false;
+  state.showWinner = false;
   render();
 }
 
@@ -824,6 +836,13 @@ function scheduleClipStop() {
 
 function showLeaderboard() {
   state.showLeaderboard = true;
+  state.showWinner = false;
+  render();
+}
+
+function showWinner() {
+  state.showWinner = true;
+  state.showLeaderboard = false;
   render();
 }
 
@@ -846,6 +865,7 @@ function resetGameSession() {
   state.buzzWinnerId = "";
   state.buzzOpen = false;
   state.showLeaderboard = false;
+  state.showWinner = false;
   state.questionBag = [];
   els.guessInput.value = "";
   els.playerHost.replaceChildren();
@@ -1088,6 +1108,8 @@ function renderQuiz() {
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
   els.wordModeButton.classList.toggle("is-active", state.mode === "word");
+  els.showLeaderboardButton.classList.toggle("is-active", state.showLeaderboard);
+  els.showWinnerButton.classList.toggle("is-active", state.showWinner);
   els.playButton.disabled = state.mode === "word" || !hasSong;
   els.replayButton.disabled = state.mode === "word" || !hasSong;
   els.stopButton.disabled = !state.isPlaying;
@@ -1293,6 +1315,7 @@ function buildDisplayState() {
     roomId: state.roomId,
     playerUrl: state.playerUrl,
     showLeaderboard: state.showLeaderboard,
+    showWinner: state.showWinner,
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
     prompt: hasWord ? "一字搶唱" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",

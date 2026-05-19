@@ -613,6 +613,14 @@ select:focus {
   color: var(--text);
 }
 
+.ghost-button.is-active {
+  border-color: rgba(241, 184, 75, 0.62);
+  background:
+    linear-gradient(180deg, rgba(241, 184, 75, 0.16), transparent),
+    #2b211b;
+  color: var(--accent-2);
+}
+
 .danger-button {
   background: #321a1d;
   border-color: rgba(255, 129, 117, 0.42);
@@ -979,10 +987,30 @@ select:focus {
   align-items: stretch;
 }
 
+.stage-hero.is-winner-reveal {
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: stretch;
+}
+
+.stage-hero.is-winner-reveal .stage-player,
+.stage-hero.is-winner-reveal .stage-info,
+.stage-hero.is-winner-reveal .stage-hints,
+.stage-hero.is-winner-reveal .stage-choices {
+  display: none;
+}
+
 .stage-leaderboard.is-final {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
+}
+
+.stage-leaderboard.is-winner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  align-items: stretch;
+  padding-right: 0;
 }
 
 .stage-leaderboard h2 {
@@ -1045,6 +1073,80 @@ select:focus {
   color: var(--text);
   font-size: 1.65rem;
   line-height: 1;
+}
+
+.stage-winner-final {
+  display: grid;
+  min-height: min(700px, calc(100vh - 170px));
+  align-content: center;
+  gap: 26px;
+  border: 1px solid rgba(241, 184, 75, 0.52);
+  border-radius: 8px;
+  background:
+    linear-gradient(140deg, rgba(142, 74, 72, 0.28), transparent 42%),
+    linear-gradient(310deg, rgba(155, 199, 170, 0.18), transparent 38%),
+    #1b1414;
+  box-shadow: var(--shadow-strong), inset 0 1px 0 rgba(255, 248, 236, 0.08);
+  padding: clamp(34px, 6vw, 86px);
+  text-align: center;
+}
+
+.stage-winner-final p {
+  margin: 0;
+  color: var(--cool);
+  font-size: clamp(1.25rem, 2vw, 2rem);
+  font-weight: 1000;
+}
+
+.stage-winner-final h2 {
+  color: var(--accent-2);
+  font-size: clamp(4.6rem, 10vw, 11rem);
+  line-height: 0.9;
+  text-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.stage-winner-scores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.stage-winner-score {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #171113;
+  padding: 24px;
+}
+
+.stage-winner-score.is-leading {
+  border-color: rgba(241, 184, 75, 0.72);
+  background:
+    linear-gradient(180deg, rgba(241, 184, 75, 0.15), transparent),
+    #241a16;
+}
+
+.stage-winner-score span,
+.stage-winner-score strong {
+  display: block;
+}
+
+.stage-winner-score span {
+  color: var(--muted);
+  font-size: clamp(1.1rem, 1.7vw, 1.55rem);
+  font-weight: 950;
+}
+
+.stage-winner-score strong {
+  margin-top: 5px;
+  color: var(--text);
+  font-size: clamp(3rem, 6vw, 6.8rem);
+  line-height: 0.92;
+}
+
+.stage-winner-note {
+  color: var(--soft);
+  font-size: clamp(1.1rem, 1.8vw, 1.7rem);
+  font-weight: 900;
 }
 
 .stage-rank {
@@ -1425,6 +1527,16 @@ select:focus {
     font-size: 3.35rem;
   }
 
+  .stage-winner-final {
+    min-height: min(560px, calc(100vh - 140px));
+    gap: 18px;
+    padding: 28px;
+  }
+
+  .stage-winner-final h2 {
+    font-size: clamp(3.8rem, 9vw, 7.5rem);
+  }
+
   .stage-answer-meta strong,
   .stage-answer-meta span,
   .stage-hint,
@@ -1537,6 +1649,20 @@ select:focus {
   .stage-choices,
   .stage-leaderboard {
     padding-right: 0;
+  }
+
+  .stage-winner-final {
+    min-height: calc(100vh - 132px);
+    gap: 18px;
+    padding: 22px;
+  }
+
+  .stage-winner-scores {
+    grid-template-columns: 1fr;
+  }
+
+  .stage-winner-score {
+    padding: 18px;
   }
 
   .player-card h1 {

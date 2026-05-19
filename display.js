@@ -1,6 +1,7 @@
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 
 const els = {
+  hero: document.querySelector(".stage-hero"),
   playerHost: document.querySelector("#stagePlayerHost"),
   mask: document.querySelector("#stageMask"),
   prompt: document.querySelector("#stagePrompt"),
@@ -59,6 +60,7 @@ function renderFromStorage() {
   els.playerHost.classList.toggle("is-masked", !state.revealed);
   document.body.classList.toggle("is-revealed", Boolean(state.revealed));
   document.body.classList.toggle("is-playing", Boolean(state.isPlaying));
+  els.hero.classList.toggle("is-winner-reveal", Boolean(state.showWinner));
 
   renderFrame(state);
   renderMeta(state);
@@ -88,6 +90,8 @@ function renderWaiting() {
   els.hints.replaceChildren();
   els.choices.replaceChildren();
   els.leaderboard.replaceChildren();
+  els.leaderboard.classList.remove("is-final", "is-winner");
+  els.hero.classList.remove("is-winner-reveal");
   els.qrPanel.hidden = true;
   els.playerHost.classList.add("is-masked");
   els.playerHost.replaceChildren();
@@ -217,7 +221,13 @@ function renderChoices(state) {
 
 function renderLeaderboard(state) {
   els.leaderboard.replaceChildren();
+  els.leaderboard.classList.toggle("is-winner", Boolean(state.showWinner));
   els.leaderboard.classList.toggle("is-final", Boolean(state.showLeaderboard));
+  if (state.showWinner) {
+    els.leaderboard.append(renderWinnerReveal(state));
+    return;
+  }
+
   if (!state.showLeaderboard && !state.buzzWinner) return;
 
   const title = document.createElement("h2");
@@ -250,6 +260,52 @@ function renderLeaderboard(state) {
     item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)} · ${escapeHtml(player.team || "A")} 組</span><strong>${player.score} 分</strong>`;
     els.leaderboard.append(item);
   });
+}
+
+function renderWinnerReveal(state) {
+  const teamScores = state.teamScores || {};
+  const aScore = Number(teamScores.A || 0);
+  const bScore = Number(teamScores.B || 0);
+  const wrapper = document.createElement("div");
+  wrapper.className = "stage-winner-final";
+
+  const label = document.createElement("p");
+  label.textContent = "分組勝方";
+
+  const headline = document.createElement("h2");
+  headline.textContent = winnerHeadline(aScore, bScore);
+
+  const scores = document.createElement("div");
+  scores.className = "stage-winner-scores";
+  scores.append(winnerScoreCard("A 組", aScore, aScore > bScore), winnerScoreCard("B 組", bScore, bScore > aScore));
+
+  const note = document.createElement("div");
+  note.className = "stage-winner-note";
+  const topPlayer = (state.leaderboard || [])[0];
+  note.textContent = topPlayer ? `個人最高分：${topPlayer.name} · ${topPlayer.score} 分` : "感謝大家一齊投入參與";
+
+  wrapper.append(label, headline, scores, note);
+  return wrapper;
+}
+
+function winnerHeadline(aScore, bScore) {
+  if (aScore === 0 && bScore === 0) return "準備公布";
+  if (aScore === bScore) return "A / B 組平手";
+  return `${aScore > bScore ? "A" : "B"} 組勝出`;
+}
+
+function winnerScoreCard(label, score, leading) {
+  const card = document.createElement("div");
+  card.className = `stage-winner-score${leading ? " is-leading" : ""}`;
+
+  const name = document.createElement("span");
+  name.textContent = label;
+
+  const value = document.createElement("strong");
+  value.textContent = score;
+
+  card.append(name, value);
+  return card;
 }
 
 function renderTeamFinal(teamScores) {
