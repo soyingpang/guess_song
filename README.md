@@ -2,6 +2,14 @@
 
 一個用 YouTube 影片片段做題目嘅華語詩歌估歌仔 web app，支援粵語同國語詩歌，適合團契、小組、主日學、詩班遊戲或營會破冰。
 
+## 文件
+
+後續開發請先睇：
+
+- `docs/GAME_PLAN.md`：團契三環節玩法計劃書
+- `docs/UPDATE_LOG.md`：按日期時間記錄的更新記錄
+- `docs/AI_HANDOFF.md`：給其他 AI / 開發者的交接摘要
+
 ## 出街用
 
 呢個 app 係純前端，可以直接放上 GitHub Pages：
