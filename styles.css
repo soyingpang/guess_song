@@ -421,6 +421,51 @@ h2 {
   grid-template-columns: 1fr;
 }
 
+.host-actions,
+.word-controls,
+.team-score-strip {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.host-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.word-controls {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+}
+
+.word-control-line {
+  display: grid;
+  gap: 6px;
+}
+
+.team-score-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.team-score-strip > div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #1c1517;
+  text-align: center;
+}
+
+.team-score-strip strong {
+  display: block;
+  color: var(--accent-2);
+  font-size: 1.7rem;
+}
+
+.team-score-strip span {
+  color: var(--muted);
+  font-weight: 900;
+}
+
 .segmented {
   min-height: 42px;
   border: 0;
@@ -1294,6 +1339,8 @@ select:focus {
 
   .transport-grid,
   .mode-row.three,
+  .host-actions,
+  .word-controls,
   .choices,
   .guess-line,
   .filter-row,

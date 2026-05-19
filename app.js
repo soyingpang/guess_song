@@ -5,6 +5,13 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const CLIP_START_SECONDS = 0;
 const CLIP_DURATION_SECONDS = 60;
+const DEFAULT_PLAY_DURATION_SECONDS = 30;
+const PLAY_DURATIONS = [60, 30, 15];
+const WORD_BANK = [
+  "主", "愛", "恩", "光", "心", "路", "天", "神", "聖", "救",
+  "盼", "望", "信", "靠", "榮", "耀", "平", "安", "真", "活",
+  "靈", "家", "十", "架", "永", "生", "讚", "美",
+];
 
 const APPROVED_SOURCE_RULES = [
   "小羊詩歌",
@@ -49,7 +56,7 @@ const state = {
   score: loadScore(),
   currentSong: null,
   currentChoices: [],
-  mode: "typed",
+  mode: "choice",
   difficulty: "easy",
   category: "all",
   round: 0,
@@ -57,12 +64,17 @@ const state = {
   answered: false,
   hintLevel: 0,
   isPlaying: false,
+  playDuration: DEFAULT_PLAY_DURATION_SECONDS,
+  playEndsAt: 0,
+  currentWord: "",
   currentQuestionId: "",
   buzzWinnerId: "",
+  buzzOpen: true,
   showLeaderboard: false,
   clipTimer: null,
   editingId: null,
   questionBag: [],
+  teamScores: { A: 0, B: 0 },
   roomReady: false,
   roomId: "",
   playerUrl: "",
@@ -82,12 +94,22 @@ const els = {
   skipButton: document.querySelector("#skipButton"),
   nextButton: document.querySelector("#nextButton"),
   toggleVideoButton: document.querySelector("#toggleVideoButton"),
-  easyModeButton: document.querySelector("#easyModeButton"),
-  normalModeButton: document.querySelector("#normalModeButton"),
-  hardModeButton: document.querySelector("#hardModeButton"),
-  typedModeButton: document.querySelector("#typedModeButton"),
+  duration60Button: document.querySelector("#duration60Button"),
+  duration30Button: document.querySelector("#duration30Button"),
+  duration15Button: document.querySelector("#duration15Button"),
   choiceModeButton: document.querySelector("#choiceModeButton"),
   buzzModeButton: document.querySelector("#buzzModeButton"),
+  wordModeButton: document.querySelector("#wordModeButton"),
+  judgeControls: document.querySelector("#judgeControls"),
+  markCorrectButton: document.querySelector("#markCorrectButton"),
+  markWrongButton: document.querySelector("#markWrongButton"),
+  reopenBuzzButton: document.querySelector("#reopenBuzzButton"),
+  wordControls: document.querySelector("#wordControls"),
+  wordInput: document.querySelector("#wordInput"),
+  randomWordButton: document.querySelector("#randomWordButton"),
+  startWordButton: document.querySelector("#startWordButton"),
+  teamAScore: document.querySelector("#teamAScore"),
+  teamBScore: document.querySelector("#teamBScore"),
   categoryFilter: document.querySelector("#categoryFilter"),
   guessForm: document.querySelector("#guessForm"),
   guessInput: document.querySelector("#guessInput"),
@@ -127,24 +149,36 @@ const els = {
 bindEvents();
 initMultiplayer();
 render();
-startRound();
-if (!state.songs.length) loadCloudLibrary({ silent: true });
+if (!state.songs.length) {
+  loadCloudLibrary({ silent: true });
+} else {
+  setResult("準備開始", `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題開始`, "");
+  render();
+}
 
 function bindEvents() {
   els.playButton.addEventListener("click", () => playCurrentClip());
   els.replayButton.addEventListener("click", () => playCurrentClip());
   els.hintButton.addEventListener("click", () => showNextHint());
   els.skipButton.addEventListener("click", () => finishRound(false, "開估"));
-  els.nextButton.addEventListener("click", () => startRound(null, { autoplay: true }));
+  els.nextButton.addEventListener("click", () => startNextQuestion());
   els.toggleVideoButton.addEventListener("click", () => toggleVideo());
 
-  els.easyModeButton.addEventListener("click", () => setDifficulty("easy"));
-  els.normalModeButton.addEventListener("click", () => setDifficulty("normal"));
-  els.hardModeButton.addEventListener("click", () => setDifficulty("hard"));
+  els.duration60Button.addEventListener("click", () => setPlayDuration(60));
+  els.duration30Button.addEventListener("click", () => setPlayDuration(30));
+  els.duration15Button.addEventListener("click", () => setPlayDuration(15));
 
-  els.typedModeButton.addEventListener("click", () => setMode("typed"));
   els.choiceModeButton.addEventListener("click", () => setMode("choice"));
   els.buzzModeButton.addEventListener("click", () => setMode("buzz"));
+  els.wordModeButton.addEventListener("click", () => setMode("word"));
+  els.markCorrectButton.addEventListener("click", () => judgeBuzzWinner(true));
+  els.markWrongButton.addEventListener("click", () => judgeBuzzWinner(false));
+  els.reopenBuzzButton.addEventListener("click", () => reopenBuzz());
+  els.randomWordButton.addEventListener("click", () => {
+    els.wordInput.value = randomWord();
+    els.wordInput.focus();
+  });
+  els.startWordButton.addEventListener("click", () => startWordRound(els.wordInput.value));
 
   els.categoryFilter.addEventListener("change", () => {
     state.category = els.categoryFilter.value;
@@ -238,14 +272,17 @@ function handlePlayerMessage(connection, message) {
   if (message.type === "join") {
     const playerId = String(message.playerId || connection.peer || crypto.randomUUID());
     const name = cleanPlayerName(message.name);
+    const team = normalizeTeam(message.team);
     const existing = state.players[playerId] || {
       id: playerId,
       name,
+      team,
       score: 0,
       answers: {},
     };
 
     existing.name = name;
+    existing.team = team;
     existing.connected = true;
     existing.connection = connection;
     state.players[playerId] = existing;
@@ -258,7 +295,7 @@ function handlePlayerMessage(connection, message) {
   }
 
   const player = state.players[connection.playerId];
-  if (!player || !state.currentSong || message.questionId !== state.currentQuestionId) return;
+  if (!player || !hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
   if (message.type === "answer") {
     handleChoiceAnswer(player, message.answer);
@@ -271,6 +308,7 @@ function handlePlayerMessage(connection, message) {
 
 function handleChoiceAnswer(player, answer) {
   if (state.mode !== "choice" || player.answers[state.currentQuestionId]) return;
+  if (!state.currentSong) return;
 
   const correct = normalize(answer) === normalize(state.currentSong.title);
   const points = correct ? 1 : 0;
@@ -289,20 +327,90 @@ function handleChoiceAnswer(player, answer) {
 }
 
 function handleBuzz(player) {
-  if (state.mode !== "buzz" || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
+  if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
 
   state.buzzWinnerId = player.id;
-  player.score += 2;
-  player.answers[state.currentQuestionId] = { answer: "buzz", correct: true, points: 2 };
   broadcastToPlayers({
     type: "result",
     questionId: state.currentQuestionId,
     winnerId: player.id,
-    message: `${player.name} 搶答成功 +2`,
+    message: `${player.name} 搶答成功，等主持判定`,
   });
+  setResult("搶答成功", `${player.name}（${teamLabel(player.team)}）`, "");
   renderPlayers();
   publishDisplayState();
   broadcastToPlayers();
+}
+
+function judgeBuzzWinner(isCorrect) {
+  const player = state.players[state.buzzWinnerId];
+  if (!player || !hasActiveQuestion()) {
+    setResult("未有人搶答", "", "");
+    return;
+  }
+
+  if (isCorrect) {
+    const points = state.mode === "word" ? 2 : 2;
+    if (state.mode === "word") {
+      const team = normalizeTeam(player.team);
+      state.teamScores[team] += points;
+      player.answers[state.currentQuestionId] = { answer: "word", correct: true, points: 0, teamPoints: points };
+      setResult("答中，組別加分", `${teamLabel(team)} +${points}`, "correct");
+      sendToPlayer(player, {
+        type: "result",
+        questionId: state.currentQuestionId,
+        correct: true,
+        points: 0,
+        message: `答中！${teamLabel(team)} +${points}`,
+      });
+    } else {
+      player.score += points;
+      player.answers[state.currentQuestionId] = { answer: "buzz", correct: true, points };
+      setResult("答中", `${player.name} +${points}`, "correct");
+      sendToPlayer(player, {
+        type: "result",
+        questionId: state.currentQuestionId,
+        correct: true,
+        points,
+        message: `答中 +${points}`,
+      });
+    }
+
+    state.answered = true;
+    state.revealed = true;
+    state.buzzOpen = false;
+    state.isPlaying = false;
+    state.playEndsAt = 0;
+    clearClipTimer();
+    saveScore();
+    render();
+    return;
+  }
+
+  player.answers[state.currentQuestionId] = { answer: "buzz", correct: false, points: 0 };
+  state.buzzWinnerId = "";
+  state.buzzOpen = true;
+  setResult("未中，已重新開放搶答", `${player.name} 暫停今題再搶`, "wrong");
+  sendToPlayer(player, {
+    type: "result",
+    questionId: state.currentQuestionId,
+    correct: false,
+    points: 0,
+    message: "未中，等其他人再搶",
+  });
+  render();
+}
+
+function reopenBuzz() {
+  if (!hasActiveQuestion()) {
+    setResult("未有題目可以搶答", "", "");
+    return;
+  }
+
+  state.buzzWinnerId = "";
+  state.buzzOpen = true;
+  setResult("已重新開放搶答", state.mode === "word" ? `今題字：${state.currentWord}` : "", "");
+  render();
 }
 
 function loadSongs() {
@@ -358,6 +466,15 @@ function saveScore() {
   localStorage.setItem(SCORE_KEY, JSON.stringify(state.score));
 }
 
+function startNextQuestion() {
+  if (state.mode === "word") {
+    startWordRound(els.wordInput.value);
+    return;
+  }
+
+  startRound(null, { autoplay: false });
+}
+
 function startRound(preferredSongId, options = {}) {
   const { autoplay = false } = options;
   const pool = playableSongs();
@@ -371,8 +488,11 @@ function startRound(preferredSongId, options = {}) {
     state.answered = false;
     state.hintLevel = 0;
     state.isPlaying = false;
+    state.playEndsAt = 0;
+    state.currentWord = "";
     state.currentQuestionId = "";
     state.buzzWinnerId = "";
+    state.buzzOpen = true;
     state.showLeaderboard = false;
     els.guessInput.value = "";
     els.playerHost.replaceChildren();
@@ -388,19 +508,45 @@ function startRound(preferredSongId, options = {}) {
 
   clearClipTimer();
   state.currentSong = song;
+  state.currentWord = "";
   state.currentChoices = makeChoices(song, pool);
   state.round += 1;
   state.revealed = false;
   state.answered = false;
   state.hintLevel = 0;
   state.isPlaying = Boolean(autoplay);
+  state.playEndsAt = autoplay ? Date.now() + clipDuration(song) * 1000 : 0;
   state.currentQuestionId = `${song.id}:${Date.now()}`;
   state.buzzWinnerId = "";
+  state.buzzOpen = true;
   state.showLeaderboard = false;
   els.guessInput.value = "";
-  setResult(autoplay ? "播放中：可播完整首" : "聽前奏，估詩歌名", "", "");
+  setResult(autoplay ? `前台播放中：${clipDuration(song)} 秒` : "題目已載入，按前台播放", "", "");
   render();
   renderYouTubeFrame({ autoplay });
+  if (autoplay) scheduleClipStop();
+}
+
+function startWordRound(preferredWord = "") {
+  clearClipTimer();
+  const word = cleanWord(preferredWord) || randomWord();
+  state.currentSong = null;
+  state.currentChoices = [];
+  state.currentWord = word;
+  state.round += 1;
+  state.revealed = false;
+  state.answered = false;
+  state.hintLevel = 0;
+  state.isPlaying = false;
+  state.playEndsAt = 0;
+  state.currentQuestionId = `word:${word}:${Date.now()}`;
+  state.buzzWinnerId = "";
+  state.buzzOpen = true;
+  state.showLeaderboard = false;
+  els.wordInput.value = word;
+  els.playerHost.replaceChildren();
+  setResult("一字搶唱：搶答開放", `今題字：${word}`, "");
+  render();
 }
 
 function playableSongs() {
@@ -448,6 +594,11 @@ function loadCurrentVideo() {
 }
 
 function playCurrentClip() {
+  if (state.mode === "word") {
+    setResult("一字題不需要播放", state.currentWord ? `今題字：${state.currentWord}` : "", "");
+    return;
+  }
+
   if (!state.currentSong) {
     setResult("先加入一首詩歌", "", "");
     return;
@@ -455,10 +606,12 @@ function playCurrentClip() {
 
   clearClipTimer();
   state.isPlaying = true;
+  state.playEndsAt = Date.now() + clipDuration(state.currentSong) * 1000;
   renderYouTubeFrame({ autoplay: true });
 
-  setResult("播放中：可播完整首", "", "");
+  setResult(`前台播放中：${clipDuration(state.currentSong)} 秒`, "", "");
   syncSurfaces();
+  scheduleClipStop();
 }
 
 function checkGuess(value) {
@@ -483,20 +636,23 @@ function finishRound(isCorrect, label = null) {
   const shouldAutoplayReveal = label === "開估" && !state.isPlaying;
   state.answered = true;
   state.revealed = true;
-  if (shouldAutoplayReveal) state.isPlaying = true;
-  state.score.total += 1;
-  if (isCorrect) {
-    state.score.correct += 1;
-    state.score.streak += 1;
-  } else {
-    state.score.streak = 0;
+  state.isPlaying = false;
+  state.playEndsAt = 0;
+  if (label !== "開估") {
+    state.score.total += 1;
+    if (isCorrect) {
+      state.score.correct += 1;
+      state.score.streak += 1;
+    } else {
+      state.score.streak = 0;
+    }
   }
 
   clearClipTimer();
   saveScore();
   setResult(label || (isCorrect ? "答中" : "未中"), answerLabel(state.currentSong), isCorrect ? "correct" : "wrong");
   render();
-  if (shouldAutoplayReveal) renderYouTubeFrame({ autoplay: true });
+  if (shouldAutoplayReveal) renderYouTubeFrame({ autoplay: false });
 }
 
 function isCorrectGuess(normalizedGuess) {
@@ -569,8 +725,8 @@ function renderHostAudio({ autoplay }) {
   const audio = document.createElement("audio");
   audio.src = state.currentSong.audioUrl;
   audio.controls = true;
-  audio.muted = false;
-  audio.volume = 1;
+  audio.muted = true;
+  audio.volume = 0;
   audio.preload = "metadata";
   audio.addEventListener(
     "loadedmetadata",
@@ -586,16 +742,19 @@ function renderHostAudio({ autoplay }) {
 function buildEmbedUrl(song, autoplay) {
   const url = new URL(`https://www.youtube-nocookie.com/embed/${song.videoId}`);
   url.searchParams.set("start", String(clipStart(song)));
+  url.searchParams.set("end", String(clipStart(song) + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
   url.searchParams.set("controls", "1");
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
+  url.searchParams.set("mute", "1");
+  url.searchParams.set("volume", "0");
   return url.toString();
 }
 
 function clipDuration(song) {
-  return Math.min(CLIP_DURATION_SECONDS, difficultyDurations[state.difficulty], song?.duration || CLIP_DURATION_SECONDS);
+  return Math.min(CLIP_DURATION_SECONDS, state.playDuration, song?.duration || CLIP_DURATION_SECONDS);
 }
 
 function clipStart() {
@@ -615,8 +774,40 @@ function setDifficulty(difficulty) {
 
 function setMode(mode) {
   state.mode = mode;
-  state.currentChoices = state.currentSong ? makeChoices(state.currentSong, playableSongs()) : [];
+  if (mode === "word") {
+    clearClipTimer();
+    state.currentSong = null;
+    state.currentChoices = [];
+    state.isPlaying = false;
+    state.playEndsAt = 0;
+    state.currentQuestionId = "";
+    els.playerHost.replaceChildren();
+    setResult("一字搶唱模式", "抽字或輸入一個字開始", "");
+  } else {
+    state.currentWord = "";
+    state.currentChoices = state.currentSong ? makeChoices(state.currentSong, playableSongs()) : [];
+    setResult(mode === "choice" ? "四選一模式" : "搶答估歌模式", "按下一題載入題目", "");
+  }
+  state.buzzWinnerId = "";
+  state.buzzOpen = true;
   render();
+}
+
+function setPlayDuration(seconds) {
+  state.playDuration = PLAY_DURATIONS.includes(seconds) ? seconds : DEFAULT_PLAY_DURATION_SECONDS;
+  if (state.currentSong) loadCurrentVideo();
+  render();
+}
+
+function scheduleClipStop() {
+  clearClipTimer();
+  state.clipTimer = window.setTimeout(() => {
+    state.isPlaying = false;
+    state.playEndsAt = 0;
+    setResult("時間到", state.currentSong ? "可以開估或下一題" : "", "");
+    renderYouTubeFrame({ autoplay: false });
+    syncSurfaces();
+  }, clipDuration(state.currentSong) * 1000);
 }
 
 function showLeaderboard() {
@@ -751,9 +942,8 @@ async function loadCloudLibrary({ silent }) {
 
     state.songs = dedupeSongs(songs);
     saveSongs();
-    setResult("已載入經典詩歌線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題`, "");
+    setResult("已載入經典詩歌線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題開始`, "");
     render();
-    startRound();
   } catch {
     if (!silent) setResult("載入線上題庫失敗", "請稍後再試", "wrong");
   }
@@ -773,6 +963,7 @@ function clearLibrary() {
   if (!confirm("清空詩歌題庫同分數？")) return;
   state.songs = [];
   state.score = { correct: 0, total: 0, streak: 0 };
+  state.teamScores = { A: 0, B: 0 };
   state.editingId = null;
   saveSongs();
   saveScore();
@@ -800,6 +991,8 @@ function renderScore() {
   els.scoreCorrect.textContent = state.score.correct;
   els.scoreTotal.textContent = state.score.total;
   els.scoreStreak.textContent = state.score.streak;
+  els.teamAScore.textContent = state.teamScores.A;
+  els.teamBScore.textContent = state.teamScores.B;
 }
 
 function renderCategoryFilter() {
@@ -825,28 +1018,38 @@ function renderCategoryFilter() {
 
 function renderQuiz() {
   const hasSong = Boolean(state.currentSong);
-  els.roundLabel.textContent = hasSong ? `第 ${state.round} 題` : "未有題目";
-  els.quizTitle.textContent = hasSong
-    ? state.answered
-      ? state.currentSong.title
-      : "估呢首詩歌"
-    : state.songs.length
-      ? emptyPoolMessage()
-      : "先加入詩歌";
+  const hasWord = state.mode === "word" && Boolean(state.currentWord);
+  els.roundLabel.textContent = hasActiveQuestion() ? `第 ${state.round} 題` : "未有題目";
+  els.quizTitle.textContent = hasWord
+    ? `今題字：${state.currentWord}`
+    : hasSong
+      ? state.answered
+        ? state.currentSong.title
+        : "估呢首詩歌"
+      : state.mode === "word"
+        ? "一字搶唱"
+        : state.songs.length
+          ? emptyPoolMessage()
+          : "先加入詩歌";
 
-  els.maskLabel.textContent = hasSong ? "後台影片已顯示，可先跳過廣告" : "聽前奏，估詩歌";
+  els.maskLabel.textContent = hasSong ? "後台影片已靜音，只作預備和跳廣告" : "前台先會出聲";
   els.playerMask.classList.toggle("is-hidden", hasSong);
   els.playerHost.classList.remove("is-masked");
   els.toggleVideoButton.textContent = state.revealed ? "前台隱藏" : "前台開估";
 
-  els.easyModeButton.classList.toggle("is-active", state.difficulty === "easy");
-  els.normalModeButton.classList.toggle("is-active", state.difficulty === "normal");
-  els.hardModeButton.classList.toggle("is-active", state.difficulty === "hard");
-  els.typedModeButton.classList.toggle("is-active", state.mode === "typed");
+  els.duration60Button.classList.toggle("is-active", state.playDuration === 60);
+  els.duration30Button.classList.toggle("is-active", state.playDuration === 30);
+  els.duration15Button.classList.toggle("is-active", state.playDuration === 15);
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
+  els.wordModeButton.classList.toggle("is-active", state.mode === "word");
+  els.playButton.disabled = state.mode === "word" || !hasSong;
+  els.replayButton.disabled = state.mode === "word" || !hasSong;
+  els.hintButton.disabled = state.mode === "word" || !hasSong;
+  els.judgeControls.hidden = !["buzz", "word"].includes(state.mode);
+  els.wordControls.hidden = state.mode !== "word";
 
-  els.guessForm.hidden = state.mode !== "typed";
+  els.guessForm.hidden = true;
   els.choices.hidden = state.mode !== "choice";
   els.choices.innerHTML = "";
 
@@ -967,7 +1170,7 @@ function renderPlayers() {
     const name = document.createElement("strong");
     const meta = document.createElement("span");
     name.textContent = `${index + 1}. ${player.name}`;
-    meta.textContent = player.connected ? "已連線" : "離線";
+    meta.textContent = `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}`;
     info.append(name, meta);
 
     const score = document.createElement("strong");
@@ -1004,7 +1207,8 @@ function syncSurfaces(extraMessage = null) {
 function buildDisplayState() {
   const song = state.currentSong;
   const hasSong = Boolean(song);
-  const revealed = Boolean(song && state.answered);
+  const hasWord = state.mode === "word" && Boolean(state.currentWord);
+  const revealed = Boolean((song || hasWord) && state.answered);
   const hints = song ? getHints(song).slice(0, state.hintLevel) : [];
 
   return {
@@ -1017,23 +1221,29 @@ function buildDisplayState() {
     difficulty: state.difficulty,
     mode: state.mode,
     hasSong,
+    hasQuestion: hasSong || hasWord,
+    hasWord,
     revealed,
     isPlaying: state.isPlaying,
-    clipDuration: 0,
+    playDuration: state.playDuration,
+    playEndsAt: state.playEndsAt,
+    clipDuration: state.playDuration,
+    currentWord: state.currentWord,
+    teamScores: { ...state.teamScores },
     roomReady: state.roomReady,
     roomId: state.roomId,
     playerUrl: state.playerUrl,
     showLeaderboard: state.showLeaderboard,
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
-    prompt: hasSong ? "聽前奏，估詩歌" : "等候主持開始",
+    prompt: hasWord ? "一字搶唱" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",
     status: els.resultText.textContent || "",
-    answer: revealed ? answerLabel(song) : "",
-    title: revealed ? song.title : "估呢首詩歌",
+    answer: revealed && song ? answerLabel(song) : hasWord ? `今題字：${state.currentWord}` : "",
+    title: hasWord ? state.currentWord : revealed && song ? song.title : "估呢首詩歌",
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
     start: song ? clipStart(song) : 0,
-    end: 0,
+    end: song ? clipStart(song) + clipDuration(song) : 0,
     hints,
     choices: state.mode === "choice" && song ? state.currentChoices : [],
     meta: revealed && song
@@ -1044,7 +1254,8 @@ function buildDisplayState() {
 
 function buildPlayerState(player) {
   const song = state.currentSong;
-  const revealed = Boolean(song && state.answered);
+  const hasWord = state.mode === "word" && Boolean(state.currentWord);
+  const revealed = Boolean((song || hasWord) && state.answered);
 
   return {
     type: "state",
@@ -1052,10 +1263,17 @@ function buildPlayerState(player) {
     round: state.round,
     mode: state.mode,
     hasSong: Boolean(song),
+    hasQuestion: Boolean(song || hasWord),
+    hasWord,
     revealed,
     isPlaying: state.isPlaying,
-    clipDuration: 0,
-    title: revealed ? song.title : "估呢首詩歌",
+    playDuration: state.playDuration,
+    playEndsAt: state.playEndsAt,
+    clipDuration: state.playDuration,
+    currentWord: state.currentWord,
+    team: normalizeTeam(player.team),
+    teamScores: { ...state.teamScores },
+    title: hasWord ? `今題字：${state.currentWord}` : revealed && song ? song.title : "估呢首詩歌",
     status: els.resultText.textContent || "",
     score: player.score,
     choices: state.mode === "choice" && song && !revealed ? state.currentChoices : [],
@@ -1092,6 +1310,7 @@ function stripPlayer(player) {
   return {
     id: player.id,
     name: player.name,
+    team: normalizeTeam(player.team),
     score: player.score,
     connected: Boolean(player.connected),
   };
@@ -1114,6 +1333,26 @@ function makeRoomId() {
 function cleanPlayerName(name) {
   const cleaned = String(name || "").trim().replace(/\s+/g, " ").slice(0, 18);
   return cleaned || "無名玩家";
+}
+
+function normalizeTeam(team) {
+  return String(team || "A").trim().toUpperCase() === "B" ? "B" : "A";
+}
+
+function teamLabel(team) {
+  return `${normalizeTeam(team)} 組`;
+}
+
+function hasActiveQuestion() {
+  return Boolean(state.currentSong || (state.mode === "word" && state.currentWord));
+}
+
+function cleanWord(value) {
+  return String(value || "").trim().replace(/\s+/g, "").slice(0, 2);
+}
+
+function randomWord() {
+  return pickRandom(WORD_BANK) || "愛";
 }
 
 function miniButton(text, title, onClick) {

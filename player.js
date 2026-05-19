@@ -1,5 +1,6 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
+const PLAYER_TEAM_KEY = "cantonese-hymn-quiz-player-team-v1";
 
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room") || "";
@@ -10,6 +11,7 @@ const state = {
   connection: null,
   playerId: localStorage.getItem(PLAYER_ID_KEY) || crypto.randomUUID(),
   name: urlName || localStorage.getItem(PLAYER_NAME_KEY) || "",
+  team: localStorage.getItem(PLAYER_TEAM_KEY) || "A",
   joined: false,
   game: null,
   lastResult: "",
@@ -18,6 +20,7 @@ const state = {
 const els = {
   joinForm: document.querySelector("#joinForm"),
   playerName: document.querySelector("#playerName"),
+  playerTeam: document.querySelector("#playerTeam"),
   playerStatus: document.querySelector("#playerStatus"),
   playerScore: document.querySelector("#playerScore"),
   playerRound: document.querySelector("#playerRound"),
@@ -32,6 +35,7 @@ const els = {
 
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
 els.playerName.value = state.name;
+els.playerTeam.value = state.team;
 
 els.joinForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -58,7 +62,9 @@ function joinGame() {
   }
 
   state.name = name.slice(0, 18);
+  state.team = normalizeTeam(els.playerTeam.value);
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
+  localStorage.setItem(PLAYER_TEAM_KEY, state.team);
   els.joinForm.hidden = true;
   setStatus("連線中...");
 
@@ -72,7 +78,7 @@ function joinGame() {
     state.connection = state.peer.connect(roomId, { reliable: true });
     state.connection.on("open", () => {
       state.joined = true;
-      send({ type: "join", playerId: state.playerId, name: state.name });
+      send({ type: "join", playerId: state.playerId, name: state.name, team: state.team });
       setStatus("已加入，等候題目");
     });
     state.connection.on("data", handleMessage);
@@ -115,11 +121,12 @@ function renderGame() {
   if (!game) return;
 
   els.playerScore.textContent = `${game.score || 0} 分`;
-  els.playerRound.textContent = game.hasSong ? `第 ${game.round} 題` : "未開始";
+  els.playerRound.textContent = game.hasQuestion ? `第 ${game.round} 題 · ${teamLabel(game.team)}` : `未開始 · ${teamLabel(state.team)}`;
   els.phoneStatus.textContent = game.isPlaying
-    ? "播放中：可播完整首"
-    : game.status || "聽片段，估詩歌";
+    ? `播放中：${remainingSeconds(game)} 秒`
+    : game.status || "等候主持";
   els.phoneTitle.textContent = game.revealed ? game.title : "估呢首詩歌";
+  if (game.hasWord) els.phoneTitle.textContent = game.title;
   els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `${game.buzzWinner.name} 搶答成功` : "");
 
   renderHints(game.hints || []);
@@ -141,7 +148,7 @@ function renderChoices(game) {
   els.phoneChoices.replaceChildren();
   els.buzzButton.hidden = true;
 
-  if (!game.hasSong || game.revealed) return;
+  if (!game.hasQuestion || game.revealed) return;
 
   if (game.mode === "choice") {
     (game.choices || []).forEach((choice) => {
@@ -160,9 +167,10 @@ function renderChoices(game) {
     });
   }
 
-  if (game.mode === "buzz") {
+  if (game.mode === "buzz" || game.mode === "word") {
     els.buzzButton.hidden = false;
     els.buzzButton.disabled = Boolean(game.answered || game.buzzWinner);
+    els.buzzButton.textContent = game.mode === "word" ? "搶唱" : "搶答";
   }
 }
 
@@ -179,7 +187,7 @@ function renderLeaderboard(players) {
   players.slice(0, 10).forEach((player, index) => {
     const item = document.createElement("div");
     item.className = "phone-rank";
-    item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${player.score} 分</strong>`;
+    item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)} · ${escapeHtml(player.team || "A")} 組</span><strong>${player.score} 分</strong>`;
     els.phoneLeaderboard.append(item);
   });
 }
@@ -190,6 +198,19 @@ function send(message) {
 
 function setStatus(message) {
   els.playerStatus.textContent = message;
+}
+
+function normalizeTeam(team) {
+  return String(team || "A").trim().toUpperCase() === "B" ? "B" : "A";
+}
+
+function teamLabel(team) {
+  return `${normalizeTeam(team)} 組`;
+}
+
+function remainingSeconds(game) {
+  if (!game.playEndsAt) return game.playDuration || 0;
+  return Math.max(0, Math.ceil((game.playEndsAt - Date.now()) / 1000));
 }
 
 function escapeHtml(value) {

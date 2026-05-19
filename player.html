@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=full-song-1" />
+    <link rel="stylesheet" href="./styles.css?v=three-rounds-1" />
   </head>
   <body class="player-body">
     <main class="player-shell">
@@ -19,6 +19,11 @@
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
             <button class="primary-button" type="submit">加入</button>
           </div>
+          <label for="playerTeam">你的組別</label>
+          <select id="playerTeam">
+            <option value="A">A 組</option>
+            <option value="B">B 組</option>
+          </select>
         </form>
 
         <div class="player-status" id="playerStatus">掃 QR 後輸入名字加入</div>
@@ -46,6 +51,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=full-song-1"></script>
+    <script src="./player.js?v=three-rounds-1"></script>
   </body>
 </html>

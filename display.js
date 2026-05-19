@@ -7,6 +7,7 @@ const els = {
   subPrompt: document.querySelector("#stageSubPrompt"),
   round: document.querySelector("#stageRound"),
   score: document.querySelector("#stageScore"),
+  teams: document.querySelector("#stageTeams"),
   status: document.querySelector("#stageStatus"),
   title: document.querySelector("#stageTitle"),
   meta: document.querySelector("#stageMeta"),
@@ -35,18 +36,24 @@ function renderFromStorage() {
   }
 
   els.round.textContent = state.hasSong ? `第 ${state.round} 題` : "未有題目";
+  if (state.hasWord) els.round.textContent = `第 ${state.round} 題`;
   els.score.textContent = `${state.correct} / ${state.total}`;
+  els.teams.textContent = `A ${state.teamScores?.A || 0} · B ${state.teamScores?.B || 0}`;
   els.status.textContent = state.status || (state.hasSong ? "聽片段，估詩歌名" : "等候主持開始");
-  els.title.textContent = state.revealed ? state.title : "估呢首粵語詩歌";
+  els.title.textContent = state.hasWord ? state.title : state.revealed ? state.title : "估呢首詩歌";
 
   els.prompt.textContent = state.revealed
     ? "答案"
     : state.isPlaying
-      ? "播放中 · 可播完整首"
-      : "聽前奏，估詩歌";
+      ? `播放中 · ${remainingSeconds(state)} 秒`
+      : state.hasWord
+        ? "一字搶唱"
+        : "聽前奏，估詩歌";
   els.subPrompt.textContent = state.revealed
     ? state.answer
-    : "答案未公開，請留心聽";
+    : state.hasWord
+      ? "鬥快唱出含有這個字的詩歌"
+      : "答案未公開，請留心聽";
 
   els.mask.classList.toggle("is-hidden", Boolean(state.revealed));
   els.playerHost.classList.toggle("is-masked", !state.revealed);
@@ -94,7 +101,7 @@ function renderFrame(state) {
     return;
   }
 
-  const frameKey = [state.audioUrl || state.videoId, state.start, state.isPlaying ? "play" : "cue"].join(":");
+  const frameKey = [state.audioUrl || state.videoId, state.start, state.end, state.isPlaying ? "play" : "cue"].join(":");
   if (frameKey === latestFrameKey) return;
   latestFrameKey = frameKey;
 
@@ -122,18 +129,27 @@ function renderAudio(state) {
     audio.currentTime = Number(state.start || 0);
     if (state.isPlaying) audio.play().catch(() => {});
   }, { once: true });
+  audio.addEventListener("timeupdate", () => {
+    if (state.end && audio.currentTime >= state.end) audio.pause();
+  });
   els.playerHost.replaceChildren(audio);
 }
 
 function buildEmbedUrl(state) {
   const url = new URL(`https://www.youtube-nocookie.com/embed/${state.videoId}`);
   url.searchParams.set("start", String(state.start || 0));
+  if (state.end) url.searchParams.set("end", String(state.end));
   url.searchParams.set("autoplay", state.isPlaying ? "1" : "0");
   url.searchParams.set("controls", "0");
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
   return url.toString();
+}
+
+function remainingSeconds(state) {
+  if (!state.playEndsAt) return state.playDuration || 0;
+  return Math.max(0, Math.ceil((state.playEndsAt - Date.now()) / 1000));
 }
 
 function renderMeta(state) {
@@ -197,7 +213,7 @@ function renderLeaderboard(state) {
   players.slice(0, 10).forEach((player, index) => {
     const item = document.createElement("div");
     item.className = "stage-rank";
-    item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${player.score} 分</strong>`;
+    item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)} · ${escapeHtml(player.team || "A")} 組</span><strong>${player.score} 分</strong>`;
     els.leaderboard.append(item);
   });
 }
