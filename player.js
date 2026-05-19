@@ -169,8 +169,11 @@ function renderChoices(game) {
 
   if (game.mode === "buzz" || game.mode === "word") {
     els.buzzButton.hidden = false;
-    els.buzzButton.disabled = Boolean(game.answered || game.buzzWinner);
+    els.buzzButton.disabled = Boolean(game.answered || game.buzzWinner || !game.buzzOpen);
     els.buzzButton.textContent = game.mode === "word" ? "搶唱" : "搶答";
+    if (!game.buzzOpen && !game.buzzWinner && !game.answered) {
+      els.phoneResult.textContent = game.mode === "word" ? "等主持開放搶唱" : "等主持開放搶答";
+    }
   }
 }
 

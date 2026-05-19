@@ -398,7 +398,7 @@ h2 {
 
 .transport-grid {
   display: grid;
-  grid-template-columns: 1.25fr repeat(4, 1fr);
+  grid-template-columns: 1.25fr repeat(5, 1fr);
   gap: 10px;
 }
 

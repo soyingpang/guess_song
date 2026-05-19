@@ -69,7 +69,7 @@ const state = {
   currentWord: "",
   currentQuestionId: "",
   buzzWinnerId: "",
-  buzzOpen: true,
+  buzzOpen: false,
   showLeaderboard: false,
   clipTimer: null,
   editingId: null,
@@ -90,6 +90,7 @@ const els = {
   roundLabel: document.querySelector("#roundLabel"),
   playButton: document.querySelector("#playButton"),
   replayButton: document.querySelector("#replayButton"),
+  stopButton: document.querySelector("#stopButton"),
   hintButton: document.querySelector("#hintButton"),
   skipButton: document.querySelector("#skipButton"),
   nextButton: document.querySelector("#nextButton"),
@@ -159,6 +160,7 @@ if (!state.songs.length) {
 function bindEvents() {
   els.playButton.addEventListener("click", () => playCurrentClip());
   els.replayButton.addEventListener("click", () => playCurrentClip());
+  els.stopButton.addEventListener("click", () => stopPlayback());
   els.hintButton.addEventListener("click", () => showNextHint());
   els.skipButton.addEventListener("click", () => finishRound(false, "開估"));
   els.nextButton.addEventListener("click", () => startNextQuestion());
@@ -330,6 +332,7 @@ function handleBuzz(player) {
   if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
 
   state.buzzWinnerId = player.id;
+  state.buzzOpen = false;
   broadcastToPlayers({
     type: "result",
     questionId: state.currentQuestionId,
@@ -337,9 +340,7 @@ function handleBuzz(player) {
     message: `${player.name} 搶答成功，等主持判定`,
   });
   setResult("搶答成功", `${player.name}（${teamLabel(player.team)}）`, "");
-  renderPlayers();
-  publishDisplayState();
-  broadcastToPlayers();
+  render();
 }
 
 function judgeBuzzWinner(isCorrect) {
@@ -389,8 +390,8 @@ function judgeBuzzWinner(isCorrect) {
 
   player.answers[state.currentQuestionId] = { answer: "buzz", correct: false, points: 0 };
   state.buzzWinnerId = "";
-  state.buzzOpen = true;
-  setResult("未中，已重新開放搶答", `${player.name} 暫停今題再搶`, "wrong");
+  state.buzzOpen = false;
+  setResult("未中", `${player.name} 暫停今題再搶；如要繼續請按開放搶答`, "wrong");
   sendToPlayer(player, {
     type: "result",
     questionId: state.currentQuestionId,
@@ -409,7 +410,7 @@ function reopenBuzz() {
 
   state.buzzWinnerId = "";
   state.buzzOpen = true;
-  setResult("已重新開放搶答", state.mode === "word" ? `今題字：${state.currentWord}` : "", "");
+  setResult(state.mode === "word" ? "已開放搶唱" : "已開放搶答", state.mode === "word" ? `今題字：${state.currentWord}` : "", "");
   render();
 }
 
@@ -492,7 +493,7 @@ function startRound(preferredSongId, options = {}) {
     state.currentWord = "";
     state.currentQuestionId = "";
     state.buzzWinnerId = "";
-    state.buzzOpen = true;
+    state.buzzOpen = false;
     state.showLeaderboard = false;
     els.guessInput.value = "";
     els.playerHost.replaceChildren();
@@ -518,7 +519,7 @@ function startRound(preferredSongId, options = {}) {
   state.playEndsAt = autoplay ? Date.now() + clipDuration(song) * 1000 : 0;
   state.currentQuestionId = `${song.id}:${Date.now()}`;
   state.buzzWinnerId = "";
-  state.buzzOpen = true;
+  state.buzzOpen = false;
   state.showLeaderboard = false;
   els.guessInput.value = "";
   setResult(autoplay ? `前台播放中：${clipDuration(song)} 秒` : "題目已載入，按前台播放", "", "");
@@ -541,11 +542,11 @@ function startWordRound(preferredWord = "") {
   state.playEndsAt = 0;
   state.currentQuestionId = `word:${word}:${Date.now()}`;
   state.buzzWinnerId = "";
-  state.buzzOpen = true;
+  state.buzzOpen = false;
   state.showLeaderboard = false;
   els.wordInput.value = word;
   els.playerHost.replaceChildren();
-  setResult("一字搶唱：搶答開放", `今題字：${word}`, "");
+  setResult("一字搶唱：已準備", `今題字：${word}，按開放搶唱開始`, "");
   render();
 }
 
@@ -610,8 +611,17 @@ function playCurrentClip() {
   renderYouTubeFrame({ autoplay: true });
 
   setResult(`前台播放中：${clipDuration(state.currentSong)} 秒`, "", "");
-  syncSurfaces();
+  render();
   scheduleClipStop();
+}
+
+function stopPlayback(message = "已停止播放") {
+  clearClipTimer();
+  state.isPlaying = false;
+  state.playEndsAt = 0;
+  if (state.currentSong) renderYouTubeFrame({ autoplay: false });
+  setResult(message, state.currentSong ? "可開估、重播或下一題" : "", "");
+  render();
 }
 
 function checkGuess(value) {
@@ -789,7 +799,7 @@ function setMode(mode) {
     setResult(mode === "choice" ? "四選一模式" : "搶答估歌模式", "按下一題載入題目", "");
   }
   state.buzzWinnerId = "";
-  state.buzzOpen = true;
+  state.buzzOpen = false;
   render();
 }
 
@@ -806,7 +816,7 @@ function scheduleClipStop() {
     state.playEndsAt = 0;
     setResult("時間到", state.currentSong ? "可以開估或下一題" : "", "");
     renderYouTubeFrame({ autoplay: false });
-    syncSurfaces();
+    render();
   }, clipDuration(state.currentSong) * 1000);
 }
 
@@ -1045,9 +1055,22 @@ function renderQuiz() {
   els.wordModeButton.classList.toggle("is-active", state.mode === "word");
   els.playButton.disabled = state.mode === "word" || !hasSong;
   els.replayButton.disabled = state.mode === "word" || !hasSong;
+  els.stopButton.disabled = !state.isPlaying;
   els.hintButton.disabled = state.mode === "word" || !hasSong;
   els.judgeControls.hidden = !["buzz", "word"].includes(state.mode);
   els.wordControls.hidden = state.mode !== "word";
+  els.reopenBuzzButton.textContent = state.mode === "word"
+    ? state.buzzOpen
+      ? "搶唱已開放"
+      : state.buzzWinnerId
+        ? "重新開放搶唱"
+        : "開放搶唱"
+    : state.buzzOpen
+      ? "搶答已開放"
+      : state.buzzWinnerId
+        ? "重新開放搶答"
+        : "開放搶答";
+  els.reopenBuzzButton.disabled = !hasActiveQuestion() || state.answered || state.buzzOpen;
 
   els.guessForm.hidden = true;
   els.choices.hidden = state.mode !== "choice";
@@ -1230,6 +1253,7 @@ function buildDisplayState() {
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
     teamScores: { ...state.teamScores },
+    buzzOpen: state.buzzOpen,
     roomReady: state.roomReady,
     roomId: state.roomId,
     playerUrl: state.playerUrl,
@@ -1273,6 +1297,7 @@ function buildPlayerState(player) {
     currentWord: state.currentWord,
     team: normalizeTeam(player.team),
     teamScores: { ...state.teamScores },
+    buzzOpen: state.buzzOpen,
     title: hasWord ? `今題字：${state.currentWord}` : revealed && song ? song.title : "估呢首詩歌",
     status: els.resultText.textContent || "",
     score: player.score,

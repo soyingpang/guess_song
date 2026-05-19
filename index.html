@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=three-rounds-1" />
+    <link rel="stylesheet" href="./styles.css?v=free-control-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -64,6 +64,7 @@
           <div class="transport-grid">
             <button class="primary-button" id="playButton" type="button">前台播放</button>
             <button class="ghost-button" id="replayButton" type="button">重播</button>
+            <button class="ghost-button" id="stopButton" type="button">停止</button>
             <button class="ghost-button" id="hintButton" type="button">提示</button>
             <button class="ghost-button" id="skipButton" type="button">開估</button>
             <button class="ghost-button" id="nextButton" type="button">下一題</button>
@@ -84,7 +85,7 @@
           <div class="host-actions" id="judgeControls" hidden>
             <button class="primary-button" id="markCorrectButton" type="button">答中 / 加分</button>
             <button class="ghost-button" id="markWrongButton" type="button">未中</button>
-            <button class="ghost-button" id="reopenBuzzButton" type="button">重新開放搶答</button>
+            <button class="ghost-button" id="reopenBuzzButton" type="button">開放搶答</button>
           </div>
 
           <div class="word-controls" id="wordControls" hidden>
@@ -199,6 +200,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=three-rounds-1"></script>
+    <script src="./app.js?v=free-control-1"></script>
   </body>
 </html>
