@@ -147,6 +147,7 @@ const els = {
   resetButton: document.querySelector("#resetButton"),
   playerCount: document.querySelector("#playerCount"),
   roomStatus: document.querySelector("#roomStatus"),
+  copyPlayerLinkButton: document.querySelector("#copyPlayerLinkButton"),
   playerList: document.querySelector("#playerList"),
 };
 
@@ -211,6 +212,7 @@ function bindEvents() {
   els.showLeaderboardButton.addEventListener("click", showLeaderboard);
   els.showWinnerButton.addEventListener("click", showWinner);
   els.resetGameButton.addEventListener("click", resetGameSession);
+  els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
@@ -1236,6 +1238,7 @@ function renderPlayers() {
   els.roomStatus.textContent = state.roomReady
     ? `房間已開：${state.roomId}`
     : "房間建立中，請保持此頁開住";
+  els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.playerList.innerHTML = "";
 
   if (!players.length) {
@@ -1276,6 +1279,49 @@ function setResult(message, answer, tone = "") {
 function openDisplayWindow() {
   publishDisplayState();
   window.open("./display.html", "hymnQuizDisplay");
+}
+
+async function copyPlayerLink() {
+  if (!state.playerUrl) {
+    setResult("玩家連結未準備好", "請等房間建立完成", "wrong");
+    return;
+  }
+
+  const originalLabel = els.copyPlayerLinkButton.textContent;
+  try {
+    await writeClipboardText(state.playerUrl);
+    els.copyPlayerLinkButton.textContent = "已複製";
+    setResult("已複製玩家連結", "掃不到 QR 時可直接傳給團友", "correct");
+  } catch {
+    showManualCopyLink(state.playerUrl);
+    setResult("請手動複製玩家連結", "瀏覽器未允許自動複製", "wrong");
+  } finally {
+    window.setTimeout(() => {
+      els.copyPlayerLinkButton.textContent = originalLabel;
+    }, 1600);
+  }
+}
+
+async function writeClipboardText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.append(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (!copied) throw new Error("Copy failed");
+}
+
+function showManualCopyLink(link) {
+  window.prompt("複製以下玩家連結", link);
 }
 
 function publishDisplayState() {

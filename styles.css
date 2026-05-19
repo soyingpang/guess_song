@@ -754,6 +754,17 @@ select:focus {
   overflow-wrap: anywhere;
 }
 
+.room-tools {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.room-tools .ghost-button {
+  width: 100%;
+}
+
 .player-list {
   display: grid;
   gap: 8px;
