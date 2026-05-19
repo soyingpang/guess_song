@@ -131,7 +131,7 @@ function renderGame() {
 
   renderHints(game.hints || []);
   renderChoices(game);
-  renderLeaderboard(game.leaderboard || []);
+  renderLeaderboard(game.leaderboard || [], game.teamScores || {});
 }
 
 function renderHints(hints) {
@@ -177,8 +177,10 @@ function renderChoices(game) {
   }
 }
 
-function renderLeaderboard(players) {
+function renderLeaderboard(players, teamScores = {}) {
   els.phoneLeaderboard.replaceChildren();
+  els.phoneLeaderboard.append(renderPhoneTeamSummary(teamScores));
+
   if (!players.length) {
     const empty = document.createElement("div");
     empty.className = "phone-empty";
@@ -193,6 +195,15 @@ function renderLeaderboard(players) {
     item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)} · ${escapeHtml(player.team || "A")} 組</span><strong>${player.score} 分</strong>`;
     els.phoneLeaderboard.append(item);
   });
+}
+
+function renderPhoneTeamSummary(teamScores) {
+  const aScore = Number(teamScores.A || 0);
+  const bScore = Number(teamScores.B || 0);
+  const summary = document.createElement("div");
+  summary.className = "phone-team-summary";
+  summary.innerHTML = `<span>A 組 <strong>${aScore}</strong></span><span>B 組 <strong>${bScore}</strong></span>`;
+  return summary;
 }
 
 function send(message) {
