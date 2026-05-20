@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-20 10:46 HKT
+更新時間：2026-05-20 13:23 HKT
 
 ## 必讀順序
 
@@ -23,6 +23,7 @@
 - 只有前台出聲。
 - 手機玩家只答題，不播放音樂。
 - 約 10 位團友參與。
+- 預設使用同一間固定房，重開一局只重置分數，不重新開房。
 
 ## 最新玩法方向
 
@@ -78,10 +79,10 @@
 - 後台已有「停止」按鈕。
 - 搶答估歌 / 一字搶唱需要主持按「開放搶答 / 搶唱」才可讓手機按鈕生效。
 - 後台右欄已改成玩家狀態優先，題庫管理預設收起。
-- 後台已有「本場重設」按鈕，可清分數、組分、題目和搶答狀態，但保留題庫、房間和玩家。
+- 後台已有「分數重置」按鈕，可清分數、組分、題目、答案和搶答狀態，但保留題庫、固定房間、QR 和玩家。
 - 前台排行榜已改成「分數結算」畫面，先顯示 A/B 組戰況，再顯示個人榜；手機也有 A/B 組分數摘要。
 - 後台已有「公布勝方」按鈕，前台會切到分組勝方全屏畫面；「公布勝方」和「排行榜」互斥顯示。
-- 開新題、播放、重新開放搶答 / 搶唱或本場重設時，會退出完場公布畫面。
+- 開新題、播放、重新開放搶答 / 搶唱或分數重置時，會退出完場公布畫面。
 - 前台 QR code 已改成本地生成：`display.html` 先載入 `local-qr.js`，`display.js` 用 `window.createLocalQrCodeDataUrl()` 產生 SVG data URL，不再依賴 `api.qrserver.com`。
 - 手機端已有自動重連；後台會用玩家 ID 保留分數，並在同名玩家離線時接回舊資料。同名仍在線時，新加入者會顯示為「名字（2）」。
 - 後台玩家欄有「複製玩家連結」按鈕，房間建立後可用；用作 QR 掃不到時的後備。
@@ -92,7 +93,8 @@
 - 手機端已有「開咪對話」：`player.js` 用 `navigator.mediaDevices.getUserMedia({ audio })` 和 `state.peer.call(roomId, stream)` 傳到後台；`app.js` 用 `state.peer.on("call")` 接收，後台玩家列表顯示音訊元件和「收咪」按鈕。
 - 遠端前台已支援：後台有 `displayConnections`，`display.html?room=...` 會送 `display-join`，後台用 `display-state` 推送 `buildDisplayState()`。外地朋友必須用「複製前台連結」，普通 `display.html` 只會本機等待同步。
 - 遠端前台聲音受瀏覽器 autoplay 限制；`display.html` 有 `#stageSoundButton`，用戶需先按「啟用聲音」。按後 `display.js` 會把 `soundUnlocked` 設為 true、重載當前 iframe，並把 YouTube `controls` 改為 `1`，方便手動補按播放。
-- 介面已做五輪美化。最新 cache version 是 `paper-card-ui-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
+- 固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制。不要再用 `makeRoomId()` 或 random room 作為預設；若 PeerJS 回報 `unavailable-id`，應提示關閉其他後台，不應靜默開新房。
+- 介面已做五輪美化。最新 cache version 是 `stable-room-reset-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
 - 最新美術方向是「都會團契的家 / lounge / 紙卡活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、柔和燈串、花葉角落和紙卡質感。前台遮罩仍必須是實色，不可改回半透明。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
@@ -108,6 +110,7 @@
 - 播放起點可每題前自由切換：由頭播或隨機中段。
 - 手機開咪是給主持後台聽，不是前台播放器；若要全場聽見，要由電腦/場地音響路由決定。
 - 外地前台同步靠 PeerJS 房間碼，不靠 localStorage；主持後台必須保持開住。
+- 後台固定房間碼；「分數重置」只清場次資料，不踢走玩家或換 QR。
 - 外地前台聲音不能靠後台完全強制自動播，必須由該前台裝置先點一次「啟用聲音」。
 
 後續如果要加「建議流程」可以是輔助提示，不應鎖死主持。

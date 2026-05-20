@@ -3,6 +3,7 @@ const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const CLOUD_LIBRARY_URL = "./hymns.json";
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
+const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const CLIP_START_SECONDS = 0;
 const CLIP_DURATION_SECONDS = 60;
 const DEFAULT_PLAY_DURATION_SECONDS = 30;
@@ -83,6 +84,7 @@ const state = {
   questionBag: [],
   teamScores: { A: 0, B: 0 },
   roomReady: false,
+  roomError: "",
   roomId: "",
   playerUrl: "",
   displayUrl: "",
@@ -242,8 +244,13 @@ function initMultiplayer() {
     return;
   }
 
-  const savedRoomId = localStorage.getItem(ROOM_ID_KEY) || makeRoomId();
-  createRoomPeer(savedRoomId);
+  const roomId = resolveRoomId();
+  createRoomPeer(roomId);
+}
+
+function resolveRoomId() {
+  localStorage.setItem(ROOM_ID_KEY, DEFAULT_ROOM_ID);
+  return DEFAULT_ROOM_ID;
 }
 
 function createRoomPeer(roomId) {
@@ -251,6 +258,7 @@ function createRoomPeer(roomId) {
 
   state.peer.on("open", (id) => {
     state.roomReady = true;
+    state.roomError = "";
     state.roomId = id;
     state.playerUrl = buildPlayerUrl(id);
     state.displayUrl = buildDisplayUrl(id);
@@ -270,13 +278,17 @@ function createRoomPeer(roomId) {
 
   state.peer.on("error", (error) => {
     if (error.type === "unavailable-id") {
-      const nextId = makeRoomId();
-      localStorage.setItem(ROOM_ID_KEY, nextId);
-      createRoomPeer(nextId);
+      state.roomReady = false;
+      state.roomError = "固定房間已經有另一個後台開住，請關閉其他後台再重新整理";
+      state.roomId = roomId;
+      state.playerUrl = "";
+      state.displayUrl = "";
+      renderPlayers();
       return;
     }
 
     state.roomReady = false;
+    state.roomError = "房間連線暫時失敗，請保持此頁開住或重新整理";
     renderPlayers();
     publishDisplayState();
   });
@@ -1014,7 +1026,7 @@ function showWinner() {
 }
 
 function resetGameSession() {
-  if (!confirm("重設本場分數同題目？題庫、房間同已加入玩家會保留。")) return;
+  if (!confirm("重置分數同題目？房間、QR、玩家同題庫會保留。")) return;
 
   clearClipTimer();
   state.score = { correct: 0, total: 0, streak: 0 };
@@ -1045,7 +1057,7 @@ function resetGameSession() {
   });
 
   saveScore();
-  setResult("本場已重設", "玩家同題庫保留，按下一題開始", "");
+  setResult("分數已重置", "同一間房保留，玩家不用重新掃碼", "correct");
   render();
 }
 
@@ -1400,9 +1412,11 @@ function renderLibrary() {
 function renderPlayers() {
   const players = leaderboardPlayers();
   els.playerCount.textContent = `${players.length} 位`;
-  els.roomStatus.textContent = state.roomReady
-    ? `房間已開：${state.roomId} · 前台 ${state.displayConnections.size} 個`
-    : "房間建立中，請保持此頁開住";
+  els.roomStatus.textContent = state.roomError
+    ? state.roomError
+    : state.roomReady
+      ? `固定房間：${state.roomId} · 前台 ${state.displayConnections.size} 個`
+      : `固定房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.copyDisplayLinkButton.disabled = !state.displayUrl;
   els.playerList.innerHTML = "";
@@ -1789,10 +1803,6 @@ function buildDisplayUrl(roomId) {
   const url = new URL("./display.html", window.location.href);
   url.searchParams.set("room", roomId);
   return url.toString();
-}
-
-function makeRoomId() {
-  return `hymn-${Math.random().toString(36).slice(2, 8)}-${Date.now().toString(36).slice(-4)}`;
 }
 
 function cleanPlayerName(name) {
