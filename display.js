@@ -335,14 +335,7 @@ function renderChoices(state) {
     return;
   }
 
-  if (state.mode !== "choice") return;
-
-  (state.choices || []).forEach((choice, index) => {
-    const item = document.createElement("div");
-    item.className = "stage-choice";
-    item.textContent = `${index + 1}. ${choice}`;
-    els.choices.append(item);
-  });
+  if (state.mode === "choice") return;
 }
 
 function renderLeaderboard(state) {

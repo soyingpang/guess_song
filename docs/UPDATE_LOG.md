@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-20 14:19 HKT
+
+類型：程式 / 前台介面 / 四選一流程
+
+摘要：
+- 前台大螢幕不再顯示四選一歌名選項。
+- `app.js` 的 display state 改為不傳四選一歌名：`choices: []`。
+- `display.js` 在 `choice` mode 不再 render `stage-choice` 歌名卡片，即使舊 state 有選項也不會顯示。
+- 手機端四選一不受影響，玩家仍然在手機看到 4 個選項並作答。
+- 更新 cache version 至 `front-hide-choice-names-1`。
+
+影響：
+- 前台畫面不會出現像可點擊按鈕的歌名卡片，避免觀眾誤會可以在大螢幕互動。
+- 前台更專注於「聽歌、看狀態、看答案/排行榜」，手機才是答題介面。
+
+測試：
+- Browser 本機打開前台頁面，確認前台沒有殘留舊的歌名選項卡片。
+- 程式碼檢查：display state 不再傳四選一歌名，player state 仍保留四選一選項。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若需要，可在前台用非按鈕樣式顯示「請用手機作答」提示，但不要顯示歌名。
+
+---
+
 ## 2026-05-20 14:08 HKT
 
 類型：設計 / 主視覺 / 韓式漫畫手繪風

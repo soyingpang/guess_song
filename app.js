@@ -1658,7 +1658,7 @@ function buildDisplayState() {
     start: song && !state.fullPlayback ? clipStart(song) : CLIP_START_SECONDS,
     end: song && !state.fullPlayback ? clipStart(song) + clipDuration(song) : 0,
     hints,
-    choices: state.mode === "choice" && song ? state.currentChoices : [],
+    choices: [],
     meta: revealed && song
       ? [song.category, song.source, song.number ? `#${song.number}` : ""].filter(Boolean)
       : [],
