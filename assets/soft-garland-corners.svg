@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720" aria-hidden="true">
+  <defs>
+    <linearGradient id="stem" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#ffe4a3" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#b8ddc3" stop-opacity=".18"/>
+    </linearGradient>
+    <radialGradient id="leaf" cx="35%" cy="32%" r="70%">
+      <stop stop-color="#dceecf" stop-opacity=".36"/>
+      <stop offset=".8" stop-color="#6f9465" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#6f9465" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="warm" cx="50%" cy="50%" r="60%">
+      <stop stop-color="#ffe4a3" stop-opacity=".32"/>
+      <stop offset="1" stop-color="#ffe4a3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M34 204C72 114 132 60 222 34" stroke="url(#stem)" stroke-width="5"/>
+    <path d="M58 168c38 4 68-8 92-36-40-10-70 1-92 36Z" fill="url(#leaf)"/>
+    <path d="M102 104c28 18 58 20 92 4-30-26-61-28-92-4Z" fill="url(#leaf)"/>
+    <path d="M154 58c20 25 48 36 84 32-20-34-48-44-84-32Z" fill="url(#leaf)"/>
+    <circle cx="64" cy="214" r="24" fill="url(#warm)"/>
+    <circle cx="142" cy="78" r="18" fill="url(#warm)"/>
+
+    <path d="M686 516c-38 90-98 144-188 170" stroke="url(#stem)" stroke-width="5"/>
+    <path d="M662 552c-38-4-68 8-92 36 40 10 70-1 92-36Z" fill="url(#leaf)"/>
+    <path d="M618 616c-28-18-58-20-92-4 30 26 61 28 92 4Z" fill="url(#leaf)"/>
+    <path d="M566 662c-20-25-48-36-84-32 20 34 48 44 84 32Z" fill="url(#leaf)"/>
+    <circle cx="656" cy="506" r="24" fill="url(#warm)"/>
+    <circle cx="578" cy="642" r="18" fill="url(#warm)"/>
+  </g>
+
+  <g stroke="#fff9ef" stroke-opacity=".035" stroke-width="2">
+    <path d="M34 278h128M34 306h106M558 414h128M580 442h106"/>
+  </g>
+</svg>

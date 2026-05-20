@@ -21,6 +21,38 @@
 
 ---
 
+## 2026-05-20 10:41 HKT
+
+類型：設計 / 介面精修
+
+摘要：
+- 再做一輪 lounge 風格美化，提升「都會團契客廳」完整度。
+- 新增本地 SVG 素材 `assets/soft-garland-corners.svg`，作為柔和花葉角落和布邊層次。
+- 後台、前台、手機端卡片加入更細緻的內框、花葉角落、暖光和層次陰影。
+- 前台答案區加入柔和底線，令大螢幕資訊更有視覺秩序。
+- 四選一選項、手機選項和排行榜卡片調整成更一致的暖色卡片質感。
+- 前台 QR 邀請卡再精修，保留清楚掃碼焦點。
+- 更新 cache version 至 `lounge-polish-ui-1`。
+
+影響：
+- 介面更接近完整活動視覺，而不是單純功能頁。
+- 沒有改動玩法流程或同步邏輯。
+- 前台遮罩仍維持實色，不會露 YouTube 答案。
+
+已測試：
+- 本機 Browser 檢查前台、後台、手機端新視覺。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若再調整，建議以真實投影距離測試字體大小和 QR code 可掃性。
+
+---
+
 ## 2026-05-20 10:36 HKT
 
 類型：設計 / 介面精修

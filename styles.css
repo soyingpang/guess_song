@@ -3232,3 +3232,298 @@ select:focus {
     min-height: calc(100vh - 18px);
   }
 }
+
+/* Fellowship lounge polish */
+:root {
+  --lounge-panel: rgba(41, 27, 31, 0.92);
+  --lounge-panel-soft: rgba(33, 22, 26, 0.82);
+  --lounge-border: rgba(255, 228, 163, 0.22);
+  --lounge-line: rgba(255, 249, 239, 0.075);
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse at 50% -12%, rgba(255, 228, 163, 0.18), transparent 30%),
+    linear-gradient(120deg, rgba(208, 130, 120, 0.13), transparent 42%),
+    linear-gradient(300deg, rgba(184, 221, 195, 0.1), transparent 38%),
+    url("./assets/warm-fabric-pattern.svg"),
+    linear-gradient(180deg, #1d1217 0%, #140f12 48%, #0f1412 100%);
+}
+
+.quiz-panel,
+.library-panel,
+.player-card {
+  border-color: var(--lounge-border);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.085), transparent 220px),
+    url("./assets/soft-garland-corners.svg") top left / 520px 520px no-repeat,
+    url("./assets/warm-fabric-pattern.svg"),
+    var(--lounge-panel);
+  box-shadow:
+    0 28px 86px rgba(15, 6, 7, 0.52),
+    inset 0 1px 0 rgba(255, 249, 239, 0.08);
+}
+
+.library-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.075), transparent 220px),
+    url("./assets/soft-garland-corners.svg") top right / 440px 440px no-repeat,
+    url("./assets/warm-fabric-pattern.svg"),
+    rgba(35, 24, 28, 0.9);
+}
+
+.quiz-panel::after,
+.library-panel::after,
+.player-card::after {
+  border-color: var(--lounge-line);
+}
+
+.topbar h1,
+.stage-top h1,
+.player-card h1 {
+  color: #fffaf2;
+  text-shadow:
+    0 2px 0 rgba(70, 40, 28, 0.24),
+    0 12px 34px rgba(255, 228, 163, 0.08),
+    0 18px 54px rgba(0, 0, 0, 0.48);
+}
+
+.eyebrow,
+.round-label,
+.stage-info p,
+.phone-question p {
+  color: #c8e7cf;
+}
+
+.brand-mark {
+  border-color: rgba(255, 228, 163, 0.5);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.14), transparent),
+    radial-gradient(ellipse at 50% 20%, rgba(255, 228, 163, 0.12), transparent 62%),
+    #2b1d21;
+}
+
+.score-strip {
+  gap: 10px;
+}
+
+.score-strip > div,
+.stage-score span,
+.player-scoreline span,
+.team-score-strip > div {
+  border-color: rgba(255, 228, 163, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.1), transparent),
+    linear-gradient(135deg, rgba(184, 221, 195, 0.065), transparent 60%),
+    rgba(31, 20, 24, 0.92);
+}
+
+.score-strip span,
+.team-score-strip strong,
+.stage-answer-meta strong,
+.stage-rank strong,
+.phone-rank strong {
+  color: #ffebb8;
+}
+
+.player-wrap,
+.stage-player {
+  border-color: rgba(255, 228, 163, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.025), transparent),
+    #100d0f;
+}
+
+.player-mask,
+.stage-mask {
+  background-image:
+    linear-gradient(180deg, rgba(12, 10, 11, 0.04), rgba(12, 10, 11, 0.68)),
+    url("./assets/soft-garland-corners.svg"),
+    url("./assets/warm-fabric-pattern.svg"),
+    linear-gradient(180deg, #21161a, #121011);
+  background-position: center, center, center, center;
+  background-size: auto, min(860px, 72vw) auto, 390px 390px, auto;
+}
+
+.player-mask::before,
+.stage-mask::before {
+  border-color: rgba(255, 228, 163, 0.32);
+  background-image:
+    linear-gradient(180deg, rgba(18, 15, 16, 0.02), rgba(18, 15, 16, 0.36)),
+    url("./assets/home-fellowship-scene.svg");
+  opacity: .94;
+}
+
+.player-mask::after,
+.stage-mask::after,
+.quiz-panel::before,
+.library-panel::before,
+.player-card::before {
+  background: linear-gradient(90deg, #d98a7f, #f2c878 42%, #bfe4c9 74%, #a9d5dc);
+}
+
+.stage-mask strong {
+  font-size: clamp(3.3rem, 5.85vw, 5.9rem);
+  letter-spacing: 0;
+}
+
+.stage-mask span {
+  border-color: rgba(255, 228, 163, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.06), transparent),
+    rgba(18, 15, 16, 0.62);
+}
+
+.stage-info {
+  position: relative;
+  padding: 0 4px 2px;
+}
+
+.stage-info::after {
+  display: block;
+  width: min(360px, 42vw);
+  height: 3px;
+  margin-top: 10px;
+  border-radius: 999px;
+  content: "";
+  background: linear-gradient(90deg, #d98a7f, #f2c878, #bfe4c9);
+  opacity: .66;
+}
+
+.stage-info h2 {
+  font-size: clamp(3rem, 5.2vw, 5.25rem);
+}
+
+.stage-choice,
+.stage-rank,
+.choice-button,
+.phone-choice {
+  border-color: rgba(255, 228, 163, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.095), transparent),
+    linear-gradient(135deg, rgba(184, 221, 195, 0.055), transparent),
+    rgba(39, 25, 30, 0.94);
+}
+
+.stage-choice,
+.choice-button,
+.phone-choice {
+  box-shadow:
+    inset 5px 0 0 rgba(242, 200, 120, 0.45),
+    inset 0 1px 0 rgba(255, 249, 239, 0.06),
+    0 14px 30px rgba(15, 6, 7, 0.18);
+}
+
+.stage-qr {
+  border-color: rgba(255, 228, 163, 0.54);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.105), transparent),
+    url("./assets/soft-garland-corners.svg") center / 390px 390px no-repeat,
+    url("./assets/warm-fabric-pattern.svg"),
+    rgba(35, 23, 27, 0.96);
+}
+
+.stage-qr::before {
+  border-color: rgba(255, 228, 163, 0.24);
+}
+
+.stage-qr img {
+  border-color: #fffaf2;
+}
+
+.primary-button {
+  background:
+    linear-gradient(180deg, #fff5d0, #f2c878 54%, #db9a50);
+}
+
+.ghost-button,
+.icon-button,
+.file-button,
+.segmented {
+  border-color: rgba(255, 228, 163, 0.2);
+}
+
+.ghost-button.is-active,
+.segmented.is-active {
+  border-color: rgba(242, 200, 120, 0.42);
+}
+
+.result-bar,
+.room-status,
+.player-status,
+.phone-result,
+.mic-status,
+.hint-item,
+.empty-state {
+  border-color: rgba(184, 221, 195, 0.28);
+  background:
+    linear-gradient(180deg, rgba(184, 221, 195, 0.09), transparent),
+    rgba(22, 29, 24, 0.9);
+}
+
+.song-item,
+.player-item,
+.library-drawer summary,
+.join-form,
+.phone-mic-panel {
+  border-color: rgba(255, 228, 163, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.065), transparent),
+    rgba(33, 21, 25, 0.94);
+}
+
+.player-body .player-card {
+  background:
+    linear-gradient(180deg, rgba(35, 24, 28, 0.76), rgba(35, 24, 28, 0.94)),
+    url("./assets/soft-garland-corners.svg") top center / 640px 640px no-repeat,
+    url("./assets/home-fellowship-scene.svg") center bottom / 980px auto no-repeat,
+    #25191d;
+}
+
+.phone-question p {
+  border-color: rgba(184, 221, 195, 0.24);
+  color: #c8e7cf;
+}
+
+.phone-question h2,
+.phone-leaderboard h2 {
+  text-wrap: balance;
+}
+
+.buzz-button {
+  min-height: 196px;
+  border: 1px solid rgba(255, 228, 163, 0.42);
+  box-shadow:
+    0 22px 58px rgba(242, 200, 120, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.46);
+}
+
+@media (max-height: 820px) and (min-width: 760px) {
+  .stage-info::after {
+    margin-top: 6px;
+  }
+
+  .stage-info h2 {
+    font-size: clamp(2.8rem, 4.9vw, 4.1rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .quiz-panel,
+  .library-panel,
+  .player-card {
+    background-size: auto, 420px 420px, 380px 380px, auto;
+  }
+
+  .stage-mask strong {
+    font-size: 2.38rem;
+  }
+
+  .stage-info::after {
+    width: min(230px, 70vw);
+  }
+
+  .buzz-button {
+    min-height: 144px;
+  }
+}
