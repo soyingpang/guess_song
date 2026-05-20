@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-20 16:26 HKT
+
+類型：修正 / 手機加入 / 交接
+
+摘要：
+- 修正手機玩家頁不應自動用瀏覽器舊名字加入的問題。
+- `player.js` 仍保留玩家自己輸入名字的原有流程，但不再從 `localStorage` 讀舊名字後自動 `joinGame()`。
+- 玩家打開 QR 連結時會先停在名字輸入畫面，狀態顯示「請輸入名字加入」。
+- 保留同一手機的 player ID，用於玩家輸入名字後接回原本分數 / 組別；但不再跳過名字輸入表單。
+- 更新 cache version 至 `player-name-entry-1`。
+- `docs/AI_HANDOFF.md` 補充規則：玩家名字必須由玩家在手機首次進入 game 時自己輸入，不可由後台代輸入，也不可因舊 localStorage 測試名自動入場。
+
+影響：
+- 測試手機或同一瀏覽器曾用過的 `Sunny` / `測試` 等舊名字不會再自動加入。
+- 玩家進場行為回到用戶要求：第一下入 game 先自己輸入名字。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認 `player.html` 載入 `player-name-entry-1`，名字輸入表單沒有 hidden，名字欄為空，狀態顯示「請輸入名字加入」，無 console error。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-20 16:17 HKT
 
 類型：流程 / 交接 / GitHub 同步

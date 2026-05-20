@@ -11,7 +11,7 @@ const state = {
   peer: null,
   connection: null,
   playerId: localStorage.getItem(PLAYER_ID_KEY) || crypto.randomUUID(),
-  name: urlName || localStorage.getItem(PLAYER_NAME_KEY) || "",
+  name: urlName || "",
   displayName: "",
   team: "A",
   joined: false,
@@ -95,8 +95,8 @@ window.addEventListener("beforeunload", () => {
 
 if (!roomId) {
   setStatus("QR 連結缺少房間碼，請重新掃描");
-} else if (state.name) {
-  joinGame();
+} else {
+  setStatus("請輸入名字加入");
 }
 
 function joinGame() {

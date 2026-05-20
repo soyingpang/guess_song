@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-20 16:17 HKT
+更新時間：2026-05-20 16:26 HKT
 
 ## 必讀順序
 
@@ -96,7 +96,7 @@
 - 遠端前台已支援：後台有 `displayConnections`，`display.html?room=...` 會送 `display-join`，後台用 `display-state` 推送 `buildDisplayState()`。外地朋友必須用「複製前台連結」，普通 `display.html` 只會本機等待同步。
 - 前台不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設前台就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
 - 固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制。不要再用 `makeRoomId()` 或 random room 作為預設；若 PeerJS 回報 `unavailable-id`，應提示關閉其他後台，不應靜默開新房。
-- 介面已做八輪美化。最新 cache version 是 `mobile-compact-teams-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
+- 介面已做八輪美化。最新 cache version 是 `player-name-entry-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。前台遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
@@ -121,6 +121,7 @@
 - 手機四選一同步有保險：`ensureChoiceOptions(song)` 會在送 player state 前補回 `currentChoices`；`player.js` 如收到空選項會顯示「選項同步中」。後台如固定房間 ID 被另一個後台佔用，`isRoomBlocked()` 會鎖住出題/播放/開估等主持控制，避免手機連到另一個後台但眼前後台仍可操作。
 - 第三環節已由「一字搶唱」改為「主題搶唱」：不要再抽太冷門的單字，內置題庫應以平安、恩典、愛、信、盼望、喜樂、讚美、耶穌、十架、救恩等大路關鍵詞為主，讓非專業團友更容易即場唱到。
 - 手機頁已做 compact：加入後品牌區會收起，排行榜不再常駐頁面，只由「排行榜」按鈕開彈窗，主畫面留給題目、選項、搶答 / 搶唱、咪高峰和狀態。
+- 玩家名字必須由玩家在手機首次進入 game 時自己輸入；`player.js` 不應再用 localStorage 舊名字自動加入，避免測試名殘留。可以保留同一手機的 player ID 用作重連，但不能跳過名字輸入表單。
 
 後續如果要加「建議流程」可以是輔助提示，不應鎖死主持。
 
