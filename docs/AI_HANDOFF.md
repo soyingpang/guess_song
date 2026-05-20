@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-20 13:23 HKT
+更新時間：2026-05-20 13:34 HKT
 
 ## 必讀順序
 
@@ -54,6 +54,7 @@
 - `assets/string-lights.svg`：本地柔和燈串素材。
 - `assets/soft-garland-corners.svg`：本地柔和花葉角落 / 布邊素材。
 - `assets/paper-grain.svg`：本地微細紙卡紋理素材。
+- `assets/fellowship-main-visual.png`：imagegen 生成的主視覺插畫，現時用於前台遮罩、手機背景和整體氛圍。
 - `hymns.json`：線上題庫。
 - `server.js`：本機測試 server。
 
@@ -94,8 +95,8 @@
 - 遠端前台已支援：後台有 `displayConnections`，`display.html?room=...` 會送 `display-join`，後台用 `display-state` 推送 `buildDisplayState()`。外地朋友必須用「複製前台連結」，普通 `display.html` 只會本機等待同步。
 - 遠端前台聲音受瀏覽器 autoplay 限制；`display.html` 有 `#stageSoundButton`，用戶需先按「啟用聲音」。按後 `display.js` 會把 `soundUnlocked` 設為 true、重載當前 iframe，並把 YouTube `controls` 改為 `1`，方便手動補按播放。
 - 固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制。不要再用 `makeRoomId()` 或 random room 作為預設；若 PeerJS 回報 `unavailable-id`，應提示關閉其他後台，不應靜默開新房。
-- 介面已做五輪美化。最新 cache version 是 `stable-room-reset-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
-- 最新美術方向是「都會團契的家 / lounge / 紙卡活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、柔和燈串、花葉角落和紙卡質感。前台遮罩仍必須是實色，不可改回半透明。
+- 介面已做六輪美化。最新 cache version 是 `fellowship-art-ui-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
+- 最新美術方向是「都會團契的家 / 完整活動主視覺 / lounge / 紙卡活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。前台遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
 

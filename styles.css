@@ -3909,3 +3909,177 @@ select {
     padding: 16px;
   }
 }
+
+/* Fellowship illustrated poster finish */
+:root {
+  --art-shadow: 0 34px 90px rgba(18, 8, 8, 0.48);
+  --art-warm: #f0bf71;
+  --art-rose: #d98a7f;
+  --art-sage: #bfe4c9;
+}
+
+body::before {
+  background:
+    linear-gradient(180deg, rgba(18, 13, 15, 0.38), rgba(18, 13, 15, 0.72)),
+    linear-gradient(90deg, rgba(18, 13, 15, 0.78), rgba(18, 13, 15, 0.18) 48%, rgba(18, 13, 15, 0.7)),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+  opacity: .34;
+}
+
+.quiz-panel,
+.library-panel,
+.player-card {
+  border-color: rgba(255, 230, 180, 0.18);
+  box-shadow:
+    0 30px 72px rgba(18, 8, 8, 0.34),
+    inset 0 1px 0 rgba(255, 249, 239, 0.07);
+}
+
+.display-body {
+  background:
+    linear-gradient(180deg, rgba(20, 13, 15, 0.76), rgba(18, 12, 14, 0.96) 62%, #100d0e),
+    linear-gradient(90deg, rgba(73, 36, 38, 0.55), rgba(16, 13, 14, 0.18) 48%, rgba(18, 13, 14, 0.76)),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    #100d0e;
+}
+
+.stage-player {
+  border-color: rgba(255, 223, 162, 0.38);
+  background: #100d0e;
+  box-shadow:
+    var(--art-shadow),
+    inset 0 0 0 1px rgba(255, 249, 239, 0.07);
+}
+
+.player-mask,
+.stage-mask {
+  overflow: hidden;
+  background: #100d0e;
+}
+
+.player-mask::before,
+.stage-mask::before {
+  inset: 0;
+  border: 0;
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(13, 10, 11, 0.18), rgba(13, 10, 11, 0.48) 64%, rgba(13, 10, 11, 0.72)),
+    linear-gradient(90deg, rgba(14, 10, 11, 0.68), rgba(14, 10, 11, 0.1) 48%, rgba(14, 10, 11, 0.66)),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 249, 239, 0.08),
+    inset 0 -140px 180px rgba(13, 10, 11, 0.62);
+  opacity: 1;
+}
+
+.stage-mask::after {
+  height: 10px;
+  background: linear-gradient(90deg, var(--art-rose), var(--art-warm) 42%, var(--art-sage) 76%, #9fc8cf);
+}
+
+.stage-mask > *,
+.player-mask > * {
+  z-index: 2;
+}
+
+.stage-disc,
+.pulse-disc {
+  background:
+    linear-gradient(180deg, rgba(255, 246, 226, 0.08), rgba(18, 13, 15, 0.4)),
+    rgba(16, 13, 14, 0.86);
+  box-shadow:
+    0 0 0 1px rgba(255, 228, 163, 0.18),
+    0 28px 86px rgba(16, 8, 8, 0.58);
+}
+
+.stage-mask strong {
+  color: #fffaf0;
+  text-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.52),
+    0 0 30px rgba(255, 220, 150, 0.12);
+}
+
+.stage-mask span {
+  border-color: rgba(255, 228, 163, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.08), transparent),
+    #241719;
+  box-shadow: 0 16px 40px rgba(13, 8, 8, 0.28);
+}
+
+.stage-top {
+  text-shadow: 0 16px 38px rgba(0, 0, 0, 0.32);
+}
+
+.stage-top h1 {
+  max-width: 1180px;
+}
+
+.stage-score span,
+.stage-answer-meta strong,
+.stage-answer-meta span,
+.stage-hint,
+.stage-choice,
+.stage-rank,
+.stage-qr {
+  border-color: rgba(255, 228, 163, 0.18);
+  box-shadow:
+    0 18px 45px rgba(13, 8, 8, 0.2),
+    inset 0 1px 0 rgba(255, 249, 239, 0.08);
+}
+
+.stage-qr {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.11), transparent),
+    url("./assets/paper-grain.svg"),
+    #26191d;
+}
+
+.player-body {
+  background:
+    linear-gradient(180deg, rgba(18, 13, 15, 0.82), rgba(18, 13, 15, 0.96)),
+    linear-gradient(120deg, rgba(217, 138, 127, 0.28), transparent 42%),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    #120d0f;
+}
+
+.player-body .player-card {
+  border-color: rgba(255, 228, 163, 0.22);
+  background:
+    linear-gradient(180deg, rgba(35, 24, 28, 0.8), rgba(35, 24, 28, 0.96) 52%),
+    url("./assets/paper-grain.svg"),
+    url("./assets/fellowship-main-visual.png") center bottom / 1120px auto no-repeat,
+    #25191d;
+  box-shadow:
+    0 34px 82px rgba(13, 8, 8, 0.38),
+    inset 0 1px 0 rgba(255, 249, 239, 0.08);
+}
+
+.join-form,
+.phone-mic-panel,
+.player-status,
+.phone-result,
+.phone-rank,
+.phone-empty,
+.phone-team-summary span,
+.phone-choice,
+.buzz-button {
+  border-color: rgba(255, 228, 163, 0.16);
+}
+
+@media (max-width: 640px) {
+  body::before {
+    background-position: center top;
+    opacity: .24;
+  }
+
+  .player-mask::before,
+  .stage-mask::before {
+    background-position: center;
+  }
+
+  .player-body .player-card {
+    background-size: auto, 220px 220px, 880px auto, auto;
+    background-position: center, center, center top, center;
+  }
+}

@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-20 13:34 HKT
+
+類型：設計 / 主視覺 / 介面美化
+
+摘要：
+- 用 imagegen 生成一張真正的主視覺插畫：都會團契客廳、暖燈、詩歌本、結他、城市夜景和桌面敬拜氣氛。
+- 新增 project-bound raster asset：`assets/fellowship-main-visual.png`。
+- 前台播放遮罩改用這張主視覺做完整海報式畫面，不再只是簡單 SVG 圖案或小裝飾。
+- 手機端和後台背景也改成延伸同一張主視覺，令三邊畫面更像同一套活動視覺。
+- 保留實色遮罩原則：前台遮罩仍然是完整實色畫面，不會透出 YouTube 標題或縮圖答案。
+- 更新 cache version 至 `fellowship-art-ui-1`。
+
+影響：
+- 視覺方向由「加裝飾」提升到「完整活動主圖 / poster art direction」。
+- 手機端更有家的感覺，前台更像團契活動主視覺。
+
+測試：
+- Browser 本機檢查後台、前台、手機三個入口可載入新圖和新 cache version。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若仍想再提升，可再做第二張「答題 / 排行榜結算」專用插畫，令完場畫面更像正式活動投影片。
+
+---
+
 ## 2026-05-20 13:23 HKT
 
 類型：程式 / 房間流程 / 場控
