@@ -7,6 +7,9 @@ const CLIP_START_SECONDS = 0;
 const CLIP_DURATION_SECONDS = 60;
 const DEFAULT_PLAY_DURATION_SECONDS = 30;
 const PLAY_DURATIONS = [60, 30, 15];
+const PLAY_START_MODES = ["beginning", "random"];
+const RANDOM_START_MIN_SECONDS = 45;
+const RANDOM_START_MAX_END_SECONDS = 180;
 const WORD_BANK = [
   "主", "愛", "恩", "光", "心", "路", "天", "神", "聖", "救",
   "盼", "望", "信", "靠", "榮", "耀", "平", "安", "真", "活",
@@ -66,6 +69,8 @@ const state = {
   isPlaying: false,
   fullPlayback: false,
   playDuration: DEFAULT_PLAY_DURATION_SECONDS,
+  playStartMode: "beginning",
+  currentClipStart: CLIP_START_SECONDS,
   playEndsAt: 0,
   currentWord: "",
   currentQuestionId: "",
@@ -100,6 +105,8 @@ const els = {
   duration60Button: document.querySelector("#duration60Button"),
   duration30Button: document.querySelector("#duration30Button"),
   duration15Button: document.querySelector("#duration15Button"),
+  startBeginningButton: document.querySelector("#startBeginningButton"),
+  startRandomButton: document.querySelector("#startRandomButton"),
   choiceModeButton: document.querySelector("#choiceModeButton"),
   buzzModeButton: document.querySelector("#buzzModeButton"),
   wordModeButton: document.querySelector("#wordModeButton"),
@@ -174,6 +181,8 @@ function bindEvents() {
   els.duration60Button.addEventListener("click", () => setPlayDuration(60));
   els.duration30Button.addEventListener("click", () => setPlayDuration(30));
   els.duration15Button.addEventListener("click", () => setPlayDuration(15));
+  els.startBeginningButton.addEventListener("click", () => setPlayStartMode("beginning"));
+  els.startRandomButton.addEventListener("click", () => setPlayStartMode("random"));
 
   els.choiceModeButton.addEventListener("click", () => setMode("choice"));
   els.buzzModeButton.addEventListener("click", () => setMode("buzz"));
@@ -534,6 +543,7 @@ function startRound(preferredSongId, options = {}) {
   state.hintLevel = 0;
   state.isPlaying = Boolean(autoplay);
   state.fullPlayback = false;
+  state.currentClipStart = chooseClipStart(song);
   state.playEndsAt = autoplay ? Date.now() + clipDuration(song) * 1000 : 0;
   state.currentQuestionId = `${song.id}:${Date.now()}`;
   state.buzzWinnerId = "";
@@ -541,7 +551,7 @@ function startRound(preferredSongId, options = {}) {
   state.showLeaderboard = false;
   state.showWinner = false;
   els.guessInput.value = "";
-  setResult(autoplay ? `前台播放中：${clipDuration(song)} 秒` : "題目已載入，按前台播放", "", "");
+  setResult(autoplay ? playbackStatus(song) : "題目已載入，按前台播放", "", "");
   render();
   renderYouTubeFrame({ autoplay });
   if (autoplay) scheduleClipStop();
@@ -559,6 +569,7 @@ function startWordRound(preferredWord = "") {
   state.hintLevel = 0;
   state.isPlaying = false;
   state.fullPlayback = false;
+  state.currentClipStart = CLIP_START_SECONDS;
   state.playEndsAt = 0;
   state.currentQuestionId = `word:${word}:${Date.now()}`;
   state.buzzWinnerId = "";
@@ -634,7 +645,7 @@ function playCurrentClip() {
   state.showWinner = false;
   renderYouTubeFrame({ autoplay: true });
 
-  setResult(`前台播放中：${clipDuration(state.currentSong)} 秒`, "", "");
+  setResult(playbackStatus(state.currentSong), "", "");
   render();
   scheduleClipStop();
 }
@@ -797,7 +808,26 @@ function clipDuration(song) {
 }
 
 function clipStart() {
-  return CLIP_START_SECONDS;
+  return state.currentClipStart || CLIP_START_SECONDS;
+}
+
+function playbackStatus(song) {
+  return `前台播放中：${clipDuration(song)} 秒 · ${playStartLabel()}`;
+}
+
+function playStartLabel() {
+  return state.playStartMode === "random" ? "隨機中段" : "由頭播";
+}
+
+function chooseClipStart(song) {
+  if (state.playStartMode !== "random") return CLIP_START_SECONDS;
+
+  const maxStart = Math.max(RANDOM_START_MIN_SECONDS, RANDOM_START_MAX_END_SECONDS - clipDuration(song));
+  return randomInteger(RANDOM_START_MIN_SECONDS, maxStart);
+}
+
+function randomInteger(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function toggleVideo() {
@@ -837,7 +867,17 @@ function setMode(mode) {
 
 function setPlayDuration(seconds) {
   state.playDuration = PLAY_DURATIONS.includes(seconds) ? seconds : DEFAULT_PLAY_DURATION_SECONDS;
+  if (state.currentSong && !state.isPlaying) state.currentClipStart = chooseClipStart(state.currentSong);
   if (state.currentSong) loadCurrentVideo();
+  render();
+}
+
+function setPlayStartMode(mode) {
+  state.playStartMode = PLAY_START_MODES.includes(mode) ? mode : "beginning";
+  if (state.currentSong && !state.isPlaying) {
+    state.currentClipStart = chooseClipStart(state.currentSong);
+    loadCurrentVideo();
+  }
   render();
 }
 
@@ -880,6 +920,7 @@ function resetGameSession() {
   state.hintLevel = 0;
   state.isPlaying = false;
   state.fullPlayback = false;
+  state.currentClipStart = CLIP_START_SECONDS;
   state.playEndsAt = 0;
   state.currentQuestionId = "";
   state.buzzWinnerId = "";
@@ -1125,6 +1166,8 @@ function renderQuiz() {
   els.duration60Button.classList.toggle("is-active", state.playDuration === 60);
   els.duration30Button.classList.toggle("is-active", state.playDuration === 30);
   els.duration15Button.classList.toggle("is-active", state.playDuration === 15);
+  els.startBeginningButton.classList.toggle("is-active", state.playStartMode === "beginning");
+  els.startRandomButton.classList.toggle("is-active", state.playStartMode === "random");
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
   els.wordModeButton.classList.toggle("is-active", state.mode === "word");
@@ -1445,7 +1488,7 @@ function buildDisplayState() {
     title: hasWord ? state.currentWord : revealed && song ? song.title : "估呢首詩歌",
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
-    start: song ? clipStart(song) : 0,
+    start: song && !state.fullPlayback ? clipStart(song) : CLIP_START_SECONDS,
     end: song && !state.fullPlayback ? clipStart(song) + clipDuration(song) : 0,
     hints,
     choices: state.mode === "choice" && song ? state.currentChoices : [],

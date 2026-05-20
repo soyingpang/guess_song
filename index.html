@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=next-autoplay-1" />
+    <link rel="stylesheet" href="./styles.css?v=start-mode-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -76,6 +76,11 @@
             <button class="segmented" id="duration60Button" type="button">60 秒</button>
             <button class="segmented is-active" id="duration30Button" type="button">30 秒</button>
             <button class="segmented" id="duration15Button" type="button">15 秒</button>
+          </div>
+
+          <div class="mode-row" role="group" aria-label="播放起點">
+            <button class="segmented is-active" id="startBeginningButton" type="button">由頭播</button>
+            <button class="segmented" id="startRandomButton" type="button">隨機中段</button>
           </div>
 
           <div class="mode-row three" role="group" aria-label="答題模式">
@@ -207,6 +212,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=next-autoplay-1"></script>
+    <script src="./app.js?v=start-mode-1"></script>
   </body>
 </html>
