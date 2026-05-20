@@ -21,6 +21,38 @@
 
 ---
 
+## 2026-05-20 10:36 HKT
+
+類型：設計 / 介面精修
+
+摘要：
+- 再做一輪「都會團契家的感覺」細節美化。
+- 新增本地 SVG 素材 `assets/string-lights.svg`，加入柔和燈串和暖光。
+- 前台、後台、手機端加入更細緻的卡片內框、燈光層次、按鈕掃光 hover、輸入框 focus 狀態。
+- 前台 QR code 區改得更像邀請卡，加入虛線內框和更清楚的掃碼焦點。
+- 前台遮罩保留實色遮答案，同時提升客廳場景層次。
+- 手機端增加狀態 pill、卡片陰影和按鈕質感，減少壓迫感。
+- 更新 cache version 至 `cozy-detail-ui-1`。
+
+影響：
+- 視覺更完整、更有活動設計感，但沒有改動遊戲流程。
+- 全部素材仍是本地 SVG，GitHub Pages 可直接載入。
+
+已測試：
+- 本機 Browser 檢查前台、後台、手機端新視覺。
+- 本機 Browser console 無 error / warning。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若現場投影偏暗，可再把前台遮罩場景亮度提高少許。
+
+---
+
 ## 2026-05-20 10:30 HKT
 
 類型：設計 / 介面美化

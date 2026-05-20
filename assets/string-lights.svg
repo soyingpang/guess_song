@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="180" viewBox="0 0 1280 180" aria-hidden="true">
+  <defs>
+    <radialGradient id="bulb" cx="50%" cy="38%" r="58%">
+      <stop stop-color="#fff7d7"/>
+      <stop offset=".36" stop-color="#ffe6a6"/>
+      <stop offset=".68" stop-color="#efbd67" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#efbd67" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sageBulb" cx="50%" cy="38%" r="58%">
+      <stop stop-color="#edf8df"/>
+      <stop offset=".42" stop-color="#b8ddc3"/>
+      <stop offset="1" stop-color="#b8ddc3" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <path d="M-20 38C130 94 260 94 410 38S690-18 846 38s282 56 454 0" fill="none" stroke="#e7c684" stroke-opacity=".34" stroke-width="3"/>
+  <path d="M-20 40C130 96 260 96 410 40S690-16 846 40s282 56 454 0" fill="none" stroke="#1a1114" stroke-opacity=".44" stroke-width="8"/>
+
+  <g>
+    <g transform="translate(84 64)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="32" fill="url(#bulb)" filter="url(#glow)" opacity=".85"/>
+      <circle cx="0" cy="8" r="7" fill="#ffe6a6"/>
+    </g>
+    <g transform="translate(202 92)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="28" fill="url(#sageBulb)" filter="url(#glow)" opacity=".78"/>
+      <circle cx="0" cy="8" r="6" fill="#b8ddc3"/>
+    </g>
+    <g transform="translate(330 78)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="32" fill="url(#bulb)" filter="url(#glow)" opacity=".84"/>
+      <circle cx="0" cy="8" r="7" fill="#ffe6a6"/>
+    </g>
+    <g transform="translate(486 32)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="30" fill="url(#bulb)" filter="url(#glow)" opacity=".78"/>
+      <circle cx="0" cy="8" r="6" fill="#ffe6a6"/>
+    </g>
+    <g transform="translate(644 18)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="34" fill="url(#sageBulb)" filter="url(#glow)" opacity=".72"/>
+      <circle cx="0" cy="8" r="7" fill="#b8ddc3"/>
+    </g>
+    <g transform="translate(806 34)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="31" fill="url(#bulb)" filter="url(#glow)" opacity=".82"/>
+      <circle cx="0" cy="8" r="7" fill="#ffe6a6"/>
+    </g>
+    <g transform="translate(958 80)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="30" fill="url(#sageBulb)" filter="url(#glow)" opacity=".74"/>
+      <circle cx="0" cy="8" r="6" fill="#b8ddc3"/>
+    </g>
+    <g transform="translate(1118 88)">
+      <line x1="0" y1="-22" x2="0" y2="0" stroke="#e7c684" stroke-opacity=".38" stroke-width="3"/>
+      <circle cx="0" cy="12" r="33" fill="url(#bulb)" filter="url(#glow)" opacity=".82"/>
+      <circle cx="0" cy="8" r="7" fill="#ffe6a6"/>
+    </g>
+  </g>
+</svg>
