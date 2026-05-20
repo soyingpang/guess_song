@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-20 10:01 HKT
+
+類型：修正 / 遠端同步
+
+摘要：
+- 修正外地朋友直接開 `display.html` 只見到「等待同步」的問題。
+- 原因是舊版前台只靠同一部電腦瀏覽器的 `localStorage` 同步；外地瀏覽器沒有主持後台的本機狀態。
+- 後台現在會產生「前台連結」：`display.html?room=...`。
+- 後台加入「複製前台連結」按鈕，方便傳給外地朋友。
+- `display.html` 現在如帶 `room` 參數，會用 PeerJS 連到主持後台並接收 `display-state`。
+- 同一部電腦的前台仍可用本機同步作後備。
+- 更新 cache version 至 `remote-display-1`。
+
+影響：
+- 外國朋友要用「複製前台連結」取得的 URL，不能只開普通 `display.html`。
+- 後台房間狀態會顯示已連接前台數量。
+- 多個遠端前台可同時跟住主持後台更新。
+
+已測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `git diff --check`
+- 本機檢查 `display.html` 已載入 PeerJS 和 `display.js?v=remote-display-1`。
+
+後續：
+- 現場/外地測試時，主持必須保持後台開住，外地朋友使用「複製前台連結」而不是手打普通前台網址。
+
+---
+
 ## 2026-05-20 09:33 HKT
 
 類型：程式 / 手機功能

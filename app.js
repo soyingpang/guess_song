@@ -85,7 +85,9 @@ const state = {
   roomReady: false,
   roomId: "",
   playerUrl: "",
+  displayUrl: "",
   peer: null,
+  displayConnections: new Set(),
   players: {},
 };
 
@@ -156,6 +158,7 @@ const els = {
   playerCount: document.querySelector("#playerCount"),
   roomStatus: document.querySelector("#roomStatus"),
   copyPlayerLinkButton: document.querySelector("#copyPlayerLinkButton"),
+  copyDisplayLinkButton: document.querySelector("#copyDisplayLinkButton"),
   playerList: document.querySelector("#playerList"),
 };
 
@@ -223,6 +226,7 @@ function bindEvents() {
   els.showWinnerButton.addEventListener("click", showWinner);
   els.resetGameButton.addEventListener("click", resetGameSession);
   els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
+  els.copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
@@ -233,6 +237,7 @@ function initMultiplayer() {
     state.roomReady = false;
     state.roomId = "";
     state.playerUrl = "";
+    state.displayUrl = "";
     renderPlayers();
     return;
   }
@@ -248,6 +253,7 @@ function createRoomPeer(roomId) {
     state.roomReady = true;
     state.roomId = id;
     state.playerUrl = buildPlayerUrl(id);
+    state.displayUrl = buildDisplayUrl(id);
     localStorage.setItem(ROOM_ID_KEY, id);
     renderPlayers();
     publishDisplayState();
@@ -279,6 +285,12 @@ function createRoomPeer(roomId) {
 function setupPlayerConnection(connection) {
   connection.on("data", (message) => handlePlayerMessage(connection, message));
   connection.on("close", () => {
+    if (connection.isDisplay) {
+      state.displayConnections.delete(connection);
+      renderPlayers();
+      return;
+    }
+
     const player = findPlayerByConnection(connection);
     if (player) {
       player.connected = false;
@@ -292,6 +304,14 @@ function setupPlayerConnection(connection) {
 
 function handlePlayerMessage(connection, message) {
   if (!message || typeof message !== "object") return;
+
+  if (message.type === "display-join") {
+    connection.isDisplay = true;
+    state.displayConnections.add(connection);
+    sendDisplayState(connection, buildDisplayState());
+    renderPlayers();
+    return;
+  }
 
   if (message.type === "join") {
     const playerId = String(message.playerId || connection.peer || crypto.randomUUID());
@@ -1381,9 +1401,10 @@ function renderPlayers() {
   const players = leaderboardPlayers();
   els.playerCount.textContent = `${players.length} 位`;
   els.roomStatus.textContent = state.roomReady
-    ? `房間已開：${state.roomId}`
+    ? `房間已開：${state.roomId} · 前台 ${state.displayConnections.size} 個`
     : "房間建立中，請保持此頁開住";
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
+  els.copyDisplayLinkButton.disabled = !state.displayUrl;
   els.playerList.innerHTML = "";
 
   if (!players.length) {
@@ -1501,7 +1522,7 @@ function setResult(message, answer, tone = "") {
 
 function openDisplayWindow() {
   publishDisplayState();
-  window.open("./display.html", "hymnQuizDisplay");
+  window.open(state.displayUrl || "./display.html", "hymnQuizDisplay");
 }
 
 async function copyPlayerLink() {
@@ -1521,6 +1542,27 @@ async function copyPlayerLink() {
   } finally {
     window.setTimeout(() => {
       els.copyPlayerLinkButton.textContent = originalLabel;
+    }, 1600);
+  }
+}
+
+async function copyDisplayLink() {
+  if (!state.displayUrl) {
+    setResult("前台連結未準備好", "請等房間建立完成", "wrong");
+    return;
+  }
+
+  const originalLabel = els.copyDisplayLinkButton.textContent;
+  try {
+    await writeClipboardText(state.displayUrl);
+    els.copyDisplayLinkButton.textContent = "已複製";
+    setResult("已複製前台連結", "可傳給外地朋友開大螢幕前台", "correct");
+  } catch {
+    showManualCopyLink(state.displayUrl);
+    setResult("請手動複製前台連結", "瀏覽器未允許自動複製", "wrong");
+  } finally {
+    window.setTimeout(() => {
+      els.copyDisplayLinkButton.textContent = originalLabel;
     }, 1600);
   }
 }
@@ -1550,6 +1592,7 @@ function showManualCopyLink(link) {
 function publishDisplayState() {
   const payload = buildDisplayState();
   localStorage.setItem(DISPLAY_STATE_KEY, JSON.stringify(payload));
+  broadcastToDisplays(payload);
 }
 
 function syncSurfaces(extraMessage = null) {
@@ -1650,6 +1693,25 @@ function broadcastToPlayers(extraMessage = null) {
   });
 }
 
+function broadcastToDisplays(payload = buildDisplayState()) {
+  state.displayConnections.forEach((connection) => {
+    if (!connection?.open) {
+      state.displayConnections.delete(connection);
+      return;
+    }
+
+    sendDisplayState(connection, payload);
+  });
+}
+
+function sendDisplayState(connection, payload) {
+  try {
+    connection.send({ type: "display-state", state: payload });
+  } catch {
+    state.displayConnections.delete(connection);
+  }
+}
+
 function sendPlayerState(player) {
   sendToPlayer(player, buildPlayerState(player));
 }
@@ -1719,6 +1781,12 @@ function uniquePlayerName(name, playerId) {
 
 function buildPlayerUrl(roomId) {
   const url = new URL("./player.html", window.location.href);
+  url.searchParams.set("room", roomId);
+  return url.toString();
+}
+
+function buildDisplayUrl(roomId) {
+  const url = new URL("./display.html", window.location.href);
   url.searchParams.set("room", roomId);
   return url.toString();
 }

@@ -1,4 +1,9 @@
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
+const RECONNECT_BASE_DELAY = 1200;
+const RECONNECT_MAX_DELAY = 8000;
+
+const params = new URLSearchParams(window.location.search);
+const roomId = params.get("room") || "";
 
 const els = {
   hero: document.querySelector(".stage-hero"),
@@ -21,21 +26,48 @@ const els = {
 };
 
 let latestFrameKey = "";
+let latestRemoteState = null;
+const displaySync = {
+  peer: null,
+  connection: null,
+  token: "",
+  reconnectAttempts: 0,
+  reconnectTimer: null,
+};
 
 window.addEventListener("storage", (event) => {
-  if (event.key === DISPLAY_STATE_KEY) renderFromStorage();
+  if (event.key === DISPLAY_STATE_KEY && !latestRemoteState) renderFromStorage();
 });
 
-renderFromStorage();
-window.setInterval(renderFromStorage, 700);
+if (roomId) {
+  connectToHostDisplay({ resetAttempts: true });
+} else {
+  renderFromStorage();
+}
+
+window.setInterval(() => {
+  if (latestRemoteState) {
+    renderState(latestRemoteState);
+    return;
+  }
+
+  renderFromStorage();
+}, 700);
 
 function renderFromStorage() {
   const state = readDisplayState();
   if (!state) {
-    renderWaiting();
+    renderWaiting(
+      roomId ? "等待遠端同步" : "等待同步",
+      roomId ? `正在連接房間：${roomId}` : "前台會自動跟住後台更新"
+    );
     return;
   }
 
+  renderState(state);
+}
+
+function renderState(state) {
   els.round.textContent = state.hasSong ? `第 ${state.round} 題` : "未有題目";
   if (state.hasWord) els.round.textContent = `第 ${state.round} 題`;
   els.score.textContent = `${state.correct} / ${state.total}`;
@@ -70,6 +102,95 @@ function renderFromStorage() {
   renderQr(state);
 }
 
+function connectToHostDisplay({ resetAttempts = false } = {}) {
+  if (!window.Peer) {
+    renderWaiting("未能連接房間", "同步工具未載入，請重新整理");
+    return;
+  }
+
+  clearTimeout(displaySync.reconnectTimer);
+  displaySync.reconnectTimer = null;
+  if (resetAttempts) displaySync.reconnectAttempts = 0;
+
+  const token = crypto.randomUUID();
+  displaySync.token = token;
+  closeDisplayPeer();
+  renderWaiting("連接主持中", `房間：${roomId}`);
+
+  const peer = new Peer(undefined, { debug: 0 });
+  displaySync.peer = peer;
+
+  peer.on("open", () => {
+    if (displaySync.token !== token) return;
+    const connection = peer.connect(roomId, { reliable: true });
+    displaySync.connection = connection;
+    bindDisplayConnection(connection, token);
+  });
+
+  peer.on("error", () => {
+    if (displaySync.token !== token) return;
+    scheduleDisplayReconnect("未能連接主持");
+  });
+}
+
+function bindDisplayConnection(connection, token) {
+  connection.on("open", () => {
+    if (displaySync.token !== token) return;
+    connection.send({ type: "display-join" });
+    renderWaiting("已連接房間", "等待主持同步畫面");
+  });
+
+  connection.on("data", (message) => {
+    if (displaySync.token !== token || !message || typeof message !== "object") return;
+    if (message.type !== "display-state" || !message.state) return;
+
+    latestRemoteState = message.state;
+    displaySync.reconnectAttempts = 0;
+    localStorage.setItem(DISPLAY_STATE_KEY, JSON.stringify(message.state));
+    renderState(message.state);
+  });
+
+  connection.on("close", () => {
+    if (displaySync.token !== token) return;
+    latestRemoteState = null;
+    scheduleDisplayReconnect("前台同步中斷");
+  });
+
+  connection.on("error", () => {
+    if (displaySync.token !== token) return;
+    latestRemoteState = null;
+    scheduleDisplayReconnect("前台同步失敗");
+  });
+}
+
+function scheduleDisplayReconnect(message) {
+  clearTimeout(displaySync.reconnectTimer);
+  displaySync.reconnectAttempts += 1;
+  const delay = Math.min(RECONNECT_MAX_DELAY, RECONNECT_BASE_DELAY * displaySync.reconnectAttempts);
+  renderWaiting(message, `${Math.ceil(delay / 1000)} 秒後重新連接房間：${roomId}`);
+  displaySync.reconnectTimer = window.setTimeout(() => {
+    displaySync.reconnectTimer = null;
+    connectToHostDisplay();
+  }, delay);
+}
+
+function closeDisplayPeer() {
+  try {
+    displaySync.connection?.close();
+  } catch {
+    // PeerJS can already be closed when reconnecting.
+  }
+
+  try {
+    displaySync.peer?.destroy();
+  } catch {
+    // PeerJS can already be closed when reconnecting.
+  }
+
+  displaySync.connection = null;
+  displaySync.peer = null;
+}
+
 function readDisplayState() {
   try {
     const raw = localStorage.getItem(DISPLAY_STATE_KEY);
@@ -79,13 +200,13 @@ function readDisplayState() {
   }
 }
 
-function renderWaiting() {
+function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟住後台更新") {
   els.round.textContent = "未連接";
   els.score.textContent = "0 / 0";
-  els.status.textContent = "請先喺後台按「開前台」";
+  els.status.textContent = roomId ? `房間：${roomId}` : "請先喺後台按「開前台」";
   els.title.textContent = "等待主持開始";
-  els.prompt.textContent = "等待同步";
-  els.subPrompt.textContent = "前台會自動跟住後台更新";
+  els.prompt.textContent = prompt;
+  els.subPrompt.textContent = subPrompt;
   els.meta.replaceChildren();
   els.hints.replaceChildren();
   els.choices.replaceChildren();
