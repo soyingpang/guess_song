@@ -22,6 +22,9 @@ const state = {
   connectionToken: "",
   game: null,
   lastResult: "",
+  micStream: null,
+  micCall: null,
+  micActive: false,
 };
 
 const els = {
@@ -37,6 +40,8 @@ const els = {
   phoneChoices: document.querySelector("#phoneChoices"),
   buzzButton: document.querySelector("#buzzButton"),
   phoneResult: document.querySelector("#phoneResult"),
+  micToggleButton: document.querySelector("#micToggleButton"),
+  phoneMicStatus: document.querySelector("#phoneMicStatus"),
   phoneLeaderboard: document.querySelector("#phoneLeaderboard"),
 };
 
@@ -55,6 +60,15 @@ els.buzzButton.addEventListener("click", () => {
   els.phoneResult.textContent = "已送出搶答";
 });
 
+els.micToggleButton.addEventListener("click", () => {
+  if (state.micActive) {
+    stopMic();
+    return;
+  }
+
+  startMic();
+});
+
 window.addEventListener("online", () => {
   if (state.joined && !state.connection?.open) scheduleReconnect("網絡已恢復");
 });
@@ -63,6 +77,10 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden && state.joined && !state.connection?.open && !state.connecting) {
     scheduleReconnect("正在恢復連線");
   }
+});
+
+window.addEventListener("beforeunload", () => {
+  stopMic({ notifyHost: false, message: "咪已關閉" });
 });
 
 if (!roomId) {
@@ -128,6 +146,7 @@ function bindRoomConnection(connection, token) {
     state.reconnectAttempts = 0;
     send({ type: "join", playerId: state.playerId, name: state.name, team: state.team });
     setStatus("已連線，等候同步");
+    updateMicUi();
   });
 
   connection.on("data", (message) => {
@@ -139,6 +158,7 @@ function bindRoomConnection(connection, token) {
     if (state.connectionToken !== token) return;
     state.connection = null;
     state.connecting = false;
+    updateMicUi();
     if (state.joined) scheduleReconnect("連線中斷");
     else handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
   });
@@ -150,6 +170,8 @@ function bindRoomConnection(connection, token) {
 }
 
 function closeCurrentPeer() {
+  stopMic({ notifyHost: false, message: "重新連線，咪已關閉" });
+
   try {
     state.connection?.close();
   } catch {
@@ -164,6 +186,7 @@ function closeCurrentPeer() {
 
   state.connection = null;
   state.peer = null;
+  updateMicUi();
 }
 
 function handleConnectionFailure(message) {
@@ -174,6 +197,7 @@ function handleConnectionFailure(message) {
   }
 
   setStatus(message);
+  updateMicUi();
   els.joinForm.hidden = false;
 }
 
@@ -214,12 +238,112 @@ function handleMessage(message) {
     setStatus(joinedStatus());
     if (previousQuestionId !== message.questionId) state.lastResult = "";
     renderGame();
+    updateMicUi();
   }
 
   if (message.type === "result" && message.questionId === state.game?.questionId) {
     state.lastResult = message.message || "";
     renderGame();
   }
+}
+
+async function startMic() {
+  if (!state.joined || !state.peer || !state.connection?.open) {
+    setMicStatus("連線後才可開咪");
+    updateMicUi();
+    return;
+  }
+
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setMicStatus("這部手機瀏覽器不支援開咪");
+    return;
+  }
+
+  try {
+    setMicStatus("請允許使用咪高峰");
+    updateMicUi({ busy: true });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+      video: false,
+    });
+    const call = state.peer.call(roomId, stream, {
+      metadata: {
+        type: "player-mic",
+        playerId: state.playerId,
+        name: state.displayName || state.name,
+      },
+    });
+
+    if (!call) throw new Error("Mic call failed");
+
+    state.micStream = stream;
+    state.micCall = call;
+    state.micActive = true;
+    bindMicCall(call);
+    send({ type: "mic-start", playerId: state.playerId });
+    setMicStatus("咪已開啟");
+    updateMicUi();
+  } catch (error) {
+    stopMic({ notifyHost: false, message: micErrorMessage(error) });
+  }
+}
+
+function bindMicCall(call) {
+  call.on("close", () => {
+    if (state.micCall === call) stopMic({ notifyHost: false, message: "主持已收咪" });
+  });
+
+  call.on("error", () => {
+    if (state.micCall === call) stopMic({ notifyHost: true, message: "咪高峰連線中斷" });
+  });
+}
+
+function stopMic(options = {}) {
+  const { notifyHost = true, message = "咪已關閉" } = options;
+  const call = state.micCall;
+  const stream = state.micStream;
+  state.micCall = null;
+  state.micStream = null;
+  state.micActive = false;
+
+  if (call) {
+    try {
+      call.close();
+    } catch {
+      // PeerJS may already have closed the media call.
+    }
+  }
+
+  if (stream) {
+    stream.getTracks().forEach((track) => track.stop());
+  }
+
+  if (notifyHost) send({ type: "mic-stop", playerId: state.playerId });
+  setMicStatus(message);
+  updateMicUi();
+}
+
+function micErrorMessage(error) {
+  if (error?.name === "NotAllowedError") return "未允許使用咪高峰";
+  if (error?.name === "NotFoundError") return "找不到手機咪高峰";
+  return "開咪失敗，請再試";
+}
+
+function updateMicUi(options = {}) {
+  const { busy = false } = options;
+  const canUseMic = Boolean(state.joined && state.connection?.open && state.peer);
+  els.micToggleButton.disabled = busy || !canUseMic;
+  els.micToggleButton.textContent = state.micActive ? "關咪" : "開咪對話";
+  els.micToggleButton.classList.toggle("is-live", state.micActive);
+  if (!canUseMic && !state.micActive) setMicStatus("連線後可開咪");
+}
+
+function setMicStatus(message) {
+  els.phoneMicStatus.textContent = message;
 }
 
 function renderGame() {

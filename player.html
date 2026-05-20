@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=start-mode-1" />
+    <link rel="stylesheet" href="./styles.css?v=phone-mic-1" />
   </head>
   <body class="player-body">
     <main class="player-shell">
@@ -32,6 +32,11 @@
           <span id="playerRound">未開始</span>
         </div>
 
+        <section class="phone-mic-panel" aria-label="手機咪高峰">
+          <button class="mic-button" id="micToggleButton" type="button" disabled>開咪對話</button>
+          <div class="mic-status" id="phoneMicStatus">未開咪</div>
+        </section>
+
         <section class="phone-question">
           <p id="phoneStatus">等候主持開始</p>
           <h2 id="phoneTitle">準備中</h2>
@@ -51,6 +56,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=start-mode-1"></script>
+    <script src="./player.js?v=phone-mic-1"></script>
   </body>
 </html>

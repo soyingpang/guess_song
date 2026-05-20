@@ -258,6 +258,10 @@ function createRoomPeer(roomId) {
     setupPlayerConnection(connection);
   });
 
+  state.peer.on("call", (call) => {
+    setupPlayerMicCall(call);
+  });
+
   state.peer.on("error", (error) => {
     if (error.type === "unavailable-id") {
       const nextId = makeRoomId();
@@ -279,6 +283,7 @@ function setupPlayerConnection(connection) {
     if (player) {
       player.connected = false;
       player.connection = null;
+      endPlayerMic(player.id, { closeCall: true, render: false });
       renderPlayers();
       syncSurfaces();
     }
@@ -299,10 +304,12 @@ function handlePlayerMessage(connection, message) {
     player.team = team;
     player.connected = true;
     player.connection = connection;
+    player.micActive = false;
     state.players[player.id] = player;
     connection.playerId = player.id;
 
     if (previousConnection && previousConnection !== connection) {
+      endPlayerMic(player.id, { closeCall: true, render: false });
       try {
         previousConnection.close();
       } catch {
@@ -318,7 +325,20 @@ function handlePlayerMessage(connection, message) {
   }
 
   const player = state.players[connection.playerId];
-  if (!player || !hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
+  if (!player) return;
+
+  if (message.type === "mic-start") {
+    player.micActive = true;
+    renderPlayers();
+    return;
+  }
+
+  if (message.type === "mic-stop") {
+    endPlayerMic(player.id, { closeCall: false });
+    return;
+  }
+
+  if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
   if (message.type === "answer") {
     handleChoiceAnswer(player, message.answer);
@@ -327,6 +347,74 @@ function handlePlayerMessage(connection, message) {
   if (message.type === "buzz") {
     handleBuzz(player);
   }
+}
+
+function setupPlayerMicCall(call) {
+  const playerId = String(call.metadata?.playerId || "");
+  const player =
+    state.players[playerId] ||
+    Object.values(state.players).find((item) => item.connection?.peer === call.peer);
+
+  if (!player) {
+    try {
+      call.answer();
+      call.close();
+    } catch {
+      // Ignore stale calls from phones that are no longer in the room.
+    }
+    return;
+  }
+
+  endPlayerMic(player.id, { closeCall: true, render: false });
+  player.micCall = call;
+  player.micActive = true;
+  call.playerId = player.id;
+
+  try {
+    call.answer();
+  } catch {
+    player.micActive = false;
+    renderPlayers();
+    return;
+  }
+
+  call.on("stream", (stream) => {
+    player.micStream = stream;
+    player.micActive = true;
+    setResult("玩家開咪", `${player.name} 正在說話`, "");
+    renderPlayers();
+  });
+
+  call.on("close", () => {
+    endPlayerMic(player.id, { closeCall: false });
+  });
+
+  call.on("error", () => {
+    endPlayerMic(player.id, { closeCall: false });
+  });
+
+  renderPlayers();
+}
+
+function endPlayerMic(playerId, options = {}) {
+  const { closeCall = true, render = true } = options;
+  const player = state.players[playerId];
+  if (!player) return;
+
+  const call = player.micCall;
+  player.micCall = null;
+  player.micStream = null;
+  player.micActive = false;
+
+  if (closeCall && call) {
+    try {
+      call.close();
+    } catch {
+      // PeerJS may already have closed the media call.
+    }
+  }
+
+  if (render) renderPlayers();
 }
 
 function handleChoiceAnswer(player, answer) {
@@ -1314,7 +1402,7 @@ function renderPlayers() {
     const name = document.createElement("strong");
     const meta = document.createElement("span");
     name.textContent = `${index + 1}. ${player.name}`;
-    meta.textContent = `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}`;
+    meta.textContent = `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}${player.micActive ? " · 開咪中" : ""}`;
     info.append(name, meta);
 
     const score = document.createElement("strong");
@@ -1341,9 +1429,30 @@ function renderPlayers() {
     remove.disabled = Boolean(player.connected);
     remove.title = player.connected ? "玩家仍在線，不能移除" : "移除離線玩家";
 
-    actions.append(teamSelect, remove);
+    const stopMic = miniButton("收咪", "中斷玩家咪高峰", () => endPlayerMic(player.id));
+    stopMic.disabled = !player.micActive;
+
+    actions.append(teamSelect, stopMic, remove);
 
     item.append(info, score, actions);
+
+    if (player.micActive) {
+      const micPanel = document.createElement("div");
+      micPanel.className = "player-mic-panel";
+      const micStatus = document.createElement("span");
+      micStatus.textContent = player.micStream ? "正在接收手機咪" : "等候手機咪連線";
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.autoplay = true;
+      audio.playsInline = true;
+      if (player.micStream) {
+        audio.srcObject = player.micStream;
+        audio.play().catch(() => {});
+      }
+      micPanel.append(micStatus, audio);
+      item.append(micPanel);
+    }
+
     els.playerList.append(item);
   });
 }
@@ -1376,6 +1485,7 @@ function removeOfflinePlayer(playerId) {
     return;
   }
 
+  endPlayerMic(playerId, { closeCall: true, render: false });
   delete state.players[playerId];
   if (state.buzzWinnerId === playerId) state.buzzWinnerId = "";
   setResult("已移除離線玩家", player.name, "");
@@ -1584,6 +1694,9 @@ function resolveJoiningPlayer(playerId, name) {
     team: "A",
     score: 0,
     answers: {},
+    micActive: false,
+    micCall: null,
+    micStream: null,
   };
 }
 

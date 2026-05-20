@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-20 09:22 HKT
+更新時間：2026-05-20 09:33 HKT
 
 ## 必讀順序
 
@@ -82,6 +82,7 @@
 - 後台按「開估」後，前台會自動以全首播放狀態開播：display state 會有 `fullPlayback: true`、`isPlaying: true`、`end: 0`，所以前台 iframe 有 `autoplay=1` 並沒有 `end` 參數。
 - 後台按「下一題」會直接 `startRound(null, { autoplay: true })`，即時用目前選好的 60 / 30 / 15 秒開始前台播放。
 - 後台已有播放起點設定：`playStartMode` 可為 `beginning` 或 `random`。每題在 `startRound()` 設定 `currentClipStart`；重播同一題沿用同一段。`fullPlayback` 時前台 start 固定回到 0。
+- 手機端已有「開咪對話」：`player.js` 用 `navigator.mediaDevices.getUserMedia({ audio })` 和 `state.peer.call(roomId, stream)` 傳到後台；`app.js` 用 `state.peer.on("call")` 接收，後台玩家列表顯示音訊元件和「收咪」按鈕。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
 
@@ -94,6 +95,7 @@
 - App 應是主持自由場控：幾時玩哪個環節、玩幾多題、幾時顯示排行榜，都由後台手動控制。
 - 播放秒數 60 / 30 / 15 可每題前自由切換。
 - 播放起點可每題前自由切換：由頭播或隨機中段。
+- 手機開咪是給主持後台聽，不是前台播放器；若要全場聽見，要由電腦/場地音響路由決定。
 
 後續如果要加「建議流程」可以是輔助提示，不應鎖死主持。
 

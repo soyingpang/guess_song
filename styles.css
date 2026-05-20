@@ -822,6 +822,28 @@ select:focus {
   align-items: center;
 }
 
+.player-mic-panel {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 220px);
+  gap: 8px;
+  align-items: center;
+  border: 1px solid rgba(155, 199, 170, 0.3);
+  border-radius: 8px;
+  background: #151a15;
+  padding: 8px;
+}
+
+.player-mic-panel span {
+  color: var(--soft);
+  font-weight: 900;
+}
+
+.player-mic-panel audio {
+  width: 100%;
+  height: 34px;
+}
+
 .mini-select {
   min-width: 72px;
   height: 38px;
@@ -1331,6 +1353,48 @@ select:focus {
   font-weight: 1000;
 }
 
+.phone-mic-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mic-button {
+  min-height: 58px;
+  border: 1px solid rgba(241, 184, 75, 0.36);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(241, 184, 75, 0.18), transparent),
+    #241a16;
+  color: var(--accent-2);
+  font-size: 1.22rem;
+  font-weight: 1000;
+}
+
+.mic-button.is-live {
+  border-color: rgba(155, 199, 170, 0.58);
+  background:
+    linear-gradient(180deg, rgba(155, 199, 170, 0.26), transparent),
+    #172018;
+  color: var(--soft);
+}
+
+.mic-button:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+.mic-status {
+  border: 1px solid rgba(155, 199, 170, 0.24);
+  border-radius: 8px;
+  background: #151a15;
+  color: var(--muted);
+  padding: 9px 10px;
+  font-weight: 850;
+  text-align: center;
+}
+
 .phone-question,
 .phone-leaderboard {
   margin-top: 18px;
@@ -1622,6 +1686,15 @@ select:focus {
   .library-tools,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .player-item,
+  .player-mic-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .player-actions {
+    flex-wrap: wrap;
   }
 
   .player-wrap {
