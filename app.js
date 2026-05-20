@@ -207,11 +207,6 @@ function bindEvents() {
     startRound();
   });
 
-  els.guessForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    checkGuess(els.guessInput.value);
-  });
-
   els.songForm.addEventListener("submit", (event) => {
     event.preventDefault();
     saveSongFromForm();
@@ -781,6 +776,7 @@ function stopPlayback(message = "已停止播放") {
 }
 
 function checkGuess(value) {
+  return;
   if (!state.currentSong || state.answered) return;
   const guess = normalize(value);
   if (!guess) {
@@ -792,6 +788,7 @@ function checkGuess(value) {
 }
 
 function chooseAnswer(title) {
+  return;
   if (!state.currentSong || state.answered) return;
   finishRound(normalize(title) === normalize(state.currentSong.title), null);
 }
@@ -1313,18 +1310,8 @@ function renderQuiz() {
   els.reopenBuzzButton.disabled = !hasActiveQuestion() || state.answered || state.buzzOpen;
 
   els.guessForm.hidden = true;
-  els.choices.hidden = state.mode !== "choice";
+  els.choices.hidden = true;
   els.choices.innerHTML = "";
-
-  state.currentChoices.forEach((choice) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "choice-button";
-    button.textContent = choice;
-    button.disabled = state.answered;
-    button.addEventListener("click", () => chooseAnswer(choice));
-    els.choices.append(button);
-  });
 }
 
 function renderHints() {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=front-qr-always-1" />
+    <link rel="stylesheet" href="./styles.css?v=host-no-guessing-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -110,7 +110,7 @@
             <div><strong id="teamBScore">0</strong><span>B 組</span></div>
           </div>
 
-          <form class="guess-form" id="guessForm">
+          <form class="guess-form" id="guessForm" hidden>
             <label for="guessInput">答案</label>
             <div class="guess-line">
               <input id="guessInput" autocomplete="off" placeholder="輸入詩歌名 / 別名 / 編號" />
@@ -118,7 +118,7 @@
             </div>
           </form>
 
-          <div class="choices" id="choices" aria-label="選項"></div>
+          <div class="choices" id="choices" aria-label="選項" hidden></div>
           <div class="hint-stack" id="hintStack" aria-live="polite"></div>
 
           <div class="result-bar" id="resultBar" role="status" aria-live="polite">
@@ -214,6 +214,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=front-qr-always-1"></script>
+    <script src="./app.js?v=host-no-guessing-1"></script>
   </body>
 </html>

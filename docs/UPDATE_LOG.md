@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-20 14:55 HKT
+
+類型：修正 / 後台 / 作答流程
+
+摘要：
+- 後台不再提供估歌作答功能。
+- 移除後台文字估歌表單的 submit handler。
+- 後台四選一選項不再顯示，也不再建立可點擊的 `choice-button`。
+- HTML 預設把後台 `guessForm` 和 `choices` 設為 hidden，避免載入期間短暫露出。
+- 手機端四選一和作答流程不受影響。
+- 更新 cache version 至 `host-no-guessing-1`。
+
+影響：
+- 主持後台只負責播放、開估、提示、搶答判分和下一題。
+- 玩家只在手機端作答，避免主持畫面被誤用成答題端。
+
+測試：
+- Browser 本機按「下一題」後，確認後台沒有四選一選項卡片。
+- Browser 本機確認手機端仍由 player state 收到四選一選項。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若主持需要查看手機端選項，可另做一個只讀「手機預覽」區，但不應可作答。
+
+---
+
 ## 2026-05-20 14:47 HKT
 
 類型：修正 / 前台 QR / 玩家加入
