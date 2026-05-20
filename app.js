@@ -278,14 +278,15 @@ function createRoomPeer(roomId) {
       state.roomId = roomId;
       state.playerUrl = "";
       state.displayUrl = "";
-      renderPlayers();
+      setResult("房間已被另一個後台使用", "請關閉其他後台，再重新整理這頁", "wrong");
+      render();
       return;
     }
 
     state.roomReady = false;
     state.roomError = "房間連線暫時失敗，請保持此頁開住或重新整理";
-    renderPlayers();
-    publishDisplayState();
+    setResult("房間連線失敗", "請檢查網絡或重新整理", "wrong");
+    render();
   });
 }
 
@@ -1219,6 +1220,15 @@ function makeChoices(correctSong, pool) {
   return shuffle([correctSong, ...otherSongs]).map((song) => song.title);
 }
 
+function ensureChoiceOptions(song) {
+  if (!song) return [];
+  if (state.currentChoices.length) return state.currentChoices;
+
+  const pool = playableSongs();
+  state.currentChoices = makeChoices(song, pool.length ? pool : [song]);
+  return state.currentChoices;
+}
+
 function render() {
   renderScore();
   renderCategoryFilter();
@@ -1259,9 +1269,14 @@ function renderCategoryFilter() {
   els.categoryFilter.value = state.category;
 }
 
+function isRoomBlocked() {
+  return Boolean(state.roomError) && !state.roomReady;
+}
+
 function renderQuiz() {
   const hasSong = Boolean(state.currentSong);
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
+  const roomBlocked = isRoomBlocked();
   els.roundLabel.textContent = hasActiveQuestion() ? `第 ${state.round} 題` : "未有題目";
   els.quizTitle.textContent = hasWord
     ? `今題字：${state.currentWord}`
@@ -1290,10 +1305,25 @@ function renderQuiz() {
   els.wordModeButton.classList.toggle("is-active", state.mode === "word");
   els.showLeaderboardButton.classList.toggle("is-active", state.showLeaderboard);
   els.showWinnerButton.classList.toggle("is-active", state.showWinner);
-  els.playButton.disabled = state.mode === "word" || !hasSong;
-  els.replayButton.disabled = state.mode === "word" || !hasSong;
-  els.stopButton.disabled = !state.isPlaying;
-  els.hintButton.disabled = state.mode === "word" || !hasSong;
+  els.openDisplayButton.disabled = roomBlocked || !state.displayUrl;
+  els.showLeaderboardButton.disabled = roomBlocked;
+  els.showWinnerButton.disabled = roomBlocked;
+  els.resetGameButton.disabled = roomBlocked;
+  els.toggleVideoButton.disabled = roomBlocked || !hasActiveQuestion();
+  els.playButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
+  els.replayButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
+  els.stopButton.disabled = roomBlocked || !state.isPlaying;
+  els.hintButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
+  els.skipButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered;
+  els.nextButton.disabled = roomBlocked;
+  els.duration60Button.disabled = roomBlocked;
+  els.duration30Button.disabled = roomBlocked;
+  els.duration15Button.disabled = roomBlocked;
+  els.startBeginningButton.disabled = roomBlocked;
+  els.startRandomButton.disabled = roomBlocked;
+  els.choiceModeButton.disabled = roomBlocked;
+  els.buzzModeButton.disabled = roomBlocked;
+  els.wordModeButton.disabled = roomBlocked;
   els.judgeControls.hidden = !["buzz", "word"].includes(state.mode);
   els.wordControls.hidden = state.mode !== "word";
   els.reopenBuzzButton.textContent = state.mode === "word"
@@ -1307,7 +1337,12 @@ function renderQuiz() {
       : state.buzzWinnerId
         ? "重新開放搶答"
         : "開放搶答";
-  els.reopenBuzzButton.disabled = !hasActiveQuestion() || state.answered || state.buzzOpen;
+  els.markCorrectButton.disabled = roomBlocked || !state.buzzWinnerId || state.answered;
+  els.markWrongButton.disabled = roomBlocked || !state.buzzWinnerId || state.answered;
+  els.reopenBuzzButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered || state.buzzOpen;
+  els.wordInput.disabled = roomBlocked;
+  els.randomWordButton.disabled = roomBlocked;
+  els.startWordButton.disabled = roomBlocked;
 
   els.guessForm.hidden = true;
   els.choices.hidden = true;
@@ -1656,6 +1691,7 @@ function buildPlayerState(player) {
   const song = state.currentSong;
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const revealed = Boolean((song || hasWord) && state.answered);
+  const choiceOptions = state.mode === "choice" && song && !revealed ? ensureChoiceOptions(song) : [];
 
   return {
     type: "state",
@@ -1679,7 +1715,7 @@ function buildPlayerState(player) {
     title: hasWord ? `今題字：${state.currentWord}` : revealed && song ? song.title : "估呢首詩歌",
     status: els.resultText.textContent || "",
     score: player.score,
-    choices: state.mode === "choice" && song && !revealed ? state.currentChoices : [],
+    choices: choiceOptions,
     hints: song ? getHints(song).slice(0, state.hintLevel) : [],
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
