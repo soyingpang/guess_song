@@ -64,6 +64,7 @@ const state = {
   answered: false,
   hintLevel: 0,
   isPlaying: false,
+  fullPlayback: false,
   playDuration: DEFAULT_PLAY_DURATION_SECONDS,
   playEndsAt: 0,
   currentWord: "",
@@ -392,6 +393,7 @@ function judgeBuzzWinner(isCorrect) {
     state.revealed = true;
     state.buzzOpen = false;
     state.isPlaying = false;
+    state.fullPlayback = false;
     state.playEndsAt = 0;
     clearClipTimer();
     saveScore();
@@ -502,6 +504,7 @@ function startRound(preferredSongId, options = {}) {
     state.answered = false;
     state.hintLevel = 0;
     state.isPlaying = false;
+    state.fullPlayback = false;
     state.playEndsAt = 0;
     state.currentWord = "";
     state.currentQuestionId = "";
@@ -530,6 +533,7 @@ function startRound(preferredSongId, options = {}) {
   state.answered = false;
   state.hintLevel = 0;
   state.isPlaying = Boolean(autoplay);
+  state.fullPlayback = false;
   state.playEndsAt = autoplay ? Date.now() + clipDuration(song) * 1000 : 0;
   state.currentQuestionId = `${song.id}:${Date.now()}`;
   state.buzzWinnerId = "";
@@ -554,6 +558,7 @@ function startWordRound(preferredWord = "") {
   state.answered = false;
   state.hintLevel = 0;
   state.isPlaying = false;
+  state.fullPlayback = false;
   state.playEndsAt = 0;
   state.currentQuestionId = `word:${word}:${Date.now()}`;
   state.buzzWinnerId = "";
@@ -623,6 +628,7 @@ function playCurrentClip() {
 
   clearClipTimer();
   state.isPlaying = true;
+  state.fullPlayback = false;
   state.playEndsAt = Date.now() + clipDuration(state.currentSong) * 1000;
   state.showLeaderboard = false;
   state.showWinner = false;
@@ -636,6 +642,7 @@ function playCurrentClip() {
 function stopPlayback(message = "已停止播放") {
   clearClipTimer();
   state.isPlaying = false;
+  state.fullPlayback = false;
   state.playEndsAt = 0;
   if (state.currentSong) renderYouTubeFrame({ autoplay: false });
   setResult(message, state.currentSong ? "可開估、重播或下一題" : "", "");
@@ -661,10 +668,11 @@ function chooseAnswer(title) {
 function finishRound(isCorrect, label = null) {
   if (!state.currentSong || state.answered) return;
 
-  const shouldAutoplayReveal = label === "開估" && !state.isPlaying;
+  const shouldAutoplayReveal = label === "開估";
   state.answered = true;
   state.revealed = true;
-  state.isPlaying = false;
+  state.isPlaying = shouldAutoplayReveal;
+  state.fullPlayback = shouldAutoplayReveal;
   state.playEndsAt = 0;
   if (label !== "開估") {
     state.score.total += 1;
@@ -678,9 +686,12 @@ function finishRound(isCorrect, label = null) {
 
   clearClipTimer();
   saveScore();
-  setResult(label || (isCorrect ? "答中" : "未中"), answerLabel(state.currentSong), isCorrect ? "correct" : "wrong");
+  setResult(
+    shouldAutoplayReveal ? "開估，全首播放中" : label || (isCorrect ? "答中" : "未中"),
+    answerLabel(state.currentSong),
+    isCorrect ? "correct" : "wrong"
+  );
   render();
-  if (shouldAutoplayReveal) renderYouTubeFrame({ autoplay: false });
 }
 
 function isCorrectGuess(normalizedGuess) {
@@ -807,6 +818,7 @@ function setMode(mode) {
     state.currentSong = null;
     state.currentChoices = [];
     state.isPlaying = false;
+    state.fullPlayback = false;
     state.playEndsAt = 0;
     state.currentQuestionId = "";
     els.playerHost.replaceChildren();
@@ -833,6 +845,7 @@ function scheduleClipStop() {
   clearClipTimer();
   state.clipTimer = window.setTimeout(() => {
     state.isPlaying = false;
+    state.fullPlayback = false;
     state.playEndsAt = 0;
     setResult("時間到", state.currentSong ? "可以開估或下一題" : "", "");
     renderYouTubeFrame({ autoplay: false });
@@ -866,6 +879,7 @@ function resetGameSession() {
   state.answered = false;
   state.hintLevel = 0;
   state.isPlaying = false;
+  state.fullPlayback = false;
   state.playEndsAt = 0;
   state.currentQuestionId = "";
   state.buzzWinnerId = "";
@@ -1411,6 +1425,7 @@ function buildDisplayState() {
     hasWord,
     revealed,
     isPlaying: state.isPlaying,
+    fullPlayback: state.fullPlayback,
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
     clipDuration: state.playDuration,
@@ -1431,7 +1446,7 @@ function buildDisplayState() {
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
     start: song ? clipStart(song) : 0,
-    end: song ? clipStart(song) + clipDuration(song) : 0,
+    end: song && !state.fullPlayback ? clipStart(song) + clipDuration(song) : 0,
     hints,
     choices: state.mode === "choice" && song ? state.currentChoices : [],
     meta: revealed && song
@@ -1454,7 +1469,8 @@ function buildPlayerState(player) {
     hasQuestion: Boolean(song || hasWord),
     hasWord,
     revealed,
-    isPlaying: state.isPlaying,
+    isPlaying: state.isPlaying && !state.fullPlayback,
+    fullPlayback: state.fullPlayback,
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
     clipDuration: state.playDuration,
