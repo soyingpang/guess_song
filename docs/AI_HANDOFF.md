@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-20 15:08 HKT
+更新時間：2026-05-20 16:17 HKT
 
 ## 必讀順序
 
@@ -31,7 +31,7 @@
 
 1. 四選一選擇題。
 2. 按時間搶答估歌。
-3. 出一個字，分 A/B 兩組鬥快唱出含有該字的詩歌。
+3. 出一個大路主題 / 關鍵詞，分 A/B 兩組鬥快唱出切合主題的詩歌。
 
 後台要可選播放秒數：
 
@@ -76,13 +76,13 @@
 - 後台有 60 / 30 / 15 秒播放設定。
 - 後台播放 iframe 已靜音，只有前台 iframe 不帶 mute 參數。
 - 前台會收到 `end` 和 `playEndsAt`，用作倒數和停止播放。
-- 手機加入時已有 A/B 組選擇。
-- 後台已有一字搶唱模式和 A/B 組分數。
+- 手機加入時不再自選 A/B 組；後台會按現有人數自動平均分配，主持仍可在後台手動調組。
+- 後台已有主題搶唱模式和 A/B 組分數。
 - 後台已有「停止」按鈕。
-- 搶答估歌 / 一字搶唱需要主持按「開放搶答 / 搶唱」才可讓手機按鈕生效。
+- 搶答估歌 / 主題搶唱需要主持按「開放搶答 / 搶唱」才可讓手機按鈕生效。
 - 後台右欄已改成玩家狀態優先，題庫管理預設收起。
 - 後台已有「分數重置」按鈕，可清分數、組分、題目、答案和搶答狀態，但保留題庫、固定房間、QR 和玩家。
-- 前台排行榜已改成「分數結算」畫面，先顯示 A/B 組戰況，再顯示個人榜；手機也有 A/B 組分數摘要。
+- 前台排行榜已改成「分數結算」畫面，先顯示 A/B 組戰況，再顯示個人榜；手機排行榜已移入彈窗，彈窗內保留 A/B 組分數摘要。
 - 後台已有「公布勝方」按鈕，前台會切到分組勝方全屏畫面；「公布勝方」和「排行榜」互斥顯示。
 - 開新題、播放、重新開放搶答 / 搶唱或分數重置時，會退出完場公布畫面。
 - 前台 QR code 已改成本地生成：`display.html` 先載入 `local-qr.js`，`display.js` 用 `window.createLocalQrCodeDataUrl()` 產生 SVG data URL，不再依賴 `api.qrserver.com`。
@@ -96,7 +96,7 @@
 - 遠端前台已支援：後台有 `displayConnections`，`display.html?room=...` 會送 `display-join`，後台用 `display-state` 推送 `buildDisplayState()`。外地朋友必須用「複製前台連結」，普通 `display.html` 只會本機等待同步。
 - 前台不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設前台就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
 - 固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制。不要再用 `makeRoomId()` 或 random room 作為預設；若 PeerJS 回報 `unavailable-id`，應提示關閉其他後台，不應靜默開新房。
-- 介面已做八輪美化。最新 cache version 是 `sync-choice-room-lock-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
+- 介面已做八輪美化。最新 cache version 是 `mobile-compact-teams-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg` MIME type。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。前台遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
@@ -119,6 +119,8 @@
 - 前台 QR 必須保留。`display.js` 已加入 `DEFAULT_ROOM_ID` / `qrRoomId` fallback，`renderWaiting()` 會顯示玩家 QR，不再 hidden；即使尚未收到後台 `display-state`，仍會生成 `player.html?room=soyingpang-guess-song-fellowship-room`。
 - 後台不應作答。`index.html` 將 `guessForm` 和 `choices` 預設 hidden；`app.js` 不再綁定後台 guess submit，`renderChoices()` 只會清空並隱藏後台選項。手機端仍由 `buildPlayerState()` 取得四選一選項。
 - 手機四選一同步有保險：`ensureChoiceOptions(song)` 會在送 player state 前補回 `currentChoices`；`player.js` 如收到空選項會顯示「選項同步中」。後台如固定房間 ID 被另一個後台佔用，`isRoomBlocked()` 會鎖住出題/播放/開估等主持控制，避免手機連到另一個後台但眼前後台仍可操作。
+- 第三環節已由「一字搶唱」改為「主題搶唱」：不要再抽太冷門的單字，內置題庫應以平安、恩典、愛、信、盼望、喜樂、讚美、耶穌、十架、救恩等大路關鍵詞為主，讓非專業團友更容易即場唱到。
+- 手機頁已做 compact：加入後品牌區會收起，排行榜不再常駐頁面，只由「排行榜」按鈕開彈窗，主畫面留給題目、選項、搶答 / 搶唱、咪高峰和狀態。
 
 後續如果要加「建議流程」可以是輔助提示，不應鎖死主持。
 
@@ -135,3 +137,16 @@
 - 下一步是什麼。
 
 如果改動影響玩法規格，也要同步更新 `docs/GAME_PLAN.md`。
+
+## GitHub 同步規則
+
+用戶已確認：每一次有實質更新，都應即時同步到 GitHub。
+
+固定流程：
+
+1. 完成程式或規格修改。
+2. 用香港時間更新 `docs/UPDATE_LOG.md`。
+3. 如影響玩法或交接狀態，同步更新 `docs/GAME_PLAN.md` / `docs/AI_HANDOFF.md`。
+4. 跑必要檢查，例如 `node --check`、`git diff --check`、Browser sanity check。
+5. `git add`、`git commit`、`git push` 到 GitHub。
+6. 如因認證、網絡或遠端衝突無法 push，必須清楚告知用戶目前只在本機，未同步 GitHub。

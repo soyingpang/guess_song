@@ -1422,6 +1422,9 @@ select:focus {
 }
 
 .phone-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   min-height: 66px;
   border-color: #5a443d;
@@ -1429,6 +1432,25 @@ select:focus {
     linear-gradient(180deg, rgba(255, 248, 236, 0.08), transparent),
     #241a1c;
   text-align: left;
+}
+
+.phone-choice-index {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 236, 190, 0.72);
+  color: #5b352c;
+  font-weight: 1000;
+}
+
+.phone-choice-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 1.05rem;
+  line-height: 1.25;
 }
 
 .buzz-button {
@@ -4630,4 +4652,210 @@ textarea {
 
 #answerText {
   color: #8d4f33;
+}
+/* Mobile compact player flow */
+.join-note {
+  margin: 2px 0 0;
+  color: #6f5b4e;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.leaderboard-button {
+  width: 100%;
+  min-height: 50px;
+}
+
+.phone-modal[hidden] {
+  display: none;
+}
+
+.phone-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(53, 34, 31, 0.46);
+  backdrop-filter: blur(7px);
+}
+
+.phone-modal-panel {
+  width: min(430px, 100%);
+  max-height: min(78vh, 620px);
+  overflow: auto;
+  border: 1px solid rgba(139, 85, 66, 0.2);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 238, 218, 0.98)),
+    url("./assets/paper-grain.svg"),
+    #fff0df;
+  background-size: auto, 220px 220px, auto;
+  padding: 14px;
+  box-shadow: 0 28px 72px rgba(67, 38, 31, 0.28);
+}
+
+.phone-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.phone-modal-head h2 {
+  margin: 0;
+  color: #4a2b2b;
+  font-size: 1.45rem;
+}
+
+.player-body.is-joined {
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+.player-body.is-joined .player-shell {
+  min-height: 100svh;
+  padding: 8px;
+}
+
+.player-body.is-joined .player-card {
+  display: flex;
+  min-height: calc(100svh - 16px);
+  max-height: calc(100svh - 16px);
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px;
+}
+
+.player-body.is-joined .player-card > .brand-mark,
+.player-body.is-joined .player-card > .eyebrow {
+  display: none;
+}
+
+.player-body.is-joined .player-card h1 {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(1.05rem, 5vw, 1.35rem);
+  line-height: 1.1;
+}
+
+.player-body.is-joined .player-status {
+  margin-top: 6px;
+  padding: 7px 9px;
+  font-size: 0.88rem;
+  line-height: 1.25;
+}
+
+.player-body.is-joined .player-scoreline {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.player-body.is-joined .player-scoreline span,
+.player-body.is-joined .leaderboard-button {
+  min-height: 42px;
+  padding: 7px 8px;
+  font-size: 0.9rem;
+}
+
+.player-body.is-joined .leaderboard-button {
+  min-width: 82px;
+}
+
+.player-body.is-joined .phone-mic-panel {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.player-body.is-joined .mic-button {
+  min-height: 40px;
+  padding: 7px 10px;
+  font-size: 0.95rem;
+}
+
+.player-body.is-joined .mic-status {
+  display: grid;
+  min-height: 40px;
+  align-items: center;
+  padding: 7px 8px;
+  font-size: 0.86rem;
+}
+
+.player-body.is-joined .phone-question {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.player-body.is-joined .phone-question p {
+  margin-bottom: 6px;
+  padding: 7px 9px;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+.player-body.is-joined .phone-question h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 7.5vw, 2rem);
+  line-height: 1.08;
+}
+
+.player-body.is-joined .phone-hints,
+.player-body.is-joined .phone-choices {
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.player-body.is-joined .phone-choices {
+  min-height: 0;
+  overflow: auto;
+}
+
+.player-body.is-joined .phone-choice {
+  min-height: 54px;
+  padding: 8px 10px;
+}
+
+.player-body.is-joined .phone-choice-index {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+}
+
+.player-body.is-joined .phone-choice-title {
+  font-size: 0.98rem;
+}
+
+.player-body.is-joined .buzz-button {
+  min-height: clamp(96px, 20svh, 138px);
+  margin-top: 8px;
+  font-size: clamp(2.6rem, 15vw, 4rem);
+}
+
+.player-body.is-joined .phone-result {
+  margin-top: 7px;
+  padding: 7px 9px;
+  font-size: 0.88rem;
+  line-height: 1.25;
+}
+
+@media (max-width: 390px) {
+  .player-body.is-joined .player-scoreline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-body.is-joined .leaderboard-button {
+    grid-column: 1 / -1;
+  }
+
+  .player-body.is-joined .phone-mic-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

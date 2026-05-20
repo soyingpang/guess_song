@@ -84,12 +84,12 @@ function renderState(state) {
     : state.isPlaying
       ? `播放中 · ${remainingSeconds(state)} 秒`
       : state.hasWord
-        ? "一字搶唱"
+        ? "主題搶唱"
         : "聽前奏，估詩歌";
   els.subPrompt.textContent = state.revealed
     ? state.answer
     : state.hasWord
-      ? "鬥快唱出含有這個字的詩歌"
+      ? "鬥快唱出切合這個主題的詩歌"
       : "答案未公開，請留心聽";
 
   els.mask.classList.toggle("is-hidden", Boolean(state.revealed));
@@ -335,7 +335,7 @@ function renderChoices(state) {
     item.textContent = state.buzzWinner
       ? `${state.buzzWinner.name}（${state.buzzWinner.team || "A"} 組）搶唱成功`
       : state.buzzOpen
-        ? "搶唱開放：鬥快唱出詩歌"
+        ? "搶唱開放：鬥快唱出合題詩歌"
         : "等待主持開放搶唱";
     els.choices.append(item);
     return;

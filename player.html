@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=sync-choice-room-lock-1" />
+    <link rel="stylesheet" href="./styles.css?v=mobile-compact-teams-1" />
   </head>
   <body class="player-body">
     <main class="player-shell">
@@ -20,17 +20,16 @@
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
             <button class="primary-button" type="submit">加入</button>
           </div>
-          <label for="playerTeam">你的組別</label>
-          <select id="playerTeam">
-            <option value="A">A 組</option>
-            <option value="B">B 組</option>
-          </select>
+          <p class="join-note">系統會自動平均分 A/B 組，主持可即場微調。</p>
         </form>
 
         <div class="player-status" id="playerStatus">掃 QR 後輸入名字加入</div>
         <div class="player-scoreline">
           <span id="playerScore">0 分</span>
           <span id="playerRound">未開始</span>
+          <button class="ghost-button leaderboard-button" id="openLeaderboardButton" type="button">
+            排行榜
+          </button>
         </div>
 
         <section class="phone-mic-panel" aria-label="手機咪高峰">
@@ -47,16 +46,22 @@
           <div class="phone-result" id="phoneResult"></div>
         </section>
 
-        <section class="phone-leaderboard">
-          <h2>排行榜</h2>
+      </section>
+
+      <div class="phone-modal" id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle" hidden>
+        <div class="phone-modal-panel">
+          <div class="phone-modal-head">
+            <h2 id="leaderboardTitle">排行榜</h2>
+            <button class="ghost-button" id="closeLeaderboardButton" type="button">關閉</button>
+          </div>
           <div id="phoneLeaderboard">
             <div class="phone-empty">等候排行榜</div>
           </div>
-        </section>
-      </section>
+        </div>
+      </div>
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=sync-choice-room-lock-1"></script>
+    <script src="./player.js?v=mobile-compact-teams-1"></script>
   </body>
 </html>

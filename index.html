@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=sync-choice-room-lock-1" />
+    <link rel="stylesheet" href="./styles.css?v=mobile-compact-teams-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -87,7 +87,7 @@
           <div class="mode-row three" role="group" aria-label="答題模式">
             <button class="segmented is-active" id="choiceModeButton" type="button">一：四選一</button>
             <button class="segmented" id="buzzModeButton" type="button">二：搶答估歌</button>
-            <button class="segmented" id="wordModeButton" type="button">三：一字搶唱</button>
+            <button class="segmented" id="wordModeButton" type="button">三：主題搶唱</button>
           </div>
 
           <div class="host-actions" id="judgeControls" hidden>
@@ -98,11 +98,11 @@
 
           <div class="word-controls" id="wordControls" hidden>
             <div class="word-control-line">
-              <label for="wordInput">一字題</label>
-              <input id="wordInput" maxlength="2" placeholder="例如：愛" />
+              <label for="wordInput">主題 / 關鍵詞</label>
+              <input id="wordInput" maxlength="8" placeholder="例如：平安 / 恩典 / 愛" />
             </div>
-            <button class="ghost-button" id="randomWordButton" type="button">抽字</button>
-            <button class="primary-button" id="startWordButton" type="button">開始一字題</button>
+            <button class="ghost-button" id="randomWordButton" type="button">抽主題</button>
+            <button class="primary-button" id="startWordButton" type="button">開始主題</button>
           </div>
 
           <div class="team-score-strip" aria-label="分組分數">
@@ -214,6 +214,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=sync-choice-room-lock-1"></script>
+    <script src="./app.js?v=mobile-compact-teams-1"></script>
   </body>
 </html>

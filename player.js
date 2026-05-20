@@ -1,6 +1,5 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
-const PLAYER_TEAM_KEY = "cantonese-hymn-quiz-player-team-v1";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 
@@ -14,7 +13,7 @@ const state = {
   playerId: localStorage.getItem(PLAYER_ID_KEY) || crypto.randomUUID(),
   name: urlName || localStorage.getItem(PLAYER_NAME_KEY) || "",
   displayName: "",
-  team: localStorage.getItem(PLAYER_TEAM_KEY) || "A",
+  team: "A",
   joined: false,
   connecting: false,
   reconnectAttempts: 0,
@@ -30,7 +29,6 @@ const state = {
 const els = {
   joinForm: document.querySelector("#joinForm"),
   playerName: document.querySelector("#playerName"),
-  playerTeam: document.querySelector("#playerTeam"),
   playerStatus: document.querySelector("#playerStatus"),
   playerScore: document.querySelector("#playerScore"),
   playerRound: document.querySelector("#playerRound"),
@@ -43,11 +41,13 @@ const els = {
   micToggleButton: document.querySelector("#micToggleButton"),
   phoneMicStatus: document.querySelector("#phoneMicStatus"),
   phoneLeaderboard: document.querySelector("#phoneLeaderboard"),
+  openLeaderboardButton: document.querySelector("#openLeaderboardButton"),
+  closeLeaderboardButton: document.querySelector("#closeLeaderboardButton"),
+  leaderboardModal: document.querySelector("#leaderboardModal"),
 };
 
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
 els.playerName.value = state.name;
-els.playerTeam.value = state.team;
 
 els.joinForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -57,7 +57,7 @@ els.joinForm.addEventListener("submit", (event) => {
 els.buzzButton.addEventListener("click", () => {
   send({ type: "buzz", questionId: state.game?.questionId });
   els.buzzButton.disabled = true;
-  els.phoneResult.textContent = "已送出搶答";
+  els.phoneResult.textContent = state.game?.mode === "word" ? "已送出搶唱" : "已送出搶答";
 });
 
 els.micToggleButton.addEventListener("click", () => {
@@ -67,6 +67,16 @@ els.micToggleButton.addEventListener("click", () => {
   }
 
   startMic();
+});
+
+els.openLeaderboardButton.addEventListener("click", openLeaderboard);
+els.closeLeaderboardButton.addEventListener("click", closeLeaderboard);
+els.leaderboardModal.addEventListener("click", (event) => {
+  if (event.target === els.leaderboardModal) closeLeaderboard();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !els.leaderboardModal.hidden) closeLeaderboard();
 });
 
 window.addEventListener("online", () => {
@@ -97,10 +107,8 @@ function joinGame() {
   }
 
   state.name = name.slice(0, 18);
-  state.team = normalizeTeam(els.playerTeam.value);
   state.displayName = "";
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
-  localStorage.setItem(PLAYER_TEAM_KEY, state.team);
   els.joinForm.hidden = true;
   connectToRoom({ resetAttempts: true });
 }
@@ -144,7 +152,7 @@ function bindRoomConnection(connection, token) {
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
-    send({ type: "join", playerId: state.playerId, name: state.name, team: state.team });
+    send({ type: "join", playerId: state.playerId, name: state.name });
     setStatus("已連線，等候同步");
     updateMicUi();
   });
@@ -231,6 +239,7 @@ function handleMessage(message) {
     const previousQuestionId = state.game?.questionId;
     state.game = message;
     state.displayName = message.playerName || state.name;
+    state.team = normalizeTeam(message.team);
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
@@ -350,6 +359,7 @@ function renderGame() {
   const game = state.game;
   if (!game) return;
 
+  document.body.classList.toggle("is-joined", Boolean(state.joined));
   els.playerScore.textContent = `${game.score || 0} 分`;
   els.playerRound.textContent = game.hasQuestion ? `第 ${game.round} 題 · ${teamLabel(game.team)}` : `未開始 · ${teamLabel(state.team)}`;
   els.phoneStatus.textContent = game.isPlaying
@@ -362,6 +372,16 @@ function renderGame() {
   renderHints(game.hints || []);
   renderChoices(game);
   renderLeaderboard(game.leaderboard || [], game.teamScores || {});
+}
+
+function openLeaderboard() {
+  els.leaderboardModal.hidden = false;
+  els.closeLeaderboardButton.focus();
+}
+
+function closeLeaderboard() {
+  els.leaderboardModal.hidden = true;
+  els.openLeaderboardButton.focus();
 }
 
 function renderHints(hints) {
@@ -389,11 +409,17 @@ function renderChoices(game) {
       return;
     }
 
-    (game.choices || []).forEach((choice) => {
+    (game.choices || []).forEach((choice, index) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "choice-button phone-choice";
-      button.textContent = choice;
+      const number = document.createElement("span");
+      number.className = "phone-choice-index";
+      number.textContent = String(index + 1);
+      const title = document.createElement("strong");
+      title.className = "phone-choice-title";
+      title.textContent = choice;
+      button.append(number, title);
       button.disabled = Boolean(game.answered);
       button.addEventListener("click", () => {
         send({ type: "answer", questionId: game.questionId, answer: choice });

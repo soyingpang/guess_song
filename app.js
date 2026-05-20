@@ -12,9 +12,10 @@ const PLAY_START_MODES = ["beginning", "random"];
 const RANDOM_START_MIN_SECONDS = 45;
 const RANDOM_START_MAX_END_SECONDS = 180;
 const WORD_BANK = [
-  "主", "愛", "恩", "光", "心", "路", "天", "神", "聖", "救",
-  "盼", "望", "信", "靠", "榮", "耀", "平", "安", "真", "活",
-  "靈", "家", "十", "架", "永", "生", "讚", "美",
+  "平安", "恩典", "愛", "信", "盼望", "喜樂", "感謝", "讚美",
+  "敬拜", "禱告", "耶穌", "天父", "聖靈", "十架", "救恩", "生命",
+  "光明", "道路", "真理", "倚靠", "同行", "保守", "安慰", "醫治",
+  "得勝", "祝福", "赦免", "榮耀", "永恆", "應許", "回家", "呼召",
 ];
 
 const APPROVED_SOURCE_RULES = [
@@ -324,12 +325,11 @@ function handlePlayerMessage(connection, message) {
   if (message.type === "join") {
     const playerId = String(message.playerId || connection.peer || crypto.randomUUID());
     const name = cleanPlayerName(message.name);
-    const team = normalizeTeam(message.team);
     const player = resolveJoiningPlayer(playerId, name);
     const previousConnection = player.connection;
 
     player.name = uniquePlayerName(name, player.id);
-    player.team = team;
+    player.team = normalizeTeam(player.team);
     player.connected = true;
     player.connection = connection;
     player.micActive = false;
@@ -468,15 +468,16 @@ function handleChoiceAnswer(player, answer) {
 function handleBuzz(player) {
   if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
 
+  const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
   state.buzzWinnerId = player.id;
   state.buzzOpen = false;
   broadcastToPlayers({
     type: "result",
     questionId: state.currentQuestionId,
     winnerId: player.id,
-    message: `${player.name} 搶答成功，等主持判定`,
+    message: `${player.name} ${actionLabel}成功，等主持判定`,
   });
-  setResult("搶答成功", `${player.name}（${teamLabel(player.team)}）`, "");
+  setResult(`${actionLabel}成功`, `${player.name}（${teamLabel(player.team)}）`, "");
   render();
 }
 
@@ -526,10 +527,11 @@ function judgeBuzzWinner(isCorrect) {
     return;
   }
 
+  const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
   player.answers[state.currentQuestionId] = { answer: "buzz", correct: false, points: 0 };
   state.buzzWinnerId = "";
   state.buzzOpen = false;
-  setResult("未中", `${player.name} 暫停今題再搶；如要繼續請按開放搶答`, "wrong");
+  setResult("未中", `${player.name} 暫停今題再搶；如要繼續請按開放${actionLabel}`, "wrong");
   sendToPlayer(player, {
     type: "result",
     questionId: state.currentQuestionId,
@@ -550,7 +552,7 @@ function reopenBuzz() {
   state.buzzOpen = true;
   state.showLeaderboard = false;
   state.showWinner = false;
-  setResult(state.mode === "word" ? "已開放搶唱" : "已開放搶答", state.mode === "word" ? `今題字：${state.currentWord}` : "", "");
+  setResult(state.mode === "word" ? "已開放搶唱" : "已開放搶答", state.mode === "word" ? `今題主題：${state.currentWord}` : "", "");
   render();
 }
 
@@ -694,7 +696,7 @@ function startWordRound(preferredWord = "") {
   state.showWinner = false;
   els.wordInput.value = word;
   els.playerHost.replaceChildren();
-  setResult("一字搶唱：已準備", `今題字：${word}，按開放搶唱開始`, "");
+  setResult("主題搶唱：已準備", `今題主題：${word}，按開放搶唱開始`, "");
   render();
 }
 
@@ -744,7 +746,7 @@ function loadCurrentVideo() {
 
 function playCurrentClip() {
   if (state.mode === "word") {
-    setResult("一字題不需要播放", state.currentWord ? `今題字：${state.currentWord}` : "", "");
+    setResult("主題搶唱不需要播放", state.currentWord ? `今題主題：${state.currentWord}` : "", "");
     return;
   }
 
@@ -970,7 +972,7 @@ function setMode(mode) {
     state.playEndsAt = 0;
     state.currentQuestionId = "";
     els.playerHost.replaceChildren();
-    setResult("一字搶唱模式", "抽字或輸入一個字開始", "");
+    setResult("主題搶唱模式", "抽主題或輸入大路關鍵詞開始", "");
   } else {
     state.currentWord = "";
     state.currentChoices = state.currentSong ? makeChoices(state.currentSong, playableSongs()) : [];
@@ -1279,13 +1281,13 @@ function renderQuiz() {
   const roomBlocked = isRoomBlocked();
   els.roundLabel.textContent = hasActiveQuestion() ? `第 ${state.round} 題` : "未有題目";
   els.quizTitle.textContent = hasWord
-    ? `今題字：${state.currentWord}`
+    ? `今題主題：${state.currentWord}`
     : hasSong
       ? state.answered
         ? state.currentSong.title
         : "估呢首詩歌"
       : state.mode === "word"
-        ? "一字搶唱"
+        ? "主題搶唱"
         : state.songs.length
           ? emptyPoolMessage()
           : "先加入詩歌";
@@ -1671,9 +1673,9 @@ function buildDisplayState() {
     showWinner: state.showWinner,
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
-    prompt: hasWord ? "一字搶唱" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",
+    prompt: hasWord ? "主題搶唱" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",
     status: els.resultText.textContent || "",
-    answer: revealed && song ? answerLabel(song) : hasWord ? `今題字：${state.currentWord}` : "",
+    answer: revealed && song ? answerLabel(song) : hasWord ? `今題主題：${state.currentWord}` : "",
     title: hasWord ? state.currentWord : revealed && song ? song.title : "估呢首詩歌",
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
@@ -1712,7 +1714,7 @@ function buildPlayerState(player) {
     team: normalizeTeam(player.team),
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
-    title: hasWord ? `今題字：${state.currentWord}` : revealed && song ? song.title : "估呢首詩歌",
+    title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : "估呢首詩歌",
     status: els.resultText.textContent || "",
     score: player.score,
     choices: choiceOptions,
@@ -1790,13 +1792,24 @@ function resolveJoiningPlayer(playerId, name) {
   return {
     id: playerId,
     name,
-    team: "A",
+    team: balancedJoiningTeam(),
     score: 0,
     answers: {},
     micActive: false,
     micCall: null,
     micStream: null,
   };
+}
+
+function balancedJoiningTeam() {
+  const counts = { A: 0, B: 0 };
+  Object.values(state.players).forEach((player) => {
+    counts[normalizeTeam(player.team)] += 1;
+  });
+
+  if (counts.A < counts.B) return "A";
+  if (counts.B < counts.A) return "B";
+  return Math.random() < 0.5 ? "A" : "B";
 }
 
 function uniquePlayerName(name, playerId) {
@@ -1850,11 +1863,11 @@ function hasActiveQuestion() {
 }
 
 function cleanWord(value) {
-  return String(value || "").trim().replace(/\s+/g, "").slice(0, 2);
+  return String(value || "").trim().replace(/\s+/g, "").slice(0, 8);
 }
 
 function randomWord() {
-  return pickRandom(WORD_BANK) || "愛";
+  return pickRandom(WORD_BANK) || "恩典";
 }
 
 function miniButton(text, title, onClick) {
