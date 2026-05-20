@@ -2397,3 +2397,434 @@ select {
     padding: 12px;
   }
 }
+
+/* Home fellowship visual pass */
+:root {
+  --bg: #140f12;
+  --bg-2: #20161a;
+  --panel: #2a1b20;
+  --panel-2: #352329;
+  --panel-3: #47302e;
+  --line: #654d45;
+  --line-soft: #473632;
+  --text: #fff9ef;
+  --muted: #decfc1;
+  --soft: #f7e7d5;
+  --accent: #f0bd6a;
+  --accent-2: #ffe9b5;
+  --cool: #b8ddc3;
+  --rose: #d08278;
+  --sky: #9fc8cf;
+  --home-shadow: 0 26px 78px rgba(15, 6, 7, 0.5);
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 22% 16%, rgba(240, 189, 106, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 24%, rgba(184, 221, 195, 0.14), transparent 34%),
+    radial-gradient(circle at 50% 92%, rgba(208, 130, 120, 0.12), transparent 42%),
+    url("./assets/warm-fabric-pattern.svg"),
+    linear-gradient(180deg, #1c1217 0%, #140f12 46%, #101513 100%);
+  background-size: auto, auto, auto, 360px 360px, auto;
+}
+
+body::before {
+  background-image:
+    url("./assets/fellowship-pattern.svg"),
+    linear-gradient(90deg, rgba(255, 249, 239, 0.02) 0 1px, transparent 1px 82px),
+    linear-gradient(0deg, rgba(255, 249, 239, 0.018) 0 1px, transparent 1px 70px);
+  background-size: 680px 680px, auto, auto;
+  opacity: .76;
+}
+
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background:
+    linear-gradient(180deg, rgba(20, 15, 18, 0.08), rgba(20, 15, 18, 0.66)),
+    radial-gradient(circle at 50% -8%, rgba(255, 233, 181, 0.14), transparent 38%);
+  pointer-events: none;
+}
+
+.topbar h1 {
+  font-size: clamp(2.9rem, 4vw, 3.75rem);
+}
+
+.brand-mark {
+  border-color: rgba(255, 233, 181, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.12), transparent),
+    #27191c;
+  box-shadow:
+    0 16px 42px rgba(15, 6, 7, 0.36),
+    0 0 0 1px rgba(184, 221, 195, 0.1) inset;
+}
+
+.quiz-panel,
+.library-panel,
+.player-card {
+  border-color: rgba(255, 233, 181, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.08), transparent 210px),
+    radial-gradient(circle at 18% 0%, rgba(255, 233, 181, 0.08), transparent 28%),
+    radial-gradient(circle at 92% 8%, rgba(184, 221, 195, 0.075), transparent 28%),
+    url("./assets/warm-fabric-pattern.svg"),
+    #27191d;
+  background-size: auto, auto, auto, 420px 420px, auto;
+  box-shadow: var(--home-shadow);
+}
+
+.quiz-panel::before,
+.library-panel::before,
+.player-card::before {
+  height: 7px;
+  background: linear-gradient(90deg, #d08278, #f0bd6a 42%, #b8ddc3 74%, #9fc8cf);
+}
+
+.control-sidebar {
+  background:
+    radial-gradient(circle at 86% 8%, rgba(255, 233, 181, 0.1), transparent 26%),
+    url("./assets/warm-fabric-pattern.svg"),
+    #24181c;
+  background-size: auto, 390px 390px, auto;
+}
+
+.player-wrap,
+.stage-player {
+  border-color: rgba(255, 233, 181, 0.24);
+  background: #100d0f;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 249, 239, 0.06),
+    0 24px 80px rgba(15, 6, 7, 0.46);
+}
+
+.player-wrap::before,
+.stage-player::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: "";
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 233, 181, 0.12), transparent 36%),
+    linear-gradient(180deg, transparent 62%, rgba(20, 15, 18, 0.34));
+  pointer-events: none;
+}
+
+#playerHost,
+#stagePlayerHost {
+  position: relative;
+  z-index: 0;
+}
+
+.player-mask,
+.stage-mask {
+  background-color: #120f10;
+  background-image:
+    linear-gradient(180deg, rgba(18, 15, 16, 0.12), rgba(18, 15, 16, 0.7)),
+    url("./assets/warm-fabric-pattern.svg"),
+    linear-gradient(180deg, #211619, #121011);
+  background-size: auto, 390px 390px, auto;
+}
+
+.player-mask::before,
+.stage-mask::before {
+  inset: clamp(18px, 5%, 42px);
+  border: 1px solid rgba(255, 233, 181, 0.22);
+  border-radius: 8px;
+  background-image:
+    linear-gradient(180deg, rgba(18, 15, 16, 0.06), rgba(18, 15, 16, 0.44)),
+    url("./assets/home-fellowship-scene.svg");
+  background-position: center;
+  background-size: cover;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 249, 239, 0.05),
+    0 26px 80px rgba(15, 6, 7, 0.36);
+  opacity: .86;
+}
+
+.player-mask::after,
+.stage-mask::after {
+  height: 10px;
+  background: linear-gradient(90deg, #d08278, #f0bd6a 42%, #b8ddc3 75%, #9fc8cf);
+}
+
+.player-mask span,
+.stage-mask span {
+  color: #f5e7d8;
+  text-shadow: 0 8px 26px rgba(0, 0, 0, 0.52);
+}
+
+.pulse-disc {
+  width: min(210px, 38vw);
+  border-color: rgba(255, 233, 181, 0.62);
+  background:
+    linear-gradient(90deg, #fff0bf 0 48%, #bd8744 48% 52%, #fff3c9 52% 100%);
+  box-shadow:
+    inset 0 0 0 1px #fff7dd,
+    0 20px 56px rgba(240, 189, 106, 0.28),
+    0 0 0 10px rgba(30, 19, 20, 0.96),
+    0 0 0 11px rgba(255, 233, 181, 0.55);
+}
+
+.stage-disc {
+  width: min(250px, 28vw);
+}
+
+.score-strip > div,
+.stage-score span,
+.player-scoreline span,
+.team-score-strip > div,
+.stage-answer-meta strong,
+.stage-answer-meta span,
+.stage-hint,
+.stage-choice,
+.stage-rank,
+.phone-rank,
+.phone-empty,
+.phone-team-summary span {
+  border-color: rgba(255, 233, 181, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.08), transparent),
+    linear-gradient(135deg, rgba(184, 221, 195, 0.055), transparent),
+    #211519;
+}
+
+.primary-button {
+  background:
+    linear-gradient(180deg, #fff3c9, #f0bd6a 58%, #d99450);
+  color: #2d1808;
+  box-shadow:
+    0 15px 34px rgba(240, 189, 106, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.46);
+}
+
+.ghost-button,
+.icon-button,
+.file-button {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.08), transparent),
+    linear-gradient(135deg, rgba(184, 221, 195, 0.04), transparent),
+    #302127;
+  border-color: rgba(255, 233, 181, 0.18);
+}
+
+.segmented.is-active {
+  background:
+    linear-gradient(180deg, rgba(255, 233, 181, 0.24), transparent),
+    #442d29;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 233, 181, 0.3),
+    0 8px 20px rgba(15, 6, 7, 0.16);
+}
+
+.choice-button,
+.phone-choice {
+  border-color: rgba(255, 233, 181, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.09), transparent),
+    #2e1f24;
+  box-shadow:
+    inset 5px 0 0 rgba(240, 189, 106, 0.42),
+    0 12px 26px rgba(15, 6, 7, 0.16);
+}
+
+.result-bar,
+.room-status,
+.player-status,
+.phone-result,
+.mic-status,
+.hint-item,
+.empty-state {
+  border-color: rgba(184, 221, 195, 0.25);
+  background:
+    linear-gradient(180deg, rgba(184, 221, 195, 0.08), transparent),
+    #171d18;
+}
+
+.song-item,
+.player-item,
+.library-drawer summary,
+.join-form,
+.phone-mic-panel {
+  border-color: rgba(255, 233, 181, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.06), transparent),
+    #211519;
+}
+
+.display-body {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(240, 189, 106, 0.12), transparent 31%),
+    radial-gradient(circle at 88% 12%, rgba(184, 221, 195, 0.12), transparent 30%),
+    url("./assets/warm-fabric-pattern.svg"),
+    linear-gradient(180deg, #1d1216 0%, #140f12 50%, #101513 100%);
+  background-size: auto, auto, 380px 380px, auto;
+}
+
+.stage-top .brand-mark {
+  width: 84px;
+  height: 84px;
+}
+
+.stage-player {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.02), transparent),
+    #100d0f;
+}
+
+.stage-mask {
+  gap: 18px;
+}
+
+.stage-mask strong {
+  color: #fffaf0;
+  font-size: clamp(3.2rem, 5.7vw, 5.6rem);
+  text-shadow:
+    0 3px 0 rgba(70, 40, 28, 0.24),
+    0 18px 48px rgba(0, 0, 0, 0.56);
+}
+
+.stage-mask span {
+  font-size: clamp(1.15rem, 1.55vw, 1.55rem);
+}
+
+.stage-info {
+  padding-left: 4px;
+}
+
+.stage-info p {
+  color: #b8ddc3;
+}
+
+.stage-info h2 {
+  color: #fff9ef;
+  text-shadow:
+    0 3px 0 rgba(70, 40, 28, 0.26),
+    0 18px 52px rgba(0, 0, 0, 0.42);
+}
+
+.stage-choice,
+.stage-rank {
+  border-color: rgba(255, 233, 181, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.08), transparent),
+    #24181d;
+}
+
+.stage-qr {
+  border-color: rgba(255, 233, 181, 0.48);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.09), transparent),
+    url("./assets/warm-fabric-pattern.svg"),
+    #22161a;
+  background-size: auto, 360px 360px, auto;
+}
+
+.stage-qr strong {
+  color: #ffe9b5;
+}
+
+.stage-sound-button {
+  background:
+    linear-gradient(180deg, #5d3b22, #342014);
+  border-color: rgba(255, 233, 181, 0.7);
+}
+
+.stage-winner-final,
+.stage-team-final {
+  background:
+    linear-gradient(180deg, rgba(18, 15, 16, 0.1), rgba(18, 15, 16, 0.42)),
+    url("./assets/home-fellowship-scene.svg"),
+    #211519;
+  background-position: center;
+  background-size: cover;
+}
+
+.player-body {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(240, 189, 106, 0.16), transparent 32%),
+    radial-gradient(circle at 84% 0%, rgba(184, 221, 195, 0.12), transparent 31%),
+    url("./assets/warm-fabric-pattern.svg"),
+    linear-gradient(180deg, #1b1115 0%, #140f12 100%);
+  background-size: auto, auto, 360px 360px, auto;
+}
+
+.player-body .player-card {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 233, 181, 0.1), transparent 30%),
+    linear-gradient(180deg, rgba(35, 24, 28, 0.78), rgba(35, 24, 28, 0.92)),
+    url("./assets/home-fellowship-scene.svg"),
+    #25191d;
+  background-position: center top, center, center bottom, center;
+  background-size: auto, auto, 980px auto, auto;
+}
+
+.player-card > .brand-mark {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.14), transparent),
+    #2d1e22;
+}
+
+.phone-question,
+.phone-leaderboard {
+  border-top-color: rgba(255, 233, 181, 0.14);
+}
+
+.phone-question h2,
+.phone-leaderboard h2 {
+  color: #fff9ef;
+}
+
+.mic-button {
+  background:
+    linear-gradient(180deg, rgba(255, 233, 181, 0.2), transparent),
+    #35221b;
+  border-color: rgba(255, 233, 181, 0.34);
+}
+
+.mic-button.is-live {
+  background:
+    linear-gradient(180deg, rgba(184, 221, 195, 0.28), transparent),
+    #17271c;
+}
+
+.buzz-button {
+  background:
+    linear-gradient(180deg, #fff3c9, #f0bd6a 56%, #d99450);
+}
+
+@media (max-height: 820px) and (min-width: 760px) {
+  .stage-disc {
+    width: 170px;
+  }
+
+  .stage-mask::before {
+    inset: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  body::before {
+    background-size: 520px 520px, auto, auto;
+  }
+
+  .stage-mask::before,
+  .player-mask::before {
+    inset: 12px;
+  }
+
+  .stage-mask strong {
+    font-size: 2.42rem;
+  }
+
+  .stage-disc {
+    width: min(170px, 48vw);
+  }
+
+  .player-body .player-card {
+    background-size: auto, auto, 760px auto, auto;
+  }
+}

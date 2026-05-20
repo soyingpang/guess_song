@@ -21,6 +21,38 @@
 
 ---
 
+## 2026-05-20 10:30 HKT
+
+類型：設計 / 介面美化
+
+摘要：
+- 按「都會團契、溫馨、有家的感覺」方向再美化一次。
+- 新增本地 SVG 素材：
+  - `assets/home-fellowship-scene.svg`：城市窗景、暖燈、木桌、詩歌本、杯和植物的客廳團契場景。
+  - `assets/warm-fabric-pattern.svg`：柔和布紋背景。
+- 前台遮罩改成更像客廳聚會空間：實色底、城市窗景、暖燈光，不會看穿 YouTube。
+- 後台和手機端加入更柔和的暖布紋、燈光和「家」的層次。
+- 手機端背景改成帶客廳場景的深暖色卡片，減少冷冰冰 app 感。
+- 更新 cache version 至 `home-fellowship-ui-1`。
+
+影響：
+- 前台更適合都會團契大螢幕：仍清楚、仍遮答案，但氣氛更像團契聚會。
+- 新素材全部是本地 SVG，GitHub Pages 可直接載入，不需要外部圖片。
+
+已測試：
+- 本機 Browser 檢查前台、後台、手機端新視覺。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 可再用實際投影 / 電視尺寸微調場景濃淡和前台標題大小。
+
+---
+
 ## 2026-05-20 10:19 HKT
 
 類型：設計 / 介面美化
