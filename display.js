@@ -1,9 +1,11 @@
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
+const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room") || "";
+const qrRoomId = roomId || DEFAULT_ROOM_ID;
 
 const els = {
   hero: document.querySelector(".stage-hero"),
@@ -216,7 +218,11 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   els.leaderboard.replaceChildren();
   els.leaderboard.classList.remove("is-final", "is-winner");
   els.hero.classList.remove("is-winner-reveal");
-  els.qrPanel.hidden = true;
+  renderQr({
+    playerUrl: buildFallbackPlayerUrl(),
+    roomId: qrRoomId,
+    roomReady: Boolean(roomId),
+  });
   els.playerHost.classList.add("is-masked");
   els.playerHost.replaceChildren();
   latestFrameKey = "";
@@ -455,7 +461,10 @@ function teamScoreBlock(label, score, leading) {
 }
 
 function renderQr(state) {
-  if (!state.playerUrl) {
+  const playerUrl = state.playerUrl || buildFallbackPlayerUrl();
+  const displayRoomId = state.roomId || qrRoomId;
+
+  if (!playerUrl) {
     els.qrPanel.hidden = true;
     els.qr.removeAttribute("src");
     delete els.qr.dataset.qrValue;
@@ -463,11 +472,18 @@ function renderQr(state) {
   }
 
   els.qrPanel.hidden = false;
-  if (els.qr.dataset.qrValue !== state.playerUrl) {
-    els.qr.dataset.qrValue = state.playerUrl;
-    els.qr.src = createQrImageSource(state.playerUrl);
+  if (els.qr.dataset.qrValue !== playerUrl) {
+    els.qr.dataset.qrValue = playerUrl;
+    els.qr.src = createQrImageSource(playerUrl);
   }
-  els.room.textContent = state.roomReady ? `房間：${state.roomId}` : "房間建立中";
+  els.room.textContent = state.roomReady ? `房間：${displayRoomId}` : `房間建立中：${displayRoomId}`;
+}
+
+function buildFallbackPlayerUrl() {
+  if (!qrRoomId) return "";
+  const url = new URL("./player.html", window.location.href);
+  url.searchParams.set("room", qrRoomId);
+  return url.toString();
 }
 
 function createQrImageSource(playerUrl) {

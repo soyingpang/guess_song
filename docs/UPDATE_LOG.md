@@ -21,6 +21,31 @@
 
 ---
 
+## 2026-05-20 14:47 HKT
+
+類型：修正 / 前台 QR / 玩家加入
+
+摘要：
+- 修正前台等待同步時 QR code 會消失的問題。
+- `display.js` 加入固定房間 fallback：即使未收到後台 `display-state`，仍用 `soyingpang-guess-song-fellowship-room` 生成玩家手機 QR。
+- `renderWaiting()` 不再隱藏 QR panel，而是顯示可加入固定房間的玩家連結。
+- `renderQr()` 在沒有 `playerUrl` 時會自動建立 fallback player URL。
+- 更新 cache version 至 `front-qr-always-1`。
+
+影響：
+- 前台右下角 QR code 會保留，玩家可以照樣掃碼加入。
+- 後台同步、前台播放、手機答題邏輯不受影響。
+
+測試：
+- Browser 本機打開 `display.html?room=soyingpang-guess-song-fellowship-room`，確認 QR panel 沒有 hidden。
+- Browser 本機確認 QR 連去 `player.html?room=soyingpang-guess-song-fellowship-room`。
+- `node --check display.js`
+
+後續：
+- 若之後仍要開多房間，前台連結必須帶 `room` query；沒有 query 時會用固定房間作預設。
+
+---
+
 ## 2026-05-20 14:38 HKT
 
 類型：設計 / 後台排版 / 主持介面
