@@ -783,6 +783,10 @@ select:focus {
   padding: 10px;
 }
 
+.player-item {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
 .song-item strong,
 .song-item span,
 .player-item strong,
@@ -808,9 +812,26 @@ select:focus {
   color: var(--accent-2);
 }
 
-.song-actions {
+.song-actions,
+.player-actions {
   display: flex;
   gap: 6px;
+}
+
+.player-actions {
+  align-items: center;
+}
+
+.mini-select {
+  min-width: 72px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 0 8px;
+  font-size: 0.82rem;
+  font-weight: 950;
 }
 
 .song-item.is-locked {
@@ -856,6 +877,10 @@ select:focus {
 
 .mini-button.delete {
   color: #ffc1bb;
+}
+
+.mini-button:disabled {
+  opacity: 0.42;
 }
 
 .display-body {

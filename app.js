@@ -1264,9 +1264,65 @@ function renderPlayers() {
     score.className = "player-score";
     score.textContent = `${player.score} 分`;
 
-    item.append(info, score);
+    const actions = document.createElement("div");
+    actions.className = "player-actions";
+
+    const teamSelect = document.createElement("select");
+    teamSelect.className = "mini-select";
+    teamSelect.setAttribute("aria-label", `${player.name} 組別`);
+    ["A", "B"].forEach((team) => {
+      const option = document.createElement("option");
+      option.value = team;
+      option.textContent = `${team} 組`;
+      teamSelect.append(option);
+    });
+    teamSelect.value = normalizeTeam(player.team);
+    teamSelect.addEventListener("change", () => setPlayerTeam(player.id, teamSelect.value));
+
+    const remove = miniButton("移", "移除離線玩家", () => removeOfflinePlayer(player.id));
+    remove.classList.add("delete");
+    remove.disabled = Boolean(player.connected);
+    remove.title = player.connected ? "玩家仍在線，不能移除" : "移除離線玩家";
+
+    actions.append(teamSelect, remove);
+
+    item.append(info, score, actions);
     els.playerList.append(item);
   });
+}
+
+function setPlayerTeam(playerId, team) {
+  const player = state.players[playerId];
+  if (!player) return;
+
+  const nextTeam = normalizeTeam(team);
+  if (normalizeTeam(player.team) === nextTeam) return;
+
+  player.team = nextTeam;
+  setResult("已更新玩家組別", `${player.name} → ${teamLabel(nextTeam)}`, "correct");
+  renderPlayers();
+  syncSurfaces();
+}
+
+function removeOfflinePlayer(playerId) {
+  const player = state.players[playerId];
+  if (!player) return;
+
+  if (player.connected) {
+    setResult("玩家仍在線", "只能移除離線玩家", "wrong");
+    renderPlayers();
+    return;
+  }
+
+  if (!confirm(`移除離線玩家「${player.name}」？`)) {
+    renderPlayers();
+    return;
+  }
+
+  delete state.players[playerId];
+  if (state.buzzWinnerId === playerId) state.buzzWinnerId = "";
+  setResult("已移除離線玩家", player.name, "");
+  render();
 }
 
 function setResult(message, answer, tone = "") {

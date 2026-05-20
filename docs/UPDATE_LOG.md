@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-20 08:54 HKT
+
+類型：程式 / 後台優化
+
+摘要：
+- 後台玩家列表加入組別下拉選單，主持可即場把玩家改到 A 組 / B 組。
+- 改組後會即時同步到手機、前台排行榜和分組資訊。
+- 後台玩家列表加入「移」按鈕，只可移除離線玩家。
+- 若玩家仍在線，移除按鈕會 disabled，避免主持誤踢。
+- 更新 cache version 至 `player-tools-1`。
+
+影響：
+- 團契現場可先讓玩家自行加入，再由主持按需要微調分組。
+- 有人手機離線、重入或測試玩家殘留時，主持可以清走離線名單，玩家欄會乾淨好多。
+
+已測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `git diff --check`
+- 本機 server 已重新啟動於 `http://127.0.0.1:5173/`。
+- 本機瀏覽器確認後台載入 `app.js?v=player-tools-1`，沒有 console error。
+- 本機 HTTP 檢查確認 `setPlayerTeam`、`removeOfflinePlayer`、`.mini-select`、`.player-actions` 已載入。
+
+後續：
+- 可加前台連線狀態提示，讓主持和全場知道手機房間是否穩定。
+- 可加主持端玩家分數微調，用作人工補分或扣錯分修正。
+
+---
+
 ## 2026-05-20 01:25 HKT
 
 類型：程式 / 現場後備
