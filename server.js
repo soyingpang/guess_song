@@ -15,6 +15,7 @@ const contentTypes = {
   ".md": "text/markdown; charset=utf-8",
   ".mp3": "audio/mpeg",
   ".ogg": "audio/ogg",
+  ".svg": "image/svg+xml; charset=utf-8",
   ".wav": "audio/wav",
   ".webm": "audio/webm",
 };

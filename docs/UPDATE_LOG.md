@@ -21,6 +21,41 @@
 
 ---
 
+## 2026-05-20 10:19 HKT
+
+類型：設計 / 介面美化
+
+摘要：
+- 前台、後台、手機端做一輪溫馨團契風格美化。
+- 新增本地 SVG 素材：
+  - `assets/worship-crest.svg`：詩歌本 / 敬拜 emblem。
+  - `assets/fellowship-pattern.svg`：淡色教會窗格與樂譜線背景紋理。
+- 三個入口頁加入同一個品牌圖示，令後台、前台、手機視覺一致。
+- 調整色盤為深酒紅、燭光金、鼠尾草綠和暖白，減少冷冰冰控制台感。
+- 強化前台遮罩為實色設計，不靠半透明遮住 YouTube。
+- 美化手機端卡片、搶答按鈕、排行榜和開咪區。
+- 更新 cache version 至 `warm-fellowship-ui-1`。
+- 本機測試 server 加入 `.svg` MIME type，方便本機預覽素材。
+
+影響：
+- GitHub Pages 會直接載入本地 SVG 素材，不依賴外部圖片服務。
+- 前台仍保留 QR code、啟用聲音、四選一和排行榜等既有流程。
+- 視覺更貼近教會團契現場使用，而不是一般考試 / 控制台畫面。
+
+已測試：
+- 本機 Browser 檢查後台、前台、手機端載入新素材和新版 CSS。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 可再按現場投影尺寸微調字體大小和 QR code 位置。
+
+---
+
 ## 2026-05-20 10:11 HKT
 
 類型：修正 / 前台播放
