@@ -488,7 +488,7 @@ function startNextQuestion() {
     return;
   }
 
-  startRound(null, { autoplay: false });
+  startRound(null, { autoplay: true });
 }
 
 function startRound(preferredSongId, options = {}) {
