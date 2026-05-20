@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-20 21:11 HKT
+
+類型：程式 / 播放流程 / YouTube 廣告
+
+摘要：
+- 按用戶最新要求，取消「前台預備 → 正式開始」兩步流程，改回一按自動播放。
+- 後台「前台預備」改為「下一題播放」：按下即抽題、載入前台、嘗試自動播放並開始倒數。
+- 「正式開始」按鈕改回「重播片段」，用於同題再播。
+- 保留防穿答案遮罩：估歌期間即使正在播放，也用實色遮住 YouTube 大部分畫面，只留右下角小窗給主持手動處理廣告。
+- cache version 更新至 `youtube-autoplay-1`，並同步更新 `README.md`、`docs/GAME_PLAN.md`、`docs/AI_HANDOFF.md`。
+
+影響：
+- 現場操作回到一鍵出題播放；如果有廣告，主持最多在 MON2 的右下角小窗手動處理。
+- 手機四選一仍只在播放中顯示，未播放 / 停止狀態不能偷答。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認：按「下一題播放」後，後台 iframe 使用 `autoplay=1`，按鈕變「播放中」。
+- Browser 本機確認：前台 `display.html` 進入 `is-playing`，倒數顯示「播放中」，iframe 使用 `autoplay=1`；遮罩仍有 `stage-mask.is-prep-cover`，大畫面被實色遮住，只留右下角操作窗，無 console error。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-20 21:02 HKT
 
 類型：修正 / 前台預備遮罩 / 手機答題

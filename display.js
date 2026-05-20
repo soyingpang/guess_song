@@ -81,14 +81,14 @@ function renderState(state) {
   els.status.textContent = state.status || (state.hasSong ? "聽片段，估詩歌名" : "等候主持開始");
   els.title.textContent = state.hasWord ? state.title : state.revealed ? state.title : "估呢首詩歌";
 
-  const prepCover = Boolean(state.frontReady && !state.isPlaying && !state.revealed);
-  const showFrontPlayer = Boolean(state.revealed || state.frontReady || state.isPlaying);
+  const prepCover = Boolean(state.hasSong && !state.revealed);
+  const showFrontPlayer = Boolean(state.revealed || prepCover);
   els.prompt.textContent = state.revealed
     ? "答案"
     : state.isPlaying
       ? `播放中 · ${remainingSeconds(state)} 秒`
       : prepCover
-        ? "前台預備中"
+        ? "答案遮罩中"
       : state.hasWord
         ? "主題搶唱"
         : "聽前奏，估詩歌";

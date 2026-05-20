@@ -173,7 +173,7 @@ render();
 if (!state.songs.length) {
   loadCloudLibrary({ silent: true });
 } else {
-  setResult("準備開始", `${approvedSongs().length}/${state.songs.length} 首可出題，按前台預備開始`, "");
+  setResult("準備開始", `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
   render();
 }
 
@@ -617,7 +617,7 @@ function startNextQuestion() {
     return;
   }
 
-  startRound(null, { frontReady: true });
+  startRound(null, { autoplay: true });
 }
 
 function startRound(preferredSongId, options = {}) {
@@ -676,7 +676,7 @@ function startRound(preferredSongId, options = {}) {
   els.guessInput.value = "";
   setResult(
     autoplay ? playbackStatus(song) : prepared ? "前台已預備" : "題目已載入",
-    autoplay ? "" : prepared ? "請在 MON2 處理廣告；可播放後按正式開始" : "按前台預備把影片送到 MON2",
+    autoplay ? "" : prepared ? "可按重播片段，或直接下一題播放" : "按下一題播放把影片送到 MON2",
     ""
   );
   render();
@@ -787,7 +787,7 @@ function stopPlayback(message = "已停止播放") {
   state.fullPlayback = false;
   state.playEndsAt = 0;
   if (state.currentSong) renderYouTubeFrame({ autoplay: false });
-  setResult(message, state.currentSong ? "可開估、重播或前台預備下一題" : "", "");
+  setResult(message, state.currentSong ? "可開估、重播或下一題播放" : "", "");
   render();
 }
 
@@ -996,7 +996,7 @@ function setMode(mode) {
   } else {
     state.currentWord = "";
     state.currentChoices = state.currentSong ? makeChoices(state.currentSong, playableSongs()) : [];
-    setResult(mode === "choice" ? "四選一模式" : "搶答估歌模式", "按前台預備載入題目", "");
+    setResult(mode === "choice" ? "四選一模式" : "搶答估歌模式", "按下一題播放", "");
   }
   state.buzzWinnerId = "";
   state.buzzOpen = false;
@@ -1028,7 +1028,7 @@ function scheduleClipStop() {
     state.fullPlayback = false;
     state.frontReady = false;
     state.playEndsAt = 0;
-    setResult("時間到", state.currentSong ? "可以開估、重播或前台預備下一題" : "", "");
+    setResult("時間到", state.currentSong ? "可以開估、重播或下一題播放" : "", "");
     renderYouTubeFrame({ autoplay: false });
     render();
   }, clipDuration(state.currentSong) * 1000);
@@ -1127,7 +1127,7 @@ function saveSongFromForm() {
   saveSongs();
   resetForm();
   render();
-  startRound(song.id, { frontReady: true });
+  startRound(song.id, { autoplay: true });
 }
 
 function editSong(songId) {
@@ -1153,7 +1153,7 @@ function deleteSong(songId) {
   state.songs = state.songs.filter((item) => item.id !== songId);
   if (state.editingId === songId) resetForm();
   saveSongs();
-  if (state.currentSong?.id === songId) startRound(null, { frontReady: true });
+  if (state.currentSong?.id === songId) startRound(null, { autoplay: true });
   render();
 }
 
@@ -1210,7 +1210,7 @@ async function loadCloudLibrary({ silent }) {
 
     state.songs = dedupeSongs(songs);
     saveSongs();
-    setResult("已載入經典詩歌線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題，按前台預備開始`, "");
+    setResult("已載入經典詩歌線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
     render();
   } catch {
     if (!silent) setResult("載入線上題庫失敗", "請稍後再試", "wrong");
@@ -1334,9 +1334,9 @@ function renderQuiz() {
   els.showWinnerButton.disabled = roomBlocked;
   els.resetGameButton.disabled = roomBlocked;
   els.toggleVideoButton.disabled = roomBlocked || !hasActiveQuestion();
-  els.playButton.textContent = state.isPlaying ? "播放中" : "正式開始";
+  els.playButton.textContent = state.isPlaying ? "播放中" : "重播片段";
   els.replayButton.textContent = "重播片段";
-  els.nextButton.textContent = state.mode === "word" ? "下一主題" : "前台預備";
+  els.nextButton.textContent = state.mode === "word" ? "下一主題" : "下一題播放";
   els.playButton.disabled = roomBlocked || state.mode === "word" || !hasSong || state.isPlaying;
   els.replayButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
   els.stopButton.disabled = roomBlocked || !state.isPlaying;
@@ -1446,7 +1446,7 @@ function renderLibrary() {
       const remove = miniButton("刪", "刪除", () => deleteSong(song.id));
       remove.classList.add("delete");
       if (approved) {
-        const play = miniButton("播", "用呢首出題並前台預備", () => startRound(song.id, { frontReady: true }));
+        const play = miniButton("播", "用呢首出題並播放", () => startRound(song.id, { autoplay: true }));
         actions.append(play, status, edit, remove);
       } else {
         actions.append(status, edit, remove);
@@ -1699,7 +1699,7 @@ function buildDisplayState() {
     showWinner: state.showWinner,
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
-    prompt: hasWord ? "主題搶唱" : state.frontReady ? "前台預備中" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",
+    prompt: hasWord ? "主題搶唱" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",
     status: els.resultText.textContent || "",
     answer: revealed && song ? answerLabel(song) : hasWord ? `今題主題：${state.currentWord}` : "",
     title: hasWord ? state.currentWord : revealed && song ? song.title : "估呢首詩歌",
