@@ -11,6 +11,7 @@ const PLAY_DURATIONS = [60, 30, 15];
 const PLAY_START_MODES = ["beginning", "random"];
 const RANDOM_START_MIN_SECONDS = 45;
 const RANDOM_START_MAX_END_SECONDS = 180;
+const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const WORD_BANK = [
   "平安", "恩典", "愛", "信", "盼望", "喜樂", "感謝", "讚美",
   "敬拜", "禱告", "耶穌", "天父", "聖靈", "十架", "救恩", "生命",
@@ -581,7 +582,7 @@ function loadScore() {
 
 function cleanSong(song) {
   const videoId = parseYouTubeId(song.videoId || song.url || song.youtube || "");
-  const audioUrl = String(song.audioUrl || song.audio || "").trim();
+  const audioUrl = String(song.audioUrl || song.audio || song.mediaUrl || song.videoUrl || "").trim();
   const title = String(song.title || "").trim();
   if ((!videoId && !audioUrl) || !title) return null;
 
@@ -877,7 +878,7 @@ function answerLabel(song) {
 
 function renderYouTubeFrame({ autoplay }) {
   if (state.currentSong.audioUrl) {
-    renderHostAudio({ autoplay });
+    renderHostLocalMedia({ autoplay });
     return;
   }
 
@@ -891,22 +892,27 @@ function renderYouTubeFrame({ autoplay }) {
   els.playerHost.replaceChildren(iframe);
 }
 
-function renderHostAudio({ autoplay }) {
-  const audio = document.createElement("audio");
-  audio.src = state.currentSong.audioUrl;
-  audio.controls = true;
-  audio.muted = true;
-  audio.volume = 0;
-  audio.preload = "metadata";
-  audio.addEventListener(
+function renderHostLocalMedia({ autoplay }) {
+  const media = document.createElement(isVideoMediaUrl(state.currentSong.audioUrl) ? "video" : "audio");
+  media.src = state.currentSong.audioUrl;
+  media.controls = true;
+  media.muted = true;
+  media.volume = 0;
+  media.preload = "metadata";
+  if (media.tagName === "VIDEO") media.playsInline = true;
+  media.addEventListener(
     "loadedmetadata",
     () => {
-      audio.currentTime = clipStart(state.currentSong);
-      if (autoplay) audio.play().catch(() => {});
+      media.currentTime = clipStart(state.currentSong);
+      if (autoplay) media.play().catch(() => {});
     },
     { once: true }
   );
-  els.playerHost.replaceChildren(audio);
+  els.playerHost.replaceChildren(media);
+}
+
+function isVideoMediaUrl(url) {
+  return LOCAL_VIDEO_EXTENSIONS.test(String(url || "").split(/[?#]/)[0]);
 }
 
 function buildEmbedUrl(song, autoplay) {
@@ -1065,7 +1071,7 @@ function saveSongFromForm() {
   const videoId = parseYouTubeId(els.songUrl.value);
   const audioUrl = els.songAudioUrl.value.trim();
   if (!videoId && !audioUrl) {
-    setResult("請填 YouTube URL / ID 或已授權音訊 URL", "", "wrong");
+    setResult("請填 YouTube URL / ID 或已授權媒體 URL", "", "wrong");
     els.songUrl.focus();
     return;
   }
@@ -1395,7 +1401,7 @@ function renderLibrary() {
       ? "答案已隱藏，開估後先顯示"
       : [
           approved ? "已批准來源" : "待審來源",
-          song.audioUrl ? "授權音訊" : "YouTube",
+          song.audioUrl ? mediaKindLabel(song.audioUrl) : "YouTube",
           song.category || "未分類",
           song.source,
           song.number ? `#${song.number}` : "",
@@ -1901,6 +1907,10 @@ function parseYouTubeId(input) {
   }
 
   return "";
+}
+
+function mediaKindLabel(url) {
+  return isVideoMediaUrl(url) ? "授權影片" : "授權音訊";
 }
 
 function parseYouTubeStart(input) {

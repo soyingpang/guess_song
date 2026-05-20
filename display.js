@@ -2,6 +2,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
+const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room") || "";
@@ -241,7 +242,7 @@ function renderFrame(state) {
   latestFrameKey = frameKey;
 
   if (state.audioUrl) {
-    renderAudio(state);
+    renderLocalMedia(state);
     return;
   }
 
@@ -255,20 +256,25 @@ function renderFrame(state) {
   els.playerHost.replaceChildren(iframe);
 }
 
-function renderAudio(state) {
-  const audio = document.createElement("audio");
-  audio.src = state.audioUrl;
-  audio.autoplay = Boolean(state.isPlaying);
-  audio.controls = true;
-  audio.preload = "metadata";
-  audio.addEventListener("loadedmetadata", () => {
-    audio.currentTime = Number(state.start || 0);
-    if (state.isPlaying) audio.play().catch(() => {});
+function renderLocalMedia(state) {
+  const media = document.createElement(isVideoMediaUrl(state.audioUrl) ? "video" : "audio");
+  media.src = state.audioUrl;
+  media.autoplay = Boolean(state.isPlaying);
+  media.controls = true;
+  media.preload = "metadata";
+  if (media.tagName === "VIDEO") media.playsInline = true;
+  media.addEventListener("loadedmetadata", () => {
+    media.currentTime = Number(state.start || 0);
+    if (state.isPlaying) media.play().catch(() => {});
   }, { once: true });
-  audio.addEventListener("timeupdate", () => {
-    if (state.end && audio.currentTime >= state.end) audio.pause();
+  media.addEventListener("timeupdate", () => {
+    if (state.end && media.currentTime >= state.end) media.pause();
   });
-  els.playerHost.replaceChildren(audio);
+  els.playerHost.replaceChildren(media);
+}
+
+function isVideoMediaUrl(url) {
+  return LOCAL_VIDEO_EXTENSIONS.test(String(url || "").split(/[?#]/)[0]);
 }
 
 function buildEmbedUrl(state) {

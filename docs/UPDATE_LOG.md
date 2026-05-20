@@ -21,6 +21,35 @@
 
 ---
 
+## 2026-05-20 17:45 HKT
+
+類型：程式 / 本地影片 / 交接
+
+摘要：
+- 回應「想有畫面」需求，加入本地 / 已授權影片檔播放支援。
+- 保留 `audioUrl` 欄位作舊題庫相容，但現在可填 `./audio/song.mp3` 或 `./video/song.mp4`；`app.js` 和 `display.js` 會按副檔名自動使用 `<audio>` 或 `<video>`。
+- 後台本地音訊 / 影片維持靜音預覽，前台負責出聲；MP4 / M4V / MOV / OGV / WEBM 會以影片方式顯示。
+- 新增 `video/README.md`，說明授權影片應放在 `video/`；更新 `audio/README.md`、`README.md`、`docs/GAME_PLAN.md` 和 `docs/AI_HANDOFF.md`。
+- 本機 `server.js` 加入影片 MIME type，cache version 更新至 `local-video-1`。
+
+影響：
+- 如果想大螢幕有畫面，可把已授權影片放入 `video/`，主持題庫欄填 `./video/song-name.mp4`。
+- 仍然要確保教會有使用 / 播放授權，影片內容未開估前也不應露出歌名或字幕答案。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認主持頁新增 `./video/sample.mp4` 題目後，`#playerHost` 會建立 `VIDEO` 元件且保持靜音；前台 `display.html` 的 `#stagePlayerHost` 亦會建立 `VIDEO` 元件，無 console error。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-20 16:26 HKT
 
 類型：修正 / 手機加入 / 交接

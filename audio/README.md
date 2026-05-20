@@ -9,3 +9,5 @@ In the host song form, use paths like:
 ```
 
 When a song has a local / authorized audio URL, the app plays that file instead of YouTube, so the front display can run without YouTube ads.
+
+If you want the front display to show moving visuals, put the authorized MP4 / video file in `../video/` instead and use a path like `./video/song-name.mp4`.

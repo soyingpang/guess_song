@@ -33,12 +33,12 @@ https://soyingpang.github.io/guess_song/display.html
 
 ## 玩法
 
-- 逐首加入詩歌 YouTube 連結，或使用教會已授權 / 自己錄製的音訊檔
+- 逐首加入詩歌 YouTube 連結，或使用教會已授權 / 自己錄製的音訊或影片檔
 - 每題由歌曲 0 秒開始播放，主持可選 60 / 30 / 15 秒
 - 可填分類、詩歌集 / 來源、編號、提示、可接受答案
 - 可揀全部分類或只玩某一類
 - 可用輸入答案或四選一
-- 如填寫本地 / 已授權音訊 URL，程式會優先使用音訊檔，完全避開 YouTube 廣告
+- 如填寫本地 / 已授權媒體 URL，程式會優先使用該音訊或影片檔，完全避開 YouTube 廣告
 - 後台播放器預設靜音，只作主持人跳過廣告和預覽；前台投影負責出聲
 - 題目用隨機抽袋，出晒先會重洗，減少連續重複
 - 未開估 / 未答完之前，題庫列表會鎖住歌名；後台影片會保持可見，方便主持人先處理 YouTube 廣告，前台仍會遮住答案
@@ -89,7 +89,7 @@ http://localhost:5173
 ]
 ```
 
-`videoId` 可以係 YouTube ID，亦可以喺 app 入面直接貼 YouTube URL。`audioUrl` 只應填你教會有權使用的音訊檔，例如自己錄音、已獲授權的 MP3/M4A/WAV/OGG，或已確認授權的公開音訊；有 `audioUrl` 時會優先播放音訊檔。你可以把音訊放入 `audio/`，然後填 `./audio/song-name.mp3`。
+`videoId` 可以係 YouTube ID，亦可以喺 app 入面直接貼 YouTube URL。`audioUrl` 保留舊名作相容用途，但而家可以填你教會有權使用的本地 / 已授權媒體檔：音訊建議放入 `audio/`，例如 `./audio/song-name.mp3`；影片建議放入 `video/`，例如 `./video/song-name.mp4`。支援常用音訊 MP3/M4A/WAV/OGG，同常用影片 MP4/M4V/MOV/OGV/WEBM；有 `audioUrl` 時會優先播放本地 / 授權檔，不用 YouTube。
 
 ## 線上題庫
 
