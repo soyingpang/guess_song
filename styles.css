@@ -722,7 +722,7 @@ select:focus {
 }
 
 .library-drawer summary::after {
-  content: "展開";
+  content: "展�?";
   border: 1px solid rgba(232, 185, 92, 0.35);
   border-radius: 999px;
   color: var(--accent-2);
@@ -732,7 +732,7 @@ select:focus {
 }
 
 .library-drawer[open] summary::after {
-  content: "收起";
+  content: "?�起";
 }
 
 .library-drawer summary > span {
@@ -3859,7 +3859,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(18, 13, 15, 0.38), rgba(18, 13, 15, 0.72)),
     linear-gradient(90deg, rgba(18, 13, 15, 0.78), rgba(18, 13, 15, 0.18) 48%, rgba(18, 13, 15, 0.7)),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat;
   opacity: .34;
 }
 
@@ -3876,7 +3876,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(20, 13, 15, 0.76), rgba(18, 12, 14, 0.96) 62%, #100d0e),
     linear-gradient(90deg, rgba(73, 36, 38, 0.55), rgba(16, 13, 14, 0.18) 48%, rgba(18, 13, 14, 0.76)),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat fixed,
     #100d0e;
 }
 
@@ -3902,7 +3902,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(13, 10, 11, 0.18), rgba(13, 10, 11, 0.48) 64%, rgba(13, 10, 11, 0.72)),
     linear-gradient(90deg, rgba(14, 10, 11, 0.68), rgba(14, 10, 11, 0.1) 48%, rgba(14, 10, 11, 0.66)),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat;
   box-shadow:
     inset 0 0 0 1px rgba(255, 249, 239, 0.08),
     inset 0 -140px 180px rgba(13, 10, 11, 0.62);
@@ -3976,7 +3976,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(18, 13, 15, 0.82), rgba(18, 13, 15, 0.96)),
     linear-gradient(120deg, rgba(217, 138, 127, 0.28), transparent 42%),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat fixed,
     #120d0f;
 }
 
@@ -3985,7 +3985,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(35, 24, 28, 0.8), rgba(35, 24, 28, 0.96) 52%),
     url("./assets/paper-grain.svg"),
-    url("./assets/fellowship-main-visual.png") center bottom / 1120px auto no-repeat,
+    url("./assets/fellowship-main-visual-manhwa.png") center bottom / 1120px auto no-repeat,
     #25191d;
   box-shadow:
     0 34px 82px rgba(13, 8, 8, 0.38),
@@ -4059,7 +4059,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(255, 246, 231, 0.72), rgba(255, 238, 214, 0.82)),
     linear-gradient(110deg, rgba(255, 244, 224, 0.82), rgba(255, 244, 224, 0.22) 52%, rgba(244, 211, 184, 0.76)),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat;
   background-blend-mode: screen, normal, normal;
   opacity: .58;
 }
@@ -4068,7 +4068,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(255, 242, 222, 0.74), rgba(250, 224, 199, 0.9)),
     linear-gradient(90deg, rgba(155, 88, 84, 0.24), rgba(255, 243, 224, 0.18) 48%, rgba(92, 142, 113, 0.22)),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat fixed,
     #f7e4ce;
   background-blend-mode: screen, normal, normal, normal;
 }
@@ -4077,7 +4077,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(255, 245, 228, 0.86), rgba(249, 224, 201, 0.94)),
     linear-gradient(130deg, rgba(217, 138, 127, 0.2), transparent 42%),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat fixed,
     #f7e4ce;
 }
 
@@ -4101,7 +4101,7 @@ body::before {
   background:
     linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(255, 244, 229, 0.92)),
     url("./assets/paper-grain.svg"),
-    url("./assets/fellowship-main-visual.png") right bottom / 860px auto no-repeat,
+    url("./assets/fellowship-main-visual-manhwa.png") right bottom / 860px auto no-repeat,
     #fff5e7;
   background-blend-mode: normal, normal, screen, normal;
   box-shadow:
@@ -4200,7 +4200,7 @@ textarea {
   background:
     linear-gradient(180deg, rgba(255, 242, 219, 0.48), rgba(255, 229, 196, 0.42) 62%, rgba(255, 221, 184, 0.58)),
     linear-gradient(90deg, rgba(255, 239, 216, 0.56), rgba(255, 239, 216, 0.04) 48%, rgba(255, 236, 210, 0.58)),
-    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+    url("./assets/fellowship-main-visual-manhwa.png") center / cover no-repeat;
   background-blend-mode: screen, normal, normal;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.42),
@@ -4303,7 +4303,7 @@ textarea {
   background:
     linear-gradient(180deg, rgba(255, 250, 240, 0.92), rgba(255, 241, 223, 0.97) 58%),
     url("./assets/paper-grain.svg"),
-    url("./assets/fellowship-main-visual.png") center bottom / 1040px auto no-repeat,
+    url("./assets/fellowship-main-visual-manhwa.png") center bottom / 1040px auto no-repeat,
     #fff3e4;
   color: var(--text);
 }

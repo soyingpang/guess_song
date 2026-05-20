@@ -21,6 +21,35 @@
 
 ---
 
+## 2026-05-20 14:08 HKT
+
+類型：設計 / 主視覺 / 韓式漫畫手繪風
+
+摘要：
+- 按用戶要求，把主視覺改向韓式漫畫 / webtoon 手繪感。
+- 用 imagegen 生成新的 project-bound raster asset：`assets/fellowship-main-visual-manhwa.png`。
+- 新主圖保留教會團契、暖光客廳、詩歌本、結他、城市窗景和溫馨家的感覺，但線條和上色改成更精緻的韓式漫畫手繪風。
+- CSS 改為引用新主圖，舊主圖 `assets/fellowship-main-visual.png` 保留作備份。
+- 更新 cache version 至 `korean-manhwa-ui-1`。
+
+影響：
+- 前台遮罩、手機背景、後台背景都會使用新的漫畫風主視覺。
+- 仍保持暖色團契方向，不回到黑色風格。
+
+測試：
+- Browser 本機檢查後台、前台、手機三個入口載入新主圖。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若要再精修，可做第二張更近似活動海報封面的版本，用於開場 / 公布勝方畫面。
+
+---
+
 ## 2026-05-20 13:52 HKT
 
 類型：設計 / 色彩方向 / 介面美化
