@@ -21,6 +21,38 @@
 
 ---
 
+## 2026-05-20 10:46 HKT
+
+類型：設計 / 介面精修
+
+摘要：
+- 再做一輪紙卡 / 桌面活動卡質感美化。
+- 新增本地 SVG 素材 `assets/paper-grain.svg`，用於卡片、按鈕、QR 邀請卡和分數牌的微細紙感。
+- 後台控制區加入更清楚的分區背景，令播放、模式、答案和組分更像一個主持控制台。
+- 前台分數牌、選項、答案資訊和 QR 邀請卡加入紙卡層次和更柔和的高光。
+- 手機端卡片、狀態、排行榜和選項按鈕加入紙感和更一致的暖色質感。
+- 更新 cache version 至 `paper-card-ui-1`。
+
+影響：
+- 視覺更像完整活動套件，保持都會團契家的方向。
+- 沒有改動玩法流程、題庫或同步邏輯。
+- 前台遮罩仍維持實色，不會露 YouTube 答案。
+
+已測試：
+- 本機 Browser 檢查前台、後台、手機端新視覺。
+- 本機 Browser console 無 error / warning。
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若現場燈光較暗，可再略為提高前台 QR card 和題目文字亮度。
+
+---
+
 ## 2026-05-20 10:41 HKT
 
 類型：設計 / 介面精修

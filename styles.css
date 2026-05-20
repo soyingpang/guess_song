@@ -3527,3 +3527,385 @@ body {
     min-height: 144px;
   }
 }
+
+/* Paper card finish */
+:root {
+  --paper-glow: rgba(255, 244, 210, 0.08);
+  --paper-edge: rgba(255, 244, 210, 0.2);
+}
+
+.app-shell {
+  width: min(1460px, calc(100% - 36px));
+}
+
+.topbar {
+  padding: 8px 0 4px;
+}
+
+.brand-block {
+  column-gap: 18px;
+}
+
+.brand-mark {
+  box-shadow:
+    0 18px 48px rgba(15, 6, 7, 0.42),
+    0 0 0 1px rgba(255, 244, 210, 0.2) inset,
+    0 0 28px rgba(242, 200, 120, 0.08);
+}
+
+.topbar-actions {
+  gap: 12px;
+}
+
+.topbar-actions > .ghost-button {
+  min-width: 104px;
+}
+
+.quiz-panel,
+.library-panel,
+.player-card {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.09), transparent 220px),
+    url("./assets/paper-grain.svg"),
+    url("./assets/soft-garland-corners.svg") top left / 520px 520px no-repeat,
+    url("./assets/warm-fabric-pattern.svg"),
+    var(--lounge-panel);
+  background-size: auto, 220px 220px, 520px 520px, 420px 420px, auto;
+}
+
+.library-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.08), transparent 220px),
+    url("./assets/paper-grain.svg"),
+    url("./assets/soft-garland-corners.svg") top right / 440px 440px no-repeat,
+    url("./assets/warm-fabric-pattern.svg"),
+    rgba(35, 24, 28, 0.92);
+  background-size: auto, 220px 220px, 440px 440px, 390px 390px, auto;
+}
+
+.quiz-panel,
+.library-panel {
+  padding: 18px;
+}
+
+.player-wrap {
+  margin-bottom: 4px;
+}
+
+.quiz-head {
+  margin-top: 20px;
+}
+
+.transport-grid,
+.mode-row,
+.guess-form,
+.team-score-strip,
+.host-actions,
+.word-controls {
+  position: relative;
+  border: 1px solid rgba(255, 244, 210, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.045), transparent),
+    rgba(18, 13, 15, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 249, 239, 0.04),
+    0 12px 28px rgba(15, 6, 7, 0.14);
+}
+
+.transport-grid {
+  padding: 8px;
+}
+
+.mode-row {
+  padding: 6px;
+}
+
+.guess-form,
+.team-score-strip {
+  padding: 10px;
+}
+
+.host-actions,
+.word-controls {
+  padding: 8px;
+}
+
+.filter-row {
+  border: 1px solid rgba(255, 244, 210, 0.1);
+  border-radius: 8px;
+  background: rgba(18, 13, 15, 0.18);
+  padding: 8px 10px;
+}
+
+.primary-button,
+.ghost-button,
+.danger-button,
+.file-button,
+.icon-button,
+.segmented,
+.choice-button,
+.mini-button,
+.mic-button,
+.buzz-button,
+.stage-sound-button,
+input,
+select {
+  outline: 1px solid rgba(255, 249, 239, 0.025);
+  outline-offset: -3px;
+}
+
+.primary-button {
+  border-color: rgba(255, 244, 210, 0.18);
+}
+
+.ghost-button,
+.icon-button,
+.file-button {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.095), transparent),
+    url("./assets/paper-grain.svg"),
+    #312126;
+  background-size: auto, 220px 220px, auto;
+}
+
+.segmented {
+  min-height: 44px;
+}
+
+.segmented.is-active {
+  background:
+    linear-gradient(180deg, rgba(255, 244, 210, 0.24), transparent),
+    url("./assets/paper-grain.svg"),
+    #462f2d;
+  background-size: auto, 220px 220px, auto;
+}
+
+.score-strip > div,
+.stage-score span,
+.player-scoreline span,
+.team-score-strip > div {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.12), transparent),
+    url("./assets/paper-grain.svg"),
+    rgba(31, 20, 24, 0.94);
+  background-size: auto, 220px 220px, auto;
+}
+
+.stage-shell {
+  width: min(1660px, calc(100vw - 48px));
+}
+
+.stage-top {
+  padding: 2px 4px 0;
+}
+
+.stage-top h1 {
+  font-size: clamp(3.7rem, 5.2vw, 5rem);
+}
+
+.stage-score {
+  gap: 12px;
+}
+
+.stage-score span {
+  min-width: 126px;
+  border-color: rgba(255, 244, 210, 0.22);
+}
+
+.stage-player {
+  border-color: rgba(255, 244, 210, 0.3);
+}
+
+.stage-mask::before {
+  inset: 18px;
+}
+
+.stage-mask strong {
+  margin-top: 8px;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.36));
+}
+
+.stage-mask span {
+  margin-top: -2px;
+}
+
+.stage-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+}
+
+.stage-info p {
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid rgba(184, 221, 195, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(184, 221, 195, 0.08), transparent),
+    rgba(18, 15, 16, 0.34);
+  padding: 4px 10px;
+}
+
+.stage-info h2 {
+  margin-top: 2px;
+}
+
+.stage-answer-meta strong,
+.stage-answer-meta span,
+.stage-hint,
+.stage-choice,
+.stage-rank {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.105), transparent),
+    url("./assets/paper-grain.svg"),
+    rgba(39, 25, 30, 0.96);
+  background-size: auto, 220px 220px, auto;
+}
+
+.stage-choice {
+  padding: 14px 18px;
+}
+
+.stage-qr {
+  grid-template-columns: 122px minmax(0, 1fr);
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.115), transparent),
+    url("./assets/paper-grain.svg"),
+    url("./assets/soft-garland-corners.svg") center / 390px 390px no-repeat,
+    rgba(35, 23, 27, 0.97);
+  background-size: auto, 220px 220px, 390px 390px, auto;
+}
+
+.stage-qr img {
+  width: 122px;
+  height: 122px;
+  border-width: 7px;
+}
+
+.stage-qr strong {
+  color: #fff1bf;
+  font-size: 1.22rem;
+}
+
+.player-body .player-shell {
+  width: min(600px, calc(100% - 24px));
+}
+
+.player-body .player-card {
+  padding: 20px;
+  background:
+    linear-gradient(180deg, rgba(35, 24, 28, 0.78), rgba(35, 24, 28, 0.94)),
+    url("./assets/paper-grain.svg"),
+    url("./assets/soft-garland-corners.svg") top center / 640px 640px no-repeat,
+    url("./assets/home-fellowship-scene.svg") center bottom / 980px auto no-repeat,
+    #25191d;
+  background-size: auto, 220px 220px, 640px 640px, 980px auto, auto;
+}
+
+.player-card > .brand-mark {
+  top: 20px;
+  right: 20px;
+}
+
+.join-form,
+.phone-mic-panel,
+.player-status,
+.phone-result,
+.phone-rank,
+.phone-empty,
+.phone-team-summary span {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.075), transparent),
+    url("./assets/paper-grain.svg"),
+    rgba(27, 18, 21, 0.9);
+  background-size: auto, 220px 220px, auto;
+}
+
+.player-scoreline {
+  gap: 10px;
+}
+
+.phone-question,
+.phone-leaderboard {
+  margin-top: 20px;
+}
+
+.phone-choice {
+  min-height: 72px;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.105), transparent),
+    url("./assets/paper-grain.svg"),
+    rgba(42, 27, 32, 0.94);
+  background-size: auto, 220px 220px, auto;
+}
+
+@media (max-height: 820px) and (min-width: 760px) {
+  .stage-shell {
+    width: min(1560px, calc(100vw - 44px));
+  }
+
+  .stage-top h1 {
+    font-size: 3.55rem;
+  }
+
+  .stage-qr {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+
+  .stage-qr img {
+    width: 90px;
+    height: 90px;
+    border-width: 5px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    width: min(100% - 20px, 1460px);
+  }
+
+  .quiz-panel,
+  .library-panel,
+  .player-card {
+    padding: 14px;
+  }
+
+  .transport-grid,
+  .mode-row,
+  .guess-form,
+  .team-score-strip,
+  .host-actions,
+  .word-controls {
+    padding: 7px;
+  }
+
+  .stage-shell {
+    width: min(100vw - 20px, 1660px);
+  }
+
+  .stage-top h1 {
+    font-size: 2.35rem;
+  }
+
+  .stage-info p {
+    border-radius: 6px;
+    padding: 3px 8px;
+  }
+
+  .stage-qr {
+    grid-template-columns: 80px minmax(0, 1fr);
+    padding: 8px;
+  }
+
+  .stage-qr img {
+    width: 80px;
+    height: 80px;
+    border-width: 4px;
+  }
+
+  .player-body .player-card {
+    padding: 16px;
+  }
+}
