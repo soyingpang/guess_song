@@ -449,7 +449,7 @@ function endPlayerMic(playerId, options = {}) {
 
 function handleChoiceAnswer(player, answer) {
   if (state.mode !== "choice" || player.answers[state.currentQuestionId]) return;
-  if (!state.currentSong) return;
+  if (!state.currentSong || !state.isPlaying || state.fullPlayback) return;
 
   const correct = normalize(answer) === normalize(state.currentSong.title);
   const points = correct ? 1 : 0;
@@ -1719,7 +1719,7 @@ function buildPlayerState(player) {
   const song = state.currentSong;
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const revealed = Boolean((song || hasWord) && state.answered);
-  const choiceOptions = state.mode === "choice" && song && !revealed ? ensureChoiceOptions(song) : [];
+  const choiceOptions = state.mode === "choice" && song && !revealed && state.isPlaying ? ensureChoiceOptions(song) : [];
 
   return {
     type: "state",
@@ -1732,6 +1732,7 @@ function buildPlayerState(player) {
     revealed,
     isPlaying: state.isPlaying && !state.fullPlayback,
     fullPlayback: state.fullPlayback,
+    frontReady: state.frontReady,
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
     clipDuration: state.playDuration,

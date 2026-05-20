@@ -404,7 +404,7 @@ function renderChoices(game) {
     if (!game.choices?.length) {
       const empty = document.createElement("div");
       empty.className = "phone-empty";
-      empty.textContent = "選項同步中，請等主持重新整理後台或按下一題";
+      empty.textContent = game.frontReady ? "前台預備中，等主持正式開始" : "選項同步中，請等主持重新整理後台或按下一題";
       els.phoneChoices.append(empty);
       return;
     }

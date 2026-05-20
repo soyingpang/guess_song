@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-20 21:02 HKT
+
+類型：修正 / 前台預備遮罩 / 手機答題
+
+摘要：
+- 修正「前台預備」直接露出 YouTube 縮圖 / 歌名，令未開始估已經穿答案的問題。
+- 前台預備時仍會載入 iframe，但 `display.js` 會保留遮罩並加上 `stage-mask.is-prep-cover`；`styles.css` 用實色遮住大部分影片，只留右下角小窗給主持處理廣告。
+- 手機四選一選項改為正式播放後才顯示；預備階段顯示「前台預備中，等主持正式開始」。
+- 後台 `handleChoiceAnswer()` 會拒絕未正式播放時送來的答案，避免玩家在預備階段偷答。
+- cache version 更新至 `youtube-prep-2`。
+
+影響：
+- 現場仍可在 MON2 處理廣告，但觀眾不會在預備階段看見 YouTube 歌名 / 縮圖中央答案。
+- 玩家手機要等主持按「正式開始」後才見到四選一選項。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認：前台預備狀態有 `stage-mask.is-prep-cover`，`#stagePlayerHost` 未被移走，iframe 已載入，但 `#stageMask` 沒有 `is-hidden`；遮罩 pseudo-element 用實色 box-shadow 覆蓋大部分畫面，只留右下角小窗。
+- Browser 本機確認前台無 console error。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-20 20:50 HKT
 
 類型：程式 / YouTube 預備流程 / 現場操作
@@ -36,7 +66,7 @@
 影響：
 - 現場流程變成：主持按「前台預備」→ 在 MON2 處理廣告 → 回後台按「正式開始」。
 - 未正式開始前不會計時；真正計時只在「正式開始」後發生。
-- 前台預備時播放器可見，可能會露出 YouTube 畫面內容；這是為了讓主持能手動處理廣告。
+- 21:02 已再修正：前台預備不可直接露出 YouTube 歌名 / 縮圖，只應留右下角小範圍處理廣告。
 
 測試：
 - `node --check app.js`
