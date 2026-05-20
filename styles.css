@@ -4020,3 +4020,392 @@ body::before {
     background-position: center, center, center top, center;
   }
 }
+
+/* Warm fellowship daylight finish */
+:root {
+  color-scheme: light;
+  --bg: #f7e4ce;
+  --bg-2: #f3d9c2;
+  --panel: #fff7ea;
+  --panel-2: #f7ead9;
+  --panel-3: #ead6c4;
+  --line: rgba(117, 73, 61, 0.24);
+  --line-soft: rgba(117, 73, 61, 0.14);
+  --text: #4b2b2b;
+  --muted: #7a6358;
+  --soft: #5f463d;
+  --accent: #c9823f;
+  --accent-2: #6d4227;
+  --accent-ink: #fff7ea;
+  --cool: #4f8f72;
+  --cool-ink: #f1f8ef;
+  --good: #3f8f5f;
+  --bad: #b95c52;
+  --wine: #9e5a58;
+  --shadow: 0 22px 52px rgba(109, 64, 45, 0.18);
+  --shadow-strong: 0 32px 76px rgba(109, 64, 45, 0.24);
+  --art-shadow: 0 32px 84px rgba(109, 64, 45, 0.22);
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 214, 150, 0.48), transparent 34%),
+    radial-gradient(circle at 84% 18%, rgba(184, 222, 196, 0.42), transparent 30%),
+    linear-gradient(180deg, #fff1dc 0%, #f6ddc6 54%, #efd0b8 100%);
+  color: var(--text);
+}
+
+body::before {
+  background:
+    linear-gradient(180deg, rgba(255, 246, 231, 0.72), rgba(255, 238, 214, 0.82)),
+    linear-gradient(110deg, rgba(255, 244, 224, 0.82), rgba(255, 244, 224, 0.22) 52%, rgba(244, 211, 184, 0.76)),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+  background-blend-mode: screen, normal, normal;
+  opacity: .58;
+}
+
+.display-body {
+  background:
+    linear-gradient(180deg, rgba(255, 242, 222, 0.74), rgba(250, 224, 199, 0.9)),
+    linear-gradient(90deg, rgba(155, 88, 84, 0.24), rgba(255, 243, 224, 0.18) 48%, rgba(92, 142, 113, 0.22)),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    #f7e4ce;
+  background-blend-mode: screen, normal, normal, normal;
+}
+
+.player-body {
+  background:
+    linear-gradient(180deg, rgba(255, 245, 228, 0.86), rgba(249, 224, 201, 0.94)),
+    linear-gradient(130deg, rgba(217, 138, 127, 0.2), transparent 42%),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat fixed,
+    #f7e4ce;
+}
+
+.topbar h1,
+.stage-top h1,
+.player-card h1 {
+  color: #4a2b2b;
+  text-shadow: 0 4px 0 rgba(255, 249, 239, 0.62), 0 16px 36px rgba(119, 73, 52, 0.16);
+}
+
+.eyebrow,
+.round-label,
+.stage-info p {
+  color: #477d64;
+}
+
+.quiz-panel,
+.library-panel,
+.player-card {
+  border-color: rgba(139, 85, 66, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(255, 244, 229, 0.92)),
+    url("./assets/paper-grain.svg"),
+    url("./assets/fellowship-main-visual.png") right bottom / 860px auto no-repeat,
+    #fff5e7;
+  background-blend-mode: normal, normal, screen, normal;
+  box-shadow:
+    0 26px 58px rgba(126, 77, 54, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.library-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.97), rgba(252, 238, 221, 0.94)),
+    url("./assets/paper-grain.svg"),
+    #fff5e7;
+}
+
+.transport-grid,
+.mode-row,
+.guess-form,
+.team-score-strip,
+.host-actions,
+.word-controls,
+.filter-row,
+.join-form,
+.phone-mic-panel,
+.player-status,
+.phone-result,
+.phone-rank,
+.phone-empty,
+.phone-team-summary span {
+  border-color: rgba(139, 85, 66, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 244, 230, 0.86)),
+    url("./assets/paper-grain.svg"),
+    #fff3e4;
+  background-size: auto, 220px 220px, auto;
+  color: var(--text);
+  box-shadow: 0 12px 28px rgba(126, 77, 54, 0.1);
+}
+
+input,
+select,
+textarea {
+  border-color: rgba(139, 85, 66, 0.22);
+  background: #fffaf1;
+  color: var(--text);
+}
+
+.primary-button,
+.ghost-button,
+.danger-button,
+.file-button,
+.icon-button,
+.segmented,
+.choice-button,
+.mini-button,
+.mic-button,
+.buzz-button,
+.phone-choice {
+  border-color: rgba(139, 85, 66, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 235, 213, 0.96)),
+    url("./assets/paper-grain.svg"),
+    #fff0df;
+  background-size: auto, 220px 220px, auto;
+  color: #53302c;
+  box-shadow: 0 12px 26px rgba(126, 77, 54, 0.1);
+}
+
+.primary-button,
+.segmented.is-active,
+.choice-button.is-correct,
+.buzz-button {
+  background:
+    linear-gradient(180deg, rgba(255, 247, 226, 0.68), rgba(211, 136, 71, 0.92)),
+    url("./assets/paper-grain.svg"),
+    #d08a47;
+  background-size: auto, 220px 220px, auto;
+  color: #fffaf1;
+}
+
+.stage-player,
+.player-wrap {
+  border-color: rgba(151, 91, 71, 0.22);
+  background: #fff4e4;
+  box-shadow:
+    0 28px 70px rgba(126, 77, 54, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.64);
+}
+
+.player-mask,
+.stage-mask {
+  background: #f9dfc1;
+}
+
+.player-mask::before,
+.stage-mask::before {
+  background:
+    linear-gradient(180deg, rgba(255, 242, 219, 0.48), rgba(255, 229, 196, 0.42) 62%, rgba(255, 221, 184, 0.58)),
+    linear-gradient(90deg, rgba(255, 239, 216, 0.56), rgba(255, 239, 216, 0.04) 48%, rgba(255, 236, 210, 0.58)),
+    url("./assets/fellowship-main-visual.png") center / cover no-repeat;
+  background-blend-mode: screen, normal, normal;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    inset 0 -100px 140px rgba(255, 225, 192, 0.5);
+}
+
+.stage-mask strong {
+  color: #4a2828;
+  text-shadow:
+    0 3px 0 rgba(255, 250, 240, 0.74),
+    0 18px 34px rgba(92, 50, 42, 0.2);
+}
+
+.stage-mask span {
+  border-color: rgba(151, 91, 71, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 239, 221, 0.92)),
+    #fff2df;
+  color: #6c5146;
+  box-shadow: 0 16px 34px rgba(126, 77, 54, 0.14);
+}
+
+.stage-disc,
+.pulse-disc {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 231, 199, 0.92)),
+    #fff3df;
+  box-shadow:
+    0 0 0 1px rgba(151, 91, 71, 0.18),
+    0 24px 60px rgba(126, 77, 54, 0.16);
+}
+
+.score-strip > div,
+.stage-score span,
+.player-scoreline span,
+.team-score-strip > div,
+.stage-answer-meta strong,
+.stage-answer-meta span,
+.stage-hint,
+.stage-choice,
+.stage-rank,
+.stage-qr,
+.stage-team-final,
+.stage-winner-final {
+  border-color: rgba(139, 85, 66, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 239, 221, 0.96)),
+    url("./assets/paper-grain.svg"),
+    #fff1df;
+  background-size: auto, 220px 220px, auto;
+  color: #4d2c2c;
+  box-shadow:
+    0 18px 42px rgba(126, 77, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74);
+}
+
+.score-strip span,
+.team-score-strip strong,
+.stage-score span,
+.stage-answer-meta strong,
+.stage-rank strong,
+.phone-rank strong {
+  color: #8d4f33;
+}
+
+.stage-info h2 {
+  color: #4a2b2b;
+  text-shadow: 0 4px 0 rgba(255, 249, 239, 0.6), 0 18px 34px rgba(92, 50, 42, 0.16);
+}
+
+.stage-info p {
+  border-color: rgba(79, 143, 114, 0.24);
+  background:
+    linear-gradient(180deg, rgba(242, 251, 239, 0.82), rgba(222, 241, 222, 0.96)),
+    #edf7e9;
+  color: #416f59;
+}
+
+.stage-info::after,
+.stage-mask::after,
+.quiz-panel::before,
+.library-panel::before,
+.player-card::before {
+  background: linear-gradient(90deg, #d98a7f, #f2c878 42%, #8cc6a2 74%, #78aeb7);
+}
+
+.stage-qr strong {
+  color: #8b4f32;
+}
+
+.stage-qr span,
+.stage-mask span,
+.stage-hint,
+.stage-choice,
+.stage-rank {
+  color: #644b41;
+}
+
+.player-body .player-card {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.92), rgba(255, 241, 223, 0.97) 58%),
+    url("./assets/paper-grain.svg"),
+    url("./assets/fellowship-main-visual.png") center bottom / 1040px auto no-repeat,
+    #fff3e4;
+  color: var(--text);
+}
+
+.brand-mark {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 238, 216, 0.96)),
+    #fff0df;
+  border-color: rgba(151, 91, 71, 0.2);
+}
+
+.empty-state,
+.room-status {
+  background:
+    linear-gradient(180deg, rgba(242, 251, 239, 0.8), rgba(226, 242, 224, 0.94)),
+    #edf7e9;
+  border-color: rgba(79, 143, 114, 0.2);
+  color: #426b56;
+}
+
+@media (max-width: 640px) {
+  .display-body,
+  .player-body {
+    background-position: center top;
+  }
+
+  .player-body .player-card {
+    background-size: auto, 220px 220px, 860px auto, auto;
+  }
+}
+
+.song-item,
+.player-item,
+.library-drawer summary {
+  border-color: rgba(139, 85, 66, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 240, 222, 0.94)),
+    url("./assets/paper-grain.svg"),
+    #fff3e4;
+  background-size: auto, 220px 220px, auto;
+  color: var(--text);
+}
+
+.library-drawer summary::after {
+  border-color: rgba(139, 85, 66, 0.2);
+  background: #fffaf1;
+  color: #8b4f32;
+}
+
+.library-drawer summary > span {
+  color: #8b4f32;
+}
+
+.stage-info {
+  border: 1px solid rgba(139, 85, 66, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 239, 221, 0.76)),
+    url("./assets/paper-grain.svg"),
+    rgba(255, 244, 230, 0.72);
+  background-size: auto, 220px 220px, auto;
+  padding: 12px 16px 14px;
+  box-shadow: 0 18px 42px rgba(126, 77, 54, 0.1);
+}
+
+.phone-question h2,
+.phone-leaderboard h2 {
+  color: #4a2b2b;
+  text-shadow: 0 3px 0 rgba(255, 249, 239, 0.66);
+}
+
+.phone-question p {
+  border-color: rgba(79, 143, 114, 0.22);
+  background:
+    linear-gradient(180deg, rgba(242, 251, 239, 0.84), rgba(224, 241, 223, 0.96)),
+    #edf7e9;
+  color: #416f59;
+}
+
+.player-mask span {
+  color: #5c443c;
+  text-shadow: 0 2px 0 rgba(255, 249, 239, 0.58);
+}
+
+.library-head span,
+.mic-status {
+  border-color: rgba(79, 143, 114, 0.22);
+  background:
+    linear-gradient(180deg, rgba(242, 251, 239, 0.86), rgba(224, 241, 223, 0.96)),
+    #edf7e9;
+  color: #416f59;
+}
+
+.mic-button:disabled,
+.buzz-button:disabled,
+.phone-choice:disabled,
+.choice-button:disabled {
+  opacity: .78;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(231, 241, 224, 0.92)),
+    url("./assets/paper-grain.svg"),
+    #eef4e6;
+  background-size: auto, 220px 220px, auto;
+  color: #6c6054;
+}
