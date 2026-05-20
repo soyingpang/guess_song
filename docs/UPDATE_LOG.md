@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-20 13:45 HKT
+
+類型：程式 / 前台播放 / 介面簡化
+
+摘要：
+- 移除前台可見的「啟用聲音」按鈕。
+- `display.js` 移除 `soundUnlocked` 和 `renderSoundButton()` 流程。
+- 前台預設就是有聲播放模式：YouTube iframe 不加 `mute`，播放時仍用 `autoplay=1`。
+- YouTube iframe 保持 `controls=0`，避免前台出現多餘播放器控制。
+- 更新 cache version 至 `front-auto-sound-1`。
+
+影響：
+- 前台大螢幕更像正式活動畫面，不需要主持或觀眾多按一粒聲音按鈕。
+- 若個別遠端瀏覽器仍硬性阻擋有聲 autoplay，屬瀏覽器政策；app 不再在畫面上提供額外「啟用聲音」流程。
+
+測試：
+- Browser 本機檢查前台沒有 `#stageSoundButton`。
+- Browser 本機檢查前台載入 `display.js?v=front-auto-sound-1`。
+- `node --check display.js`
+- `node --check app.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+
+後續：
+- 若現場仍遇到個別瀏覽器阻擋聲音，優先用同一部電腦的前台視窗播放；不要輕易把可見聲音按鈕加回來。
+
+---
+
 ## 2026-05-20 13:34 HKT
 
 類型：設計 / 主視覺 / 介面美化

@@ -967,36 +967,6 @@ select:focus {
   padding: 30px;
 }
 
-.stage-sound-button {
-  position: absolute;
-  z-index: 4;
-  right: 18px;
-  bottom: 18px;
-  min-height: 48px;
-  border: 1px solid rgba(241, 184, 75, 0.56);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(241, 184, 75, 0.2), transparent),
-    #221812;
-  color: var(--accent-2);
-  padding: 0 18px;
-  box-shadow: var(--shadow);
-  font-size: 1rem;
-  font-weight: 1000;
-}
-
-.stage-sound-button.is-enabled {
-  border-color: rgba(155, 199, 170, 0.48);
-  background:
-    linear-gradient(180deg, rgba(155, 199, 170, 0.18), transparent),
-    #151d15;
-  color: var(--soft);
-}
-
-.stage-sound-button[hidden] {
-  display: none;
-}
-
 .stage-disc {
   width: min(238px, 30vw);
 }
@@ -1785,14 +1755,6 @@ select:focus {
     border-width: 4px;
   }
 
-  .stage-sound-button {
-    right: 10px;
-    bottom: 10px;
-    min-height: 42px;
-    padding: 0 12px;
-    font-size: 0.92rem;
-  }
-
   .stage-choices,
   .stage-leaderboard {
     padding-right: 0;
@@ -2048,8 +2010,7 @@ body::before {
 .choice-button,
 .mini-button,
 .mic-button,
-.buzz-button,
-.stage-sound-button {
+.buzz-button {
   border-radius: 8px;
 }
 
@@ -2191,19 +2152,6 @@ select {
 .stage-qr img {
   border-radius: 8px;
   box-shadow: 0 12px 28px rgba(18, 7, 8, 0.34);
-}
-
-.stage-sound-button {
-  background:
-    linear-gradient(180deg, #4a301b, #2a1b11);
-  border-color: rgba(239, 189, 103, 0.72);
-  color: var(--accent-2);
-}
-
-.stage-sound-button.is-enabled {
-  background:
-    linear-gradient(180deg, #223a28, #16241a);
-  border-color: rgba(172, 217, 187, 0.62);
 }
 
 .stage-winner-final,
@@ -2727,12 +2675,6 @@ body::after {
   color: #ffe9b5;
 }
 
-.stage-sound-button {
-  background:
-    linear-gradient(180deg, #5d3b22, #342014);
-  border-color: rgba(255, 233, 181, 0.7);
-}
-
 .stage-winner-final,
 .stage-team-final {
   background:
@@ -2984,8 +2926,7 @@ body::after {
 .choice-button,
 .mini-button,
 .mic-button,
-.buzz-button,
-.stage-sound-button {
+.buzz-button {
   position: relative;
   overflow: hidden;
 }
@@ -2996,8 +2937,7 @@ body::after {
 .file-button::after,
 .choice-button::after,
 .mic-button::after,
-.buzz-button::after,
-.stage-sound-button::after {
+.buzz-button::after {
   position: absolute;
   inset: 0;
   content: "";
@@ -3013,8 +2953,7 @@ body::after {
 .file-button:hover::after,
 .choice-button:hover::after,
 .mic-button:hover::after,
-.buzz-button:hover::after,
-.stage-sound-button:hover::after {
+.buzz-button:hover::after {
   transform: translateX(120%);
 }
 
@@ -3027,8 +2966,7 @@ body::after {
 .choice-button:active,
 .mini-button:active,
 .mic-button:active,
-.buzz-button:active,
-.stage-sound-button:active {
+.buzz-button:active {
   transform: translateY(0);
 }
 
@@ -3648,7 +3586,6 @@ body {
 .mini-button,
 .mic-button,
 .buzz-button,
-.stage-sound-button,
 input,
 select {
   outline: 1px solid rgba(255, 249, 239, 0.025);
