@@ -29,6 +29,7 @@ const els = {
 };
 
 let latestFrameKey = "";
+let latestPlaybackState = null;
 let latestRemoteState = null;
 let currentDisplayState = null;
 const displaySync = {
@@ -80,21 +81,26 @@ function renderState(state) {
   els.status.textContent = state.status || (state.hasSong ? "聽片段，估詩歌名" : "等候主持開始");
   els.title.textContent = state.hasWord ? state.title : state.revealed ? state.title : "估呢首詩歌";
 
+  const showFrontPlayer = Boolean(state.revealed || state.frontReady || state.isPlaying);
   els.prompt.textContent = state.revealed
     ? "答案"
     : state.isPlaying
       ? `播放中 · ${remainingSeconds(state)} 秒`
+      : state.frontReady
+        ? "前台預備中"
       : state.hasWord
         ? "主題搶唱"
         : "聽前奏，估詩歌";
   els.subPrompt.textContent = state.revealed
     ? state.answer
+    : state.frontReady
+      ? "主持處理廣告後，先正式開始計時"
     : state.hasWord
       ? "鬥快唱出切合這個主題的詩歌"
       : "答案未公開，請留心聽";
 
-  els.mask.classList.toggle("is-hidden", Boolean(state.revealed));
-  els.playerHost.classList.toggle("is-masked", !state.revealed);
+  els.mask.classList.toggle("is-hidden", showFrontPlayer);
+  els.playerHost.classList.toggle("is-masked", !showFrontPlayer);
   document.body.classList.toggle("is-revealed", Boolean(state.revealed));
   document.body.classList.toggle("is-playing", Boolean(state.isPlaying));
   document.body.classList.add("is-sound-unlocked");
@@ -227,6 +233,7 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   els.playerHost.classList.add("is-masked");
   els.playerHost.replaceChildren();
   latestFrameKey = "";
+  latestPlaybackState = null;
   currentDisplayState = null;
 }
 
@@ -234,12 +241,23 @@ function renderFrame(state) {
   if (!state.hasSong || (!state.videoId && !state.audioUrl)) {
     els.playerHost.replaceChildren();
     latestFrameKey = "";
+    latestPlaybackState = null;
     return;
   }
 
-  const frameKey = [state.audioUrl || state.videoId, state.start, state.end, state.isPlaying ? "play" : "cue"].join(":");
-  if (frameKey === latestFrameKey) return;
+  const frameKey = [
+    state.audioUrl || state.videoId,
+    state.start,
+    state.end,
+    state.frontReady ? "front-ready" : "masked",
+    state.revealed ? "revealed" : "blind",
+  ].join(":");
+  if (frameKey === latestFrameKey) {
+    syncFramePlayback(state);
+    return;
+  }
   latestFrameKey = frameKey;
+  latestPlaybackState = Boolean(state.isPlaying);
 
   if (state.audioUrl) {
     renderLocalMedia(state);
@@ -277,12 +295,47 @@ function isVideoMediaUrl(url) {
   return LOCAL_VIDEO_EXTENSIONS.test(String(url || "").split(/[?#]/)[0]);
 }
 
+function syncFramePlayback(state) {
+  const shouldPlay = Boolean(state.isPlaying);
+  if (latestPlaybackState === shouldPlay) return;
+  latestPlaybackState = shouldPlay;
+
+  const media = els.playerHost.firstElementChild;
+  if (!media) return;
+
+  if (state.audioUrl) {
+    if (shouldPlay) {
+      media.currentTime = Number(state.start || 0);
+      media.play().catch(() => {});
+    } else {
+      media.pause();
+    }
+    return;
+  }
+
+  postYouTubeCommand(shouldPlay ? "playVideo" : "pauseVideo", shouldPlay ? [Number(state.start || 0)] : []);
+}
+
+function postYouTubeCommand(command, args = []) {
+  const iframe = els.playerHost.querySelector("iframe");
+  if (!iframe?.contentWindow) return;
+  if (command === "playVideo" && args.length) {
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: "command", func: "seekTo", args: [args[0], true] }),
+      "*"
+    );
+  }
+  iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: command, args: [] }), "*");
+}
+
 function buildEmbedUrl(state) {
   const url = new URL(`https://www.youtube-nocookie.com/embed/${state.videoId}`);
   url.searchParams.set("start", String(state.start || 0));
   if (state.end) url.searchParams.set("end", String(state.end));
   url.searchParams.set("autoplay", state.isPlaying ? "1" : "0");
-  url.searchParams.set("controls", "0");
+  url.searchParams.set("controls", state.frontReady && !state.revealed ? "1" : "0");
+  url.searchParams.set("enablejsapi", "1");
+  url.searchParams.set("origin", window.location.origin);
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");

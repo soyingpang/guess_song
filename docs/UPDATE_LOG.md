@@ -21,6 +21,38 @@
 
 ---
 
+## 2026-05-20 20:50 HKT
+
+類型：程式 / YouTube 預備流程 / 現場操作
+
+摘要：
+- 按用戶最新決定，保留 YouTube 作現場折衷方案，新增「前台預備 → 正式開始」流程。
+- 後台「下一題」改為「前台預備」：抽題並把 YouTube 載入前台，但不開始倒數。
+- 前台預備狀態會顯示播放器和控制列，方便主持在 `MON2` 手動處理 / 跳過廣告。
+- 後台「前台播放」改為「正式開始」：按下後才開始 60 / 30 / 15 秒播放和倒數。
+- `display.js` 會盡量沿用已預備的 YouTube iframe，用 `enablejsapi=1` 和 `postMessage` 發 `seekTo` / `playVideo`，避免正式開始時重新載入一次廣告。
+- 更新 cache version 至 `youtube-prep-1`，並同步更新 `README.md`、`docs/GAME_PLAN.md`、`docs/AI_HANDOFF.md`。
+
+影響：
+- 現場流程變成：主持按「前台預備」→ 在 MON2 處理廣告 → 回後台按「正式開始」。
+- 未正式開始前不會計時；真正計時只在「正式開始」後發生。
+- 前台預備時播放器可見，可能會露出 YouTube 畫面內容；這是為了讓主持能手動處理廣告。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認：按「前台預備」後，後台狀態顯示「前台已預備」，YouTube iframe 使用 `autoplay=0`、`controls=1`；按「正式開始」後，後台狀態變「前台播放中：30 秒 · 由頭播」，按鈕變「播放中」並開始倒數。
+- Browser 本機確認：前台 `display.html` 在預備 / 播放狀態都會顯示播放器而非遮住 iframe，播放狀態有 `is-playing`，無 console error。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-20 17:45 HKT
 
 類型：程式 / 本地影片 / 交接
