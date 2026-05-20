@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-20 10:11 HKT
+
+類型：修正 / 前台播放
+
+摘要：
+- 解釋並修正「用前台連結開出來的前台無聲」問題。
+- 原因是遠端前台由主持後台隔空觸發 YouTube，有聲 autoplay 會被手機和不少電腦瀏覽器阻擋。
+- 前台播放器加入「啟用聲音」按鈕。
+- 外地朋友或用連結打開前台的人，進入前台後要先按一次「啟用聲音」。
+- 按下後會重載目前片段嘗試播放；之後 YouTube iframe 會顯示控制列，若瀏覽器仍阻擋，可直接在影片內按播放。
+- 更新 cache version 至 `display-sound-unlock-1`。
+
+影響：
+- 遠端前台仍可同步主持畫面，但聲音需要該前台裝置先做一次人手互動。
+- 同一部電腦開前台也可按「啟用聲音」作保險。
+
+已測試：
+- `node --check display.js`
+- `node --check app.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `git diff --check`
+- 本機 Browser 檢查前台頁已加入 `stageSoundButton`，並載入 `display.js?v=display-sound-unlock-1`。
+- 本機 Browser 驗證按「啟用聲音」後，YouTube iframe 由 `controls=0` 重載為 `controls=1`，並保留 `autoplay=1`。
+
+後續：
+- 現場提醒遠端前台：「一入前台先按啟用聲音」。這是瀏覽器限制，無法完全用程式繞過。
+
+---
+
 ## 2026-05-20 10:01 HKT
 
 類型：修正 / 遠端同步

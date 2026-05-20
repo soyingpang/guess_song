@@ -23,10 +23,13 @@ const els = {
   qrPanel: document.querySelector("#stageQrPanel"),
   qr: document.querySelector("#stageQr"),
   room: document.querySelector("#stageRoom"),
+  soundButton: document.querySelector("#stageSoundButton"),
 };
 
 let latestFrameKey = "";
 let latestRemoteState = null;
+let currentDisplayState = null;
+let soundUnlocked = false;
 const displaySync = {
   peer: null,
   connection: null,
@@ -34,6 +37,14 @@ const displaySync = {
   reconnectAttempts: 0,
   reconnectTimer: null,
 };
+
+els.soundButton.addEventListener("click", () => {
+  soundUnlocked = true;
+  latestFrameKey = "";
+  els.soundButton.textContent = "聲音已啟用";
+  els.soundButton.classList.add("is-enabled");
+  if (currentDisplayState) renderFrame(currentDisplayState);
+});
 
 window.addEventListener("storage", (event) => {
   if (event.key === DISPLAY_STATE_KEY && !latestRemoteState) renderFromStorage();
@@ -68,6 +79,7 @@ function renderFromStorage() {
 }
 
 function renderState(state) {
+  currentDisplayState = state;
   els.round.textContent = state.hasSong ? `第 ${state.round} 題` : "未有題目";
   if (state.hasWord) els.round.textContent = `第 ${state.round} 題`;
   els.score.textContent = `${state.correct} / ${state.total}`;
@@ -92,7 +104,9 @@ function renderState(state) {
   els.playerHost.classList.toggle("is-masked", !state.revealed);
   document.body.classList.toggle("is-revealed", Boolean(state.revealed));
   document.body.classList.toggle("is-playing", Boolean(state.isPlaying));
+  document.body.classList.toggle("is-sound-unlocked", soundUnlocked);
   els.hero.classList.toggle("is-winner-reveal", Boolean(state.showWinner));
+  renderSoundButton(state);
 
   renderFrame(state);
   renderMeta(state);
@@ -217,6 +231,8 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   els.playerHost.classList.add("is-masked");
   els.playerHost.replaceChildren();
   latestFrameKey = "";
+  currentDisplayState = null;
+  renderSoundButton(null);
 }
 
 function renderFrame(state) {
@@ -226,7 +242,7 @@ function renderFrame(state) {
     return;
   }
 
-  const frameKey = [state.audioUrl || state.videoId, state.start, state.end, state.isPlaying ? "play" : "cue"].join(":");
+  const frameKey = [state.audioUrl || state.videoId, state.start, state.end, state.isPlaying ? "play" : "cue", soundUnlocked ? "sound" : "locked"].join(":");
   if (frameKey === latestFrameKey) return;
   latestFrameKey = frameKey;
 
@@ -249,6 +265,7 @@ function renderAudio(state) {
   const audio = document.createElement("audio");
   audio.src = state.audioUrl;
   audio.autoplay = Boolean(state.isPlaying);
+  audio.controls = true;
   audio.preload = "metadata";
   audio.addEventListener("loadedmetadata", () => {
     audio.currentTime = Number(state.start || 0);
@@ -265,11 +282,20 @@ function buildEmbedUrl(state) {
   url.searchParams.set("start", String(state.start || 0));
   if (state.end) url.searchParams.set("end", String(state.end));
   url.searchParams.set("autoplay", state.isPlaying ? "1" : "0");
-  url.searchParams.set("controls", "0");
+  url.searchParams.set("controls", soundUnlocked ? "1" : "0");
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
   return url.toString();
+}
+
+function renderSoundButton(state) {
+  const shouldShow = Boolean(state?.hasSong);
+  els.soundButton.hidden = !shouldShow;
+  if (!shouldShow) return;
+
+  els.soundButton.textContent = soundUnlocked ? "聲音已啟用" : "啟用聲音";
+  els.soundButton.classList.toggle("is-enabled", soundUnlocked);
 }
 
 function remainingSeconds(state) {
