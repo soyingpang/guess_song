@@ -105,6 +105,10 @@ els.onsiteModeButton.addEventListener("click", () => setPlayerMode(false));
 els.remoteModeButton.addEventListener("click", () => setPlayerMode(true));
 els.phoneRemotePlayButton.addEventListener("click", () => retryRemotePlayback());
 els.phoneRemoteListenButton.addEventListener("click", () => playHostAudioBroadcast());
+els.openLeaderboardButton.textContent = "榜";
+els.openLeaderboardButton.title = "排行榜";
+els.closeLeaderboardButton.textContent = "×";
+els.closeLeaderboardButton.title = "關閉排行榜";
 els.leaderboardModal.addEventListener("click", (event) => {
   if (event.target === els.leaderboardModal) closeLeaderboard();
 });
@@ -398,7 +402,8 @@ function updateMicUi(options = {}) {
   const { busy = false } = options;
   const canUseMic = Boolean(state.joined && state.connection?.open && state.peer);
   els.micToggleButton.disabled = busy || !canUseMic;
-  els.micToggleButton.textContent = state.micActive ? "關咪" : "開咪對話";
+  els.micToggleButton.textContent = state.micActive ? "關咪" : "咪";
+  els.micToggleButton.title = state.micActive ? "關閉咪高峰" : "開咪對話";
   els.micToggleButton.classList.toggle("is-live", state.micActive);
   if (!canUseMic && !state.micActive) setMicStatus("連線後可開咪");
 }
@@ -873,7 +878,8 @@ function updateRemotePlaybackUi(game) {
     setRemotePlayerStatus(state.remotePlaybackBlocked ? "請按一下啟用播放" : "同步播放中");
     setRemoteShieldText(state.remotePlaybackBlocked ? "點一下開聲" : "手機播放中", "畫面已遮住答案");
     els.phoneRemotePlayButton.hidden = false;
-    els.phoneRemotePlayButton.textContent = state.remotePlaybackBlocked ? "啟用手機播放" : "重新同步播放";
+    els.phoneRemotePlayButton.textContent = state.remotePlaybackBlocked ? "播放" : "同步";
+    els.phoneRemotePlayButton.title = state.remotePlaybackBlocked ? "啟用手機播放" : "重新同步播放";
     return;
   }
 
