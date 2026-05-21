@@ -4982,3 +4982,151 @@ textarea {
     padding: 8px 10px;
   }
 }
+
+
+/* Front display joined player roster */
+.stage-roster {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 36;
+  display: grid;
+  gap: 10px;
+  width: min(360px, calc(100vw - 36px));
+  max-height: min(260px, 45vh);
+  overflow: hidden;
+  border: 1px solid rgba(103, 151, 140, 0.38);
+  border-radius: 8px;
+  background: rgba(255, 250, 241, 0.94);
+  color: #4a2828;
+  padding: 12px;
+  box-shadow: 0 14px 36px rgba(126, 77, 54, 0.2);
+}
+
+.stage-roster[hidden] {
+  display: none;
+}
+
+.stage-roster-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stage-roster-header strong {
+  font-size: 0.95rem;
+}
+
+.stage-roster-header span {
+  color: #6b4a3f;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.stage-roster-list {
+  display: grid;
+  gap: 6px;
+  max-height: 198px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.stage-roster-player {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 34px;
+  border: 1px solid rgba(126, 77, 54, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 6px 8px;
+}
+
+.stage-roster-player.is-live {
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  border-color: rgba(103, 151, 140, 0.52);
+  background: rgba(231, 247, 231, 0.72);
+}
+
+.stage-roster-player.is-offline {
+  opacity: 0.62;
+}
+
+.stage-roster-name {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stage-roster-meta,
+.stage-roster-score,
+.stage-roster-badge,
+.stage-roster-more {
+  font-size: 0.78rem;
+}
+
+.stage-roster-meta {
+  color: #6b4a3f;
+}
+
+.stage-roster-score {
+  color: #a35c2c;
+  white-space: nowrap;
+}
+
+.stage-roster-badge {
+  border-radius: 999px;
+  background: #dff4df;
+  color: #2d6f50;
+  font-weight: 800;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.stage-roster-badge.is-muted {
+  background: rgba(126, 77, 54, 0.12);
+  color: #7b625b;
+}
+
+.stage-roster-more {
+  color: #6b4a3f;
+  text-align: center;
+}
+
+.stage-mic-layer {
+  bottom: 296px;
+}
+
+@media (max-width: 720px) {
+  .stage-roster {
+    left: 10px;
+    bottom: 10px;
+    width: min(280px, calc(100vw - 20px));
+    max-height: 158px;
+    padding: 9px;
+  }
+
+  .stage-roster-list {
+    max-height: 104px;
+  }
+
+  .stage-roster-player {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .stage-roster-player.is-live {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .stage-roster-meta {
+    display: none;
+  }
+
+  .stage-mic-layer {
+    bottom: 184px;
+  }
+}

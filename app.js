@@ -363,6 +363,7 @@ function handlePlayerMessage(connection, message) {
   if (message.type === "mic-start") {
     player.micActive = true;
     renderPlayers();
+    publishDisplayState();
     return;
   }
 
@@ -408,6 +409,7 @@ function setupPlayerMicCall(call) {
   } catch {
     player.micActive = false;
     renderPlayers();
+    publishDisplayState();
     return;
   }
 
@@ -417,6 +419,7 @@ function setupPlayerMicCall(call) {
     setResult("玩家開咪", `${player.name} 正在說話`, "");
     forwardPlayerMicToDisplays(player);
     renderPlayers();
+    publishDisplayState();
   });
 
   call.on("close", () => {
@@ -449,7 +452,10 @@ function endPlayerMic(playerId, options = {}) {
     }
   }
 
-  if (render) renderPlayers();
+  if (render) {
+    renderPlayers();
+    publishDisplayState();
+  }
 }
 
 function syncActiveMicsToDisplay(connection) {
@@ -1773,6 +1779,7 @@ function buildDisplayState() {
     playerUrl: state.playerUrl,
     showLeaderboard: state.showLeaderboard,
     showWinner: state.showWinner,
+    players: leaderboardPlayers().map(stripPlayer),
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
     prompt: hasWord ? "主題搶唱" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",
@@ -1876,6 +1883,7 @@ function stripPlayer(player) {
     team: normalizeTeam(player.team),
     score: player.score,
     connected: Boolean(player.connected),
+    micActive: Boolean(player.micActive),
   };
 }
 

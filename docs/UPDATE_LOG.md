@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-21 10:03 HKT
+
+類型：程式 / 前台玩家名單 / 分數 / 開咪狀態 / 交接
+
+摘要：
+- 回應「前台顯示已加入的人、每個人分數、誰開緊咪」需求，新增前台玩家狀態名單。
+- `app.js` 的 display state 新增 `players`，並在 `stripPlayer()` 加入 `micActive`，讓前台知道玩家是否開咪。
+- 玩家手機送出 `mic-start`、後台收到 mic stream、收咪 / mic call 關閉時，會即時 `publishDisplayState()` 同步前台。
+- `display.html` 新增 `#stageRoster`，`display.js` 新增 `renderRoster()` 顯示已加入玩家、A/B 組、分數、離線和開咪狀態。
+- `styles.css` 新增 `.stage-roster` 相關樣式，前台左下顯示玩家狀態，QR 仍保留右下；手機咪音訊浮層改為避開玩家名單。
+- cache version 更新至 `stage-roster-1`。
+
+影響：
+- 前台現在可以即時看到誰已加入、分數是多少、屬於 A/B 哪一組，以及誰正在開咪。
+- 前台排行榜仍維持原本「主持按排行榜才顯示結算」的用途；這次新增的是常駐簡潔玩家狀態，不取代完場排行榜。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認 `display.html` 載入 `stage-roster-1`，無 console error。
+- Headless Chrome 臨時測試頁載入正式 `display.js` / `local-qr.js`，用模擬 display state 確認 `#stageRoster` 顯示玩家、分數、A/B 組、`開咪` 和 `離線` 狀態。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-21 09:53 HKT
 
 類型：程式 / 手機咪高峰 / 前台播放 / 交接

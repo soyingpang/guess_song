@@ -23,6 +23,7 @@ const els = {
   hints: document.querySelector("#stageHints"),
   choices: document.querySelector("#stageChoices"),
   leaderboard: document.querySelector("#stageLeaderboard"),
+  roster: document.querySelector("#stageRoster"),
   qrPanel: document.querySelector("#stageQrPanel"),
   qr: document.querySelector("#stageQr"),
   room: document.querySelector("#stageRoom"),
@@ -118,6 +119,7 @@ function renderState(state) {
   renderHints(state.hints || []);
   renderChoices(state);
   renderLeaderboard(state);
+  renderRoster(state);
   renderQr(state);
 }
 
@@ -326,6 +328,7 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   els.choices.replaceChildren();
   els.leaderboard.replaceChildren();
   els.leaderboard.classList.remove("is-final", "is-winner");
+  renderRoster({ players: [] });
   els.hero.classList.remove("is-winner-reveal");
   renderQr({
     playerUrl: buildFallbackPlayerUrl(),
@@ -546,6 +549,69 @@ function renderLeaderboard(state) {
     item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)} · ${escapeHtml(player.team || "A")} 組</span><strong>${player.score} 分</strong>`;
     els.leaderboard.append(item);
   });
+}
+
+function renderRoster(state) {
+  if (!els.roster) return;
+
+  const players = (state.players || state.leaderboard || []).filter(Boolean);
+  els.roster.replaceChildren();
+  els.roster.hidden = players.length === 0;
+  if (!players.length) return;
+
+  const liveCount = players.filter((player) => player.micActive).length;
+  const header = document.createElement("div");
+  header.className = "stage-roster-header";
+
+  const title = document.createElement("strong");
+  title.textContent = "已加入玩家";
+
+  const summary = document.createElement("span");
+  summary.textContent = `${players.length} 位${liveCount ? ` · ${liveCount} 開咪` : ""}`;
+
+  header.append(title, summary);
+
+  const list = document.createElement("div");
+  list.className = "stage-roster-list";
+
+  players.slice(0, 12).forEach((player) => {
+    const item = document.createElement("div");
+    item.className = "stage-roster-player";
+    item.classList.toggle("is-live", Boolean(player.micActive));
+    item.classList.toggle("is-offline", !player.connected);
+
+    const name = document.createElement("span");
+    name.className = "stage-roster-name";
+    name.textContent = player.name || "玩家";
+
+    const meta = document.createElement("span");
+    meta.className = "stage-roster-meta";
+    meta.textContent = `${player.team || "A"} 組`;
+
+    const score = document.createElement("strong");
+    score.className = "stage-roster-score";
+    score.textContent = `${Number(player.score || 0)} 分`;
+
+    item.append(name, meta, score);
+
+    if (player.micActive || !player.connected) {
+      const badge = document.createElement("span");
+      badge.className = `stage-roster-badge${player.micActive ? "" : " is-muted"}`;
+      badge.textContent = player.micActive ? "開咪" : "離線";
+      item.append(badge);
+    }
+
+    list.append(item);
+  });
+
+  if (players.length > 12) {
+    const more = document.createElement("div");
+    more.className = "stage-roster-more";
+    more.textContent = `還有 ${players.length - 12} 位玩家`;
+    list.append(more);
+  }
+
+  els.roster.append(header, list);
 }
 
 function renderWinnerReveal(state) {
