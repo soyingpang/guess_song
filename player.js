@@ -673,7 +673,7 @@ function remoteCountdownText(game) {
 function renderRemoteMedia(game) {
   if (!els.phoneRemoteMedia || !els.phoneRemotePlayerHost) return;
 
-  if (!state.remoteMode || !state.joined || !hasRemoteMedia(game)) {
+  if (!state.remoteMode || !state.joined || !hasRemoteMedia(game) || !shouldShowRemoteSyncPlayer(game)) {
     teardownRemoteMedia();
     return;
   }
@@ -704,6 +704,10 @@ function renderRemoteMedia(game) {
 
 function hasRemoteMedia(game) {
   return Boolean(game && (game.audioUrl || game.videoId));
+}
+
+function shouldShowRemoteSyncPlayer(game) {
+  return Boolean(game?.audioUrl);
 }
 
 function remoteMediaKey(game) {

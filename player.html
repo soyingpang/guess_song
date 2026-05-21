@@ -46,6 +46,19 @@
         padding: 6px 9px;
         font-size: 0.78rem;
       }
+
+      .player-body.is-joined.is-remote-player .phone-question {
+        order: 1;
+      }
+
+      .player-body.is-joined.is-remote-player .phone-remote-panel {
+        order: 2;
+        flex: 0 0 auto;
+      }
+
+      .player-body.is-joined.is-remote-player .phone-remote-roster {
+        display: none;
+      }
     </style>
   </head>
   <body class="player-body">
@@ -158,6 +171,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=host-audio-broadcast-3"></script>
+    <script src="./player.js?v=remote-choice-priority-1"></script>
   </body>
 </html>
