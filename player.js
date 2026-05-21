@@ -16,6 +16,7 @@ const state = {
   name: urlName || "",
   displayName: "",
   team: "A",
+  entryNameReady: false,
   joined: false,
   connecting: false,
   reconnectAttempts: 0,
@@ -43,7 +44,11 @@ const state = {
 
 const els = {
   joinForm: document.querySelector("#joinForm"),
+  playerModeField: document.querySelector("#playerModeField"),
   playerName: document.querySelector("#playerName"),
+  playerNameLabel: document.querySelector('label[for="playerName"]'),
+  playerNameLine: document.querySelector("#playerName")?.closest(".guess-line"),
+  playerNameNote: document.querySelector(".join-form > .join-note"),
   playerStatus: document.querySelector("#playerStatus"),
   playerScore: document.querySelector("#playerScore"),
   playerRound: document.querySelector("#playerRound"),
@@ -97,6 +102,7 @@ const ICONS = {
 
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
 els.playerName.value = state.name;
+showNameStep();
 applyPlayerMode();
 
 els.joinForm.addEventListener("submit", (event) => {
@@ -170,17 +176,46 @@ function joinGame() {
 
   state.name = name.slice(0, 18);
   state.displayName = "";
+  state.entryNameReady = true;
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
+  showModeStep();
+}
+
+function showNameStep() {
+  state.entryNameReady = false;
+  if (els.playerModeField) els.playerModeField.hidden = true;
+  if (els.playerNameLabel) els.playerNameLabel.hidden = false;
+  if (els.playerNameLine) els.playerNameLine.hidden = false;
+  if (els.playerNameNote) els.playerNameNote.hidden = false;
+}
+
+function showModeStep() {
+  if (els.playerModeField) els.playerModeField.hidden = false;
+  if (els.playerNameLabel) els.playerNameLabel.hidden = true;
+  if (els.playerNameLine) els.playerNameLine.hidden = true;
+  if (els.playerNameNote) els.playerNameNote.hidden = true;
+  setStatus("請選擇你是否在現場");
+  applyPlayerMode();
+}
+
+function startJoinWithSelectedMode() {
+  if (!state.entryNameReady || state.joined || state.connecting) return;
   lockPlayerMode();
   els.joinForm.hidden = true;
   connectToRoom({ resetAttempts: true });
+}
+
+function showJoinFormAfterFailure() {
+  els.joinForm.hidden = false;
+  if (state.entryNameReady) showModeStep();
+  else showNameStep();
 }
 
 function connectToRoom({ resetAttempts = false } = {}) {
   if (!window.Peer) {
     setStatus("未能載入連線工具，請重新整理");
     unlockPlayerMode();
-    els.joinForm.hidden = false;
+    showJoinFormAfterFailure();
     return;
   }
 
@@ -282,14 +317,14 @@ function handleConnectionFailure(message) {
   setStatus(message);
   updateMicUi();
   unlockPlayerMode();
-  els.joinForm.hidden = false;
+  showJoinFormAfterFailure();
 }
 
 function scheduleReconnect(message) {
   if (!roomId || !state.name) {
     setStatus(`${message}，請重新掃 QR 加入`);
     unlockPlayerMode();
-    els.joinForm.hidden = false;
+    showJoinFormAfterFailure();
     return;
   }
 
@@ -758,6 +793,7 @@ function setPlayerMode(remoteMode) {
   state.remoteMode = Boolean(remoteMode);
   localStorage.setItem(PLAYER_REMOTE_MODE_KEY, state.remoteMode ? "remote" : "onsite");
   applyPlayerMode();
+  startJoinWithSelectedMode();
 }
 
 function lockPlayerMode() {

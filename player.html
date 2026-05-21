@@ -273,7 +273,7 @@
         <h1>華語詩歌估歌仔</h1>
 
         <form class="join-form" id="joinForm">
-          <div class="player-mode-field">
+          <div class="player-mode-field" id="playerModeField" hidden>
             <span>你今次點玩？</span>
             <div class="player-mode-switch" aria-label="遊玩方式">
               <button class="player-mode-button" id="onsiteModeButton" type="button">在現場</button>
@@ -284,7 +284,7 @@
           <label for="playerName">你的名字</label>
           <div class="guess-line">
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
-            <button class="primary-button" type="submit">加入</button>
+            <button class="primary-button" type="submit">下一步</button>
           </div>
           <p class="join-note">系統會自動平均分 A/B 組，主持可即場微調。</p>
         </form>
@@ -375,6 +375,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=phone-mic-relay-1"></script>
+    <script src="./player.js?v=join-flow-1"></script>
   </body>
 </html>
