@@ -36,6 +36,9 @@ const state = {
   hostAudioElement: null,
   hostAudioBlocked: false,
   hostAudioStatus: "等候主持音訊廣播",
+  voiceBroadcastCalls: new Map(),
+  voiceBroadcastElements: new Map(),
+  voiceBroadcastBlocked: false,
 };
 
 const els = {
@@ -147,6 +150,7 @@ document.addEventListener("visibilitychange", () => {
 window.addEventListener("beforeunload", () => {
   stopMic({ notifyHost: false, message: "咪已關閉" });
   stopHostAudioBroadcast({ closeCall: true, message: "等候主持音訊廣播" });
+  stopAllVoiceBroadcasts();
 });
 
 window.setInterval(updateLiveClock, 700);
@@ -249,6 +253,7 @@ function bindRoomConnection(connection, token) {
 function closeCurrentPeer() {
   stopMic({ notifyHost: false, message: "重新連線，咪已關閉" });
   stopHostAudioBroadcast({ closeCall: true, message: "等候主持音訊廣播" });
+  stopAllVoiceBroadcasts();
 
   try {
     state.connection?.close();
@@ -438,6 +443,11 @@ function setMicStatus(message) {
 }
 
 function handlePeerCall(call) {
+  if (call?.metadata?.type === "remote-player-mic-broadcast") {
+    handleVoiceBroadcastCall(call);
+    return;
+  }
+
   if (call?.metadata?.type !== "host-audio-broadcast") {
     closePeerCall(call);
     return;
@@ -528,11 +538,93 @@ function attachHostAudioBroadcastStream(stream) {
   playHostAudioBroadcast();
 }
 
+function handleVoiceBroadcastCall(call) {
+  if (!state.remoteMode || !state.joined || call.metadata?.roomId !== roomId) {
+    closePeerCall(call);
+    return;
+  }
+
+  const sourcePlayerId = String(call.metadata?.sourcePlayerId || call.peer || crypto.randomUUID());
+  stopVoiceBroadcast(sourcePlayerId, { closeCall: true });
+  state.voiceBroadcastCalls.set(sourcePlayerId, call);
+
+  call.on("stream", (stream) => {
+    if (state.voiceBroadcastCalls.get(sourcePlayerId) !== call) return;
+    attachVoiceBroadcastStream(sourcePlayerId, stream, call.metadata?.sourcePlayerName || "開咪玩家");
+  });
+
+  call.on("close", () => {
+    if (state.voiceBroadcastCalls.get(sourcePlayerId) === call) {
+      stopVoiceBroadcast(sourcePlayerId, { closeCall: false });
+    }
+  });
+
+  call.on("error", () => {
+    if (state.voiceBroadcastCalls.get(sourcePlayerId) === call) {
+      stopVoiceBroadcast(sourcePlayerId, { closeCall: false });
+    }
+  });
+
+  try {
+    call.answer();
+  } catch {
+    stopVoiceBroadcast(sourcePlayerId, { closeCall: true });
+  }
+}
+
+function attachVoiceBroadcastStream(sourcePlayerId, stream, sourceName) {
+  if (!stream?.getAudioTracks?.().length) {
+    stopVoiceBroadcast(sourcePlayerId, { closeCall: true });
+    return;
+  }
+
+  const previousAudio = state.voiceBroadcastElements.get(sourcePlayerId);
+  if (previousAudio) {
+    previousAudio.pause();
+    previousAudio.srcObject = null;
+    previousAudio.remove();
+  }
+
+  const audio = document.createElement("audio");
+  audio.autoplay = true;
+  audio.controls = false;
+  audio.hidden = true;
+  audio.playsInline = true;
+  audio.srcObject = stream;
+  audio.dataset.sourceName = sourceName;
+  audio.addEventListener("playing", () => {
+    state.voiceBroadcastBlocked = false;
+    renderHostAudioBroadcastUi();
+  });
+  audio.addEventListener("pause", () => {
+    if (state.voiceBroadcastElements.get(sourcePlayerId) !== audio) return;
+    state.voiceBroadcastBlocked = true;
+    setHostAudioStatus("請按「啟用收聽」");
+  });
+  audio.addEventListener("error", () => {
+    if (state.voiceBroadcastElements.get(sourcePlayerId) !== audio) return;
+    state.voiceBroadcastBlocked = true;
+    setHostAudioStatus("請按「啟用收聽」");
+  });
+
+  state.voiceBroadcastElements.set(sourcePlayerId, audio);
+  els.phoneRemoteListen?.append(audio);
+  setHostAudioStatus(`${sourceName} 開咪中`);
+  stream.getTracks().forEach((track) => {
+    track.addEventListener("ended", () => stopVoiceBroadcast(sourcePlayerId, { closeCall: false }));
+  });
+
+  playVoiceBroadcasts();
+}
+
 function playHostAudioBroadcast() {
   const audio = state.hostAudioElement;
+  playVoiceBroadcasts();
   if (!audio || !state.hostAudioStream) {
-    state.hostAudioBlocked = false;
-    setHostAudioStatus("等候主持音訊廣播");
+    if (!state.voiceBroadcastElements.size) {
+      state.hostAudioBlocked = false;
+      setHostAudioStatus("等候主持音訊廣播");
+    }
     return;
   }
 
@@ -558,6 +650,28 @@ function playHostAudioBroadcast() {
     });
 }
 
+function playVoiceBroadcasts() {
+  if (!state.voiceBroadcastElements.size) {
+    state.voiceBroadcastBlocked = false;
+    renderHostAudioBroadcastUi();
+    return;
+  }
+
+  state.voiceBroadcastBlocked = false;
+  Array.from(state.voiceBroadcastElements.values()).forEach((audio) => {
+    audio.muted = false;
+    audio.volume = 1;
+    const playPromise = audio.play();
+    if (playPromise?.catch) {
+      playPromise.catch(() => {
+        state.voiceBroadcastBlocked = true;
+        setHostAudioStatus("請按「啟用收聽」");
+      });
+    }
+  });
+  renderHostAudioBroadcastUi();
+}
+
 function stopHostAudioBroadcast(options = {}) {
   const { closeCall = true, message = "等候主持音訊廣播" } = options;
   const call = state.hostAudioCall;
@@ -579,6 +693,34 @@ function stopHostAudioBroadcast(options = {}) {
 
   stream?.getTracks?.().forEach((track) => track.stop());
   setHostAudioStatus(message);
+}
+
+function stopVoiceBroadcast(sourcePlayerId, options = {}) {
+  const { closeCall = true } = options;
+  const call = state.voiceBroadcastCalls.get(sourcePlayerId);
+  const audio = state.voiceBroadcastElements.get(sourcePlayerId);
+
+  state.voiceBroadcastCalls.delete(sourcePlayerId);
+  state.voiceBroadcastElements.delete(sourcePlayerId);
+
+  if (closeCall) closePeerCall(call);
+
+  if (audio) {
+    const stream = audio.srcObject;
+    audio.pause();
+    audio.srcObject = null;
+    audio.remove();
+    stream?.getTracks?.().forEach((track) => track.stop());
+  }
+
+  state.voiceBroadcastBlocked = false;
+  renderHostAudioBroadcastUi();
+}
+
+function stopAllVoiceBroadcasts() {
+  Array.from(state.voiceBroadcastCalls.keys()).forEach((sourcePlayerId) => {
+    stopVoiceBroadcast(sourcePlayerId, { closeCall: true });
+  });
 }
 
 function closePeerCall(call) {
@@ -605,8 +747,10 @@ function renderHostAudioBroadcastUi() {
   }
 
   els.phoneRemoteListenStatus.textContent = state.hostAudioStatus || "等候主持音訊廣播";
-  els.phoneRemoteListenButton.hidden = !(state.hostAudioStream && state.hostAudioBlocked);
-  els.phoneRemoteListenButton.disabled = !state.hostAudioStream;
+  const needsUnlock = (state.hostAudioStream && state.hostAudioBlocked) || state.voiceBroadcastBlocked;
+  const hasPlayableAudio = state.hostAudioStream || state.voiceBroadcastElements.size > 0;
+  els.phoneRemoteListenButton.hidden = !needsUnlock;
+  els.phoneRemoteListenButton.disabled = !hasPlayableAudio;
 }
 
 function setPlayerMode(remoteMode) {
