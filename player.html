@@ -105,6 +105,98 @@
         display: inline-flex;
       }
 
+      .player-mode-field {
+        gap: 10px;
+        border-color: rgba(103, 151, 140, 0.32);
+        background: rgba(255, 252, 245, 0.82);
+      }
+
+      .player-mode-field > span {
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+
+      .player-mode-field .player-mode-switch {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+      }
+
+      .player-mode-button {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        align-items: center;
+        gap: 10px;
+        min-height: 72px;
+        padding: 10px 12px;
+        text-align: left;
+      }
+
+      .player-mode-button strong,
+      .player-mode-button small {
+        display: block;
+        min-width: 0;
+      }
+
+      .player-mode-button strong {
+        font-size: 1.08rem;
+        line-height: 1.15;
+      }
+
+      .player-mode-button small {
+        margin-top: 3px;
+        color: currentColor;
+        font-size: 0.78rem;
+        font-weight: 850;
+        line-height: 1.25;
+        opacity: 0.78;
+      }
+
+      .mode-card-icon {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 8px;
+      }
+
+      .mode-card-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2.2;
+      }
+
+      #onsiteModeButton {
+        border-color: rgba(45, 111, 80, 0.42);
+        background: linear-gradient(180deg, rgba(232, 248, 235, 0.96), rgba(255, 248, 236, 0.9));
+        color: #24543f;
+        box-shadow: 0 8px 18px rgba(45, 111, 80, 0.12);
+      }
+
+      #onsiteModeButton .mode-card-icon {
+        background: rgba(45, 111, 80, 0.14);
+      }
+
+      #remoteModeButton {
+        border-color: rgba(37, 99, 235, 0.38);
+        background: linear-gradient(180deg, rgba(239, 246, 255, 0.98), rgba(255, 248, 236, 0.92));
+        color: #163a73;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
+      }
+
+      #remoteModeButton .mode-card-icon {
+        background: rgba(37, 99, 235, 0.13);
+      }
+
+      .player-mode-button.is-active {
+        box-shadow:
+          0 0 0 3px rgba(241, 184, 75, 0.28),
+          0 10px 22px rgba(91, 53, 44, 0.16);
+      }
+
       .player-body:not(.is-joined):not(.is-connecting) .player-status,
       .player-body:not(.is-joined) .player-scoreline,
       .player-body:not(.is-joined) .phone-mic-panel,
@@ -339,12 +431,28 @@
 
         <form class="join-form" id="joinForm">
           <div class="player-mode-field" id="playerModeField" hidden>
-            <span>你今次點玩？</span>
+            <span>請先確認你的位置</span>
             <div class="player-mode-switch" aria-label="遊玩方式">
-              <button class="player-mode-button" id="onsiteModeButton" type="button">在現場</button>
-              <button class="player-mode-button" id="remoteModeButton" type="button">不在現場</button>
+              <button class="player-mode-button" id="onsiteModeButton" type="button" aria-label="我在現場，現場聽聲音">
+                <span class="mode-card-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 21s6-5.1 6-11a6 6 0 0 0-12 0c0 5.9 6 11 6 11Z"/><path d="M12 12.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z"/></svg>
+                </span>
+                <span>
+                  <strong>我在現場</strong>
+                  <small>現場聽聲音，手機答題</small>
+                </span>
+              </button>
+              <button class="player-mode-button" id="remoteModeButton" type="button" aria-label="我不在現場，手機同步播放">
+                <span class="mode-card-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M9 17h6"/><path d="M9 8h6"/><path d="M8 11.5h8"/></svg>
+                </span>
+                <span>
+                  <strong>我不在現場</strong>
+                  <small>手機同步播放，答案會遮住</small>
+                </span>
+              </button>
             </div>
-            <p class="join-note">入房後不可切換；不在現場會用手機同步播放詩歌，畫面會遮住答案。</p>
+            <p class="join-note">按任何一個選項會即時加入；入房後不可切換。</p>
           </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
@@ -440,6 +548,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=entry-clean-1"></script>
+    <script src="./player.js?v=mode-cards-1"></script>
   </body>
 </html>

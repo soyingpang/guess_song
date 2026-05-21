@@ -828,12 +828,13 @@ function unlockPlayerMode() {
 }
 
 function applyPlayerMode() {
+  const hasChosenMode = state.modeLocked || state.joined || state.connecting;
   document.body.classList.toggle("is-remote-player", state.remoteMode);
   document.body.classList.toggle("is-mode-locked", state.modeLocked);
-  els.onsiteModeButton.classList.toggle("is-active", !state.remoteMode);
-  els.remoteModeButton.classList.toggle("is-active", state.remoteMode);
-  els.onsiteModeButton.setAttribute("aria-pressed", String(!state.remoteMode));
-  els.remoteModeButton.setAttribute("aria-pressed", String(state.remoteMode));
+  els.onsiteModeButton.classList.toggle("is-active", hasChosenMode && !state.remoteMode);
+  els.remoteModeButton.classList.toggle("is-active", hasChosenMode && state.remoteMode);
+  els.onsiteModeButton.setAttribute("aria-pressed", String(hasChosenMode && !state.remoteMode));
+  els.remoteModeButton.setAttribute("aria-pressed", String(hasChosenMode && state.remoteMode));
 
   if (!state.remoteMode || !state.joined) {
     els.phoneRemotePanel.hidden = true;
