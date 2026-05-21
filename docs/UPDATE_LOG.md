@@ -21,6 +21,35 @@
 
 ---
 
+## 2026-05-21 13:13 HKT
+
+類型：修正 / 手機端 / 不在現場開聲 / YouTube 控制列
+
+摘要：
+- 再次回應「手機仍然沒有聲」問題，確認 YouTube 手機 embed 必須由玩家實際點中 YouTube iframe 內部控制列，單靠外層按鈕和 postMessage 不可靠。
+- `player.js` 新增 `remoteYoutubeManualUnlock` 狀態：按「開聲並同步」後，重建同步 iframe 並進入手動開聲模式。
+- `styles.css` 新增 `.phone-remote-media.is-youtube-manual-unlock`：保留主畫面答案遮罩，但露出底部一小條 YouTube 控制列，讓手機觸控可直接落到 YouTube 播放 / 聲音控制。
+- 手機提示改為「請點下面 YouTube 控制列開聲」，按鈕文字改為「重新同步控制列」。
+- cache version 更新至 `phone-youtube-control-1`。
+
+影響：
+- 不在現場手機不再要求玩家盲點遮罩；玩家按「開聲並同步」後，應直接點下面露出的 YouTube 控制列開聲。
+- YouTube 廣告、地區限制、手機瀏覽器 autoplay 政策仍不能由程式完全繞過；若控制列仍不能開聲，唯一穩定方案仍是本地 / 已授權音訊或影片檔。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 臨時測試頁載入正式 `player.js`，模擬不在現場 YouTube 播放：初始顯示「請先開聲並同步」；按「開聲並同步」後確認 `#phoneRemoteMedia` 加上 `is-youtube-manual-unlock`、底部露出約 45px YouTube 控制列、提示改為「請點下面 YouTube 控制列開聲」、iframe 使用 `autoplay=1` / `controls=1` 和最新 start 秒數，無 console error；測完已刪除臨時測試頁。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-21 13:04 HKT
 
 類型：修正 / 手機端 / 不在現場開聲 / YouTube

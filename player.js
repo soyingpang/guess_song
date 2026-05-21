@@ -32,6 +32,7 @@ const state = {
   remotePlaybackKey: "",
   remotePlaybackBlocked: false,
   remoteYoutubeActivationRequested: false,
+  remoteYoutubeManualUnlock: false,
 };
 
 const els = {
@@ -493,6 +494,7 @@ function renderRemoteMedia(game) {
     state.remotePlaybackKey = "";
     state.remotePlaybackBlocked = false;
     state.remoteYoutubeActivationRequested = false;
+    state.remoteYoutubeManualUnlock = false;
     buildRemoteMediaFrame(game);
   }
 
@@ -634,6 +636,7 @@ function retryRemotePlayback() {
 
   if (isRemoteYouTube(state.game)) {
     state.remoteYoutubeActivationRequested = true;
+    state.remoteYoutubeManualUnlock = true;
     state.remotePlaybackBlocked = true;
     state.remoteMediaKey = remoteMediaKey(state.game);
     state.remotePlaybackKey = "";
@@ -662,25 +665,28 @@ function updateRemotePlaybackUi(game) {
   if (!hasMedia) {
     setRemotePlayerStatus("等候歌曲");
     els.phoneRemotePlayButton.hidden = true;
+    els.phoneRemoteMedia.classList.remove("is-youtube-manual-unlock");
     return;
   }
 
   if (shouldPlay) {
     if (isRemoteYouTube(game)) {
+      els.phoneRemoteMedia.classList.toggle("is-youtube-manual-unlock", state.remoteYoutubeManualUnlock);
       setRemotePlayerStatus(
-        state.remoteYoutubeActivationRequested ? "如仍無聲，點一下上面遮罩" : "請先開聲並同步"
+        state.remoteYoutubeManualUnlock ? "請點下面 YouTube 控制列開聲" : "請先開聲並同步"
       );
       setRemoteShieldText(
-        state.remoteYoutubeActivationRequested ? "再點一下開聲" : "點一下開聲",
-        state.remoteYoutubeActivationRequested ? "觸控會落到 YouTube 播放器" : "畫面已遮住答案"
+        state.remoteYoutubeManualUnlock ? "答案遮住中" : "點一下開聲",
+        state.remoteYoutubeManualUnlock ? "下面可點 YouTube 控制列" : "畫面已遮住答案"
       );
       els.phoneRemotePlayButton.hidden = false;
-      els.phoneRemotePlayButton.textContent = state.remoteYoutubeActivationRequested
-        ? "重新同步開聲"
+      els.phoneRemotePlayButton.textContent = state.remoteYoutubeManualUnlock
+        ? "重新同步控制列"
         : "開聲並同步";
       return;
     }
 
+    els.phoneRemoteMedia.classList.remove("is-youtube-manual-unlock");
     setRemotePlayerStatus(state.remotePlaybackBlocked ? "請按一下啟用播放" : "同步播放中");
     setRemoteShieldText(state.remotePlaybackBlocked ? "點一下開聲" : "手機播放中", "畫面已遮住答案");
     els.phoneRemotePlayButton.hidden = false;
@@ -690,6 +696,7 @@ function updateRemotePlaybackUi(game) {
 
   setRemotePlayerStatus(game?.frontReady ? "已預備" : game?.revealed ? "已開估" : "等候播放");
   setRemoteShieldText("手機同步播放器", "畫面已遮住答案");
+  els.phoneRemoteMedia.classList.remove("is-youtube-manual-unlock");
   els.phoneRemotePlayButton.hidden = true;
 }
 
@@ -707,7 +714,9 @@ function teardownRemoteMedia() {
   state.remotePlaybackKey = "";
   state.remotePlaybackBlocked = false;
   state.remoteYoutubeActivationRequested = false;
+  state.remoteYoutubeManualUnlock = false;
   if (els.phoneRemoteMedia) els.phoneRemoteMedia.hidden = true;
+  if (els.phoneRemoteMedia) els.phoneRemoteMedia.classList.remove("is-youtube-manual-unlock");
   if (els.phoneRemotePlayerHost) els.phoneRemotePlayerHost.replaceChildren();
   if (els.phoneRemotePlayButton) els.phoneRemotePlayButton.hidden = true;
 }

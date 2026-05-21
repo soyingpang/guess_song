@@ -5476,3 +5476,28 @@ textarea {
   min-height: 72px;
   max-height: 96px;
 }
+
+
+/* Phone YouTube manual unlock */
+.phone-remote-media.is-youtube-manual-unlock .phone-remote-frame {
+  min-height: 132px;
+  max-height: 156px;
+}
+
+.phone-remote-media.is-youtube-manual-unlock .phone-remote-shield {
+  inset: 0 0 44px 0;
+  border-bottom: 1px solid rgba(103, 151, 140, 0.28);
+}
+
+.phone-remote-media.is-youtube-manual-unlock .phone-remote-shield strong {
+  font-size: 0.86rem;
+}
+
+.phone-remote-media.is-youtube-manual-unlock .phone-remote-shield span {
+  font-size: 0.68rem;
+}
+
+.player-body.is-joined .phone-remote-media.is-youtube-manual-unlock .phone-remote-frame {
+  min-height: 118px;
+  max-height: 140px;
+}
