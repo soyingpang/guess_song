@@ -94,6 +94,12 @@ const state = {
   peer: null,
   displayConnections: new Set(),
   displayMicCalls: new Map(),
+  audioBroadcastSourceStream: null,
+  audioBroadcastStream: null,
+  audioBroadcastCalls: new Map(),
+  audioBroadcastRetryTimers: new Map(),
+  audioBroadcastActive: false,
+  audioBroadcastStarting: false,
   players: {},
 };
 
@@ -165,6 +171,8 @@ const els = {
   roomStatus: document.querySelector("#roomStatus"),
   copyPlayerLinkButton: document.querySelector("#copyPlayerLinkButton"),
   copyDisplayLinkButton: document.querySelector("#copyDisplayLinkButton"),
+  audioBroadcastButton: document.querySelector("#audioBroadcastButton"),
+  audioBroadcastStatus: document.querySelector("#audioBroadcastStatus"),
   playerList: document.querySelector("#playerList"),
 };
 
@@ -228,6 +236,7 @@ function bindEvents() {
   els.resetGameButton.addEventListener("click", resetGameSession);
   els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
   els.copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
+  els.audioBroadcastButton.addEventListener("click", toggleAudioBroadcast);
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
@@ -309,6 +318,7 @@ function setupPlayerConnection(connection) {
       player.connected = false;
       player.connection = null;
       endPlayerMic(player.id, { closeCall: true, render: false });
+      endAudioBroadcastForPlayer(player.id);
       renderPlayers();
       syncSurfaces();
     }
@@ -337,12 +347,14 @@ function handlePlayerMessage(connection, message) {
     player.team = normalizeTeam(player.team);
     player.connected = true;
     player.connection = connection;
+    player.remoteMode = Boolean(message.remoteMode);
     player.micActive = false;
     state.players[player.id] = player;
     connection.playerId = player.id;
 
     if (previousConnection && previousConnection !== connection) {
       endPlayerMic(player.id, { closeCall: true, render: false });
+      endAudioBroadcastForPlayer(player.id);
       try {
         previousConnection.close();
       } catch {
@@ -354,6 +366,7 @@ function handlePlayerMessage(connection, message) {
     renderPlayers();
     publishDisplayState();
     broadcastToPlayers();
+    syncAudioBroadcastToPlayer(player);
     return;
   }
 
@@ -527,6 +540,211 @@ function endDisplayMicForConnection(connection) {
 
 function displayMicCallKey(displayPeer, playerId) {
   return `${displayPeer}:${playerId}`;
+}
+
+async function toggleAudioBroadcast() {
+  if (state.audioBroadcastActive || state.audioBroadcastStarting) {
+    stopAudioBroadcast("不在現場音訊廣播已停止");
+    return;
+  }
+
+  if (!state.roomReady || isRoomBlocked()) {
+    setResult("房間未準備", "請先確定固定房間已建立", "wrong");
+    return;
+  }
+
+  if (!navigator.mediaDevices?.getDisplayMedia) {
+    setResult("瀏覽器不支援音訊廣播", "請用桌面版 Chrome / Edge 開主持後台", "wrong");
+    return;
+  }
+
+  try {
+    state.audioBroadcastStarting = true;
+    renderAudioBroadcastUi();
+    setResult("選擇音訊來源", "請選播放 YouTube 的 Chrome 分頁，並勾選分享音訊", "");
+
+    const sourceStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+      },
+    });
+    const audioTracks = sourceStream.getAudioTracks();
+
+    if (!audioTracks.length) {
+      sourceStream.getTracks().forEach((track) => track.stop());
+      state.audioBroadcastStarting = false;
+      renderAudioBroadcastUi();
+      setResult("沒有取得音訊", "請重新開始，選 Chrome 分頁並勾選分享音訊", "wrong");
+      return;
+    }
+
+    stopAudioBroadcast("", { silent: true });
+    state.audioBroadcastSourceStream = sourceStream;
+    state.audioBroadcastStream = new MediaStream(audioTracks);
+    state.audioBroadcastActive = true;
+    state.audioBroadcastStarting = false;
+
+    sourceStream.getTracks().forEach((track) => {
+      track.addEventListener("ended", () => {
+        if (state.audioBroadcastSourceStream === sourceStream) {
+          stopAudioBroadcast("主持音訊分享已停止");
+        }
+      });
+    });
+
+    broadcastAudioToRemotePlayers();
+    renderPlayers();
+    renderAudioBroadcastUi();
+    setResult("不在現場音訊廣播中", "只會送到選了「不在現場」的玩家手機", "correct");
+  } catch (error) {
+    state.audioBroadcastStarting = false;
+    renderAudioBroadcastUi();
+    setResult(
+      error?.name === "NotAllowedError" ? "已取消音訊廣播" : "音訊廣播失敗",
+      "請用桌面 Chrome / Edge，選 Chrome 分頁並勾選分享音訊",
+      "wrong"
+    );
+  }
+}
+
+function stopAudioBroadcast(message = "不在現場音訊廣播已停止", options = {}) {
+  const { silent = false } = options;
+  state.audioBroadcastStarting = false;
+  state.audioBroadcastActive = false;
+  clearAllAudioBroadcastRetries();
+
+  Array.from(state.audioBroadcastCalls.values()).forEach((call) => {
+    try {
+      call.close();
+    } catch {
+      // PeerJS may already have closed the call.
+    }
+  });
+  state.audioBroadcastCalls.clear();
+
+  state.audioBroadcastSourceStream?.getTracks().forEach((track) => track.stop());
+  state.audioBroadcastStream?.getTracks().forEach((track) => track.stop());
+  state.audioBroadcastSourceStream = null;
+  state.audioBroadcastStream = null;
+
+  renderAudioBroadcastUi();
+  renderPlayers();
+  if (!silent && message) setResult(message, "不在現場玩家將聽不到主持電腦音訊", "");
+}
+
+function broadcastAudioToRemotePlayers() {
+  Object.values(state.players).forEach(syncAudioBroadcastToPlayer);
+  renderAudioBroadcastUi();
+}
+
+function syncAudioBroadcastToPlayer(player) {
+  if (!shouldAudioBroadcastToPlayer(player)) {
+    endAudioBroadcastForPlayer(player?.id);
+    return;
+  }
+
+  if (state.audioBroadcastCalls.has(player.id)) return;
+
+  try {
+    const call = state.peer.call(player.connection.peer, state.audioBroadcastStream, {
+      metadata: {
+        type: "host-audio-broadcast",
+        roomId: state.roomId,
+        playerId: player.id,
+      },
+    });
+    if (!call) return;
+
+    call.playerId = player.id;
+    state.audioBroadcastCalls.set(player.id, call);
+    call.on("close", () => {
+      handleAudioBroadcastCallEnd(player.id, call, { retry: true });
+    });
+    call.on("error", () => {
+      handleAudioBroadcastCallEnd(player.id, call, { retry: true });
+    });
+  } catch {
+    state.audioBroadcastCalls.delete(player.id);
+    queueAudioBroadcastRetry(player.id);
+  }
+}
+
+function shouldAudioBroadcastToPlayer(player) {
+  return Boolean(
+    state.audioBroadcastActive &&
+      state.audioBroadcastStream &&
+      state.peer &&
+      player?.remoteMode &&
+      player.connected &&
+      player.connection?.open &&
+      player.connection?.peer
+  );
+}
+
+function endAudioBroadcastForPlayer(playerId) {
+  if (!playerId) return;
+  clearAudioBroadcastRetry(playerId);
+  const call = state.audioBroadcastCalls.get(playerId);
+  state.audioBroadcastCalls.delete(playerId);
+  if (!call) return;
+
+  try {
+    call.close();
+  } catch {
+    // PeerJS may already have closed the call.
+  }
+  renderAudioBroadcastUi();
+}
+
+function handleAudioBroadcastCallEnd(playerId, call, options = {}) {
+  const { retry = false } = options;
+  if (state.audioBroadcastCalls.get(playerId) !== call) return;
+
+  state.audioBroadcastCalls.delete(playerId);
+  renderAudioBroadcastUi();
+  if (retry) queueAudioBroadcastRetry(playerId);
+}
+
+function queueAudioBroadcastRetry(playerId) {
+  if (!playerId || state.audioBroadcastRetryTimers.has(playerId)) return;
+  if (!shouldAudioBroadcastToPlayer(state.players[playerId])) return;
+
+  const timer = window.setTimeout(() => {
+    state.audioBroadcastRetryTimers.delete(playerId);
+    syncAudioBroadcastToPlayer(state.players[playerId]);
+  }, 1200);
+  state.audioBroadcastRetryTimers.set(playerId, timer);
+}
+
+function clearAudioBroadcastRetry(playerId) {
+  const timer = state.audioBroadcastRetryTimers.get(playerId);
+  if (!timer) return;
+  window.clearTimeout(timer);
+  state.audioBroadcastRetryTimers.delete(playerId);
+}
+
+function clearAllAudioBroadcastRetries() {
+  Array.from(state.audioBroadcastRetryTimers.values()).forEach((timer) => window.clearTimeout(timer));
+  state.audioBroadcastRetryTimers.clear();
+}
+
+function renderAudioBroadcastUi() {
+  if (!els.audioBroadcastButton || !els.audioBroadcastStatus) return;
+
+  const remoteConnected = Object.values(state.players).filter((player) => player.connected && player.remoteMode).length;
+  const connectedCalls = state.audioBroadcastCalls.size;
+  els.audioBroadcastButton.disabled = state.audioBroadcastStarting || !state.roomReady || isRoomBlocked();
+  els.audioBroadcastButton.textContent = state.audioBroadcastActive ? "停止音訊廣播" : state.audioBroadcastStarting ? "準備廣播..." : "開始音訊廣播";
+  els.audioBroadcastStatus.textContent = state.audioBroadcastActive
+    ? remoteConnected
+      ? `不在現場聲音：廣播中 · 已送出 ${connectedCalls}/${remoteConnected} 部手機`
+      : "不在現場聲音：廣播中 · 等候不在現場玩家"
+    : state.audioBroadcastStarting
+      ? "不在現場聲音：等待主持選擇分頁音訊"
+      : "不在現場聲音：未廣播";
 }
 
 function handleChoiceAnswer(player, answer) {
@@ -1550,6 +1768,7 @@ function renderPlayers() {
       : `固定房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.copyDisplayLinkButton.disabled = !state.displayUrl;
+  renderAudioBroadcastUi();
   els.playerList.innerHTML = "";
 
   if (!players.length) {

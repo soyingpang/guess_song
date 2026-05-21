@@ -31,6 +31,11 @@ const state = {
   remoteMediaKey: "",
   remotePlaybackKey: "",
   remotePlaybackBlocked: false,
+  hostAudioCall: null,
+  hostAudioStream: null,
+  hostAudioElement: null,
+  hostAudioBlocked: false,
+  hostAudioStatus: "等候主持音訊廣播",
 };
 
 const els = {
@@ -58,6 +63,9 @@ const els = {
   phoneRemoteCountdown: document.querySelector("#phoneRemoteCountdown"),
   phoneRemoteTeams: document.querySelector("#phoneRemoteTeams"),
   phoneRemoteMic: document.querySelector("#phoneRemoteMic"),
+  phoneRemoteListen: document.querySelector("#phoneRemoteListen"),
+  phoneRemoteListenStatus: document.querySelector("#phoneRemoteListenStatus"),
+  phoneRemoteListenButton: document.querySelector("#phoneRemoteListenButton"),
   phoneRemoteRoster: document.querySelector("#phoneRemoteRoster"),
   phoneRemoteMedia: document.querySelector("#phoneRemoteMedia"),
   phoneRemotePlayerHost: document.querySelector("#phoneRemotePlayerHost"),
@@ -96,6 +104,7 @@ els.closeLeaderboardButton.addEventListener("click", closeLeaderboard);
 els.onsiteModeButton.addEventListener("click", () => setPlayerMode(false));
 els.remoteModeButton.addEventListener("click", () => setPlayerMode(true));
 els.phoneRemotePlayButton.addEventListener("click", () => retryRemotePlayback());
+els.phoneRemoteListenButton.addEventListener("click", () => playHostAudioBroadcast());
 els.leaderboardModal.addEventListener("click", (event) => {
   if (event.target === els.leaderboardModal) closeLeaderboard();
 });
@@ -116,6 +125,7 @@ document.addEventListener("visibilitychange", () => {
 
 window.addEventListener("beforeunload", () => {
   stopMic({ notifyHost: false, message: "咪已關閉" });
+  stopHostAudioBroadcast({ closeCall: true, message: "等候主持音訊廣播" });
 });
 
 window.setInterval(updateLiveClock, 700);
@@ -169,6 +179,14 @@ function connectToRoom({ resetAttempts = false } = {}) {
     bindRoomConnection(connection, token);
   });
 
+  peer.on("call", (call) => {
+    if (state.connectionToken !== token) {
+      closePeerCall(call);
+      return;
+    }
+    handlePeerCall(call);
+  });
+
   peer.on("error", () => {
     if (state.connectionToken !== token) return;
     handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
@@ -182,7 +200,7 @@ function bindRoomConnection(connection, token) {
     state.connecting = false;
     state.reconnectAttempts = 0;
     lockPlayerMode();
-    send({ type: "join", playerId: state.playerId, name: state.name });
+    send({ type: "join", playerId: state.playerId, name: state.name, remoteMode: state.remoteMode });
     setStatus("已連線，等候同步");
     updateMicUi();
   });
@@ -209,6 +227,7 @@ function bindRoomConnection(connection, token) {
 
 function closeCurrentPeer() {
   stopMic({ notifyHost: false, message: "重新連線，咪已關閉" });
+  stopHostAudioBroadcast({ closeCall: true, message: "等候主持音訊廣播" });
 
   try {
     state.connection?.close();
@@ -388,6 +407,178 @@ function setMicStatus(message) {
   els.phoneMicStatus.textContent = message;
 }
 
+function handlePeerCall(call) {
+  if (call?.metadata?.type !== "host-audio-broadcast") {
+    closePeerCall(call);
+    return;
+  }
+
+  if (!state.remoteMode || !state.joined || call.metadata?.roomId !== roomId) {
+    closePeerCall(call);
+    return;
+  }
+
+  stopHostAudioBroadcast({ closeCall: true, message: "正在接駁主持音訊" });
+  state.hostAudioCall = call;
+  state.hostAudioBlocked = false;
+  setHostAudioStatus("正在接駁主持音訊");
+
+  call.on("stream", (stream) => {
+    if (state.hostAudioCall !== call) return;
+    attachHostAudioBroadcastStream(stream);
+  });
+
+  call.on("close", () => {
+    if (state.hostAudioCall === call) {
+      stopHostAudioBroadcast({ closeCall: false, message: "主持音訊廣播已停止" });
+    }
+  });
+
+  call.on("error", () => {
+    if (state.hostAudioCall === call) {
+      stopHostAudioBroadcast({ closeCall: false, message: "主持音訊連線中斷" });
+    }
+  });
+
+  try {
+    call.answer();
+  } catch {
+    stopHostAudioBroadcast({ closeCall: true, message: "無法接駁主持音訊" });
+  }
+}
+
+function attachHostAudioBroadcastStream(stream) {
+  if (!stream?.getAudioTracks?.().length) {
+    stopHostAudioBroadcast({ closeCall: true, message: "主持音訊沒有音軌" });
+    return;
+  }
+
+  const previousAudio = state.hostAudioElement;
+  if (previousAudio) {
+    previousAudio.pause();
+    previousAudio.srcObject = null;
+    previousAudio.remove();
+  }
+
+  state.hostAudioStream = stream;
+  state.hostAudioBlocked = false;
+
+  const audio = document.createElement("audio");
+  audio.autoplay = true;
+  audio.controls = false;
+  audio.hidden = true;
+  audio.playsInline = true;
+  audio.srcObject = stream;
+  audio.addEventListener("playing", () => {
+    if (state.hostAudioElement !== audio) return;
+    state.hostAudioBlocked = false;
+    setHostAudioStatus("正在收聽現場聲音");
+  });
+  audio.addEventListener("pause", () => {
+    if (state.hostAudioElement !== audio || !state.hostAudioStream) return;
+    state.hostAudioBlocked = true;
+    setHostAudioStatus("請按「啟用收聽」");
+  });
+  audio.addEventListener("error", () => {
+    if (state.hostAudioElement !== audio) return;
+    state.hostAudioBlocked = true;
+    setHostAudioStatus("收聽失敗，請再按一次");
+  });
+
+  state.hostAudioElement = audio;
+  els.phoneRemoteListen?.append(audio);
+  stream.getTracks().forEach((track) => {
+    track.addEventListener("ended", () => {
+      if (state.hostAudioStream === stream) {
+        stopHostAudioBroadcast({ closeCall: false, message: "主持音訊廣播已停止" });
+      }
+    });
+  });
+
+  playHostAudioBroadcast();
+}
+
+function playHostAudioBroadcast() {
+  const audio = state.hostAudioElement;
+  if (!audio || !state.hostAudioStream) {
+    state.hostAudioBlocked = false;
+    setHostAudioStatus("等候主持音訊廣播");
+    return;
+  }
+
+  audio.muted = false;
+  audio.volume = 1;
+  setHostAudioStatus("正在啟用現場聲音");
+
+  const playPromise = audio.play();
+  if (!playPromise?.then) {
+    state.hostAudioBlocked = false;
+    setHostAudioStatus("正在收聽現場聲音");
+    return;
+  }
+
+  playPromise
+    .then(() => {
+      state.hostAudioBlocked = false;
+      setHostAudioStatus("正在收聽現場聲音");
+    })
+    .catch(() => {
+      state.hostAudioBlocked = true;
+      setHostAudioStatus("請按「啟用收聽」");
+    });
+}
+
+function stopHostAudioBroadcast(options = {}) {
+  const { closeCall = true, message = "等候主持音訊廣播" } = options;
+  const call = state.hostAudioCall;
+  const stream = state.hostAudioStream;
+  const audio = state.hostAudioElement;
+
+  state.hostAudioCall = null;
+  state.hostAudioStream = null;
+  state.hostAudioElement = null;
+  state.hostAudioBlocked = false;
+
+  if (closeCall) closePeerCall(call);
+
+  if (audio) {
+    audio.pause();
+    audio.srcObject = null;
+    audio.remove();
+  }
+
+  stream?.getTracks?.().forEach((track) => track.stop());
+  setHostAudioStatus(message);
+}
+
+function closePeerCall(call) {
+  if (!call) return;
+  try {
+    call.close();
+  } catch {
+    // PeerJS may already have closed the media call.
+  }
+}
+
+function setHostAudioStatus(message) {
+  state.hostAudioStatus = message;
+  renderHostAudioBroadcastUi();
+}
+
+function renderHostAudioBroadcastUi() {
+  if (!els.phoneRemoteListenStatus || !els.phoneRemoteListenButton) return;
+
+  if (!state.remoteMode || !state.joined) {
+    els.phoneRemoteListenStatus.textContent = "不在現場模式可收聽";
+    els.phoneRemoteListenButton.hidden = true;
+    return;
+  }
+
+  els.phoneRemoteListenStatus.textContent = state.hostAudioStatus || "等候主持音訊廣播";
+  els.phoneRemoteListenButton.hidden = !(state.hostAudioStream && state.hostAudioBlocked);
+  els.phoneRemoteListenButton.disabled = !state.hostAudioStream;
+}
+
 function setPlayerMode(remoteMode) {
   if (state.modeLocked || state.joined || state.connecting) return;
   state.remoteMode = Boolean(remoteMode);
@@ -421,6 +612,7 @@ function applyPlayerMode() {
   if (!state.remoteMode || !state.joined) {
     els.phoneRemotePanel.hidden = true;
     teardownRemoteMedia();
+    stopHostAudioBroadcast({ closeCall: true, message: "等候主持音訊廣播" });
     return;
   }
 
@@ -455,6 +647,7 @@ function renderRemotePanel(game) {
   els.phoneRemotePanel.hidden = false;
   els.phoneRemoteStatus.textContent = phoneStatusText(game);
   els.phoneRemoteCountdown.textContent = remoteCountdownText(game);
+  renderHostAudioBroadcastUi();
 
   const teamScores = game?.teamScores || {};
   els.phoneRemoteTeams.textContent = `A ${Number(teamScores.A || 0)} · B ${Number(teamScores.B || 0)}`;
