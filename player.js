@@ -364,7 +364,9 @@ function handleMessage(message) {
   }
 
   if (message.type === "result" && message.questionId === state.game?.questionId) {
-    state.lastResult = message.message || "";
+    state.lastResult = message.excludedPlayerId === state.playerId
+      ? "你今題已答錯，不能再補答"
+      : message.message || "";
     renderGame();
   }
 }
@@ -1223,7 +1225,7 @@ function renderGame() {
   els.phoneStatus.textContent = phoneStatusText(game);
   els.phoneTitle.textContent = game.revealed ? game.title : "估呢首詩歌";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
-  els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `${game.buzzWinner.name} 搶答成功` : "");
+  els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `第一個${game.mode === "word" ? "搶唱" : "搶答"}：${game.buzzWinner.name}` : "");
 
   renderHints(game.hints || []);
   renderChoices(game);
@@ -1289,10 +1291,21 @@ function renderChoices(game) {
   }
 
   if (game.mode === "buzz" || game.mode === "word") {
+    const actionLabel = game.mode === "word" ? "搶唱" : "搶答";
+    const alreadyTried = Boolean(game.answered);
     els.buzzButton.hidden = false;
-    els.buzzButton.disabled = Boolean(game.answered || game.buzzWinner || !game.buzzOpen);
-    els.buzzButton.textContent = game.mode === "word" ? "搶唱" : "搶答";
-    if (!game.buzzOpen && !game.buzzWinner && !game.answered) {
+    els.buzzButton.disabled = Boolean(alreadyTried || game.buzzWinner || !game.buzzOpen);
+    els.buzzButton.textContent = actionLabel;
+
+    if (game.buzzWinner) {
+      els.phoneResult.textContent = `第一個${actionLabel}：${game.buzzWinner.name}`;
+    } else if (alreadyTried && !game.revealed) {
+      els.phoneResult.textContent = `你今題已${actionLabel}過，等其他人補答`;
+    } else if (game.buzzOpen) {
+      els.phoneResult.textContent = state.lastResult?.includes("未中")
+        ? state.lastResult
+        : `${actionLabel}開放，鬥快按`;
+    } else if (!game.answered) {
       els.phoneResult.textContent = game.mode === "word" ? "等主持開放搶唱" : "等主持開放搶答";
     }
   }

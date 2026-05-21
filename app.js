@@ -874,16 +874,40 @@ function handleBuzz(player) {
   if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
 
   const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
+  pausePlaybackForBuzz();
   state.buzzWinnerId = player.id;
   state.buzzOpen = false;
   broadcastToPlayers({
     type: "result",
     questionId: state.currentQuestionId,
     winnerId: player.id,
-    message: `${player.name} ${actionLabel}成功，等主持判定`,
+    message: `第一個${actionLabel}：${player.name}，等主持判定`,
   });
-  setResult(`${actionLabel}成功`, `${player.name}（${teamLabel(player.team)}）`, "");
+  setResult(`第一個${actionLabel}`, `${player.name}（${teamLabel(player.team)}）`, "");
   render();
+}
+
+function pausePlaybackForBuzz() {
+  if (!state.currentSong || !state.isPlaying) return;
+
+  clearClipTimer();
+  state.isPlaying = false;
+  state.fullPlayback = false;
+  state.playEndsAt = 0;
+  pauseHostPlaybackFrame();
+}
+
+function pauseHostPlaybackFrame() {
+  const media = els.playerHost.firstElementChild;
+  if (!media) return;
+
+  if (state.currentSong?.audioUrl) {
+    media.pause?.();
+    return;
+  }
+
+  const frame = els.playerHost.querySelector("iframe");
+  frame?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "pauseVideo", args: [] }), "*");
 }
 
 function judgeBuzzWinner(isCorrect) {
@@ -935,14 +959,21 @@ function judgeBuzzWinner(isCorrect) {
   const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
   player.answers[state.currentQuestionId] = { answer: "buzz", correct: false, points: 0 };
   state.buzzWinnerId = "";
-  state.buzzOpen = false;
-  setResult("未中", `${player.name} 暫停今題再搶；如要繼續請按開放${actionLabel}`, "wrong");
-  sendToPlayer(player, {
+  state.buzzOpen = hasAvailableBuzzPlayers();
+  const resultTitle = state.buzzOpen ? "未中，補答開放" : "未中";
+  const resultDetail = state.buzzOpen
+    ? `${player.name} 今題不能再搶；其他人可以補答`
+    : `${player.name} 未中，今題已沒有其他人可補答`;
+  setResult(resultTitle, resultDetail, "wrong");
+  broadcastToPlayers({
     type: "result",
     questionId: state.currentQuestionId,
     correct: false,
     points: 0,
-    message: "未中，等其他人再搶",
+    excludedPlayerId: player.id,
+    message: state.buzzOpen
+      ? `${player.name} 未中，其他人可以補${actionLabel}`
+      : `${player.name} 未中，今題沒有其他人可補${actionLabel}`,
   });
   render();
 }
@@ -953,12 +984,29 @@ function reopenBuzz() {
     return;
   }
 
+  if (hasConnectedPlayers() && !hasAvailableBuzzPlayers()) {
+    setResult("沒有可補答玩家", "今題答錯過的人不能再搶，請下一題或開估", "wrong");
+    render();
+    return;
+  }
+
   state.buzzWinnerId = "";
   state.buzzOpen = true;
   state.showLeaderboard = false;
   state.showWinner = false;
   setResult(state.mode === "word" ? "已開放搶唱" : "已開放搶答", state.mode === "word" ? `今題主題：${state.currentWord}` : "", "");
   render();
+}
+
+function hasAvailableBuzzPlayers() {
+  if (!state.currentQuestionId) return false;
+  return Object.values(state.players).some(
+    (player) => player.connected && !player.answers?.[state.currentQuestionId]
+  );
+}
+
+function hasConnectedPlayers() {
+  return Object.values(state.players).some((player) => player.connected);
 }
 
 function loadSongs() {
@@ -1337,6 +1385,8 @@ function buildEmbedUrl(song, autoplay) {
   url.searchParams.set("end", String(clipStart(song) + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
   url.searchParams.set("controls", "1");
+  url.searchParams.set("enablejsapi", "1");
+  url.searchParams.set("origin", window.location.origin);
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");

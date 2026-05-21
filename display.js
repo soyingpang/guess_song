@@ -485,7 +485,7 @@ function renderChoices(state) {
     const item = document.createElement("div");
     item.className = "stage-choice buzz-live";
     item.textContent = state.buzzWinner
-      ? `${state.buzzWinner.name} 搶答成功`
+      ? `第一個搶答：${state.buzzWinner.name}`
       : state.buzzOpen
         ? "搶答開放：鬥快按手機"
         : "等待主持開放搶答";
@@ -497,7 +497,7 @@ function renderChoices(state) {
     const item = document.createElement("div");
     item.className = "stage-choice buzz-live";
     item.textContent = state.buzzWinner
-      ? `${state.buzzWinner.name}（${state.buzzWinner.team || "A"} 組）搶唱成功`
+      ? `第一個搶唱：${state.buzzWinner.name}（${state.buzzWinner.team || "A"} 組）`
       : state.buzzOpen
         ? "搶唱開放：鬥快唱出合題詩歌"
         : "等待主持開放搶唱";
