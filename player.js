@@ -464,11 +464,27 @@ function setIconButton(button, iconName, label) {
   button.title = label;
 }
 
+function setMicButton(button, iconName, label, visibleLabel, live) {
+  if (!button) return;
+  const icon = ICONS[iconName] || "";
+  const liveBadge = live ? '<span class="mic-live-dot">LIVE</span>' : "";
+  button.innerHTML = `${icon}<span class="mic-label">${visibleLabel}</span>${liveBadge}<span class="visually-hidden">${label}</span>`;
+  button.classList.add("icon-action-button");
+  button.setAttribute("aria-label", label);
+  button.title = label;
+}
+
 function updateMicUi(options = {}) {
   const { busy = false } = options;
   const canUseMic = Boolean(state.joined && state.connection?.open && state.peer);
   els.micToggleButton.disabled = busy || !canUseMic;
-  setIconButton(els.micToggleButton, state.micActive ? "micOff" : "mic", state.micActive ? "關咪" : "開咪對話");
+  setMicButton(
+    els.micToggleButton,
+    state.micActive ? "micOff" : "mic",
+    state.micActive ? "關咪" : "開咪對話",
+    state.micActive ? "收咪" : "開咪",
+    state.micActive,
+  );
   els.micToggleButton.classList.toggle("is-live", state.micActive);
   if (!canUseMic && !state.micActive) setMicStatus("連線後可開咪");
 }

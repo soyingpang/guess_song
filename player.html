@@ -81,6 +81,30 @@
         aspect-ratio: auto;
       }
 
+      .mic-button .mic-label {
+        font-size: 0.9rem;
+        font-weight: 1000;
+        letter-spacing: 0;
+      }
+
+      .mic-button .mic-live-dot {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        min-height: 18px;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: #fff8ec;
+        color: #7a1f16;
+        font-size: 0.66rem;
+        font-weight: 1000;
+        line-height: 1;
+      }
+
+      .mic-button.is-live .mic-live-dot {
+        display: inline-flex;
+      }
+
       .player-body.is-joined.is-remote-player .phone-question {
         order: 1;
       }
@@ -138,7 +162,6 @@
       }
 
       .player-body.is-joined .leaderboard-button.icon-action-button,
-      .player-body.is-joined .mic-button.icon-action-button,
       .player-body.is-joined .phone-listen-button.icon-action-button,
       .player-body.is-joined .phone-remote-play-button.icon-action-button {
         width: 32px;
@@ -149,11 +172,41 @@
       }
 
       .player-body.is-joined .mic-button.icon-action-button {
-        justify-self: start;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        min-height: 42px;
+        padding: 6px 10px;
+        border-color: rgba(37, 99, 235, 0.6);
+        background: rgba(219, 234, 254, 0.98);
+        color: #12306e;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+      }
+
+      .player-body.is-joined .mic-button.icon-action-button:disabled {
+        border-color: rgba(148, 163, 184, 0.55);
+        background: rgba(226, 232, 240, 0.85);
+        color: #64748b;
+        box-shadow: none;
+      }
+
+      .player-body.is-joined .mic-button.icon-action-button.is-live {
+        border-color: rgba(220, 38, 38, 0.8);
+        background: #b42318;
+        color: #fff8ec;
+        box-shadow: 0 10px 24px rgba(180, 35, 24, 0.28);
+      }
+
+      .player-body.is-joined .mic-button.icon-action-button svg {
+        width: 1.1rem;
+        height: 1.1rem;
       }
 
       .player-body.is-joined .phone-mic-panel {
-        grid-template-columns: 32px;
+        grid-template-columns: minmax(0, 1fr);
         gap: 0;
         margin-top: 4px;
       }
@@ -375,6 +428,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=join-flow-1"></script>
+    <script src="./player.js?v=host-mic-button-1"></script>
   </body>
 </html>
