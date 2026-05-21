@@ -1215,7 +1215,7 @@ function renderGame() {
   const game = state.game;
   if (!game) return;
 
-  document.body.classList.toggle("is-joined", Boolean(state.joined));
+  syncBodyState();
   applyPlayerMode();
   els.playerScore.textContent = `${game.score || 0} 分`;
   els.playerRound.textContent = game.hasQuestion ? `第 ${game.round} 題 · ${teamLabel(game.team)}` : `未開始 · ${teamLabel(state.team)}`;
@@ -1332,6 +1332,12 @@ function send(message) {
 
 function setStatus(message) {
   els.playerStatus.textContent = message;
+  syncBodyState();
+}
+
+function syncBodyState() {
+  document.body.classList.toggle("is-joined", Boolean(state.joined));
+  document.body.classList.toggle("is-connecting", Boolean(state.connecting && !state.joined));
 }
 
 function joinedStatus() {
