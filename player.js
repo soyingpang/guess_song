@@ -31,8 +31,6 @@ const state = {
   remoteMediaKey: "",
   remotePlaybackKey: "",
   remotePlaybackBlocked: false,
-  remoteYoutubeActivationRequested: false,
-  remoteYoutubeManualUnlock: false,
 };
 
 const els = {
@@ -493,8 +491,6 @@ function renderRemoteMedia(game) {
     state.remoteMediaKey = mediaKey;
     state.remotePlaybackKey = "";
     state.remotePlaybackBlocked = false;
-    state.remoteYoutubeActivationRequested = false;
-    state.remoteYoutubeManualUnlock = false;
     buildRemoteMediaFrame(game);
   }
 
@@ -635,8 +631,6 @@ function retryRemotePlayback() {
   if (!state.game || !hasRemoteMedia(state.game)) return;
 
   if (isRemoteYouTube(state.game)) {
-    state.remoteYoutubeActivationRequested = true;
-    state.remoteYoutubeManualUnlock = true;
     state.remotePlaybackBlocked = true;
     state.remoteMediaKey = remoteMediaKey(state.game);
     state.remotePlaybackKey = "";
@@ -671,18 +665,10 @@ function updateRemotePlaybackUi(game) {
 
   if (shouldPlay) {
     if (isRemoteYouTube(game)) {
-      els.phoneRemoteMedia.classList.toggle("is-youtube-manual-unlock", state.remoteYoutubeManualUnlock);
-      setRemotePlayerStatus(
-        state.remoteYoutubeManualUnlock ? "請點下面 YouTube 控制列開聲" : "請先開聲並同步"
-      );
-      setRemoteShieldText(
-        state.remoteYoutubeManualUnlock ? "答案遮住中" : "點一下開聲",
-        state.remoteYoutubeManualUnlock ? "下面可點 YouTube 控制列" : "畫面已遮住答案"
-      );
-      els.phoneRemotePlayButton.hidden = false;
-      els.phoneRemotePlayButton.textContent = state.remoteYoutubeManualUnlock
-        ? "重新同步控制列"
-        : "開聲並同步";
+      els.phoneRemoteMedia.classList.remove("is-youtube-manual-unlock");
+      setRemotePlayerStatus("YouTube 手機不能自動開聲");
+      setRemoteShieldText("答案已遮住", "要自動有聲請用本地授權音訊");
+      els.phoneRemotePlayButton.hidden = true;
       return;
     }
 
@@ -713,8 +699,6 @@ function teardownRemoteMedia() {
   state.remoteMediaKey = "";
   state.remotePlaybackKey = "";
   state.remotePlaybackBlocked = false;
-  state.remoteYoutubeActivationRequested = false;
-  state.remoteYoutubeManualUnlock = false;
   if (els.phoneRemoteMedia) els.phoneRemoteMedia.hidden = true;
   if (els.phoneRemoteMedia) els.phoneRemoteMedia.classList.remove("is-youtube-manual-unlock");
   if (els.phoneRemotePlayerHost) els.phoneRemotePlayerHost.replaceChildren();
@@ -754,7 +738,7 @@ function buildRemoteEmbedUrl(game, autoplay) {
   url.searchParams.set("start", String(Math.max(0, Math.floor(desiredRemoteSecond(game)))));
   if (game.end && !game.fullPlayback) url.searchParams.set("end", String(Math.floor(Number(game.end))));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
-  url.searchParams.set("controls", "1");
+  url.searchParams.set("controls", "0");
   url.searchParams.set("disablekb", "1");
   url.searchParams.set("enablejsapi", "1");
   url.searchParams.set("fs", "0");

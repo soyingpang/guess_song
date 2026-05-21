@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=phone-youtube-control-1" />
+    <link rel="stylesheet" href="./styles.css?v=phone-youtube-safe-1" />
   </head>
   <body class="player-body">
     <main class="player-shell">
@@ -72,12 +72,12 @@
             <div class="phone-remote-frame" aria-label="手機同步播放器">
               <div id="phoneRemotePlayerHost"></div>
               <div class="phone-remote-shield">
-                <strong id="phoneRemoteShieldTitle">點一下開聲</strong>
+                <strong id="phoneRemoteShieldTitle">答案已遮住</strong>
                 <span id="phoneRemoteShieldNote">畫面已遮住答案</span>
               </div>
             </div>
             <button class="ghost-button phone-remote-play-button" id="phoneRemotePlayButton" type="button" hidden>
-              開聲並同步
+              重新同步播放
             </button>
           </div>
           <div class="phone-remote-roster" id="phoneRemoteRoster"></div>
@@ -108,6 +108,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=phone-youtube-control-1"></script>
+    <script src="./player.js?v=phone-youtube-safe-1"></script>
   </body>
 </html>

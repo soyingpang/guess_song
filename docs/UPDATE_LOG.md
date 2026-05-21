@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-05-21 13:27 HKT
+
+類型：規格 / 修正 / 手機端 / YouTube 安全遮罩
+
+摘要：
+- 回應「可否不用手按自動開聲同步」和「畫面走光太多」：確認 YouTube 手機 embed 不能可靠做到不用手按自動有聲，且露出控制列會讓部分歌直接走光。
+- `player.js` 移除不在現場 YouTube 的手動控制列模式；YouTube 播放中會顯示「YouTube 手機不能自動開聲」，並保留完整答案遮罩。
+- `player.js` 將不在現場 YouTube iframe 改回 `controls=0`，避免控制列或縮圖文字走光。
+- `styles.css` 追加安全覆蓋：即使舊狀態 class 出現，也會把 `.phone-remote-shield` 全面覆蓋到底，不再露出底部 YouTube 控制列。
+- README / 玩法計劃 / AI 交接改清楚：若要求不手按而自動同步有聲，應改用本地 / 已授權音訊或影片檔；YouTube 手機端以安全遮罩為先。
+- cache version 更新至 `phone-youtube-safe-1`。
+
+影響：
+- 不在現場手機不再因露出 YouTube 控制列而走光。
+- YouTube 題目在手機端不能保證自動有聲；目前安全取向是同步狀態和遮住答案。真正自動有聲需要改用授權媒體檔。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 臨時測試頁載入正式 `player.js`，模擬不在現場 YouTube 播放：確認 cache `phone-youtube-safe-1`、iframe 使用 `autoplay=1` / `controls=0`、狀態顯示「YouTube 手機不能自動開聲」、按鈕 hidden、遮罩文字提示使用本地授權音訊、底部不再露控制列，無 console error；測完已刪除臨時測試頁。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-21 13:13 HKT
 
 類型：修正 / 手機端 / 不在現場開聲 / YouTube 控制列

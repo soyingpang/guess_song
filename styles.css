@@ -5501,3 +5501,16 @@ textarea {
   min-height: 118px;
   max-height: 140px;
 }
+
+
+/* Phone YouTube safe cover */
+.phone-remote-media.is-youtube-manual-unlock .phone-remote-frame,
+.player-body.is-joined .phone-remote-media.is-youtube-manual-unlock .phone-remote-frame {
+  min-height: 72px;
+  max-height: 96px;
+}
+
+.phone-remote-media.is-youtube-manual-unlock .phone-remote-shield {
+  inset: 0;
+  border-bottom: 0;
+}
