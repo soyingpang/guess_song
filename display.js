@@ -32,6 +32,11 @@ let latestFrameKey = "";
 let latestPlaybackState = null;
 let latestRemoteState = null;
 let currentDisplayState = null;
+const stageMic = {
+  calls: new Map(),
+  items: new Map(),
+  layer: null,
+};
 const displaySync = {
   peer: null,
   connection: null,
@@ -133,6 +138,7 @@ function connectToHostDisplay({ resetAttempts = false } = {}) {
 
   const peer = new Peer(undefined, { debug: 0 });
   displaySync.peer = peer;
+  peer.on("call", handleDisplayMicCall);
 
   peer.on("open", () => {
     if (displaySync.token !== token) return;
@@ -189,6 +195,8 @@ function scheduleDisplayReconnect(message) {
 }
 
 function closeDisplayPeer() {
+  clearStageMic();
+
   try {
     displaySync.connection?.close();
   } catch {
@@ -203,6 +211,98 @@ function closeDisplayPeer() {
 
   displaySync.connection = null;
   displaySync.peer = null;
+}
+
+function handleDisplayMicCall(call) {
+  if (call.metadata?.type !== "display-player-mic") {
+    try {
+      call.answer();
+      call.close();
+    } catch {
+      // Ignore unknown media calls.
+    }
+    return;
+  }
+
+  const playerId = String(call.metadata?.playerId || call.peer || crypto.randomUUID());
+  const playerName = String(call.metadata?.playerName || "玩家").trim() || "玩家";
+  closeStageMicCall(playerId);
+  stageMic.calls.set(playerId, call);
+
+  call.on("stream", (stream) => {
+    renderStageMic(playerId, playerName, stream);
+  });
+  call.on("close", () => closeStageMicCall(playerId));
+  call.on("error", () => closeStageMicCall(playerId));
+
+  try {
+    call.answer();
+  } catch {
+    closeStageMicCall(playerId);
+  }
+}
+
+function renderStageMic(playerId, playerName, stream) {
+  const layer = ensureStageMicLayer();
+  const existing = stageMic.items.get(playerId);
+  if (existing) existing.remove();
+
+  const item = document.createElement("div");
+  item.className = "stage-mic-item";
+
+  const label = document.createElement("strong");
+  label.textContent = `手機咪：${playerName}`;
+
+  const status = document.createElement("span");
+  status.textContent = "前台播放中";
+
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.autoplay = true;
+  audio.playsInline = true;
+  audio.srcObject = stream;
+  audio.addEventListener("play", () => {
+    status.textContent = "前台播放中";
+  });
+  audio.play().catch(() => {
+    item.classList.add("needs-tap");
+    status.textContent = "點一下播放手機咪";
+  });
+
+  item.append(label, status, audio);
+  layer.append(item);
+  stageMic.items.set(playerId, item);
+}
+
+function ensureStageMicLayer() {
+  if (stageMic.layer?.isConnected) return stageMic.layer;
+
+  const layer = document.createElement("div");
+  layer.className = "stage-mic-layer";
+  layer.setAttribute("aria-live", "polite");
+  document.body.append(layer);
+  stageMic.layer = layer;
+  return layer;
+}
+
+function closeStageMicCall(playerId) {
+  const call = stageMic.calls.get(playerId);
+  stageMic.calls.delete(playerId);
+  try {
+    call?.close();
+  } catch {
+    // PeerJS may already have closed the forwarded mic call.
+  }
+
+  const item = stageMic.items.get(playerId);
+  stageMic.items.delete(playerId);
+  item?.remove();
+}
+
+function clearStageMic() {
+  Array.from(stageMic.calls.keys()).forEach(closeStageMicCall);
+  stageMic.layer?.remove();
+  stageMic.layer = null;
 }
 
 function readDisplayState() {

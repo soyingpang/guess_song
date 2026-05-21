@@ -93,6 +93,7 @@ const state = {
   displayUrl: "",
   peer: null,
   displayConnections: new Set(),
+  displayMicCalls: new Map(),
   players: {},
 };
 
@@ -297,6 +298,7 @@ function setupPlayerConnection(connection) {
   connection.on("data", (message) => handlePlayerMessage(connection, message));
   connection.on("close", () => {
     if (connection.isDisplay) {
+      endDisplayMicForConnection(connection);
       state.displayConnections.delete(connection);
       renderPlayers();
       return;
@@ -320,6 +322,7 @@ function handlePlayerMessage(connection, message) {
     connection.isDisplay = true;
     state.displayConnections.add(connection);
     sendDisplayState(connection, buildDisplayState());
+    syncActiveMicsToDisplay(connection);
     renderPlayers();
     return;
   }
@@ -412,6 +415,7 @@ function setupPlayerMicCall(call) {
     player.micStream = stream;
     player.micActive = true;
     setResult("玩家開咪", `${player.name} 正在說話`, "");
+    forwardPlayerMicToDisplays(player);
     renderPlayers();
   });
 
@@ -435,6 +439,7 @@ function endPlayerMic(playerId, options = {}) {
   player.micCall = null;
   player.micStream = null;
   player.micActive = false;
+  endDisplayMicForPlayer(playerId);
 
   if (closeCall && call) {
     try {
@@ -445,6 +450,77 @@ function endPlayerMic(playerId, options = {}) {
   }
 
   if (render) renderPlayers();
+}
+
+function syncActiveMicsToDisplay(connection) {
+  Object.values(state.players).forEach((player) => {
+    if (player.micStream && player.micActive) forwardPlayerMicToDisplay(player, connection);
+  });
+}
+
+function forwardPlayerMicToDisplays(player) {
+  state.displayConnections.forEach((connection) => forwardPlayerMicToDisplay(player, connection));
+}
+
+function forwardPlayerMicToDisplay(player, connection) {
+  if (!state.peer || !connection?.open || !connection.peer || !player?.micStream) return;
+
+  const key = displayMicCallKey(connection.peer, player.id);
+  if (state.displayMicCalls.has(key)) return;
+
+  try {
+    const call = state.peer.call(connection.peer, player.micStream, {
+      metadata: {
+        type: "display-player-mic",
+        playerId: player.id,
+        playerName: player.name,
+      },
+    });
+    if (!call) return;
+
+    call.playerId = player.id;
+    call.displayPeer = connection.peer;
+    state.displayMicCalls.set(key, call);
+    call.on("close", () => {
+      if (state.displayMicCalls.get(key) === call) state.displayMicCalls.delete(key);
+    });
+    call.on("error", () => {
+      if (state.displayMicCalls.get(key) === call) state.displayMicCalls.delete(key);
+    });
+  } catch {
+    state.displayMicCalls.delete(key);
+  }
+}
+
+function endDisplayMicForPlayer(playerId) {
+  Array.from(state.displayMicCalls.entries()).forEach(([key, call]) => {
+    if (call.playerId !== playerId) return;
+    state.displayMicCalls.delete(key);
+    try {
+      call.close();
+    } catch {
+      // PeerJS may already have closed the forwarded display call.
+    }
+  });
+}
+
+function endDisplayMicForConnection(connection) {
+  const displayPeer = connection?.peer;
+  if (!displayPeer) return;
+
+  Array.from(state.displayMicCalls.entries()).forEach(([key, call]) => {
+    if (call.displayPeer !== displayPeer) return;
+    state.displayMicCalls.delete(key);
+    try {
+      call.close();
+    } catch {
+      // PeerJS may already have closed the forwarded display call.
+    }
+  });
+}
+
+function displayMicCallKey(displayPeer, playerId) {
+  return `${displayPeer}:${playerId}`;
 }
 
 function handleChoiceAnswer(player, answer) {

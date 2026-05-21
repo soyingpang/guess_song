@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-21 09:53 HKT
+
+類型：程式 / 手機咪高峰 / 前台播放 / 交接
+
+摘要：
+- 回應「手機咪應該要前台聽到」需求，加入後台轉發手機咪到前台的流程。
+- `app.js` 在收到玩家手機 `micStream` 後，會向每個已連接的前台 display peer 建立 media call，metadata type 為 `display-player-mic`。
+- 前台 `display.js` 新增 `peer.on("call")` 接收 forwarded mic stream，並建立 `.stage-mic-layer` 音訊浮層播放手機咪。
+- 如果前台瀏覽器阻擋自動播放，浮層會顯示音訊控制列和「點一下播放手機咪」，方便現場補救。
+- display 斷線、玩家收咪或 mic call 關閉時，會清理對應的 forwarded media call / audio 元件。
+- cache version 更新至 `stage-mic-1`。
+
+影響：
+- 玩家按「開咪對話」後，聲音不再只在後台聽到；已連接的前台也會收到並播放。
+- 現場要留意手機和喇叭距離，避免回音 / 嘯叫。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認 `display.html` 載入 `stage-mic-1` 的 CSS / JS，無 console error。
+- 真手機咪高峰需要在現場或實機瀏覽器再測音量、回音和自動播放是否被阻擋；若被阻擋，前台會顯示音訊控制列可點一下播放。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-20 21:11 HKT
 
 類型：程式 / 播放流程 / YouTube 廣告
