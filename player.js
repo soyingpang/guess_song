@@ -75,6 +75,23 @@ const els = {
   phoneRemoteShieldNote: document.querySelector("#phoneRemoteShieldNote"),
 };
 
+const ICONS = {
+  leaderboard:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a3 3 0 0 0 3 3"/><path d="M17 6h3a3 3 0 0 1-3 3"/></svg>',
+  close:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6 6 18"/></svg>',
+  mic:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>',
+  micOff:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v4"/><path d="M9 9v3a3 3 0 0 0 5.1 2.1"/><path d="M5 11a7 7 0 0 0 11 5.7"/><path d="M19 11a7 7 0 0 1-.7 3"/><path d="M12 18v3"/><path d="M4 4l16 16"/></svg>',
+  volume:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 4 0 0 1 0 5"/><path d="M18.5 7a7 7 0 0 1 0 10"/></svg>',
+  play:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7-11-7Z"/></svg>',
+  sync:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M18.5 9A7 7 0 0 0 6.4 6.8L4 9"/><path d="M5.5 15A7 7 0 0 0 17.6 17.2L20 15"/></svg>',
+};
+
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
 els.playerName.value = state.name;
 applyPlayerMode();
@@ -105,10 +122,10 @@ els.onsiteModeButton.addEventListener("click", () => setPlayerMode(false));
 els.remoteModeButton.addEventListener("click", () => setPlayerMode(true));
 els.phoneRemotePlayButton.addEventListener("click", () => retryRemotePlayback());
 els.phoneRemoteListenButton.addEventListener("click", () => playHostAudioBroadcast());
-els.openLeaderboardButton.textContent = "榜";
-els.openLeaderboardButton.title = "排行榜";
-els.closeLeaderboardButton.textContent = "×";
-els.closeLeaderboardButton.title = "關閉排行榜";
+setIconButton(els.openLeaderboardButton, "leaderboard", "排行榜");
+setIconButton(els.closeLeaderboardButton, "close", "關閉排行榜");
+setIconButton(els.phoneRemoteListenButton, "volume", "啟用收聽");
+updateMicUi();
 els.leaderboardModal.addEventListener("click", (event) => {
   if (event.target === els.leaderboardModal) closeLeaderboard();
 });
@@ -398,12 +415,20 @@ function micErrorMessage(error) {
   return "開咪失敗，請再試";
 }
 
+function setIconButton(button, iconName, label) {
+  if (!button) return;
+  const icon = ICONS[iconName] || "";
+  button.innerHTML = `${icon}<span class="visually-hidden">${label}</span>`;
+  button.classList.add("icon-action-button");
+  button.setAttribute("aria-label", label);
+  button.title = label;
+}
+
 function updateMicUi(options = {}) {
   const { busy = false } = options;
   const canUseMic = Boolean(state.joined && state.connection?.open && state.peer);
   els.micToggleButton.disabled = busy || !canUseMic;
-  els.micToggleButton.textContent = state.micActive ? "關咪" : "咪";
-  els.micToggleButton.title = state.micActive ? "關閉咪高峰" : "開咪對話";
+  setIconButton(els.micToggleButton, state.micActive ? "micOff" : "mic", state.micActive ? "關咪" : "開咪對話");
   els.micToggleButton.classList.toggle("is-live", state.micActive);
   if (!canUseMic && !state.micActive) setMicStatus("連線後可開咪");
 }
@@ -878,8 +903,11 @@ function updateRemotePlaybackUi(game) {
     setRemotePlayerStatus(state.remotePlaybackBlocked ? "請按一下啟用播放" : "同步播放中");
     setRemoteShieldText(state.remotePlaybackBlocked ? "點一下開聲" : "手機播放中", "畫面已遮住答案");
     els.phoneRemotePlayButton.hidden = false;
-    els.phoneRemotePlayButton.textContent = state.remotePlaybackBlocked ? "播放" : "同步";
-    els.phoneRemotePlayButton.title = state.remotePlaybackBlocked ? "啟用手機播放" : "重新同步播放";
+    setIconButton(
+      els.phoneRemotePlayButton,
+      state.remotePlaybackBlocked ? "play" : "sync",
+      state.remotePlaybackBlocked ? "啟用手機播放" : "重新同步播放"
+    );
     return;
   }
 

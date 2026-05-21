@@ -47,6 +47,40 @@
         font-size: 0.78rem;
       }
 
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      .icon-action-button {
+        display: inline-grid;
+        place-items: center;
+        gap: 0;
+        min-width: 34px;
+        aspect-ratio: 1;
+        line-height: 1;
+      }
+
+      .icon-action-button svg {
+        width: 1.05rem;
+        height: 1.05rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2.15;
+      }
+
+      .mic-button.icon-action-button {
+        width: 100%;
+        aspect-ratio: auto;
+      }
+
       .player-body.is-joined.is-remote-player .phone-question {
         order: 1;
       }
@@ -103,8 +137,23 @@
         min-width: 0;
       }
 
+      .player-body.is-joined .leaderboard-button.icon-action-button,
+      .player-body.is-joined .mic-button.icon-action-button,
+      .player-body.is-joined .phone-listen-button.icon-action-button,
+      .player-body.is-joined .phone-remote-play-button.icon-action-button {
+        width: 32px;
+        min-width: 32px;
+        max-width: 32px;
+        aspect-ratio: 1;
+        padding: 0;
+      }
+
+      .player-body.is-joined .mic-button.icon-action-button {
+        justify-self: start;
+      }
+
       .player-body.is-joined .phone-mic-panel {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: 32px;
         gap: 0;
         margin-top: 4px;
       }
@@ -326,6 +375,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=phone-one-screen-1"></script>
+    <script src="./player.js?v=phone-icons-1"></script>
   </body>
 </html>
