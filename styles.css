@@ -5342,3 +5342,137 @@ textarea {
     font-size: 0.72rem;
   }
 }
+
+
+/* Phone sync player refinements */
+.player-mode-field {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(103, 151, 140, 0.22);
+  border-radius: 8px;
+  background: rgba(244, 252, 241, 0.62);
+  padding: 9px;
+}
+
+.player-mode-field > span {
+  color: #4a2828;
+  font-size: 0.86rem;
+  font-weight: 950;
+}
+
+.player-mode-field .player-mode-switch {
+  margin-top: 0;
+}
+
+.player-mode-field .join-note {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.player-body.is-mode-locked .player-mode-button {
+  cursor: default;
+}
+
+.phone-remote-media[hidden] {
+  display: none;
+}
+
+.phone-remote-media {
+  display: grid;
+  gap: 7px;
+  border: 1px solid rgba(103, 151, 140, 0.25);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 7px;
+}
+
+.phone-remote-media-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.phone-remote-media-head strong {
+  color: #2d6f50;
+  font-size: 0.82rem;
+}
+
+.phone-remote-media-head span {
+  min-width: 0;
+  overflow: hidden;
+  color: #7b625b;
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phone-remote-frame {
+  position: relative;
+  min-height: 82px;
+  max-height: 118px;
+  overflow: hidden;
+  border: 1px solid rgba(74, 40, 40, 0.12);
+  border-radius: 8px;
+  background: #1f1a18;
+  aspect-ratio: 16 / 9;
+}
+
+#phoneRemotePlayerHost,
+#phoneRemotePlayerHost iframe,
+#phoneRemotePlayerHost video,
+#phoneRemotePlayerHost audio {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#phoneRemotePlayerHost audio {
+  opacity: 0;
+}
+
+.phone-remote-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  gap: 3px;
+  background:
+    linear-gradient(135deg, rgba(244, 252, 241, 0.96), rgba(255, 248, 236, 0.97)),
+    url("./assets/paper-grain.svg");
+  color: #4a2828;
+  pointer-events: none;
+  text-align: center;
+}
+
+.phone-remote-shield strong {
+  font-size: 0.92rem;
+  font-weight: 950;
+}
+
+.phone-remote-shield span {
+  color: #7b625b;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.phone-remote-play-button {
+  min-height: 38px;
+  padding: 7px 10px;
+  font-size: 0.82rem;
+}
+
+.player-body.is-joined .phone-remote-media {
+  gap: 5px;
+  padding: 6px;
+}
+
+.player-body.is-joined .phone-remote-frame {
+  min-height: 72px;
+  max-height: 96px;
+}

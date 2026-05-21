@@ -1,8 +1,9 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
-const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-remote-mode-v1";
+const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
+const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room") || "";
@@ -26,6 +27,10 @@ const state = {
   micCall: null,
   micActive: false,
   remoteMode: localStorage.getItem(PLAYER_REMOTE_MODE_KEY) === "remote",
+  modeLocked: false,
+  remoteMediaKey: "",
+  remotePlaybackKey: "",
+  remotePlaybackBlocked: false,
 };
 
 const els = {
@@ -54,6 +59,10 @@ const els = {
   phoneRemoteTeams: document.querySelector("#phoneRemoteTeams"),
   phoneRemoteMic: document.querySelector("#phoneRemoteMic"),
   phoneRemoteRoster: document.querySelector("#phoneRemoteRoster"),
+  phoneRemoteMedia: document.querySelector("#phoneRemoteMedia"),
+  phoneRemotePlayerHost: document.querySelector("#phoneRemotePlayerHost"),
+  phoneRemotePlayerStatus: document.querySelector("#phoneRemotePlayerStatus"),
+  phoneRemotePlayButton: document.querySelector("#phoneRemotePlayButton"),
 };
 
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
@@ -84,6 +93,7 @@ els.openLeaderboardButton.addEventListener("click", openLeaderboard);
 els.closeLeaderboardButton.addEventListener("click", closeLeaderboard);
 els.onsiteModeButton.addEventListener("click", () => setPlayerMode(false));
 els.remoteModeButton.addEventListener("click", () => setPlayerMode(true));
+els.phoneRemotePlayButton.addEventListener("click", () => retryRemotePlayback());
 els.leaderboardModal.addEventListener("click", (event) => {
   if (event.target === els.leaderboardModal) closeLeaderboard();
 });
@@ -124,6 +134,7 @@ function joinGame() {
   state.name = name.slice(0, 18);
   state.displayName = "";
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
+  lockPlayerMode();
   els.joinForm.hidden = true;
   connectToRoom({ resetAttempts: true });
 }
@@ -131,6 +142,7 @@ function joinGame() {
 function connectToRoom({ resetAttempts = false } = {}) {
   if (!window.Peer) {
     setStatus("未能載入連線工具，請重新整理");
+    unlockPlayerMode();
     els.joinForm.hidden = false;
     return;
   }
@@ -167,6 +179,7 @@ function bindRoomConnection(connection, token) {
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
+    lockPlayerMode();
     send({ type: "join", playerId: state.playerId, name: state.name });
     setStatus("已連線，等候同步");
     updateMicUi();
@@ -221,12 +234,14 @@ function handleConnectionFailure(message) {
 
   setStatus(message);
   updateMicUi();
+  unlockPlayerMode();
   els.joinForm.hidden = false;
 }
 
 function scheduleReconnect(message) {
   if (!roomId || !state.name) {
     setStatus(`${message}，請重新掃 QR 加入`);
+    unlockPlayerMode();
     els.joinForm.hidden = false;
     return;
   }
@@ -258,6 +273,7 @@ function handleMessage(message) {
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
+    lockPlayerMode();
     els.joinForm.hidden = true;
     setStatus(joinedStatus());
     if (previousQuestionId !== message.questionId) state.lastResult = "";
@@ -371,13 +387,30 @@ function setMicStatus(message) {
 }
 
 function setPlayerMode(remoteMode) {
+  if (state.modeLocked || state.joined || state.connecting) return;
   state.remoteMode = Boolean(remoteMode);
   localStorage.setItem(PLAYER_REMOTE_MODE_KEY, state.remoteMode ? "remote" : "onsite");
   applyPlayerMode();
 }
 
+function lockPlayerMode() {
+  state.modeLocked = true;
+  document.body.classList.add("is-mode-locked");
+  els.onsiteModeButton.disabled = true;
+  els.remoteModeButton.disabled = true;
+}
+
+function unlockPlayerMode() {
+  if (state.joined) return;
+  state.modeLocked = false;
+  document.body.classList.remove("is-mode-locked");
+  els.onsiteModeButton.disabled = false;
+  els.remoteModeButton.disabled = false;
+}
+
 function applyPlayerMode() {
   document.body.classList.toggle("is-remote-player", state.remoteMode);
+  document.body.classList.toggle("is-mode-locked", state.modeLocked);
   els.onsiteModeButton.classList.toggle("is-active", !state.remoteMode);
   els.remoteModeButton.classList.toggle("is-active", state.remoteMode);
   els.onsiteModeButton.setAttribute("aria-pressed", String(!state.remoteMode));
@@ -385,6 +418,7 @@ function applyPlayerMode() {
 
   if (!state.remoteMode || !state.joined) {
     els.phoneRemotePanel.hidden = true;
+    teardownRemoteMedia();
     return;
   }
 
@@ -398,12 +432,13 @@ function updateLiveClock() {
   if (state.remoteMode && state.joined && !els.phoneRemotePanel.hidden) {
     els.phoneRemoteStatus.textContent = phoneStatusText(state.game);
     els.phoneRemoteCountdown.textContent = remoteCountdownText(state.game);
+    updateRemotePlaybackUi(state.game);
   }
 }
 
 function phoneStatusText(game) {
   if (!game) return "等候主持";
-  if (game.isPlaying) return `播放中 · ${remainingSeconds(game)} 秒`;
+  if (game.isPlaying) return `前台播放中 · ${remainingSeconds(game)} 秒`;
   if (game.revealed) return "已開估";
   if (game.frontReady) return "前台預備中";
   return game.status || "等候主持";
@@ -428,6 +463,7 @@ function renderRemotePanel(game) {
     ? livePlayers.map((player) => player.name).slice(0, 3).join("、")
     : "沒有";
 
+  renderRemoteMedia(game);
   renderRemoteRoster(players);
 }
 
@@ -437,6 +473,238 @@ function remoteCountdownText(game) {
   if (game.revealed) return "開估";
   if (game.hasQuestion) return "待開始";
   return "--";
+}
+
+function renderRemoteMedia(game) {
+  if (!els.phoneRemoteMedia || !els.phoneRemotePlayerHost) return;
+
+  if (!state.remoteMode || !state.joined || !hasRemoteMedia(game)) {
+    teardownRemoteMedia();
+    return;
+  }
+
+  els.phoneRemoteMedia.hidden = false;
+  const mediaKey = remoteMediaKey(game);
+  if (mediaKey !== state.remoteMediaKey) {
+    state.remoteMediaKey = mediaKey;
+    state.remotePlaybackKey = "";
+    state.remotePlaybackBlocked = false;
+    buildRemoteMediaFrame(game);
+  }
+
+  const playbackKey = [
+    remoteShouldPlay(game) ? "play" : "pause",
+    Number(game.playEndsAt || 0),
+    game.fullPlayback ? "full" : "clip",
+    game.revealed ? "revealed" : "blind",
+  ].join(":");
+
+  if (playbackKey !== state.remotePlaybackKey) {
+    state.remotePlaybackKey = playbackKey;
+    syncRemoteMedia(game);
+  }
+
+  updateRemotePlaybackUi(game);
+}
+
+function hasRemoteMedia(game) {
+  return Boolean(game && (game.audioUrl || game.videoId));
+}
+
+function remoteMediaKey(game) {
+  return [
+    game.questionId || "",
+    game.audioUrl || game.videoId || "",
+    Number(game.start || 0),
+    Number(game.end || 0),
+    game.fullPlayback ? "full" : "clip",
+  ].join(":");
+}
+
+function buildRemoteMediaFrame(game) {
+  els.phoneRemotePlayerHost.replaceChildren();
+
+  if (game.audioUrl) {
+    buildRemoteLocalMedia(game);
+    return;
+  }
+
+  const iframe = document.createElement("iframe");
+  iframe.src = buildRemoteEmbedUrl(game, remoteShouldPlay(game));
+  iframe.title = "YouTube 同步播放器";
+  iframe.allow =
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  iframe.allowFullscreen = false;
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  els.phoneRemotePlayerHost.replaceChildren(iframe);
+}
+
+function buildRemoteLocalMedia(game) {
+  const media = document.createElement(isVideoMediaUrl(game.audioUrl) ? "video" : "audio");
+  media.src = game.audioUrl;
+  media.controls = false;
+  media.preload = "auto";
+  media.autoplay = remoteShouldPlay(game);
+  if (media.tagName === "VIDEO") media.playsInline = true;
+  media.addEventListener(
+    "loadedmetadata",
+    () => {
+      media.currentTime = desiredRemoteSecond(game);
+      if (remoteShouldPlay(state.game)) playRemoteMedia(state.game);
+    },
+    { once: true }
+  );
+  media.addEventListener("playing", () => {
+    state.remotePlaybackBlocked = false;
+    setRemotePlayerStatus("同步播放中");
+  });
+  media.addEventListener("pause", () => updateRemotePlaybackUi(state.game));
+  media.addEventListener("error", () => {
+    state.remotePlaybackBlocked = true;
+    setRemotePlayerStatus("播放失敗，請重新同步");
+  });
+  els.phoneRemotePlayerHost.replaceChildren(media);
+}
+
+function syncRemoteMedia(game) {
+  if (!hasRemoteMedia(game)) return;
+  if (remoteShouldPlay(game)) {
+    playRemoteMedia(game, { forceSeek: true });
+    return;
+  }
+
+  pauseRemoteMedia(game);
+}
+
+function playRemoteMedia(game, options = {}) {
+  if (!game || !hasRemoteMedia(game)) return;
+  const { forceSeek = false } = options;
+  const seconds = desiredRemoteSecond(game);
+  const media = els.phoneRemotePlayerHost.firstElementChild;
+  if (!media) return;
+
+  if (game.audioUrl) {
+    if (forceSeek || Math.abs(Number(media.currentTime || 0) - seconds) > 1.5) {
+      media.currentTime = seconds;
+    }
+
+    media
+      .play()
+      .then(() => {
+        state.remotePlaybackBlocked = false;
+        updateRemotePlaybackUi(game);
+      })
+      .catch(() => {
+        state.remotePlaybackBlocked = true;
+        updateRemotePlaybackUi(game);
+      });
+    return;
+  }
+
+  state.remotePlaybackBlocked = false;
+  postRemoteYouTubeCommand("seekTo", [seconds, true]);
+  postRemoteYouTubeCommand("playVideo");
+  window.setTimeout(() => {
+    if (state.remoteMediaKey !== remoteMediaKey(game) || !remoteShouldPlay(state.game)) return;
+    postRemoteYouTubeCommand("seekTo", [desiredRemoteSecond(state.game), true]);
+    postRemoteYouTubeCommand("playVideo");
+  }, 900);
+  updateRemotePlaybackUi(game);
+}
+
+function pauseRemoteMedia(game) {
+  const media = els.phoneRemotePlayerHost.firstElementChild;
+  if (!media) return;
+
+  if (game?.audioUrl) {
+    media.pause();
+    return;
+  }
+
+  postRemoteYouTubeCommand("pauseVideo");
+}
+
+function retryRemotePlayback() {
+  if (!state.game || !hasRemoteMedia(state.game)) return;
+  state.remotePlaybackBlocked = false;
+  state.remotePlaybackKey = "";
+  playRemoteMedia(state.game, { forceSeek: true });
+  updateRemotePlaybackUi(state.game);
+}
+
+function updateRemotePlaybackUi(game) {
+  if (!els.phoneRemoteMedia || els.phoneRemoteMedia.hidden) return;
+  const hasMedia = hasRemoteMedia(game);
+  const shouldPlay = remoteShouldPlay(game);
+
+  if (!hasMedia) {
+    setRemotePlayerStatus("等候歌曲");
+    els.phoneRemotePlayButton.hidden = true;
+    return;
+  }
+
+  if (shouldPlay) {
+    setRemotePlayerStatus(state.remotePlaybackBlocked ? "請按一下啟用播放" : "同步播放中");
+    els.phoneRemotePlayButton.hidden = false;
+    els.phoneRemotePlayButton.textContent = state.remotePlaybackBlocked ? "啟用手機播放" : "重新同步播放";
+    return;
+  }
+
+  setRemotePlayerStatus(game?.frontReady ? "已預備" : game?.revealed ? "已開估" : "等候播放");
+  els.phoneRemotePlayButton.hidden = true;
+}
+
+function setRemotePlayerStatus(message) {
+  if (els.phoneRemotePlayerStatus) els.phoneRemotePlayerStatus.textContent = message;
+}
+
+function teardownRemoteMedia() {
+  state.remoteMediaKey = "";
+  state.remotePlaybackKey = "";
+  state.remotePlaybackBlocked = false;
+  if (els.phoneRemoteMedia) els.phoneRemoteMedia.hidden = true;
+  if (els.phoneRemotePlayerHost) els.phoneRemotePlayerHost.replaceChildren();
+  if (els.phoneRemotePlayButton) els.phoneRemotePlayButton.hidden = true;
+}
+
+function remoteShouldPlay(game) {
+  return Boolean(game && (game.mediaPlaying ?? game.isPlaying));
+}
+
+function desiredRemoteSecond(game) {
+  const start = Number(game?.start || 0);
+  if (!remoteShouldPlay(game) || game.fullPlayback || !game.playEndsAt) return start;
+
+  const duration = Number(game.clipDuration || game.playDuration || 0);
+  if (!duration) return start;
+
+  const remaining = Math.max(0, (Number(game.playEndsAt) - Date.now()) / 1000);
+  const elapsed = Math.max(0, duration - remaining);
+  const end = Number(game.end || 0);
+  const target = start + elapsed;
+  return end ? Math.min(Math.max(start, target), Math.max(start, end - 0.5)) : Math.max(start, target);
+}
+
+function postRemoteYouTubeCommand(command, args = []) {
+  const iframe = els.phoneRemotePlayerHost.querySelector("iframe");
+  if (!iframe?.contentWindow) return;
+  iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: command, args }), "*");
+}
+
+function buildRemoteEmbedUrl(game, autoplay) {
+  const url = new URL(`https://www.youtube-nocookie.com/embed/${game.videoId}`);
+  url.searchParams.set("start", String(Math.max(0, Math.floor(desiredRemoteSecond(game)))));
+  if (game.end && !game.fullPlayback) url.searchParams.set("end", String(Math.floor(Number(game.end))));
+  url.searchParams.set("autoplay", autoplay ? "1" : "0");
+  url.searchParams.set("controls", "0");
+  url.searchParams.set("disablekb", "1");
+  url.searchParams.set("enablejsapi", "1");
+  url.searchParams.set("fs", "0");
+  url.searchParams.set("origin", window.location.origin);
+  url.searchParams.set("rel", "0");
+  url.searchParams.set("modestbranding", "1");
+  url.searchParams.set("playsinline", "1");
+  return url.toString();
 }
 
 function renderRemoteRoster(players) {
@@ -620,6 +888,10 @@ function teamLabel(team) {
 function remainingSeconds(game) {
   if (!game.playEndsAt) return game.playDuration || 0;
   return Math.max(0, Math.ceil((game.playEndsAt - Date.now()) / 1000));
+}
+
+function isVideoMediaUrl(url) {
+  return LOCAL_VIDEO_EXTENSIONS.test(String(url || "").split(/[?#]/)[0]);
 }
 
 function escapeHtml(value) {

@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-21 10:56 HKT
+
+類型：程式 / 手機端 / 不在現場同步播放 / 交接
+
+摘要：
+- 回應「不在現場手機必定要同步播放歌」需求，將手機模式改成入房前選「在現場 / 不在現場」，入房後鎖定不可切換。
+- `player.html` 將模式選擇移入加入表單，並新增 `#phoneRemoteMedia`、`#phoneRemotePlayerHost`、`#phoneRemotePlayButton`。
+- `app.js` 的 player state 新增 `mediaPlaying`、`videoId`、`audioUrl`、`start`、`end`，讓不在現場手機知道同一題要播哪段。
+- `player.js` 新增遮罩式同步播放器：不在現場模式會載入同一條 YouTube / 本地授權媒體，按主持播放狀態同步 play / pause，並用遮罩蓋住畫面避免露出歌名或答案。
+- 手機瀏覽器如阻擋自動播放，可按「啟用手機播放 / 重新同步播放」，播放器會按主持倒數計算應播放位置並追返進度。
+- cache version 更新至 `phone-sync-player-1`。
+
+影響：
+- 在現場玩家手機仍不發聲，避免現場多部手機一起播放。
+- 不在現場玩家可只用手機加入、答題、看狀態並同步聽歌；YouTube 廣告和手機 autoplay 政策仍可能要玩家按同步按鈕補救。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認 `player.html` 載入 `phone-sync-player-1`，模式按鈕在加入表單內，預設未顯示同步 panel，無 console error。
+- Browser 臨時測試頁載入正式 `player.js`，模擬「不在現場」玩家收到主持 state 後，確認入房後模式鎖定、`#phoneRemoteMedia` 顯示、遮罩 YouTube iframe 使用 `autoplay=1` / `controls=0` / 正確 start-end、`重新同步播放` 按鈕顯示，無 console error；測完已刪除臨時測試頁。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-21 10:27 HKT
 
 類型：程式 / 手機端 / 只用手機模式 / 遠端玩家 / 交接

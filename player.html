@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=phone-remote-1" />
+    <link rel="stylesheet" href="./styles.css?v=phone-sync-player-1" />
   </head>
   <body class="player-body">
     <main class="player-shell">
@@ -15,6 +15,14 @@
         <h1>華語詩歌估歌仔</h1>
 
         <form class="join-form" id="joinForm">
+          <div class="player-mode-field">
+            <span>你今次點玩？</span>
+            <div class="player-mode-switch" aria-label="遊玩方式">
+              <button class="player-mode-button" id="onsiteModeButton" type="button">在現場</button>
+              <button class="player-mode-button" id="remoteModeButton" type="button">不在現場</button>
+            </div>
+            <p class="join-note">入房後不可切換；不在現場會用手機同步播放詩歌，畫面會遮住答案。</p>
+          </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
@@ -30,11 +38,6 @@
           <button class="ghost-button leaderboard-button" id="openLeaderboardButton" type="button">
             排行榜
           </button>
-        </div>
-
-        <div class="player-mode-switch" aria-label="遊玩方式">
-          <button class="player-mode-button" id="onsiteModeButton" type="button">現場</button>
-          <button class="player-mode-button" id="remoteModeButton" type="button">只用手機</button>
         </div>
 
         <section class="phone-mic-panel" aria-label="手機咪高峰">
@@ -60,6 +63,22 @@
               <small>開咪</small>
               <strong id="phoneRemoteMic">沒有</strong>
             </span>
+          </div>
+          <div class="phone-remote-media" id="phoneRemoteMedia" hidden>
+            <div class="phone-remote-media-head">
+              <strong>同步播放器</strong>
+              <span id="phoneRemotePlayerStatus">等候歌曲</span>
+            </div>
+            <div class="phone-remote-frame" aria-label="手機同步播放器">
+              <div id="phoneRemotePlayerHost"></div>
+              <div class="phone-remote-shield">
+                <strong>手機播放中</strong>
+                <span>畫面已遮住</span>
+              </div>
+            </div>
+            <button class="ghost-button phone-remote-play-button" id="phoneRemotePlayButton" type="button" hidden>
+              啟用手機播放
+            </button>
           </div>
           <div class="phone-remote-roster" id="phoneRemoteRoster"></div>
         </section>
@@ -89,6 +108,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=phone-remote-1"></script>
+    <script src="./player.js?v=phone-sync-player-1"></script>
   </body>
 </html>
