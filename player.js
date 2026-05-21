@@ -31,6 +31,7 @@ const state = {
   remoteMediaKey: "",
   remotePlaybackKey: "",
   remotePlaybackBlocked: false,
+  remoteYoutubeActivationRequested: false,
 };
 
 const els = {
@@ -63,6 +64,8 @@ const els = {
   phoneRemotePlayerHost: document.querySelector("#phoneRemotePlayerHost"),
   phoneRemotePlayerStatus: document.querySelector("#phoneRemotePlayerStatus"),
   phoneRemotePlayButton: document.querySelector("#phoneRemotePlayButton"),
+  phoneRemoteShieldTitle: document.querySelector("#phoneRemoteShieldTitle"),
+  phoneRemoteShieldNote: document.querySelector("#phoneRemoteShieldNote"),
 };
 
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
@@ -489,6 +492,7 @@ function renderRemoteMedia(game) {
     state.remoteMediaKey = mediaKey;
     state.remotePlaybackKey = "";
     state.remotePlaybackBlocked = false;
+    state.remoteYoutubeActivationRequested = false;
     buildRemoteMediaFrame(game);
   }
 
@@ -537,6 +541,7 @@ function buildRemoteMediaFrame(game) {
   iframe.allowFullscreen = false;
   iframe.referrerPolicy = "strict-origin-when-cross-origin";
   els.phoneRemotePlayerHost.replaceChildren(iframe);
+  if (remoteShouldPlay(game)) state.remotePlaybackBlocked = true;
 }
 
 function buildRemoteLocalMedia(game) {
@@ -601,7 +606,7 @@ function playRemoteMedia(game, options = {}) {
     return;
   }
 
-  state.remotePlaybackBlocked = false;
+  state.remotePlaybackBlocked = true;
   postRemoteYouTubeCommand("seekTo", [seconds, true]);
   postRemoteYouTubeCommand("playVideo");
   window.setTimeout(() => {
@@ -626,6 +631,23 @@ function pauseRemoteMedia(game) {
 
 function retryRemotePlayback() {
   if (!state.game || !hasRemoteMedia(state.game)) return;
+
+  if (isRemoteYouTube(state.game)) {
+    state.remoteYoutubeActivationRequested = true;
+    state.remotePlaybackBlocked = true;
+    state.remoteMediaKey = remoteMediaKey(state.game);
+    state.remotePlaybackKey = "";
+    buildRemoteMediaFrame(state.game);
+    window.setTimeout(() => {
+      if (!isRemoteYouTube(state.game) || !remoteShouldPlay(state.game)) return;
+      postRemoteYouTubeCommand("seekTo", [desiredRemoteSecond(state.game), true]);
+      postRemoteYouTubeCommand("playVideo");
+      updateRemotePlaybackUi(state.game);
+    }, 900);
+    updateRemotePlaybackUi(state.game);
+    return;
+  }
+
   state.remotePlaybackBlocked = false;
   state.remotePlaybackKey = "";
   playRemoteMedia(state.game, { forceSeek: true });
@@ -644,13 +666,30 @@ function updateRemotePlaybackUi(game) {
   }
 
   if (shouldPlay) {
+    if (isRemoteYouTube(game)) {
+      setRemotePlayerStatus(
+        state.remoteYoutubeActivationRequested ? "如仍無聲，點一下上面遮罩" : "請先開聲並同步"
+      );
+      setRemoteShieldText(
+        state.remoteYoutubeActivationRequested ? "再點一下開聲" : "點一下開聲",
+        state.remoteYoutubeActivationRequested ? "觸控會落到 YouTube 播放器" : "畫面已遮住答案"
+      );
+      els.phoneRemotePlayButton.hidden = false;
+      els.phoneRemotePlayButton.textContent = state.remoteYoutubeActivationRequested
+        ? "重新同步開聲"
+        : "開聲並同步";
+      return;
+    }
+
     setRemotePlayerStatus(state.remotePlaybackBlocked ? "請按一下啟用播放" : "同步播放中");
+    setRemoteShieldText(state.remotePlaybackBlocked ? "點一下開聲" : "手機播放中", "畫面已遮住答案");
     els.phoneRemotePlayButton.hidden = false;
     els.phoneRemotePlayButton.textContent = state.remotePlaybackBlocked ? "啟用手機播放" : "重新同步播放";
     return;
   }
 
   setRemotePlayerStatus(game?.frontReady ? "已預備" : game?.revealed ? "已開估" : "等候播放");
+  setRemoteShieldText("手機同步播放器", "畫面已遮住答案");
   els.phoneRemotePlayButton.hidden = true;
 }
 
@@ -658,13 +697,23 @@ function setRemotePlayerStatus(message) {
   if (els.phoneRemotePlayerStatus) els.phoneRemotePlayerStatus.textContent = message;
 }
 
+function setRemoteShieldText(title, note) {
+  if (els.phoneRemoteShieldTitle) els.phoneRemoteShieldTitle.textContent = title;
+  if (els.phoneRemoteShieldNote) els.phoneRemoteShieldNote.textContent = note;
+}
+
 function teardownRemoteMedia() {
   state.remoteMediaKey = "";
   state.remotePlaybackKey = "";
   state.remotePlaybackBlocked = false;
+  state.remoteYoutubeActivationRequested = false;
   if (els.phoneRemoteMedia) els.phoneRemoteMedia.hidden = true;
   if (els.phoneRemotePlayerHost) els.phoneRemotePlayerHost.replaceChildren();
   if (els.phoneRemotePlayButton) els.phoneRemotePlayButton.hidden = true;
+}
+
+function isRemoteYouTube(game) {
+  return Boolean(game?.videoId && !game?.audioUrl);
 }
 
 function remoteShouldPlay(game) {
@@ -696,7 +745,7 @@ function buildRemoteEmbedUrl(game, autoplay) {
   url.searchParams.set("start", String(Math.max(0, Math.floor(desiredRemoteSecond(game)))));
   if (game.end && !game.fullPlayback) url.searchParams.set("end", String(Math.floor(Number(game.end))));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
-  url.searchParams.set("controls", "0");
+  url.searchParams.set("controls", "1");
   url.searchParams.set("disablekb", "1");
   url.searchParams.set("enablejsapi", "1");
   url.searchParams.set("fs", "0");

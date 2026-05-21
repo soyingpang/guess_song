@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-05-21 13:04 HKT
+
+類型：修正 / 手機端 / 不在現場開聲 / YouTube
+
+摘要：
+- 回應「手機顯示播放中但聽不到聲」問題，調整不在現場手機的 YouTube 開聲流程。
+- `player.js` 對 YouTube 同步播放器不再假設已成功開聲；播放中會顯示「請先開聲並同步」。
+- `#phoneRemotePlayButton` 改為「開聲並同步 / 重新同步開聲」：玩家按下後會按目前倒數重建 YouTube iframe，並再次送 `seekTo` / `playVideo`。
+- 手機遮罩文字改為「點一下開聲 / 再點一下開聲」，而遮罩仍保持不吃 pointer event，讓玩家點遮罩時觸控直接落到 YouTube iframe，同時遮住標題和答案。
+- 手機 YouTube iframe 改用 `controls=1`，但仍在遮罩後面，增加手機瀏覽器接受點擊開聲的機會。
+- cache version 更新至 `phone-sound-unlock-1`。
+
+影響：
+- 不在現場手機現在會更誠實顯示「未必已開聲」，並提供兩步補救：先按「開聲並同步」，仍無聲就點遮罩播放器區域。
+- 仍然不能 100% 繞過 YouTube / 手機瀏覽器政策；若該手機或地區被 YouTube 廣告 / autoplay 擋住，玩家需要手動點一下。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認 `player.html` 載入 `phone-sound-unlock-1`，遮罩文字是「點一下開聲」，無 console error。
+- Browser 臨時測試頁載入正式 `player.js`，模擬不在現場 YouTube 播放：初始顯示「請先開聲並同步」、iframe 使用 `autoplay=1` / `controls=1`；按「開聲並同步」後確認 iframe 以新 start 秒數重建，按鈕改為「重新同步開聲」，提示改為「如仍無聲，點一下上面遮罩」，無 console error；測完已刪除臨時測試頁。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-21 10:56 HKT
 
 類型：程式 / 手機端 / 不在現場同步播放 / 交接

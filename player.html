@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=phone-sync-player-1" />
+    <link rel="stylesheet" href="./styles.css?v=phone-sound-unlock-1" />
   </head>
   <body class="player-body">
     <main class="player-shell">
@@ -72,8 +72,8 @@
             <div class="phone-remote-frame" aria-label="手機同步播放器">
               <div id="phoneRemotePlayerHost"></div>
               <div class="phone-remote-shield">
-                <strong>手機播放中</strong>
-                <span>畫面已遮住</span>
+                <strong id="phoneRemoteShieldTitle">點一下開聲</strong>
+                <span id="phoneRemoteShieldNote">畫面已遮住答案</span>
               </div>
             </div>
             <button class="ghost-button phone-remote-play-button" id="phoneRemotePlayButton" type="button" hidden>
@@ -108,6 +108,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=phone-sync-player-1"></script>
+    <script src="./player.js?v=phone-sound-unlock-1"></script>
   </body>
 </html>
