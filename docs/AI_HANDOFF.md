@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-21 10:03 HKT
+更新時間：2026-05-21 10:27 HKT
 
 ## 必讀順序
 
@@ -99,10 +99,11 @@
 - 手機端已有「開咪對話」：`player.js` 用 `navigator.mediaDevices.getUserMedia({ audio })` 和 `state.peer.call(roomId, stream)` 傳到後台；`app.js` 用 `state.peer.on("call")` 接收，後台玩家列表顯示音訊元件和「收咪」按鈕。
 - 手機咪已會轉發到前台：`app.js` 收到 `player.micStream` 後用 `state.peer.call(displayPeer, stream, { metadata: { type: "display-player-mic" } })` 轉發給所有 `displayConnections`；`display.js` 用 `peer.on("call")` 接收並在 `.stage-mic-layer` 播放。前台如被瀏覽器擋自動播放，會顯示音訊控制列供主持點一下。
 - 前台已加入玩家狀態名單：`buildDisplayState()` 會傳 `players`，每個 player 包含 `connected` / `micActive`；`display.js` 用 `#stageRoster` 顯示已加入玩家、A/B 組、分數、離線和開咪狀態。手機開咪 / 收咪時要 `publishDisplayState()`，否則前台名單不會即時更新。
+- 手機端已加入「現場 / 只用手機」模式：`player.html` 有 `#onsiteModeButton` / `#remoteModeButton` 和 `#phoneRemotePanel`；`player.js` 用 `PLAYER_REMOTE_MODE_KEY` 記住偏好。只用手機模式會顯示同步倒數、A/B 組分、開咪名單和玩家狀態，但不播放 YouTube / 詩歌聲音。
 - 遠端前台已支援：後台有 `displayConnections`，`display.html?room=...` 會送 `display-join`，後台用 `display-state` 推送 `buildDisplayState()`。外地朋友必須用「複製前台連結」，普通 `display.html` 只會本機等待同步。
 - 前台不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設前台就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
 - 固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制。不要再用 `makeRoomId()` 或 random room 作為預設；若 PeerJS 回報 `unavailable-id`，應提示關閉其他後台，不應靜默開新房。
-- 介面已做八輪美化。最新 cache version 是 `stage-roster-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
+- 介面已做八輪美化。最新 cache version 是 `phone-remote-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。前台遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。

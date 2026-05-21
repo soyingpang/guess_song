@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>華語詩歌估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=stage-roster-1" />
+    <link rel="stylesheet" href="./styles.css?v=phone-remote-1" />
   </head>
   <body class="player-body">
     <main class="player-shell">
@@ -32,9 +32,36 @@
           </button>
         </div>
 
+        <div class="player-mode-switch" aria-label="遊玩方式">
+          <button class="player-mode-button" id="onsiteModeButton" type="button">現場</button>
+          <button class="player-mode-button" id="remoteModeButton" type="button">只用手機</button>
+        </div>
+
         <section class="phone-mic-panel" aria-label="手機咪高峰">
           <button class="mic-button" id="micToggleButton" type="button" disabled>開咪對話</button>
           <div class="mic-status" id="phoneMicStatus">未開咪</div>
+        </section>
+
+        <section class="phone-remote-panel" id="phoneRemotePanel" aria-label="手機同步狀態" hidden>
+          <div class="phone-remote-head">
+            <strong>手機同步</strong>
+            <span id="phoneRemoteStatus">等候主持開始</span>
+          </div>
+          <div class="phone-remote-grid">
+            <span>
+              <small>倒數</small>
+              <strong id="phoneRemoteCountdown">--</strong>
+            </span>
+            <span>
+              <small>組分</small>
+              <strong id="phoneRemoteTeams">A 0 · B 0</strong>
+            </span>
+            <span>
+              <small>開咪</small>
+              <strong id="phoneRemoteMic">沒有</strong>
+            </span>
+          </div>
+          <div class="phone-remote-roster" id="phoneRemoteRoster"></div>
         </section>
 
         <section class="phone-question">
@@ -62,6 +89,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=stage-roster-1"></script>
+    <script src="./player.js?v=phone-remote-1"></script>
   </body>
 </html>

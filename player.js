@@ -1,5 +1,6 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
+const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-remote-mode-v1";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 
@@ -24,6 +25,7 @@ const state = {
   micStream: null,
   micCall: null,
   micActive: false,
+  remoteMode: localStorage.getItem(PLAYER_REMOTE_MODE_KEY) === "remote",
 };
 
 const els = {
@@ -44,10 +46,19 @@ const els = {
   openLeaderboardButton: document.querySelector("#openLeaderboardButton"),
   closeLeaderboardButton: document.querySelector("#closeLeaderboardButton"),
   leaderboardModal: document.querySelector("#leaderboardModal"),
+  onsiteModeButton: document.querySelector("#onsiteModeButton"),
+  remoteModeButton: document.querySelector("#remoteModeButton"),
+  phoneRemotePanel: document.querySelector("#phoneRemotePanel"),
+  phoneRemoteStatus: document.querySelector("#phoneRemoteStatus"),
+  phoneRemoteCountdown: document.querySelector("#phoneRemoteCountdown"),
+  phoneRemoteTeams: document.querySelector("#phoneRemoteTeams"),
+  phoneRemoteMic: document.querySelector("#phoneRemoteMic"),
+  phoneRemoteRoster: document.querySelector("#phoneRemoteRoster"),
 };
 
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
 els.playerName.value = state.name;
+applyPlayerMode();
 
 els.joinForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -71,6 +82,8 @@ els.micToggleButton.addEventListener("click", () => {
 
 els.openLeaderboardButton.addEventListener("click", openLeaderboard);
 els.closeLeaderboardButton.addEventListener("click", closeLeaderboard);
+els.onsiteModeButton.addEventListener("click", () => setPlayerMode(false));
+els.remoteModeButton.addEventListener("click", () => setPlayerMode(true));
 els.leaderboardModal.addEventListener("click", (event) => {
   if (event.target === els.leaderboardModal) closeLeaderboard();
 });
@@ -92,6 +105,8 @@ document.addEventListener("visibilitychange", () => {
 window.addEventListener("beforeunload", () => {
   stopMic({ notifyHost: false, message: "咪已關閉" });
 });
+
+window.setInterval(updateLiveClock, 700);
 
 if (!roomId) {
   setStatus("QR 連結缺少房間碼，請重新掃描");
@@ -355,16 +370,119 @@ function setMicStatus(message) {
   els.phoneMicStatus.textContent = message;
 }
 
+function setPlayerMode(remoteMode) {
+  state.remoteMode = Boolean(remoteMode);
+  localStorage.setItem(PLAYER_REMOTE_MODE_KEY, state.remoteMode ? "remote" : "onsite");
+  applyPlayerMode();
+}
+
+function applyPlayerMode() {
+  document.body.classList.toggle("is-remote-player", state.remoteMode);
+  els.onsiteModeButton.classList.toggle("is-active", !state.remoteMode);
+  els.remoteModeButton.classList.toggle("is-active", state.remoteMode);
+  els.onsiteModeButton.setAttribute("aria-pressed", String(!state.remoteMode));
+  els.remoteModeButton.setAttribute("aria-pressed", String(state.remoteMode));
+
+  if (!state.remoteMode || !state.joined) {
+    els.phoneRemotePanel.hidden = true;
+    return;
+  }
+
+  els.phoneRemotePanel.hidden = false;
+  renderRemotePanel(state.game);
+}
+
+function updateLiveClock() {
+  if (!state.game) return;
+  if (state.game.isPlaying) els.phoneStatus.textContent = phoneStatusText(state.game);
+  if (state.remoteMode && state.joined && !els.phoneRemotePanel.hidden) {
+    els.phoneRemoteStatus.textContent = phoneStatusText(state.game);
+    els.phoneRemoteCountdown.textContent = remoteCountdownText(state.game);
+  }
+}
+
+function phoneStatusText(game) {
+  if (!game) return "等候主持";
+  if (game.isPlaying) return `播放中 · ${remainingSeconds(game)} 秒`;
+  if (game.revealed) return "已開估";
+  if (game.frontReady) return "前台預備中";
+  return game.status || "等候主持";
+}
+
+function renderRemotePanel(game) {
+  if (!state.remoteMode || !state.joined) {
+    els.phoneRemotePanel.hidden = true;
+    return;
+  }
+
+  els.phoneRemotePanel.hidden = false;
+  els.phoneRemoteStatus.textContent = phoneStatusText(game);
+  els.phoneRemoteCountdown.textContent = remoteCountdownText(game);
+
+  const teamScores = game?.teamScores || {};
+  els.phoneRemoteTeams.textContent = `A ${Number(teamScores.A || 0)} · B ${Number(teamScores.B || 0)}`;
+
+  const players = (game?.leaderboard || []).filter(Boolean);
+  const livePlayers = players.filter((player) => player.micActive);
+  els.phoneRemoteMic.textContent = livePlayers.length
+    ? livePlayers.map((player) => player.name).slice(0, 3).join("、")
+    : "沒有";
+
+  renderRemoteRoster(players);
+}
+
+function remoteCountdownText(game) {
+  if (!game) return "--";
+  if (game.isPlaying) return `${remainingSeconds(game)} 秒`;
+  if (game.revealed) return "開估";
+  if (game.hasQuestion) return "待開始";
+  return "--";
+}
+
+function renderRemoteRoster(players) {
+  els.phoneRemoteRoster.replaceChildren();
+
+  if (!players.length) {
+    const empty = document.createElement("div");
+    empty.className = "phone-remote-empty";
+    empty.textContent = "等候玩家加入";
+    els.phoneRemoteRoster.append(empty);
+    return;
+  }
+
+  players.slice(0, 8).forEach((player) => {
+    const item = document.createElement("div");
+    item.className = "phone-remote-player";
+    item.classList.toggle("is-live", Boolean(player.micActive));
+    item.classList.toggle("is-offline", !player.connected);
+
+    const name = document.createElement("span");
+    name.textContent = player.name || "玩家";
+
+    const meta = document.createElement("small");
+    meta.textContent = `${player.team || "A"} 組 · ${Number(player.score || 0)} 分`;
+
+    item.append(name, meta);
+
+    if (player.micActive || !player.connected) {
+      const badge = document.createElement("strong");
+      badge.textContent = player.micActive ? "開咪" : "離線";
+      item.append(badge);
+    }
+
+    els.phoneRemoteRoster.append(item);
+  });
+}
+
 function renderGame() {
   const game = state.game;
   if (!game) return;
 
   document.body.classList.toggle("is-joined", Boolean(state.joined));
+  applyPlayerMode();
   els.playerScore.textContent = `${game.score || 0} 分`;
   els.playerRound.textContent = game.hasQuestion ? `第 ${game.round} 題 · ${teamLabel(game.team)}` : `未開始 · ${teamLabel(state.team)}`;
-  els.phoneStatus.textContent = game.isPlaying
-    ? `播放中：${remainingSeconds(game)} 秒`
-    : game.status || "等候主持";
+  els.phoneStatus.textContent = phoneStatusText(game);
   els.phoneTitle.textContent = game.revealed ? game.title : "估呢首詩歌";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
   els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `${game.buzzWinner.name} 搶答成功` : "");
@@ -372,6 +490,7 @@ function renderGame() {
   renderHints(game.hints || []);
   renderChoices(game);
   renderLeaderboard(game.leaderboard || [], game.teamScores || {});
+  renderRemotePanel(game);
 }
 
 function openLeaderboard() {

@@ -21,6 +21,38 @@
 
 ---
 
+## 2026-05-21 10:27 HKT
+
+類型：程式 / 手機端 / 只用手機模式 / 遠端玩家 / 交接
+
+摘要：
+- 回應「有些人只用手機端都同時玩到」需求，新增手機端「現場 / 只用手機」切換。
+- `player.html` 新增模式切換按鈕和 `#phoneRemotePanel` 手機同步資訊板。
+- `player.js` 新增 `PLAYER_REMOTE_MODE_KEY`，會記住玩家偏好；只用手機模式會顯示同步狀態、倒數、A/B 組分、正在開咪的人和玩家分數 / 離線狀態。
+- 手機端新增 `updateLiveClock()`，倒數會在手機上自己每 0.7 秒更新，不再只等後台推送 state。
+- `styles.css` 新增 `.phone-remote-*` 和 `.player-mode-*` 樣式，保持已加入後的手機畫面緊湊。
+- cache version 更新至 `phone-remote-1`。
+
+影響：
+- 現場玩家可以保持「現場」模式，手機仍然簡潔作答。
+- 外地 / 看不到前台的人可切到「只用手機」，用手機看到更多同步資訊，同時仍可答四選一、搶答 / 搶唱、開咪和看排行榜。
+- 這版仍不在手機播放 YouTube / 詩歌聲音，避免每部手機各自出廣告和延遲；遠端聲音應由團契通話 / 直播 / 現場前台音訊處理。
+
+測試：
+- `node --check app.js`
+- `node --check display.js`
+- `node --check player.js`
+- `node --check local-qr.js`
+- `node --check server.js`
+- `git diff --check`
+- Browser 本機確認 `player.html` 載入 `phone-remote-1`，有「現場 / 只用手機」切換和 `#phoneRemotePanel`，無 console error。
+- Browser 臨時測試頁載入正式 `player.js`，模擬主持 state 後確認只用手機 panel 顯示倒數、A/B 組分、開咪玩家、玩家分數和離線狀態，無 console error。
+
+後續：
+- 本次修正會即時 commit 並 push 到 GitHub。
+
+---
+
 ## 2026-05-21 10:03 HKT
 
 類型：程式 / 前台玩家名單 / 分數 / 開咪狀態 / 交接

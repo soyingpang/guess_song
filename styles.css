@@ -5130,3 +5130,215 @@ textarea {
     bottom: 184px;
   }
 }
+
+
+/* Phone remote player mode */
+.player-mode-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.player-mode-button {
+  min-height: 46px;
+  border: 1px solid rgba(139, 85, 66, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 248, 236, 0.72);
+  color: #5b352c;
+  font-weight: 950;
+}
+
+.player-mode-button.is-active {
+  border-color: rgba(103, 151, 140, 0.58);
+  background: linear-gradient(180deg, rgba(223, 244, 223, 0.96), rgba(255, 248, 236, 0.9));
+  color: #2d6f50;
+  box-shadow: inset 0 0 0 1px rgba(103, 151, 140, 0.18);
+}
+
+.phone-remote-panel[hidden] {
+  display: none;
+}
+
+.phone-remote-panel {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+  border: 1px solid rgba(103, 151, 140, 0.34);
+  border-radius: 8px;
+  background: rgba(244, 252, 241, 0.76);
+  padding: 11px;
+  color: #4a2828;
+}
+
+.phone-remote-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.phone-remote-head strong {
+  color: #2d6f50;
+  font-size: 0.98rem;
+}
+
+.phone-remote-head span {
+  color: #6b4a3f;
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+.phone-remote-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.phone-remote-grid span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  border: 1px solid rgba(126, 77, 54, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 7px;
+}
+
+.phone-remote-grid small {
+  color: #7b625b;
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.phone-remote-grid strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #8d4f33;
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phone-remote-roster {
+  display: grid;
+  gap: 5px;
+  max-height: 132px;
+  overflow: auto;
+}
+
+.phone-remote-player,
+.phone-remote-empty {
+  border: 1px solid rgba(126, 77, 54, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.54);
+  padding: 7px 8px;
+}
+
+.phone-remote-player {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 8px;
+  align-items: center;
+}
+
+.phone-remote-player.is-live {
+  border-color: rgba(103, 151, 140, 0.52);
+  background: rgba(231, 247, 231, 0.82);
+}
+
+.phone-remote-player.is-offline {
+  opacity: 0.62;
+}
+
+.phone-remote-player span {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phone-remote-player small {
+  color: #7b625b;
+  font-weight: 800;
+}
+
+.phone-remote-player strong {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  border-radius: 999px;
+  background: #dff4df;
+  color: #2d6f50;
+  font-size: 0.74rem;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.phone-remote-empty {
+  color: #7b625b;
+  font-weight: 850;
+  text-align: center;
+}
+
+.player-body.is-joined .player-mode-switch {
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.player-body.is-joined .player-mode-button {
+  min-height: 38px;
+  padding: 6px 8px;
+  font-size: 0.86rem;
+}
+
+.player-body.is-joined .phone-remote-panel {
+  gap: 6px;
+  margin-top: 7px;
+  padding: 8px;
+}
+
+.player-body.is-joined .phone-remote-grid {
+  gap: 5px;
+}
+
+.player-body.is-joined .phone-remote-grid span {
+  padding: 6px;
+}
+
+.player-body.is-joined .phone-remote-roster {
+  max-height: 88px;
+}
+
+.player-body.is-joined .phone-remote-player,
+.player-body.is-joined .phone-remote-empty {
+  padding: 6px 7px;
+  font-size: 0.82rem;
+}
+
+.player-body.is-joined.is-remote-player .phone-question {
+  margin-top: 7px;
+  padding-top: 7px;
+}
+
+@media (max-width: 390px) {
+  .phone-remote-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .phone-remote-grid span:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-height: 760px) {
+  .player-body.is-joined .phone-remote-roster {
+    max-height: 62px;
+  }
+
+  .player-body.is-joined .phone-remote-head span,
+  .player-body.is-joined .phone-remote-player small {
+    font-size: 0.72rem;
+  }
+}
