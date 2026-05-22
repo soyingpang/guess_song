@@ -5,6 +5,7 @@
 - 80年代流行曲：50 首
 - 90年代流行曲：50 首
 - 全部流行曲：100 首
+- 全部歌單：200 首（教會詩歌 100 首 + 流行曲 100 首）
 - 自動搜尋候選：164 首
 - 自動找到可信 YouTube 配對：164 首
 - 未能自動配對：0 首
@@ -15,6 +16,7 @@
 - `songlists/pop-80s.json`
 - `songlists/pop-90s.json`
 - `songlists/pop-all.json`
+- `songlists/all-songlists.json`
 - `docs/POP_YOUTUBE_MATCHES_2026-05-22.csv`
 
 ## 80年代流行曲前 20 首

@@ -58,9 +58,9 @@
           </div>
 
           <div class="filter-row">
-            <label for="categoryFilter">只玩分類</label>
+            <label for="categoryFilter">只玩歌單 / 分類</label>
             <select id="categoryFilter">
-              <option value="all">全部分類</option>
+              <option value="all">全部歌單</option>
             </select>
           </div>
 
@@ -143,11 +143,6 @@
               <button class="ghost-button" id="audioBroadcastButton" type="button">開始音訊廣播</button>
             </div>
             <div class="room-status audio-broadcast-status" id="audioBroadcastStatus">不在現場聲音：未廣播</div>
-            <div class="room-status">線上歌單：選完按載入</div>
-            <div class="room-tools">
-              <select id="cloudLibrarySelect" aria-label="線上歌單"></select>
-              <button class="ghost-button" id="cloudButton" type="button">載入歌單</button>
-            </div>
             <div class="player-list" id="playerList"></div>
           </section>
 
@@ -220,6 +215,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=songlists-visible-1"></script>
+    <script src="./app.js?v=category-songlists-1"></script>
   </body>
 </html>

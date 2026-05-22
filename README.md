@@ -50,10 +50,10 @@ https://soyingpang.github.io/guess_song/display.html
 - 玩家開咪對話時，聲音會由後台接收並轉發到前台播放
 - 四選一答中加 1 分；搶答估歌由主持判定，答中加 2 分；主題搶唱支援 A/B 組分組計分
 - 後台可按「排行榜」，前台會顯示即時排名
-- 線上歌單已加入教會詩歌、80年代流行曲、90年代流行曲和全部流行曲，可在後台切換載入
+- 線上歌單已合併教會詩歌、80年代流行曲和90年代流行曲，可直接用「只玩歌單 / 分類」切換玩法
 - 隨機抽題只會使用已批准來源；待審來源會保留在題庫，但不會被抽中
 - 題庫會存在同一部裝置嘅瀏覽器 localStorage
-- `hymns.json`、`songlists/pop-80s.json`、`songlists/pop-90s.json`、`songlists/pop-all.json` 可以做 GitHub Pages 線上歌單，所有裝置都可以一鍵載入
+- `songlists/all-songlists.json` 是預設線上歌單，會把教會詩歌、80年代流行曲和90年代流行曲一併載入
 
 ## 玩家手機
 
@@ -96,10 +96,11 @@ http://localhost:5173
 
 ## 線上歌單
 
-想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 JSON 歌單。格式同上面一樣。更新後 push 到 GitHub，網站入面選擇歌單再按「載入歌單」就會載入最新題庫。
+想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 JSON 歌單。格式同上面一樣。更新後 push 到 GitHub，網站會載入 `songlists/all-songlists.json`，主持可用「只玩歌單 / 分類」選擇今次玩邊個歌單。
 
 目前線上歌單包括：
 
+- `songlists/all-songlists.json`：全部歌單
 - `hymns.json`：教會詩歌
 - `songlists/pop-80s.json`：80年代流行曲
 - `songlists/pop-90s.json`：90年代流行曲

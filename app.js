@@ -1,30 +1,12 @@
-const STORAGE_KEY = "chinese-hymn-quiz-library-v4";
+const STORAGE_KEY = "guess-song-library-v5";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
-const DEFAULT_CLOUD_LIBRARY_ID = "hymns";
+const DEFAULT_CLOUD_LIBRARY_ID = "allSonglists";
 const CLOUD_LIBRARY_OPTIONS = [
   {
-    id: "hymns",
-    label: "教會詩歌",
-    url: "./hymns.json",
-    loadedMessage: "已載入教會詩歌線上歌單",
-  },
-  {
-    id: "pop80s",
-    label: "80年代流行曲",
-    url: "./songlists/pop-80s.json",
-    loadedMessage: "已載入80年代流行曲歌單",
-  },
-  {
-    id: "pop90s",
-    label: "90年代流行曲",
-    url: "./songlists/pop-90s.json",
-    loadedMessage: "已載入90年代流行曲歌單",
-  },
-  {
-    id: "popAll",
-    label: "全部流行曲",
-    url: "./songlists/pop-all.json",
-    loadedMessage: "已載入全部流行曲歌單",
+    id: "allSonglists",
+    label: "全部歌單",
+    url: "./songlists/all-songlists.json",
+    loadedMessage: "已載入全部歌單",
   },
 ];
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
@@ -272,7 +254,7 @@ function bindEvents() {
   els.cloudLibrarySelect?.addEventListener("change", () => {
     state.cloudLibraryId = els.cloudLibrarySelect.value || DEFAULT_CLOUD_LIBRARY_ID;
   });
-  els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
+  els.cloudButton?.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
 }
@@ -1793,7 +1775,7 @@ function renderCategoryFilter() {
 
   const all = document.createElement("option");
   all.value = "all";
-  all.textContent = "全部分類";
+  all.textContent = "全部歌單";
   els.categoryFilter.append(all);
 
   categories.forEach((category) => {
