@@ -1349,7 +1349,7 @@ function renderGame() {
   els.playerScore.textContent = `${game.score || 0} 分`;
   els.playerRound.textContent = game.hasQuestion ? `第 ${game.round} 題 · ${teamLabel(game.team)}` : `未開始 · ${teamLabel(state.team)}`;
   els.phoneStatus.textContent = phoneStatusText(game);
-  els.phoneTitle.textContent = game.revealed ? game.title : "估呢首詩歌";
+  els.phoneTitle.textContent = game.revealed ? game.title : "估呢首歌";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
   els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `第一個${game.mode === "word" ? "搶唱" : "搶答"}：${game.buzzWinner.name}` : "");
 

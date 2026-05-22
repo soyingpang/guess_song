@@ -1,6 +1,32 @@
 const STORAGE_KEY = "chinese-hymn-quiz-library-v4";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
-const CLOUD_LIBRARY_URL = "./hymns.json";
+const DEFAULT_CLOUD_LIBRARY_ID = "hymns";
+const CLOUD_LIBRARY_OPTIONS = [
+  {
+    id: "hymns",
+    label: "教會詩歌",
+    url: "./hymns.json",
+    loadedMessage: "已載入教會詩歌線上歌單",
+  },
+  {
+    id: "pop80s",
+    label: "80年代流行曲",
+    url: "./songlists/pop-80s.json",
+    loadedMessage: "已載入80年代流行曲歌單",
+  },
+  {
+    id: "pop90s",
+    label: "90年代流行曲",
+    url: "./songlists/pop-90s.json",
+    loadedMessage: "已載入90年代流行曲歌單",
+  },
+  {
+    id: "popAll",
+    label: "全部流行曲",
+    url: "./songlists/pop-all.json",
+    loadedMessage: "已載入全部流行曲歌單",
+  },
+];
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
@@ -49,6 +75,8 @@ const APPROVED_SOURCE_RULES = [
   "playground ministry",
   "hkacm",
   "香港基督徒音樂事工協會",
+  "youtube",
+  "流行曲題庫",
 ];
 
 const difficultyDurations = {
@@ -65,6 +93,7 @@ const state = {
   mode: "choice",
   difficulty: "easy",
   category: "all",
+  cloudLibraryId: DEFAULT_CLOUD_LIBRARY_ID,
   round: 0,
   revealed: false,
   answered: false,
@@ -164,6 +193,7 @@ const els = {
   showLeaderboardButton: document.querySelector("#showLeaderboardButton"),
   showWinnerButton: document.querySelector("#showWinnerButton"),
   resetGameButton: document.querySelector("#resetGameButton"),
+  cloudLibrarySelect: document.querySelector("#cloudLibrarySelect"),
   cloudButton: document.querySelector("#cloudButton"),
   exportButton: document.querySelector("#exportButton"),
   importInput: document.querySelector("#importInput"),
@@ -177,11 +207,12 @@ const els = {
   playerList: document.querySelector("#playerList"),
 };
 
+populateCloudLibrarySelect();
 bindEvents();
 initMultiplayer();
 render();
 if (!state.songs.length) {
-  loadCloudLibrary({ silent: true });
+  loadCloudLibrary({ silent: true, libraryId: DEFAULT_CLOUD_LIBRARY_ID });
 } else {
   setResult("準備開始", `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
   render();
@@ -238,6 +269,9 @@ function bindEvents() {
   els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
   els.copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
   els.audioBroadcastButton.addEventListener("click", toggleAudioBroadcast);
+  els.cloudLibrarySelect?.addEventListener("change", () => {
+    state.cloudLibraryId = els.cloudLibrarySelect.value || DEFAULT_CLOUD_LIBRARY_ID;
+  });
   els.cloudButton.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
@@ -1181,9 +1215,9 @@ function normalizeSource(source) {
 }
 
 function emptyPoolMessage() {
-  if (!state.songs.length) return "先加入詩歌";
-  if (!approvedSongs().length) return "未有已批准來源詩歌";
-  return "呢個分類未有已批准詩歌";
+  if (!state.songs.length) return "先加入歌曲";
+  if (!approvedSongs().length) return "未有已批准來源歌曲";
+  return "呢個分類未有已批准歌曲";
 }
 
 function takeNextSong(pool) {
@@ -1214,7 +1248,7 @@ function playCurrentClip() {
   }
 
   if (!state.currentSong) {
-    setResult("先加入一首詩歌", "", "");
+    setResult("先加入一首歌", "", "");
     return;
   }
 
@@ -1326,7 +1360,7 @@ function showNextHint() {
 function getHints(song) {
   return [
     song.category ? `分類：${song.category}` : "",
-    song.source ? `詩歌集 / 來源：${song.source}` : "",
+    song.source ? `來源：${song.source}` : "",
     song.number ? `編號：${song.number}` : "",
     song.hint ? `提示：${song.hint}` : "",
     `字數：${countTitleChars(song.title)}，首字提示：${maskTitle(song.title)}`,
@@ -1348,7 +1382,7 @@ function renderYouTubeFrame({ autoplay }) {
 
   const iframe = document.createElement("iframe");
   iframe.src = buildEmbedUrl(state.currentSong, autoplay);
-  iframe.title = "YouTube 詩歌片段";
+  iframe.title = "YouTube 歌曲片段";
   iframe.allow =
     "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
   iframe.allowFullscreen = true;
@@ -1563,16 +1597,16 @@ function saveSongFromForm() {
   });
 
   if (!song) {
-    setResult("請檢查詩歌名同 YouTube 連結", "", "wrong");
+    setResult("請檢查歌名同 YouTube 連結", "", "wrong");
     return;
   }
 
   if (state.editingId) {
     state.songs = state.songs.map((item) => (item.id === state.editingId ? song : item));
-    setResult("已更新詩歌", song.title, "");
+    setResult("已更新歌曲", song.title, "");
   } else {
     state.songs.unshift(song);
-    setResult("已加入詩歌", song.title, "");
+    setResult("已加入歌曲", song.title, "");
   }
 
   state.editingId = null;
@@ -1598,7 +1632,7 @@ function editSong(songId) {
   els.songSource.value = song.source;
   els.songHint.value = song.hint;
   els.songAliases.value = song.aliases.join(", ");
-  els.songSubmitButton.textContent = "更新詩歌";
+  els.songSubmitButton.textContent = "更新歌曲";
   els.songTitle.focus();
 }
 
@@ -1615,7 +1649,7 @@ function resetForm() {
   els.songAudioUrl.value = "";
   els.songStart.value = CLIP_START_SECONDS;
   els.songDuration.value = CLIP_DURATION_SECONDS;
-  els.songSubmitButton.textContent = "加入詩歌";
+  els.songSubmitButton.textContent = "加入歌曲";
 }
 
 function exportSongs() {
@@ -1623,7 +1657,7 @@ function exportSongs() {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "cantonese-hymn-library.json";
+  anchor.download = "guess-song-library.json";
   anchor.click();
   URL.revokeObjectURL(url);
 }
@@ -1649,24 +1683,51 @@ async function importSongs(event) {
   }
 }
 
-async function loadCloudLibrary({ silent }) {
+function populateCloudLibrarySelect() {
+  if (!els.cloudLibrarySelect) return;
+  els.cloudLibrarySelect.replaceChildren();
+  CLOUD_LIBRARY_OPTIONS.forEach((library) => {
+    const option = document.createElement("option");
+    option.value = library.id;
+    option.textContent = library.label;
+    els.cloudLibrarySelect.append(option);
+  });
+  els.cloudLibrarySelect.value = state.cloudLibraryId;
+}
+
+function cloudLibraryById(libraryId) {
+  return CLOUD_LIBRARY_OPTIONS.find((library) => library.id === libraryId) || CLOUD_LIBRARY_OPTIONS[0];
+}
+
+function selectedCloudLibrary() {
+  const selectedId = els.cloudLibrarySelect?.value || state.cloudLibraryId || DEFAULT_CLOUD_LIBRARY_ID;
+  return cloudLibraryById(selectedId);
+}
+
+async function loadCloudLibrary({ silent, libraryId } = {}) {
+  const library = libraryId ? cloudLibraryById(libraryId) : selectedCloudLibrary();
+  state.cloudLibraryId = library.id;
+  if (els.cloudLibrarySelect) els.cloudLibrarySelect.value = library.id;
+
   try {
-    const response = await fetch(CLOUD_LIBRARY_URL, { cache: "no-store" });
+    const response = await fetch(library.url, { cache: "no-store" });
     if (!response.ok) throw new Error("No cloud library");
 
     const incoming = await response.json();
     const songs = Array.isArray(incoming) ? incoming.map(cleanSong).filter(Boolean) : [];
     if (!songs.length) {
-      if (!silent) setResult("線上題庫暫時未有詩歌", "可以先用右邊表格加入", "");
+      if (!silent) setResult("線上歌單暫時未有歌曲", "可以先用右邊表格加入", "");
       return;
     }
 
     state.songs = dedupeSongs(songs);
+    state.category = "all";
+    state.questionBag = [];
     saveSongs();
-    setResult("已載入經典詩歌線上題庫", `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
+    setResult(library.loadedMessage, `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
     render();
   } catch {
-    if (!silent) setResult("載入線上題庫失敗", "請稍後再試", "wrong");
+    if (!silent) setResult("載入線上歌單失敗", "請稍後再試", "wrong");
   }
 }
 
@@ -1681,7 +1742,7 @@ function dedupeSongs(songs) {
 }
 
 function clearLibrary() {
-  if (!confirm("清空詩歌題庫同分數？")) return;
+  if (!confirm("清空歌單同分數？")) return;
   state.songs = [];
   state.score = { correct: 0, total: 0, streak: 0 };
   state.teamScores = { A: 0, B: 0 };
@@ -1760,12 +1821,12 @@ function renderQuiz() {
     : hasSong
       ? state.answered
         ? state.currentSong.title
-        : "估呢首詩歌"
+        : "估呢首歌"
       : state.mode === "word"
         ? "主題搶唱"
         : state.songs.length
           ? emptyPoolMessage()
-          : "先加入詩歌";
+          : "先加入歌曲";
 
   els.maskLabel.textContent = hasSong ? "後台影片已靜音，只作預備和跳廣告" : "前台先會出聲";
   els.playerMask.classList.toggle("is-hidden", hasSong);
@@ -1851,7 +1912,7 @@ function renderLibrary() {
   if (!state.songs.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
-    empty.textContent = "未有題目。貼一條詩歌 YouTube 連結，就可以開始建立題庫。";
+    empty.textContent = "未有題目。貼一條 YouTube 連結，就可以開始建立歌單。";
     els.songList.append(empty);
     return;
   }
@@ -1868,7 +1929,7 @@ function renderLibrary() {
     const info = document.createElement("div");
     const title = document.createElement("strong");
     const meta = document.createElement("span");
-    title.textContent = blindRound ? `盲抽中 · 詩歌 ${index + 1}` : song.title;
+    title.textContent = blindRound ? `盲抽中 · 歌曲 ${index + 1}` : song.title;
     meta.textContent = blindRound
       ? "答案已隱藏，開估後先顯示"
       : [
@@ -2154,10 +2215,10 @@ function buildDisplayState() {
     players: leaderboardPlayers().map(stripPlayer),
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
-    prompt: hasWord ? "主題搶唱" : hasSong ? "聽前奏，估詩歌" : "等候主持開始",
+    prompt: hasWord ? "主題搶唱" : hasSong ? "聽前奏，估歌名" : "等候主持開始",
     status: els.resultText.textContent || "",
     answer: revealed && song ? answerLabel(song) : hasWord ? `今題主題：${state.currentWord}` : "",
-    title: hasWord ? state.currentWord : revealed && song ? song.title : "估呢首詩歌",
+    title: hasWord ? state.currentWord : revealed && song ? song.title : "估呢首歌",
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
     start: song && !state.fullPlayback ? clipStart(song) : CLIP_START_SECONDS,
@@ -2197,7 +2258,7 @@ function buildPlayerState(player) {
     team: normalizeTeam(player.team),
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
-    title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : "估呢首詩歌",
+    title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : "估呢首歌",
     status: els.resultText.textContent || "",
     score: player.score,
     choices: choiceOptions,

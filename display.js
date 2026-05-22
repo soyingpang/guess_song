@@ -84,8 +84,8 @@ function renderState(state) {
   if (state.hasWord) els.round.textContent = `第 ${state.round} 題`;
   els.score.textContent = `${state.correct} / ${state.total}`;
   els.teams.textContent = `A ${state.teamScores?.A || 0} · B ${state.teamScores?.B || 0}`;
-  els.status.textContent = state.status || (state.hasSong ? "聽片段，估詩歌名" : "等候主持開始");
-  els.title.textContent = state.hasWord ? state.title : state.revealed ? state.title : "估呢首詩歌";
+  els.status.textContent = state.status || (state.hasSong ? "聽片段，估歌名" : "等候主持開始");
+  els.title.textContent = state.hasWord ? state.title : state.revealed ? state.title : "估呢首歌";
 
   const prepCover = Boolean(state.hasSong && !state.revealed);
   const showFrontPlayer = Boolean(state.revealed || prepCover);
@@ -97,13 +97,13 @@ function renderState(state) {
         ? "答案遮罩中"
       : state.hasWord
         ? "主題搶唱"
-        : "聽前奏，估詩歌";
+        : "聽前奏，估歌名";
   els.subPrompt.textContent = state.revealed
     ? state.answer
     : prepCover
       ? "答案已遮住，只留右下角廣告操作區"
     : state.hasWord
-      ? "鬥快唱出切合這個主題的詩歌"
+      ? "鬥快唱出切合這個主題的歌"
       : "答案未公開，請留心聽";
 
   els.mask.classList.toggle("is-hidden", showFrontPlayer && !prepCover);
@@ -371,7 +371,7 @@ function renderFrame(state) {
 
   const iframe = document.createElement("iframe");
   iframe.src = buildEmbedUrl(state);
-  iframe.title = "YouTube 詩歌片段";
+  iframe.title = "YouTube 歌曲片段";
   iframe.allow =
     "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
   iframe.allowFullscreen = true;
@@ -499,7 +499,7 @@ function renderChoices(state) {
     item.textContent = state.buzzWinner
       ? `第一個搶唱：${state.buzzWinner.name}（${state.buzzWinner.team || "A"} 組）`
       : state.buzzOpen
-        ? "搶唱開放：鬥快唱出合題詩歌"
+        ? "搶唱開放：鬥快唱出合題歌曲"
         : "等待主持開放搶唱";
     els.choices.append(item);
     return;

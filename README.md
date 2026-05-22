@@ -1,6 +1,6 @@
-# 華語詩歌估歌仔
+# 估歌仔
 
-一個用 YouTube 影片片段做題目嘅華語詩歌估歌仔 web app，支援粵語同國語詩歌，適合團契、小組、主日學、詩班遊戲或營會破冰。
+一個用 YouTube 影片片段做題目嘅估歌仔 web app，支援教會詩歌、80年代流行曲、90年代流行曲同自訂歌單，適合團契、小組、朋友聚會或營會破冰。
 
 ## 文件
 
@@ -33,9 +33,9 @@ https://soyingpang.github.io/guess_song/display.html
 
 ## 玩法
 
-- 逐首加入詩歌 YouTube 連結，或使用教會已授權 / 自己錄製的音訊或影片檔
+- 逐首加入歌曲 YouTube 連結，或使用已授權 / 自己錄製的音訊或影片檔
 - 每題由歌曲 0 秒開始播放，主持可選 60 / 30 / 15 秒
-- 可填分類、詩歌集 / 來源、編號、提示、可接受答案
+- 可填分類、來源 / 歌單、編號、提示、可接受答案
 - 可揀全部分類或只玩某一類
 - 可用輸入答案或四選一
 - 如填寫本地 / 已授權媒體 URL，程式會優先使用該音訊或影片檔，完全避開 YouTube 廣告
@@ -46,18 +46,18 @@ https://soyingpang.github.io/guess_song/display.html
 - 後台按「下一題播放」會一按抽題並自動播放 / 倒數；估歌期間前台會遮住 YouTube 答案，只留右下角小窗方便手動處理廣告
 - 前台右下會顯示 QR code，玩家手機掃碼後輸入名字加入
 - 前台會顯示已加入玩家、分數、A/B 組和開咪狀態
-- 手機端入房前先選「在現場 / 不在現場」；不在現場模式會用遮罩播放器同步播放詩歌聲音，並顯示倒數、組分、開咪和玩家狀態，入房後不可切換
+- 手機端入房前先選「在現場 / 不在現場」；不在現場模式會用遮罩播放器同步播放聲音，並顯示倒數、組分、開咪和玩家狀態，入房後不可切換
 - 玩家開咪對話時，聲音會由後台接收並轉發到前台播放
 - 四選一答中加 1 分；搶答估歌由主持判定，答中加 2 分；主題搶唱支援 A/B 組分組計分
 - 後台可按「排行榜」，前台會顯示即時排名
-- 線上題庫已按你確認的白名單來源重做，優先保留經典、多人常唱、團契容易估到的粵語/國語詩歌
+- 線上歌單已加入教會詩歌、80年代流行曲、90年代流行曲和全部流行曲，可在後台切換載入
 - 隨機抽題只會使用已批准來源；待審來源會保留在題庫，但不會被抽中
 - 題庫會存在同一部裝置嘅瀏覽器 localStorage
-- `hymns.json` 可以做 GitHub Pages 線上題庫，所有裝置都可以一鍵載入
+- `hymns.json`、`songlists/pop-80s.json`、`songlists/pop-90s.json`、`songlists/pop-all.json` 可以做 GitHub Pages 線上歌單，所有裝置都可以一鍵載入
 
 ## 玩家手機
 
-主持人先開後台，再按「開前台」。前台右下角會出現 QR code。玩家用手機掃碼後，先選「在現場 / 不在現場」，再輸入名字加入遊戲；A/B 組會由系統按人數自動平均分配，主持仍可在後台手動調整。不在現場玩家的手機會同步狀態和遮住答案。YouTube 在手機瀏覽器不能可靠自動開聲；如要不手按而自動同步有聲，題庫應改用教會已授權的本地音訊或影片檔。
+主持人先開後台，再按「開前台」。前台右下角會出現 QR code。玩家用手機掃碼後，先選「在現場 / 不在現場」，再輸入名字加入遊戲；A/B 組會由系統按人數自動平均分配，主持仍可在後台手動調整。不在現場玩家的手機會同步狀態和遮住答案。YouTube 在手機瀏覽器不能可靠自動開聲；如要不手按而自動同步有聲，題庫應改用已授權的本地音訊或影片檔。
 
 多人連線使用瀏覽器 WebRTC peer-to-peer；主持人後台要保持開住，因為分數同房間狀態由主持人頁面管理。
 
@@ -78,28 +78,33 @@ http://localhost:5173
 ```json
 [
   {
-    "title": "詩歌名",
+    "title": "歌名",
     "aliases": ["可接受別名", "英文名或簡稱"],
     "videoId": "dQw4w9WgXcQ",
     "audioUrl": "./audio/song.mp3",
     "start": 0,
     "duration": 60,
     "category": "敬拜",
-    "source": "詩歌集 / 來源",
+    "source": "來源 / 歌單",
     "hint": "提示文字",
-    "number": "詩歌編號"
+    "number": "歌曲編號"
   }
 ]
 ```
 
 `videoId` 可以係 YouTube ID，亦可以喺 app 入面直接貼 YouTube URL。`audioUrl` 保留舊名作相容用途，但而家可以填你教會有權使用的本地 / 已授權媒體檔：音訊建議放入 `audio/`，例如 `./audio/song-name.mp3`；影片建議放入 `video/`，例如 `./video/song-name.mp4`。支援常用音訊 MP3/M4A/WAV/OGG，同常用影片 MP4/M4V/MOV/OGV/WEBM；有 `audioUrl` 時會優先播放本地 / 授權檔，不用 YouTube。
 
-## 線上題庫
+## 線上歌單
 
-想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 `hymns.json`。格式同上面一樣。更新後 push 到 GitHub，網站入面按「線上題庫」就會載入最新題庫。
+想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 JSON 歌單。格式同上面一樣。更新後 push 到 GitHub，網站入面選擇歌單再按「載入歌單」就會載入最新題庫。
 
-目前線上題庫已預載 88 首公開 YouTube 詩歌影片；按「線上題庫」會替換成白名單經典題庫，避免舊題庫留在瀏覽器。
+目前線上歌單包括：
 
-目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、玻璃海樂團 Worship Nations、讚美之泉 Stream of Praise、建道神學院新祢呈敬拜隊、泥土音樂 Clay Music、約書亞樂團 Joshua Band、團契遊樂園、HKACM 香港基督徒音樂事工協會。其他來源會先標示為「待審」。
+- `hymns.json`：教會詩歌
+- `songlists/pop-80s.json`：80年代流行曲
+- `songlists/pop-90s.json`：90年代流行曲
+- `songlists/pop-all.json`：全部流行曲
+
+目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、玻璃海樂團 Worship Nations、讚美之泉 Stream of Praise、建道神學院新祢呈敬拜隊、泥土音樂 Clay Music、約書亞樂團 Joshua Band、團契遊樂園、HKACM 香港基督徒音樂事工協會、YouTube、流行曲題庫。其他來源會先標示為「待審」。
 
 後續新增題目時，以教會團契常唱、旋律一出較多人認得、華人教會大路的經典詩歌為優先；冷門歌、個人翻唱、來源不清楚的影片先留待審。

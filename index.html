@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>華語詩歌估歌仔</title>
+    <title>估歌仔</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./styles.css?v=host-audio-broadcast-3" />
   </head>
@@ -12,8 +12,8 @@
       <header class="topbar">
         <div class="brand-block">
           <img class="brand-mark" src="./assets/worship-crest.svg" alt="" aria-hidden="true" />
-          <p class="eyebrow">團契詩歌時間</p>
-          <h1>華語詩歌估歌仔</h1>
+          <p class="eyebrow">團契 / 朋友聚會</p>
+          <h1>估歌仔</h1>
         </div>
         <div class="topbar-actions">
           <button class="ghost-button" id="openDisplayButton" type="button">開前台</button>
@@ -43,14 +43,14 @@
             <div id="playerHost"></div>
             <div class="player-mask" id="playerMask">
               <div class="pulse-disc" aria-hidden="true"></div>
-              <span id="maskLabel">聽前奏，估詩歌</span>
+              <span id="maskLabel">聽前奏，估歌名</span>
             </div>
           </div>
 
           <div class="quiz-head">
             <div>
               <p class="round-label" id="roundLabel">未有題目</p>
-              <h2 id="quizTitle">先加入詩歌</h2>
+              <h2 id="quizTitle">先加入歌曲</h2>
             </div>
             <button class="icon-button" id="toggleVideoButton" type="button" title="顯示或隱藏影片">
               顯示影片
@@ -113,7 +113,7 @@
           <form class="guess-form" id="guessForm" hidden>
             <label for="guessInput">答案</label>
             <div class="guess-line">
-              <input id="guessInput" autocomplete="off" placeholder="輸入詩歌名 / 別名 / 編號" />
+              <input id="guessInput" autocomplete="off" placeholder="輸入歌名 / 別名 / 編號" />
               <button class="primary-button" type="submit">提交</button>
             </div>
           </form>
@@ -122,7 +122,7 @@
           <div class="hint-stack" id="hintStack" aria-live="polite"></div>
 
           <div class="result-bar" id="resultBar" role="status" aria-live="polite">
-            <span id="resultText">加入詩歌後就可以開始</span>
+            <span id="resultText">加入歌曲後就可以開始</span>
             <strong id="answerText"></strong>
           </div>
         </section>
@@ -149,15 +149,15 @@
           <details class="library-drawer">
             <summary>
               <div>
-                <p class="eyebrow">詩歌題庫</p>
+                <p class="eyebrow">線上 / 自訂歌單</p>
                 <h2 id="libraryTitle">題庫管理</h2>
               </div>
               <span id="songCount">0 首</span>
             </summary>
 
             <form class="song-form" id="songForm">
-              <label for="songTitle">詩歌名</label>
-              <input id="songTitle" required placeholder="例如：全因為祢" />
+              <label for="songTitle">歌名</label>
+              <input id="songTitle" required placeholder="例如：海闊天空 / 全因為祢" />
 
               <label for="songUrl">YouTube URL / ID</label>
               <input id="songUrl" placeholder="貼 YouTube 連結；如使用授權媒體可留空" />
@@ -187,8 +187,8 @@
                 </div>
               </div>
 
-              <label for="songSource">詩歌集 / 來源</label>
-              <input id="songSource" placeholder="例如：生命聖詩 / ACM / 小組常唱" />
+              <label for="songSource">來源 / 歌單</label>
+              <input id="songSource" placeholder="例如：YouTube / 流行曲題庫 / ACM" />
 
               <label for="songHint">提示</label>
               <input id="songHint" placeholder="例如：副歌好多人一聽就識，可空白" />
@@ -197,12 +197,13 @@
               <input id="songAliases" placeholder="別名、英文名、常用簡稱，用逗號分隔" />
 
               <button class="primary-button full-width" id="songSubmitButton" type="submit">
-                加入詩歌
+                加入歌曲
               </button>
             </form>
 
             <div class="library-tools">
-              <button class="ghost-button" id="cloudButton" type="button">線上題庫</button>
+              <select class="library-select" id="cloudLibrarySelect" aria-label="線上歌單" style="grid-column: 1 / -1"></select>
+              <button class="ghost-button" id="cloudButton" type="button">載入歌單</button>
               <button class="ghost-button" id="exportButton" type="button">匯出</button>
               <label class="file-button" for="importInput">匯入</label>
               <input id="importInput" type="file" accept="application/json" />
@@ -216,6 +217,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=buzz-pause-retry-1"></script>
+    <script src="./app.js?v=pop-songlists-1"></script>
   </body>
 </html>
