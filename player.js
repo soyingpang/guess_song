@@ -1,15 +1,29 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
 const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
+const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 const CONNECTION_TIMEOUT_MS = 9000;
+const PEER_OPTIONS = {
+  debug: 1,
+  host: "0.peerjs.com",
+  port: 443,
+  path: "/",
+  secure: true,
+  config: {
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun1.l.google.com:19302" },
+    ],
+  },
+};
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 
 const params = new URLSearchParams(window.location.search);
-const roomId = params.get("room") || "";
+const roomId = (params.get("room") || DEFAULT_ROOM_ID).trim();
 const urlName = params.get("name") || "";
 
 const state = {
@@ -252,7 +266,7 @@ function connectToRoom({ resetAttempts = false } = {}) {
     handleConnectionFailure("連線逾時，請重新掃前台 QR 或檢查手機網絡");
   }, CONNECTION_TIMEOUT_MS);
 
-  const peer = new Peer(undefined, { debug: 0 });
+  const peer = new Peer(undefined, PEER_OPTIONS);
   state.peer = peer;
 
   peer.on("open", () => {
@@ -268,6 +282,16 @@ function connectToRoom({ resetAttempts = false } = {}) {
       return;
     }
     handlePeerCall(call);
+  });
+
+  peer.on("disconnected", () => {
+    if (state.connectionToken !== token) return;
+    handleConnectionFailure("同步服務斷線");
+  });
+
+  peer.on("close", () => {
+    if (state.connectionToken !== token || state.reconnectTimer) return;
+    handleConnectionFailure("同步服務已關閉");
   });
 
   peer.on("error", (error) => {
@@ -354,7 +378,7 @@ function clearConnectionTimeout() {
 
 function connectionFailureMessage(error) {
   const type = String(error?.type || "").trim();
-  if (type === "peer-unavailable") return "找不到主持房間，請確認控制台保持開住";
+  if (type === "peer-unavailable") return "找不到主持房間，請確認後台保持開住";
   if (type === "network") return "手機網絡暫時連不到同步服務";
   if (type === "browser-incompatible") return "連線失敗：這個手機瀏覽器不支援同步連線";
   return "連線失敗，請確認主持人後台仍然開住";

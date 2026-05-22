@@ -12,6 +12,19 @@ const CLOUD_LIBRARY_OPTIONS = [
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
+const PEER_OPTIONS = {
+  debug: 1,
+  host: "0.peerjs.com",
+  port: 443,
+  path: "/",
+  secure: true,
+  config: {
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun1.l.google.com:19302" },
+    ],
+  },
+};
 const CLIP_START_SECONDS = 0;
 const CLIP_DURATION_SECONDS = 60;
 const DEFAULT_PLAY_DURATION_SECONDS = 30;
@@ -279,7 +292,7 @@ function resolveRoomId() {
 }
 
 function createRoomPeer(roomId) {
-  state.peer = new Peer(roomId, { debug: 0 });
+  state.peer = new Peer(roomId, PEER_OPTIONS);
 
   state.peer.on("open", (id) => {
     state.roomReady = true;
@@ -299,6 +312,17 @@ function createRoomPeer(roomId) {
     setupPlayerMicCall(call);
   });
 
+  state.peer.on("disconnected", () => {
+    state.roomReady = false;
+    state.roomError = "房間同步服務暫時斷線，正在重連";
+    render();
+    try {
+      state.peer.reconnect();
+    } catch {
+      setResult("房間同步服務斷線", "請重新整理後台再開前台", "wrong");
+    }
+  });
+
   state.peer.on("error", (error) => {
     if (error.type === "unavailable-id") {
       state.roomReady = false;
@@ -312,10 +336,18 @@ function createRoomPeer(roomId) {
     }
 
     state.roomReady = false;
-    state.roomError = "房間連線暫時失敗，請保持此頁開住或重新整理";
-    setResult("房間連線失敗", "請檢查網絡或重新整理", "wrong");
+    state.roomError = roomFailureMessage(error);
+    setResult("房間連線失敗", "請檢查網絡、關閉重複後台，或重新整理", "wrong");
     render();
   });
+}
+
+function roomFailureMessage(error) {
+  const type = String(error?.type || "").trim();
+  if (type === "network") return "房間同步服務暫時連不到，請保持此頁開住或重新整理";
+  if (type === "server-error" || type === "socket-error") return "PeerJS 同步服務暫時失敗，請稍後重新整理";
+  if (type === "browser-incompatible") return "此瀏覽器不支援多人同步，請改用 Chrome / Safari";
+  return "房間連線暫時失敗，請保持此頁開住或重新整理";
 }
 
 function setupPlayerConnection(connection) {
@@ -1958,7 +1990,7 @@ function renderPlayers() {
   els.roomStatus.textContent = state.roomError
     ? state.roomError
     : state.roomReady
-      ? `固定房間：${state.roomId} · 前台 ${state.displayConnections.size} 個`
+      ? `固定房間：${state.roomId} · 前台 ${state.displayConnections.size} 個 · 可連線`
       : `固定房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.copyDisplayLinkButton.disabled = !state.displayUrl;
