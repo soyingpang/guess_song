@@ -4,6 +4,8 @@ const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
+const SILENT_UNLOCK_AUDIO_URI =
+  "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room") || "";
@@ -37,6 +39,10 @@ const state = {
   hostAudioElement: null,
   hostAudioBlocked: false,
   hostAudioStatus: "等候主持音訊廣播",
+  remoteAudioPrimed: false,
+  remoteAudioPriming: false,
+  remoteUnlockAudioElement: null,
+  remoteAudioContext: null,
   voiceBroadcastCalls: new Map(),
   voiceBroadcastElements: new Map(),
   voiceBroadcastBlocked: false,
@@ -128,9 +134,18 @@ els.micToggleButton.addEventListener("click", () => {
 els.openLeaderboardButton.addEventListener("click", openLeaderboard);
 els.closeLeaderboardButton.addEventListener("click", closeLeaderboard);
 els.onsiteModeButton.addEventListener("click", () => setPlayerMode(false));
-els.remoteModeButton.addEventListener("click", () => setPlayerMode(true));
-els.phoneRemotePlayButton.addEventListener("click", () => retryRemotePlayback());
-els.phoneRemoteListenButton.addEventListener("click", () => playHostAudioBroadcast());
+els.remoteModeButton.addEventListener("click", () => {
+  primeRemoteListening();
+  setPlayerMode(true);
+});
+els.phoneRemotePlayButton.addEventListener("click", () => {
+  primeRemoteListening();
+  retryRemotePlayback();
+});
+els.phoneRemoteListenButton.addEventListener("click", () => {
+  primeRemoteListening();
+  playHostAudioBroadcast();
+});
 setIconButton(els.openLeaderboardButton, "leaderboard", "排行榜");
 setIconButton(els.closeLeaderboardButton, "close", "關閉排行榜");
 setIconButton(els.phoneRemoteListenButton, "volume", "啟用收聽");
@@ -495,6 +510,100 @@ function setMicStatus(message) {
   els.phoneMicStatus.textContent = message;
 }
 
+function configureHiddenAudioElement(audio) {
+  audio.autoplay = true;
+  audio.controls = false;
+  audio.hidden = true;
+  audio.playsInline = true;
+  return audio;
+}
+
+function ensureRemoteUnlockAudioElement() {
+  let audio = state.remoteUnlockAudioElement;
+  if (!audio) {
+    audio = configureHiddenAudioElement(document.createElement("audio"));
+    audio.preload = "auto";
+    audio.src = SILENT_UNLOCK_AUDIO_URI;
+    state.remoteUnlockAudioElement = audio;
+  }
+
+  if (!audio.isConnected) document.body.append(audio);
+  return audio;
+}
+
+function primeRemoteListening() {
+  if (state.hostAudioStream || state.voiceBroadcastElements.size) {
+    state.remoteAudioPrimed = true;
+    playHostAudioBroadcast();
+    return Promise.resolve(true);
+  }
+
+  if (state.remoteAudioPrimed || state.remoteAudioPriming) return Promise.resolve(state.remoteAudioPrimed);
+
+  state.remoteAudioPriming = true;
+  const tasks = [];
+  let synchronousUnlock = false;
+  const audio = ensureRemoteUnlockAudioElement();
+
+  try {
+    audio.pause();
+    audio.srcObject = null;
+    audio.src = SILENT_UNLOCK_AUDIO_URI;
+    audio.muted = false;
+    audio.volume = 1;
+    audio.currentTime = 0;
+    const playPromise = audio.play();
+    if (playPromise?.then) tasks.push(playPromise);
+    else synchronousUnlock = true;
+  } catch {
+    // Some browsers only unlock via Web Audio; try that path below.
+  }
+
+  try {
+    const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextConstructor) {
+      if (!state.remoteAudioContext) state.remoteAudioContext = new AudioContextConstructor();
+      const context = state.remoteAudioContext;
+      if (context.state === "suspended") tasks.push(context.resume());
+      else synchronousUnlock = true;
+      const source = context.createBufferSource();
+      const gain = context.createGain();
+      source.buffer = context.createBuffer(1, 1, context.sampleRate || 44100);
+      gain.gain.value = 0;
+      source.connect(gain).connect(context.destination);
+      source.start(0);
+    }
+  } catch {
+    // If the browser refuses this unlock path, the visible button remains as fallback.
+  }
+
+  if (!tasks.length) return finishRemoteAudioPriming(synchronousUnlock);
+
+  return Promise.allSettled(tasks).then((results) => {
+    const unlocked = results.some((result) => result.status === "fulfilled");
+    return finishRemoteAudioPriming(unlocked);
+  });
+}
+
+function finishRemoteAudioPriming(unlocked) {
+  state.remoteAudioPriming = false;
+  state.remoteAudioPrimed = state.remoteAudioPrimed || Boolean(unlocked);
+
+  const audio = state.remoteUnlockAudioElement;
+  if (audio && !state.hostAudioStream) {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+
+  if (state.remoteMode && state.joined && !state.hostAudioStream && !state.voiceBroadcastElements.size) {
+    setHostAudioStatus(state.remoteAudioPrimed ? "已啟用自動收聽，等候主持音訊" : "等候主持音訊廣播");
+  } else {
+    renderHostAudioBroadcastUi();
+  }
+
+  return Promise.resolve(state.remoteAudioPrimed);
+}
+
 function handlePeerCall(call) {
   if (call?.metadata?.type === "remote-player-mic-broadcast") {
     handleVoiceBroadcastCall(call);
@@ -546,8 +655,11 @@ function attachHostAudioBroadcastStream(stream) {
     return;
   }
 
+  const audio = configureHiddenAudioElement(state.remoteUnlockAudioElement || document.createElement("audio"));
+  state.remoteUnlockAudioElement = audio;
+
   const previousAudio = state.hostAudioElement;
-  if (previousAudio) {
+  if (previousAudio && previousAudio !== audio) {
     previousAudio.pause();
     previousAudio.srcObject = null;
     previousAudio.remove();
@@ -556,27 +668,26 @@ function attachHostAudioBroadcastStream(stream) {
   state.hostAudioStream = stream;
   state.hostAudioBlocked = false;
 
-  const audio = document.createElement("audio");
-  audio.autoplay = true;
-  audio.controls = false;
-  audio.hidden = true;
-  audio.playsInline = true;
+  audio.pause();
+  audio.srcObject = null;
+  audio.removeAttribute("src");
+  audio.load();
   audio.srcObject = stream;
-  audio.addEventListener("playing", () => {
+  audio.onplaying = () => {
     if (state.hostAudioElement !== audio) return;
     state.hostAudioBlocked = false;
     setHostAudioStatus("正在收聽現場聲音");
-  });
-  audio.addEventListener("pause", () => {
+  };
+  audio.onpause = () => {
     if (state.hostAudioElement !== audio || !state.hostAudioStream) return;
     state.hostAudioBlocked = true;
     setHostAudioStatus("請按「啟用收聽」");
-  });
-  audio.addEventListener("error", () => {
+  };
+  audio.onerror = () => {
     if (state.hostAudioElement !== audio) return;
     state.hostAudioBlocked = true;
     setHostAudioStatus("收聽失敗，請再按一次");
-  });
+  };
 
   state.hostAudioElement = audio;
   els.phoneRemoteListen?.append(audio);
@@ -741,7 +852,15 @@ function stopHostAudioBroadcast(options = {}) {
   if (audio) {
     audio.pause();
     audio.srcObject = null;
-    audio.remove();
+    audio.onplaying = null;
+    audio.onpause = null;
+    audio.onerror = null;
+    if (audio === state.remoteUnlockAudioElement) {
+      audio.src = SILENT_UNLOCK_AUDIO_URI;
+      if (!audio.isConnected) document.body.append(audio);
+    } else {
+      audio.remove();
+    }
   }
 
   stream?.getTracks?.().forEach((track) => track.stop());
@@ -799,9 +918,16 @@ function renderHostAudioBroadcastUi() {
     return;
   }
 
-  els.phoneRemoteListenStatus.textContent = state.hostAudioStatus || "等候主持音訊廣播";
   const needsUnlock = (state.hostAudioStream && state.hostAudioBlocked) || state.voiceBroadcastBlocked;
   const hasPlayableAudio = state.hostAudioStream || state.voiceBroadcastElements.size > 0;
+  const waitingForAudio = !hasPlayableAudio;
+  const hasDefaultWaitingStatus = !state.hostAudioStatus || state.hostAudioStatus === "等候主持音訊廣播";
+  els.phoneRemoteListenStatus.textContent =
+    waitingForAudio && state.remoteAudioPriming
+      ? "正在啟用自動收聽"
+      : waitingForAudio && state.remoteAudioPrimed && hasDefaultWaitingStatus
+      ? "已啟用自動收聽，等候主持音訊"
+      : state.hostAudioStatus || "等候主持音訊廣播";
   els.phoneRemoteListenButton.hidden = !needsUnlock;
   els.phoneRemoteListenButton.disabled = !hasPlayableAudio;
 }

@@ -636,11 +636,11 @@
                 </span>
                 <span>
                   <strong>我不在現場</strong>
-                  <small>手機同步播放，答案會遮住</small>
+                  <small>手機同步播放，自動收聽</small>
                 </span>
               </button>
             </div>
-            <p class="join-note">按任何一個選項會即時加入；入房後不可切換。</p>
+            <p class="join-note">按任何一個選項會即時加入；不在現場會先自動開聲。</p>
           </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
@@ -686,7 +686,7 @@
           <div class="phone-remote-listen" id="phoneRemoteListen">
             <div>
               <strong>現場聲音</strong>
-              <span id="phoneRemoteListenStatus">等候主持音訊廣播</span>
+              <span id="phoneRemoteListenStatus">會自動收聽主持音訊</span>
             </div>
             <button class="ghost-button phone-listen-button" id="phoneRemoteListenButton" type="button" hidden>
               啟用收聽
@@ -736,6 +736,6 @@
     </main>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./player.js?v=mobile-game-ui-1"></script>
+    <script src="./player.js?v=remote-audio-auto-1"></script>
   </body>
 </html>
