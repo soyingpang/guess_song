@@ -14,13 +14,18 @@ const contentTypes = {
   ".m4a": "audio/mp4",
   ".md": "text/markdown; charset=utf-8",
   ".mp3": "audio/mpeg",
+  ".gif": "image/gif",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
   ".m4v": "video/mp4",
   ".mov": "video/quicktime",
   ".mp4": "video/mp4",
   ".ogv": "video/ogg",
   ".ogg": "audio/ogg",
+  ".png": "image/png",
   ".svg": "image/svg+xml; charset=utf-8",
   ".wav": "audio/wav",
+  ".webp": "image/webp",
   ".webm": "video/webm",
 };
 
