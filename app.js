@@ -288,9 +288,7 @@ function createRoomPeer(roomId) {
     state.playerUrl = buildPlayerUrl(id);
     state.displayUrl = buildDisplayUrl(id);
     localStorage.setItem(ROOM_ID_KEY, id);
-    renderPlayers();
-    publishDisplayState();
-    broadcastToPlayers();
+    render();
   });
 
   state.peer.on("connection", (connection) => {
