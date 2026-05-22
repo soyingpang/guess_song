@@ -2358,7 +2358,7 @@ select {
 
   .player-shell {
     width: min(100% - 18px, 590px);
-    padding-top: 9px;
+    padding: 9px 0;
   }
 
   .player-card > .brand-mark {
@@ -3198,7 +3198,7 @@ select:focus {
   }
 
   .player-body .player-card {
-    min-height: calc(100vh - 18px);
+    min-height: calc(100svh - 18px);
   }
 }
 
