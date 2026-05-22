@@ -161,7 +161,9 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("online", () => {
-  if (state.joined && !state.connection?.open) scheduleReconnect("網絡已恢復");
+  const shouldReconnect =
+    (state.joined || (state.entryNameReady && state.modeLocked)) && !state.connection?.open;
+  if (shouldReconnect) scheduleReconnect("網絡已恢復");
 });
 
 document.addEventListener("visibilitychange", () => {
@@ -333,7 +335,8 @@ function closeCurrentPeer() {
 function handleConnectionFailure(message) {
   clearConnectionTimeout();
   state.connecting = false;
-  if (state.joined) {
+  const canRetryWithoutReset = Boolean(state.entryNameReady && state.modeLocked && roomId && state.name);
+  if (state.joined || canRetryWithoutReset) {
     scheduleReconnect(message);
     return;
   }
@@ -351,8 +354,8 @@ function clearConnectionTimeout() {
 
 function connectionFailureMessage(error) {
   const type = String(error?.type || "").trim();
-  if (type === "peer-unavailable") return "連線失敗：找不到主持房間，請重新掃前台 QR";
-  if (type === "network") return "連線失敗：手機網絡暫時連不到同步服務";
+  if (type === "peer-unavailable") return "找不到主持房間，請確認控制台保持開住";
+  if (type === "network") return "手機網絡暫時連不到同步服務";
   if (type === "browser-incompatible") return "連線失敗：這個手機瀏覽器不支援同步連線";
   return "連線失敗，請確認主持人後台仍然開住";
 }
@@ -366,12 +369,13 @@ function scheduleReconnect(message) {
   }
 
   if (navigator.onLine === false) {
+    state.connecting = true;
     setStatus(`${message}，等候網絡恢復`);
     return;
   }
 
   clearTimeout(state.reconnectTimer);
-  state.connecting = false;
+  state.connecting = true;
   state.reconnectAttempts += 1;
   const delay = Math.min(RECONNECT_MAX_DELAY, RECONNECT_BASE_DELAY * state.reconnectAttempts);
   setStatus(`${message}，${Math.ceil(delay / 1000)} 秒後自動重連`);
