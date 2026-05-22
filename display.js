@@ -688,6 +688,15 @@ function teamScoreBlock(label, score, leading) {
 }
 
 function renderQr(state) {
+  const hostBlocked = state && state.roomReady === false && state.roomError && !state.playerUrl;
+  if (hostBlocked) {
+    els.qrPanel.hidden = false;
+    els.qr.removeAttribute("src");
+    delete els.qr.dataset.qrValue;
+    els.room.textContent = state.roomError;
+    return;
+  }
+
   const playerUrl = state.playerUrl || buildFallbackPlayerUrl();
   const displayRoomId = state.roomId || qrRoomId;
 

@@ -2190,6 +2190,7 @@ function buildDisplayState() {
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
     roomReady: state.roomReady,
+    roomError: state.roomError,
     roomId: state.roomId,
     playerUrl: state.playerUrl,
     showLeaderboard: state.showLeaderboard,

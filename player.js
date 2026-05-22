@@ -3,6 +3,7 @@ const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
 const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
+const CONNECTION_TIMEOUT_MS = 9000;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
@@ -23,6 +24,7 @@ const state = {
   connecting: false,
   reconnectAttempts: 0,
   reconnectTimer: null,
+  connectionTimeout: null,
   connectionToken: "",
   game: null,
   lastResult: "",
@@ -243,6 +245,10 @@ function connectToRoom({ resetAttempts = false } = {}) {
   state.connecting = true;
   closeCurrentPeer();
   setStatus(state.reconnectAttempts ? "重新連線中..." : "連線中...");
+  state.connectionTimeout = window.setTimeout(() => {
+    if (state.connectionToken !== token || state.joined) return;
+    handleConnectionFailure("連線逾時，請重新掃前台 QR 或檢查手機網絡");
+  }, CONNECTION_TIMEOUT_MS);
 
   const peer = new Peer(undefined, { debug: 0 });
   state.peer = peer;
@@ -262,15 +268,16 @@ function connectToRoom({ resetAttempts = false } = {}) {
     handlePeerCall(call);
   });
 
-  peer.on("error", () => {
+  peer.on("error", (error) => {
     if (state.connectionToken !== token) return;
-    handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
+    handleConnectionFailure(connectionFailureMessage(error));
   });
 }
 
 function bindRoomConnection(connection, token) {
   connection.on("open", () => {
     if (state.connectionToken !== token) return;
+    clearConnectionTimeout();
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
@@ -294,13 +301,14 @@ function bindRoomConnection(connection, token) {
     else handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
   });
 
-  connection.on("error", () => {
+  connection.on("error", (error) => {
     if (state.connectionToken !== token) return;
-    handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
+    handleConnectionFailure(connectionFailureMessage(error));
   });
 }
 
 function closeCurrentPeer() {
+  clearConnectionTimeout();
   stopMic({ notifyHost: false, message: "重新連線，咪已關閉" });
   stopHostAudioBroadcast({ closeCall: true, message: "等候主持音訊廣播" });
   stopAllVoiceBroadcasts();
@@ -323,6 +331,7 @@ function closeCurrentPeer() {
 }
 
 function handleConnectionFailure(message) {
+  clearConnectionTimeout();
   state.connecting = false;
   if (state.joined) {
     scheduleReconnect(message);
@@ -333,6 +342,19 @@ function handleConnectionFailure(message) {
   updateMicUi();
   unlockPlayerMode();
   showJoinFormAfterFailure();
+}
+
+function clearConnectionTimeout() {
+  clearTimeout(state.connectionTimeout);
+  state.connectionTimeout = null;
+}
+
+function connectionFailureMessage(error) {
+  const type = String(error?.type || "").trim();
+  if (type === "peer-unavailable") return "連線失敗：找不到主持房間，請重新掃前台 QR";
+  if (type === "network") return "連線失敗：手機網絡暫時連不到同步服務";
+  if (type === "browser-incompatible") return "連線失敗：這個手機瀏覽器不支援同步連線";
+  return "連線失敗，請確認主持人後台仍然開住";
 }
 
 function scheduleReconnect(message) {
