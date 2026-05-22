@@ -143,6 +143,11 @@
               <button class="ghost-button" id="audioBroadcastButton" type="button">開始音訊廣播</button>
             </div>
             <div class="room-status audio-broadcast-status" id="audioBroadcastStatus">不在現場聲音：未廣播</div>
+            <div class="room-status">線上歌單：選完按載入</div>
+            <div class="room-tools">
+              <select id="cloudLibrarySelect" aria-label="線上歌單"></select>
+              <button class="ghost-button" id="cloudButton" type="button">載入歌單</button>
+            </div>
             <div class="player-list" id="playerList"></div>
           </section>
 
@@ -202,8 +207,6 @@
             </form>
 
             <div class="library-tools">
-              <select class="library-select" id="cloudLibrarySelect" aria-label="線上歌單" style="grid-column: 1 / -1"></select>
-              <button class="ghost-button" id="cloudButton" type="button">載入歌單</button>
               <button class="ghost-button" id="exportButton" type="button">匯出</button>
               <label class="file-button" for="importInput">匯入</label>
               <input id="importInput" type="file" accept="application/json" />
@@ -217,6 +220,6 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-    <script src="./app.js?v=pop-songlists-1"></script>
+    <script src="./app.js?v=songlists-visible-1"></script>
   </body>
 </html>
