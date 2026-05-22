@@ -50,10 +50,10 @@ https://soyingpang.github.io/guess_song/display.html
 - 玩家開咪對話時，聲音會由後台接收並轉發到前台播放
 - 四選一答中加 1 分；搶答估歌由主持判定，答中加 2 分；主題搶唱支援 A/B 組分組計分
 - 後台可按「排行榜」，前台會顯示即時排名
-- 線上歌單已合併教會詩歌、80年代流行曲和90年代流行曲，可直接用「只玩歌單 / 分類」切換玩法
+- 線上歌單已合併教會詩歌、80年代流行曲、90年代流行曲和近25年熱門新歌，可直接用「線上歌單」或「只玩歌單 / 分類」切換玩法
 - 隨機抽題只會使用已批准來源；待審來源會保留在題庫，但不會被抽中
 - 題庫會存在同一部裝置嘅瀏覽器 localStorage
-- `songlists/all-songlists.json` 是預設線上歌單，會把教會詩歌、80年代流行曲和90年代流行曲一併載入
+- `songlists/all-songlists.json` 是預設線上歌單，會把教會詩歌、80年代流行曲、90年代流行曲和近25年熱門新歌一併載入
 
 ## 玩家手機
 
@@ -104,6 +104,7 @@ http://localhost:5173
 - `hymns.json`：教會詩歌
 - `songlists/pop-80s.json`：80年代流行曲
 - `songlists/pop-90s.json`：90年代流行曲
+- `songlists/pop-recent-25.json`：近25年熱門新歌
 - `songlists/pop-all.json`：全部流行曲
 
 目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、玻璃海樂團 Worship Nations、讚美之泉 Stream of Praise、建道神學院新祢呈敬拜隊、泥土音樂 Clay Music、約書亞樂團 Joshua Band、團契遊樂園、HKACM 香港基督徒音樂事工協會、YouTube、流行曲題庫。其他來源會先標示為「待審」。

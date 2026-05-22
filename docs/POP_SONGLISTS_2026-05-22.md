@@ -1,5 +1,7 @@
 # 流行曲 YouTube 歌單 - 2026-05-22
 
+> 2026-05-23 更新：另已新增 `songlists/pop-recent-25.json`（近25年熱門新歌 92 首），`songlists/pop-all.json` 已擴充至 192 首，`songlists/all-songlists.json` 已擴充至 565 首。詳見 `docs/POP_RECENT_25_SONGLIST_2026-05-23.md`。
+
 ## 摘要
 
 - 80年代流行曲：50 首

@@ -8,6 +8,36 @@ const CLOUD_LIBRARY_OPTIONS = [
     url: "./songlists/all-songlists.json",
     loadedMessage: "已載入全部歌單",
   },
+  {
+    id: "hymns",
+    label: "教會詩歌",
+    url: "./hymns.json",
+    loadedMessage: "已載入教會詩歌",
+  },
+  {
+    id: "recentPop25",
+    label: "近25年熱門新歌",
+    url: "./songlists/pop-recent-25.json",
+    loadedMessage: "已載入近25年熱門新歌",
+  },
+  {
+    id: "allPop",
+    label: "全部流行曲",
+    url: "./songlists/pop-all.json",
+    loadedMessage: "已載入全部流行曲",
+  },
+  {
+    id: "pop80s",
+    label: "80年代流行曲",
+    url: "./songlists/pop-80s.json",
+    loadedMessage: "已載入80年代流行曲",
+  },
+  {
+    id: "pop90s",
+    label: "90年代流行曲",
+    url: "./songlists/pop-90s.json",
+    loadedMessage: "已載入90年代流行曲",
+  },
 ];
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
@@ -1728,7 +1758,7 @@ function populateCloudLibrarySelect() {
     option.textContent = library.label;
     els.cloudLibrarySelect.append(option);
   });
-  els.cloudLibrarySelect.value = state.cloudLibraryId;
+  els.cloudLibrarySelect.value = cloudLibraryById(state.cloudLibraryId).id;
 }
 
 function cloudLibraryById(libraryId) {

@@ -707,6 +707,27 @@ select:focus {
   margin: 0;
 }
 
+.cloud-library-panel {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.cloud-library-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.cloud-library-controls label {
+  grid-column: 1 / -1;
+}
+
+.cloud-library-controls select {
+  min-width: 0;
+}
+
 .library-drawer {
   margin-top: 16px;
   border-top: 1px solid var(--line);
