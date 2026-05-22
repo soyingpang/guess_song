@@ -100,6 +100,7 @@ const state = {
   playStartMode: "beginning",
   currentClipStart: CLIP_START_SECONDS,
   playEndsAt: 0,
+  playbackRevision: 0,
   currentWord: "",
   currentQuestionId: "",
   buzzWinnerId: "",
@@ -425,6 +426,7 @@ function handlePlayerMessage(connection, message) {
 
   if (message.type === "mic-start") {
     player.micActive = true;
+    keepPlaybackRunningDuringMic();
     renderPlayers();
     publishDisplayState();
     return;
@@ -479,6 +481,7 @@ function setupPlayerMicCall(call) {
   call.on("stream", (stream) => {
     player.micStream = stream;
     player.micActive = true;
+    keepPlaybackRunningDuringMic();
     setResult("玩家開咪", `${player.name} 正在說話`, "");
     forwardPlayerMicToDisplays(player);
     forwardPlayerMicToRemotePlayers(player);
@@ -518,6 +521,7 @@ function endPlayerMic(playerId, options = {}) {
   }
 
   if (render) {
+    keepPlaybackRunningDuringMic();
     renderPlayers();
     publishDisplayState();
   }
@@ -954,6 +958,26 @@ function pauseHostPlaybackFrame() {
 
   const frame = els.playerHost.querySelector("iframe");
   frame?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "pauseVideo", args: [] }), "*");
+}
+
+function keepPlaybackRunningDuringMic() {
+  if (!state.currentSong || !state.isPlaying) return;
+
+  state.playbackRevision += 1;
+  resumeHostPlaybackFrame();
+}
+
+function resumeHostPlaybackFrame() {
+  const media = els.playerHost.firstElementChild;
+  if (!media) return;
+
+  if (state.currentSong?.audioUrl) {
+    media.play?.().catch(() => {});
+    return;
+  }
+
+  const frame = els.playerHost.querySelector("iframe");
+  frame?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "playVideo", args: [] }), "*");
 }
 
 function judgeBuzzWinner(isCorrect) {
@@ -2215,6 +2239,7 @@ function buildDisplayState() {
     frontReady: state.frontReady,
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
+    playbackRevision: state.playbackRevision,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
     teamScores: { ...state.teamScores },
@@ -2265,6 +2290,7 @@ function buildPlayerState(player) {
     frontReady: state.frontReady,
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
+    playbackRevision: state.playbackRevision,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
     playerName: player.name,

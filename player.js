@@ -1095,6 +1095,7 @@ function renderRemoteMedia(game) {
   const playbackKey = [
     remoteShouldPlay(game) ? "play" : "pause",
     Number(game.playEndsAt || 0),
+    Number(game.playbackRevision || 0),
     game.fullPlayback ? "full" : "clip",
     game.revealed ? "revealed" : "blind",
   ].join(":");

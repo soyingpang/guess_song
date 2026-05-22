@@ -45,6 +45,7 @@ const els = {
 
 let latestFrameKey = "";
 let latestPlaybackState = null;
+let latestPlaybackRevision = 0;
 let latestRemoteState = null;
 let currentDisplayState = null;
 const stageMic = {
@@ -412,6 +413,7 @@ function renderFrame(state) {
   }
   latestFrameKey = frameKey;
   latestPlaybackState = Boolean(state.isPlaying);
+  latestPlaybackRevision = Number(state.playbackRevision || 0);
 
   if (state.audioUrl) {
     renderLocalMedia(state);
@@ -451,8 +453,10 @@ function isVideoMediaUrl(url) {
 
 function syncFramePlayback(state) {
   const shouldPlay = Boolean(state.isPlaying);
-  if (latestPlaybackState === shouldPlay) return;
+  const playbackRevision = Number(state.playbackRevision || 0);
+  if (latestPlaybackState === shouldPlay && latestPlaybackRevision === playbackRevision) return;
   latestPlaybackState = shouldPlay;
+  latestPlaybackRevision = playbackRevision;
 
   const media = els.playerHost.firstElementChild;
   if (!media) return;
