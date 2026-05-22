@@ -1,4 +1,4 @@
-const STORAGE_KEY = "guess-song-library-v5";
+const STORAGE_KEY = "guess-song-library-v6";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const DEFAULT_CLOUD_LIBRARY_ID = "allSonglists";
 const CLOUD_LIBRARY_OPTIONS = [

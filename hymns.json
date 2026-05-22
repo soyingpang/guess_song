@@ -5,10 +5,10 @@
     "videoId": "b-749mZx8fU",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "內巷 | withinlane / YouTube",
     "hint": "TPMAC 近5年程序表出現 50 次；YouTube：[ 人們需要主  ] 中文歌詞字幕",
-    "number": "001",
+    "number": "HYMN-001",
     "language": "中文"
   },
   {
@@ -17,10 +17,10 @@
     "videoId": "P0rEipirPzs",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Tom Luk / YouTube",
     "hint": "TPMAC 近5年程序表出現 9 次；YouTube：主賜福你 lyrics // ACM // full version",
-    "number": "002",
+    "number": "HYMN-002",
     "language": "中文"
   },
   {
@@ -29,10 +29,10 @@
     "videoId": "IbU42dENe2M",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Tom Wan / YouTube",
     "hint": "TPMAC 近5年程序表出現 7 次；YouTube：感恩祭",
-    "number": "003",
+    "number": "HYMN-003",
     "language": "中文"
   },
   {
@@ -41,10 +41,10 @@
     "videoId": "V1LRpbz25SY",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "新心音樂事工 New Heart Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 7 次；YouTube：你真偉大",
-    "number": "004",
+    "number": "HYMN-004",
     "language": "中文"
   },
   {
@@ -53,10 +53,10 @@
     "videoId": "7x7Ve4jBmHQ",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "維珍妮亞 / YouTube",
     "hint": "TPMAC 近5年程序表出現 7 次；YouTube：耶和華永遠至高",
-    "number": "005",
+    "number": "HYMN-005",
     "language": "中文"
   },
   {
@@ -65,10 +65,10 @@
     "videoId": "zwdR8KM80nk",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "J.Praise青年音樂事工 / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：世界之光",
-    "number": "006",
+    "number": "HYMN-006",
     "language": "中文"
   },
   {
@@ -77,10 +77,10 @@
     "videoId": "rKZ5bx-kdZM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "基恩敬拜 Amazing Grace Worship / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：傳揚祢大愛 Proclaiming Your Magnificent Love",
-    "number": "007",
+    "number": "HYMN-007",
     "language": "中文"
   },
   {
@@ -89,10 +89,10 @@
     "videoId": "zYHUxoykI7w",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "生命河靈糧堂 / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：成為神蹟的器皿",
-    "number": "008",
+    "number": "HYMN-008",
     "language": "中文"
   },
   {
@@ -101,10 +101,10 @@
     "videoId": "axJlfLJGwQk",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "777Worship 完全的敬拜 | 敬拜中裡合一 | Unity in Worship / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：我們成為一家人",
-    "number": "009",
+    "number": "HYMN-009",
     "language": "中文"
   },
   {
@@ -113,10 +113,10 @@
     "videoId": "9sxo44elABI",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Teresa古今詩歌Hymns♬ / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：【教會獨一的根基】The Church's One Foundation│詞：S. J. Stone│曲：S. S.Wesley│鋼琴：Julie Ann Kitchen│頌唱：Teresa H.",
-    "number": "010",
+    "number": "HYMN-010",
     "language": "中文"
   },
   {
@@ -125,10 +125,10 @@
     "videoId": "v5wnpajW6jo",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：【榮耀的呼召 Glorious Calling】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20)",
-    "number": "011",
+    "number": "HYMN-011",
     "language": "中文"
   },
   {
@@ -137,10 +137,10 @@
     "videoId": "vTG-LQPFtRg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "More of Jesus Worship (更多有耶穌的敬拜) / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：求祢以真理和愛引導我 | 同心圓 (TWS 敬拜者使團) | 歌詞MV",
-    "number": "012",
+    "number": "HYMN-012",
     "language": "中文"
   },
   {
@@ -149,10 +149,10 @@
     "videoId": "uE_HAcwlxL8",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "宇宙光百人大合唱 / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：美哉主耶穌",
-    "number": "013",
+    "number": "HYMN-013",
     "language": "中文"
   },
   {
@@ -161,10 +161,10 @@
     "videoId": "_I4wvMSOiw8",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：【讚美耶和華  Praise The Lord】官方歌詞版MV (Official Lyrics MV) - 讚美之泉台語敬拜讚美 (1)",
-    "number": "014",
+    "number": "HYMN-014",
     "language": "中文"
   },
   {
@@ -173,10 +173,10 @@
     "videoId": "9AsBFAfnUjM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Fiona Hui / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：全地至高是我主",
-    "number": "015",
+    "number": "HYMN-015",
     "language": "中文"
   },
   {
@@ -185,10 +185,10 @@
     "videoId": "ycl3KkFSe6U",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "sensorMusic / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：同證主恩 sensorMusic (Demo)｜ 原創詩歌 粵語詩歌 詩歌敬拜",
-    "number": "016",
+    "number": "HYMN-016",
     "language": "中文"
   },
   {
@@ -197,10 +197,10 @@
     "videoId": "WCwTGlsfl5c",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "信•望•愛詩歌頻道 - Faith·Hope·Love Poetry Channel / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：角聲使團 因祢榮耀",
-    "number": "017",
+    "number": "HYMN-017",
     "language": "中文"
   },
   {
@@ -209,10 +209,10 @@
     "videoId": "xn0llwzGmTE",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "福茂唱片 / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：范瑋琪 + 蘇以樂 + 蘇以行 + 蔡語涵 + 蔡岳辰 - 活出愛 Love Life (官方歌詞版) - 『LOVE LIFE』公益主題曲",
-    "number": "018",
+    "number": "HYMN-018",
     "language": "中文"
   },
   {
@@ -221,10 +221,10 @@
     "videoId": "mbnRYggcPpw",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Isaac Lam / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：祢的信實廣大｜會眾詩歌｜台北懷恩堂主日崇拜",
-    "number": "019",
+    "number": "HYMN-019",
     "language": "中文"
   },
   {
@@ -233,10 +233,10 @@
     "videoId": "zniTLYgOw34",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Penelope Chan / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：稱謝復活主  普天頌讚新修訂版第273首",
-    "number": "020",
+    "number": "HYMN-020",
     "language": "中文"
   },
   {
@@ -245,10 +245,10 @@
     "videoId": "XfEgUshJAmg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "7davidpan / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：【稱頌上主】",
-    "number": "021",
+    "number": "HYMN-021",
     "language": "中文"
   },
   {
@@ -257,10 +257,10 @@
     "videoId": "pw5elBqhQMA",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "傳統聖詩 Traditional Hymns / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：聖哉三一 Holy Holy Holy ｜生命聖詩5（國語）",
-    "number": "022",
+    "number": "HYMN-022",
     "language": "中文"
   },
   {
@@ -269,10 +269,10 @@
     "videoId": "WehSVicC2M8",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Release - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：興起發光",
-    "number": "023",
+    "number": "HYMN-023",
     "language": "中文"
   },
   {
@@ -281,10 +281,10 @@
     "videoId": "PZhCPVB0dp8",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "RainbowPromise / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：萬代君主",
-    "number": "024",
+    "number": "HYMN-024",
     "language": "中文"
   },
   {
@@ -293,10 +293,10 @@
     "videoId": "KE8X-sG64nk",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：【阿爸天父 Abba Father】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (13)",
-    "number": "025",
+    "number": "HYMN-025",
     "language": "中文"
   },
   {
@@ -305,10 +305,10 @@
     "videoId": "a18vlQLgoCc",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "HKACM - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：除祢以外",
-    "number": "026",
+    "number": "HYMN-026",
     "language": "中文"
   },
   {
@@ -317,10 +317,10 @@
     "videoId": "2tX58dM4n1s",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Release - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：以愛還愛",
-    "number": "027",
+    "number": "HYMN-027",
     "language": "中文"
   },
   {
@@ -329,10 +329,10 @@
     "videoId": "u2M-zzt1Whc",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【何等恩典 How Could It Be】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14)",
-    "number": "028",
+    "number": "HYMN-028",
     "language": "中文"
   },
   {
@@ -341,10 +341,10 @@
     "videoId": "5oTLWdZ6m58",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "內巷 | withinlane / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：[ 在主前靜默 Be still for the presence of the Lord ] - Cover ft. 簡愛 Christine Chien",
-    "number": "029",
+    "number": "HYMN-029",
     "language": "中文"
   },
   {
@@ -353,10 +353,10 @@
     "videoId": "4qL_VVKRMMY",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "刘文良 - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：奉獻什麼",
-    "number": "030",
+    "number": "HYMN-030",
     "language": "中文"
   },
   {
@@ -365,10 +365,10 @@
     "videoId": "kNnZXzsNYPo",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【從這代到那代 From Now till Evermore】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19)",
-    "number": "031",
+    "number": "HYMN-031",
     "language": "中文"
   },
   {
@@ -377,10 +377,10 @@
     "videoId": "YaJ5gof0YNQ",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【恩典之路 The Path of Grace】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14)",
-    "number": "032",
+    "number": "HYMN-032",
     "language": "中文"
   },
   {
@@ -389,10 +389,10 @@
     "videoId": "Muq6RNaLjgU",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【愛中相遇 See You Face to Face】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19)",
-    "number": "033",
+    "number": "HYMN-033",
     "language": "中文"
   },
   {
@@ -401,10 +401,10 @@
     "videoId": "QHxdGXUkCFQ",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Kennex in Jesus / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：主愛如繁星 - 粵語詩歌 【官方歌詞版 MV】",
-    "number": "034",
+    "number": "HYMN-034",
     "language": "中文"
   },
   {
@@ -413,10 +413,10 @@
     "videoId": "SLnz3WWVAOA",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "天韻合唱團 Heavenly Melody / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【主愛有多少】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV",
-    "number": "035",
+    "number": "HYMN-035",
     "language": "中文"
   },
   {
@@ -425,10 +425,10 @@
     "videoId": "Q8PtoXcgfMc",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "J A piano hymns / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：教會的主 [ 純音樂 cover | 歌詞 ]",
-    "number": "036",
+    "number": "HYMN-036",
     "language": "中文"
   },
   {
@@ -437,10 +437,10 @@
     "videoId": "EpVDF3OAY68",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Heaven / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：榮耀歸與祂",
-    "number": "037",
+    "number": "HYMN-037",
     "language": "中文"
   },
   {
@@ -449,10 +449,10 @@
     "videoId": "9VisPP2HLtc",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Zonder's Music / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：每一天",
-    "number": "038",
+    "number": "HYMN-038",
     "language": "中文"
   },
   {
@@ -461,10 +461,10 @@
     "videoId": "OcfKXc6pItA",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "GOOD TV DAILY / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：天堂敬拜~獻上活祭（單曲）",
-    "number": "039",
+    "number": "HYMN-039",
     "language": "中文"
   },
   {
@@ -473,10 +473,10 @@
     "videoId": "_8JkN8A5ukc",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Teresa古今詩歌Hymns♬ / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【真神之愛】The Love of God│《生命聖詩》 第41首│詞曲 : Frederick M. Lehman│鋼琴：gracehome251│頌唱：Teresa Huang",
-    "number": "040",
+    "number": "HYMN-040",
     "language": "中文"
   },
   {
@@ -485,10 +485,10 @@
     "videoId": "TVHWJcJN4xg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Tony Xu / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：祂是耶和華",
-    "number": "041",
+    "number": "HYMN-041",
     "language": "中文"
   },
   {
@@ -497,10 +497,10 @@
     "videoId": "e-oDTeztqyE",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：神坐著為王",
-    "number": "042",
+    "number": "HYMN-042",
     "language": "中文"
   },
   {
@@ -509,10 +509,10 @@
     "videoId": "9cSuojDc4iw",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "全人敬拜 Holistic Worship / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：你是神",
-    "number": "043",
+    "number": "HYMN-043",
     "language": "中文"
   },
   {
@@ -521,10 +521,10 @@
     "videoId": "kWvRXBLI0uk",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【耶穌 耶穌 Jesus, Jesus】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (10)",
-    "number": "044",
+    "number": "HYMN-044",
     "language": "中文"
   },
   {
@@ -533,10 +533,10 @@
     "videoId": "rPidR2UgZHo",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "SCBC Choir・士嘉堡華人浸信會詩班・Toronto / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：萬邦之歌",
-    "number": "045",
+    "number": "HYMN-045",
     "language": "中文"
   },
   {
@@ -545,10 +545,10 @@
     "videoId": "zIxxulCf9hg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "elauwong2 / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：衷心稱頌上主 ( 粵語，練習版  )",
-    "number": "046",
+    "number": "HYMN-046",
     "language": "中文"
   },
   {
@@ -557,10 +557,10 @@
     "videoId": "lnAPNXfE16Q",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "wah yeung / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：詩歌音樂分享:遍地細說主奇妙。",
-    "number": "047",
+    "number": "HYMN-047",
     "language": "中文"
   },
   {
@@ -569,10 +569,10 @@
     "videoId": "j2D4P98oXW0",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "All Nations worship & praise Ministries - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：頌讚全能上帝",
-    "number": "048",
+    "number": "HYMN-048",
     "language": "中文"
   },
   {
@@ -581,10 +581,10 @@
     "videoId": "9Qjy1gKQ4dA",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Vivian Huang / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：願你的話",
-    "number": "049",
+    "number": "HYMN-049",
     "language": "中文"
   },
   {
@@ -593,10 +593,10 @@
     "videoId": "WD8QpzZYzrk",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Release - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：高舉尊貴的祢",
-    "number": "050",
+    "number": "HYMN-050",
     "language": "中文"
   },
   {
@@ -605,10 +605,10 @@
     "videoId": "vLa1kd3yBxI",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "全人敬拜 Holistic Worship / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：世上最好的愛",
-    "number": "051",
+    "number": "HYMN-051",
     "language": "中文"
   },
   {
@@ -617,10 +617,10 @@
     "videoId": "Bm3j7cxqGP8",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Worship Music-AM  / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：仍能讚美",
-    "number": "052",
+    "number": "HYMN-052",
     "language": "中文"
   },
   {
@@ -629,10 +629,10 @@
     "videoId": "ozRtnVOvYvM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "m2kmusic / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：『以感恩為祭 』 團契遊樂園5 應許（基督教詩歌）",
-    "number": "053",
+    "number": "HYMN-053",
     "language": "中文"
   },
   {
@@ -641,10 +641,10 @@
     "videoId": "gB3vpIAYhIM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "777Worship 完全的敬拜 | 敬拜中裡合一 | Unity in Worship / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：以馬內利",
-    "number": "054",
+    "number": "HYMN-054",
     "language": "中文"
   },
   {
@@ -653,10 +653,10 @@
     "videoId": "Iz477EjWNX4",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "HKACM Official 香港基督徒音樂事工協會 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【傳承使命】Official Lyric Video - 官方完整版 (大使命)",
-    "number": "055",
+    "number": "HYMN-055",
     "language": "中文"
   },
   {
@@ -665,10 +665,10 @@
     "videoId": "AH-i_-I1PQg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Tze Bun Lee / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：充滿主馨香",
-    "number": "056",
+    "number": "HYMN-056",
     "language": "中文"
   },
   {
@@ -677,10 +677,10 @@
     "videoId": "qFYsELkwt5E",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Heaven / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：同領主餐",
-    "number": "057",
+    "number": "HYMN-057",
     "language": "中文"
   },
   {
@@ -689,10 +689,10 @@
     "videoId": "cMFGl4jAp_w",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "9234 san / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：唯有耶穌",
-    "number": "058",
+    "number": "HYMN-058",
     "language": "中文"
   },
   {
@@ -701,10 +701,10 @@
     "videoId": "_YpwaY6KY_Y",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：在你手中",
-    "number": "059",
+    "number": "HYMN-059",
     "language": "中文"
   },
   {
@@ -713,10 +713,10 @@
     "videoId": "ZIi6z99ojQE",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "潘敏珊, 天天頌揚 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：主如明亮晨星（國語詩歌）",
-    "number": "060",
+    "number": "HYMN-060",
     "language": "中文"
   },
   {
@@ -725,10 +725,10 @@
     "videoId": "0YJZUyVOQVY",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【寶貴十架 Precious Cross】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11P)",
-    "number": "061",
+    "number": "HYMN-061",
     "language": "中文"
   },
   {
@@ -737,10 +737,10 @@
     "videoId": "Pfp-sJRc6M4",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "彩虹約定 - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：幽谷讚美聲",
-    "number": "062",
+    "number": "HYMN-062",
     "language": "中文"
   },
   {
@@ -749,10 +749,10 @@
     "videoId": "p4DocAb4LBM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "衛理公會城中教會詩班 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：從罪灰走向活水",
-    "number": "063",
+    "number": "HYMN-063",
     "language": "中文"
   },
   {
@@ -761,10 +761,10 @@
     "videoId": "aphnxDaW39Q",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "iTabernacle.net會幕文化 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【詩歌】愛就是",
-    "number": "064",
+    "number": "HYMN-064",
     "language": "中文"
   },
   {
@@ -773,10 +773,10 @@
     "videoId": "kvrRtRe9AoU",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【我們的神 You Are Our God】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "065",
+    "number": "HYMN-065",
     "language": "中文"
   },
   {
@@ -785,10 +785,10 @@
     "videoId": "0CoDTJ5HnSw",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：我心所慕(這是天父世界)",
-    "number": "066",
+    "number": "HYMN-066",
     "language": "中文"
   },
   {
@@ -797,10 +797,10 @@
     "videoId": "c2zgA20Bl6o",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "玻璃海樂團 - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：我是你愛子",
-    "number": "067",
+    "number": "HYMN-067",
     "language": "中文"
   },
   {
@@ -809,10 +809,10 @@
     "videoId": "eJPxfrXs7y0",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美的時刻 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：我要感謝上主（粵語詩歌）",
-    "number": "068",
+    "number": "HYMN-068",
     "language": "中文"
   },
   {
@@ -821,10 +821,10 @@
     "videoId": "KgnklCi-k-Q",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "CantonHymn恢復粵語詩歌敬拜文化運動 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：我願為祢去 - 小羊詩歌（官方粵語核准版 CantonHymn Demo Cover）",
-    "number": "069",
+    "number": "HYMN-069",
     "language": "中文"
   },
   {
@@ -833,10 +833,10 @@
     "videoId": "UbspCrEwMDA",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "上敬拜 Shang Worshippers / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：上敬拜Shang Worshippers -主我高舉你的名 Lord I Lift Your Name On High（f.t 黃美珍JANE / 劉文瀚Yusof）",
-    "number": "070",
+    "number": "HYMN-070",
     "language": "中文"
   },
   {
@@ -845,10 +845,10 @@
     "videoId": "BO5EyHp-8vM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "天韻合唱團 Heavenly Melody / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【聖哉 聖哉 聖哉/擁戴我主為王】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV",
-    "number": "071",
+    "number": "HYMN-071",
     "language": "中文"
   },
   {
@@ -857,10 +857,10 @@
     "videoId": "7zqwxDsvITQ",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "天韻合唱團 Heavenly Melody / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【祢是我一切】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV",
-    "number": "072",
+    "number": "HYMN-072",
     "language": "中文"
   },
   {
@@ -869,10 +869,10 @@
     "videoId": "lspZOQhpu30",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【愛祢，是我一生的呼召 I Live My Life To Love You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "073",
+    "number": "HYMN-073",
     "language": "中文"
   },
   {
@@ -881,10 +881,10 @@
     "videoId": "Ta9_ny2SpWg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Worship Music-AM  / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：是祢先愛我",
-    "number": "074",
+    "number": "HYMN-074",
     "language": "中文"
   },
   {
@@ -893,10 +893,10 @@
     "videoId": "CIxO_bbfy3c",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "香港聖詩會 Hong Kong Hymn Society / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：晝夜思念神律法 Blessed is the Man - 2019 聖詩頌唱會「詩‧人」",
-    "number": "075",
+    "number": "HYMN-075",
     "language": "中文"
   },
   {
@@ -905,10 +905,10 @@
     "videoId": "evguKWXIbjM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之心 Singing Hearts / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：有一位神",
-    "number": "076",
+    "number": "HYMN-076",
     "language": "中文"
   },
   {
@@ -917,10 +917,10 @@
     "videoId": "2KM6F_vQSD0",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "基恩敬拜 Amazing Grace Worship / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：《有祢同行》With You by my side - 基恩敬拜AGWMM official MV",
-    "number": "077",
+    "number": "HYMN-077",
     "language": "中文"
   },
   {
@@ -929,10 +929,10 @@
     "videoId": "9y9elbi43HM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美的時刻 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：榮耀的王成肉身（粵語詩歌）",
-    "number": "078",
+    "number": "HYMN-078",
     "language": "中文"
   },
   {
@@ -941,10 +941,10 @@
     "videoId": "jPNcVV2TSCs",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Penelope Chan / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：永活基督  普天頌讚新修訂版第274首  吳仲廉",
-    "number": "079",
+    "number": "HYMN-079",
     "language": "中文"
   },
   {
@@ -953,10 +953,10 @@
     "videoId": "lsTdTiXfVBg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "香港聖詩會 Hong Kong Hymn Society / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：永生神就是靈 Immortal, Invisible, God Only Wise - 第二屆聖詩頌唱會「耶穌基督我心所信」",
-    "number": "080",
+    "number": "HYMN-080",
     "language": "中文"
   },
   {
@@ -965,10 +965,10 @@
     "videoId": "-ZnOCvRnwaQ",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【永遠尊貴 All Honor To You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A)",
-    "number": "081",
+    "number": "HYMN-081",
     "language": "中文"
   },
   {
@@ -977,10 +977,10 @@
     "videoId": "XnJyM4VGaFc",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "傳統聖詩 Traditional Hymns / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：主治萬方 Jesus Shall Reign Where'er the Sun｜生命聖詩16（國語）",
-    "number": "082",
+    "number": "HYMN-082",
     "language": "中文"
   },
   {
@@ -989,10 +989,10 @@
     "videoId": "b5nij6n8_JM",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "團契遊樂園 - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：為何揀選我",
-    "number": "083",
+    "number": "HYMN-083",
     "language": "中文"
   },
   {
@@ -1001,10 +1001,10 @@
     "videoId": "0IGQ_LRTmmk",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Teresa古今詩歌Hymns♬ / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【為我受傷】Wounded for me│詞：Rober & Ovens│曲：William G. J. Ovens│鋼琴：朱素雲│頌唱：Teresa Huang│#基督教傳統詩歌 #受難節復活節詩歌",
-    "number": "084",
+    "number": "HYMN-084",
     "language": "中文"
   },
   {
@@ -1013,10 +1013,10 @@
     "videoId": "BDIPIamUqEE",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "ekmanson / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：純·敬拜隊：真光普照",
-    "number": "085",
+    "number": "HYMN-085",
     "language": "中文"
   },
   {
@@ -1025,10 +1025,10 @@
     "videoId": "RdoeAXXld10",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "touchmusichk - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：祢是我神",
-    "number": "086",
+    "number": "HYMN-086",
     "language": "中文"
   },
   {
@@ -1037,10 +1037,10 @@
     "videoId": "a3DiWZScTSU",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "611 Worship 敬拜 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：主給我子女名份/ 盡心盡性讚美祂",
-    "number": "087",
+    "number": "HYMN-087",
     "language": "中文"
   },
   {
@@ -1049,10 +1049,10 @@
     "videoId": "3VWBvV6yisI",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Teresa / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：美哉錫安",
-    "number": "088",
+    "number": "HYMN-088",
     "language": "中文"
   },
   {
@@ -1061,10 +1061,10 @@
     "videoId": "-KNbJjsfGIo",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "栽蒔 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：耶和華以勒",
-    "number": "089",
+    "number": "HYMN-089",
     "language": "中文"
   },
   {
@@ -1073,10 +1073,10 @@
     "videoId": "Za0hLucl6fI",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "宇宙光百人大合唱 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：耶穌奇妙的救恩",
-    "number": "090",
+    "number": "HYMN-090",
     "language": "中文"
   },
   {
@@ -1085,10 +1085,10 @@
     "videoId": "6vAILBz8cgo",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "活水囝仔 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【 耶穌愛我 Jesus Loves Me】- 活水囝仔兒童敬拜舞蹈",
-    "number": "091",
+    "number": "HYMN-091",
     "language": "中文"
   },
   {
@@ -1097,10 +1097,10 @@
     "videoId": "YE34QiLu1sg",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Jennifer Poon / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：讚之歌_耶穌配得至聖尊榮",
-    "number": "092",
+    "number": "HYMN-092",
     "language": "中文"
   },
   {
@@ -1109,10 +1109,10 @@
     "videoId": "dYHsbERCqTU",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Taipei Trinity / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：委身詩班20190210主日獻詩 聖名榮光",
-    "number": "093",
+    "number": "HYMN-093",
     "language": "中文"
   },
   {
@@ -1121,10 +1121,10 @@
     "videoId": "WiQbzG7Tew8",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【無伴奏合唱 Acapella】聖善夜 O Holy Night｜ 讚美之泉",
-    "number": "094",
+    "number": "HYMN-094",
     "language": "中文"
   },
   {
@@ -1133,10 +1133,10 @@
     "videoId": "_l7d2uvAXKE",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "影音使團有限公司 The Media Evangelism Limited / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：至高尊貴的祢",
-    "number": "095",
+    "number": "HYMN-095",
     "language": "中文"
   },
   {
@@ -1145,10 +1145,10 @@
     "videoId": "OxF1O_xboSA",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "基恩敬拜 Amazing Grace Worship / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：萬國萬民讚美主 - 2018 基恩敬拜禱告更新｜詩班獻詩",
-    "number": "096",
+    "number": "HYMN-096",
     "language": "中文"
   },
   {
@@ -1157,10 +1157,10 @@
     "videoId": "gdjd5T78rBc",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "m2kmusic / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：『薪火永傳 』 團契遊樂園3 薪火永傳（基督教詩歌）",
-    "number": "097",
+    "number": "HYMN-097",
     "language": "中文"
   },
   {
@@ -1169,10 +1169,10 @@
     "videoId": "yiApkyNmE5Y",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "SongsOfAscents上行詩 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：生命聖詩346 | 要忠心 | Be True  (We are going forth from the school of Jesus)",
-    "number": "098",
+    "number": "HYMN-098",
     "language": "中文"
   },
   {
@@ -1181,10 +1181,10 @@
     "videoId": "4n8UYvrGX44",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Release - Topic / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：讓我感恩",
-    "number": "099",
+    "number": "HYMN-099",
     "language": "中文"
   },
   {
@@ -1193,10 +1193,370 @@
     "videoId": "YRrDoIw0ZuA",
     "start": 0,
     "duration": 60,
-    "category": "宣道會大埔堂近年程序表",
+    "category": "教會詩歌",
     "source": "Jennifer Poon / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：青年新歌_讚美我天父",
-    "number": "100",
+    "number": "HYMN-100",
+    "language": "中文"
+  },
+  {
+    "title": "至聖上帝",
+    "aliases": [],
+    "videoId": "hS3fjCIHHvs",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "台北聖樂團 Taipei Oratorio Choir  |  台北聖樂推廣協會  / YouTube",
+    "hint": "TPMAC 近5年程序表出現 238 次；YouTube：至聖上帝真道 Cantique de Jean Racine｜台北聖樂團 ｜台語詩歌",
+    "number": "HYMN-101",
+    "language": "中文"
+  },
+  {
+    "title": "分享主愛",
+    "aliases": [],
+    "videoId": "mF5b6fWZV9Y",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "終極敬拜WorshipInHongKong / YouTube",
+    "hint": "TPMAC 近5年程序表出現 114 次；YouTube：分享主愛﹙粵語﹚伍偉基 Let There Be Love",
+    "number": "HYMN-102",
+    "language": "中文"
+  },
+  {
+    "title": "遵主教導",
+    "aliases": [],
+    "videoId": "WJm719-bz_I",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "Iglesia Cristiana China / YouTube",
+    "hint": "TPMAC 近5年程序表出現 43 次；YouTube：委身遵主教導而行 • Pon en práctica las enseñanzas del Señor",
+    "number": "HYMN-103",
+    "language": "中文"
+  },
+  {
+    "title": "慈愛長存",
+    "aliases": [],
+    "videoId": "SIVcv8xcJmQ",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "Greenee's Original Creation Storytelling 青草兒原創故事坊 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 3 次；YouTube：《慈愛長存》 (粵) 原創詩歌",
+    "number": "HYMN-104",
+    "language": "中文"
+  },
+  {
+    "title": "遠超萬名之名",
+    "aliases": [],
+    "videoId": "n-8i5e3Sdok",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "藍影 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 3 次；YouTube：遠超萬名之名",
+    "number": "HYMN-105",
+    "language": "中文"
+  },
+  {
+    "title": "陪我走過春夏秋冬",
+    "aliases": [],
+    "videoId": "AjL3gfY9SOA",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "joehuang90 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 3 次；YouTube：陪我走過春夏秋冬-小羊詩歌(一粒麥子)",
+    "number": "HYMN-106",
+    "language": "中文"
+  },
+  {
+    "title": "預苦四十晝夜",
+    "aliases": [],
+    "videoId": "Wvxe1XpvvwA",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "香港聖樂促進會 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 3 次；YouTube：齊來學聖詩 (10)：預苦四十晝夜 (普天頌讚新修訂本第209首)",
+    "number": "HYMN-107",
+    "language": "中文"
+  },
+  {
+    "title": "一生敬拜祢",
+    "aliases": [],
+    "videoId": "nGzADKIDf4A",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【一生敬拜祢 All the Days of My Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (22)",
+    "number": "HYMN-108",
+    "language": "中文"
+  },
+  {
+    "title": "世界最美的聲音",
+    "aliases": [],
+    "videoId": "oO-dutjvxLY",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "同心圓敬拜福音平台 One Circle / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：同心圓 |《世界最美的聲音(奇異恩典)》TWS 敬拜者使團「HEART」Live 專輯",
+    "number": "HYMN-109",
+    "language": "中文"
+  },
+  {
+    "title": "這是天父世界",
+    "aliases": [],
+    "videoId": "_1HnQN1OlPE",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "台北聖樂團 Taipei Oratorio Choir  |  台北聖樂推廣協會  / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：這是天父世界｜This is my Father's world ｜台北聖樂團｜指揮 李珮琨｜伴奏 盧主芬｜台灣神學院｜中英歌詞",
+    "number": "HYMN-110",
+    "language": "中文"
+  },
+  {
+    "title": "靠近十架",
+    "aliases": [],
+    "videoId": "bb8hzK4Dmtc",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "Teresa古今詩歌Hymns♬ / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【靠近十架】Near the Cross│詞：Fanny Jane Crosby│曲：William Howard Doane│鋼琴：Julie Ann Kitchen│頌唱：Teresa Huang",
+    "number": "HYMN-111",
+    "language": "中文"
+  },
+  {
+    "title": "願祢崇高",
+    "aliases": [],
+    "videoId": "kX0u2irJc4c",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "Mii / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：願你崇高－天韻詩歌",
+    "number": "HYMN-112",
+    "language": "中文"
+  },
+  {
+    "title": "上主的國",
+    "aliases": [],
+    "videoId": "A5Wb91e3stA",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "台中泰澤歌詠祈禱團體 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：Taizé 泰澤 - The kingdom of God 上主的國  《110》 ○  20150619_台中南屯 (Taize/taize)",
+    "number": "HYMN-113",
+    "language": "中文"
+  },
+  {
+    "title": "世界最美聲音",
+    "aliases": [],
+    "videoId": "gg-W3l8S4Bc",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "Ceci Sum / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：世界最美聲音 (with harmony line)",
+    "number": "HYMN-114",
+    "language": "中文"
+  },
+  {
+    "title": "亞伯拉罕的主",
+    "aliases": [],
+    "videoId": "Mh8_sBMO12k",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "香港聖樂促進會 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【聖詩薈萃】亞伯拉罕的主(粵) - 普天頌讚新修訂本39首",
+    "number": "HYMN-115",
+    "language": "中文"
+  },
+  {
+    "title": "人人都應該知道",
+    "aliases": [],
+    "videoId": "ZNP7eI_666w",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "Edison團契詩歌 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：D22人人都應該知道",
+    "number": "HYMN-116",
+    "language": "中文"
+  },
+  {
+    "title": "人算甚麼",
+    "aliases": [],
+    "videoId": "_nILV6V0NSc",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "GraceSong79 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：人算甚麼",
+    "number": "HYMN-117",
+    "language": "中文"
+  },
+  {
+    "title": "仍然相信祢",
+    "aliases": [],
+    "videoId": "VzmM9I0KqUM",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "HKACM Official 香港基督徒音樂事工協會 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【仍然相信祢 / Still Believing】HKACM Official Music Video",
+    "number": "HYMN-118",
+    "language": "中文"
+  },
+  {
+    "title": "以愛奉獻",
+    "aliases": [],
+    "videoId": "7z6uarutMD8",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：以愛奉獻｜歌詞版",
+    "number": "HYMN-119",
+    "language": "中文"
+  },
+  {
+    "title": "以馬內利來臨",
+    "aliases": [],
+    "videoId": "aHVh-c5aejI",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "香港聖詩會 Hong Kong Hymn Society / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：以馬內利來臨歌 O Come, O Come Emmanuel - 2019 聖誕聖跡歌述崇拜",
+    "number": "HYMN-120",
+    "language": "中文"
+  },
+  {
+    "title": "住在祢裡面",
+    "aliases": [],
+    "videoId": "IKGazOdWmH4",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【住在祢裡面 Abiding in You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (16)",
+    "number": "HYMN-121",
+    "language": "中文"
+  },
+  {
+    "title": "來崇拜大君",
+    "aliases": [],
+    "videoId": "ONdWpgIB8Pc",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "敬拜頌歌piano / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：來崇拜大君",
+    "number": "HYMN-122",
+    "language": "中文"
+  },
+  {
+    "title": "來稱頌真神",
+    "aliases": [],
+    "videoId": "ARKKh2IA4Rg",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "Isaac Lam / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：20160731 懷恩堂聖樂崇拜 來稱頌真神 亞薩詩班與會眾 ＠ GBC",
+    "number": "HYMN-123",
+    "language": "中文"
+  },
+  {
+    "title": "信心的等待",
+    "aliases": [],
+    "videoId": "0mn6wvX1l18",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "基恩敬拜 Amazing Grace Worship / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：《信心的等待》Wait with faith - 基恩敬拜AGWMM official MV",
+    "number": "HYMN-124",
+    "language": "中文"
+  },
+  {
+    "title": "全能父上帝",
+    "aliases": [],
+    "videoId": "XgisFdhTr74",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "讚美的時刻 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：全能父上帝（粵語詩歌）",
+    "number": "HYMN-125",
+    "language": "中文"
+  },
+  {
+    "title": "全能真神",
+    "aliases": [],
+    "videoId": "_rJJsC4GYPE",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "台北靈糧堂聯合崇拜 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：Live Worship【宣告耶穌／我敬拜祢全能真神】CROSSMAN",
+    "number": "HYMN-126",
+    "language": "中文"
+  },
+  {
+    "title": "創造奇功",
+    "aliases": [],
+    "videoId": "3h3bQm6nBiI",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "循道衞理佈道團MEM / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：創造奇功歌（詩集：普天頌讚 第11首）",
+    "number": "HYMN-127",
+    "language": "中文"
+  },
+  {
+    "title": "勇敢走出去",
+    "aliases": [],
+    "videoId": "w43QIZ79YbY",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【勇敢走出去 Stepping Out】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12P)",
+    "number": "HYMN-128",
+    "language": "中文"
+  },
+  {
+    "title": "十架犧牲的愛",
+    "aliases": [],
+    "videoId": "PpsC-Satfsk",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "橄欖枝 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：十架犧牲的愛 - 薪火敬拜使團",
+    "number": "HYMN-129",
+    "language": "中文"
+  },
+  {
+    "title": "同餅同杯",
+    "aliases": [],
+    "videoId": "6zIEotjphl8",
+    "start": 0,
+    "duration": 60,
+    "category": "教會詩歌",
+    "source": "flow church 流堂 / YouTube",
+    "hint": "TPMAC 近5年程序表出現 2 次；YouTube：《同餅同杯》 // flow church 流堂10.13解慰聖餐聚會 主題曲",
+    "number": "HYMN-130",
     "language": "中文"
   }
 ]
