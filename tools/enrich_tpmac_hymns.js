@@ -10,6 +10,7 @@ const TARGET_ADDITIONS = Number(process.env.TPMAC_TARGET_ADDITIONS || 50);
 const SCAN_LIMIT = Number(process.env.TPMAC_SCAN_LIMIT || 180);
 const CONCURRENCY = Number(process.env.TPMAC_CONCURRENCY || 6);
 const MIN_COUNT = Number(process.env.TPMAC_MIN_COUNT || 2);
+const MATCH_SCORE_THRESHOLD = Number(process.env.TPMAC_MATCH_SCORE_THRESHOLD || 92);
 
 const HARD_SKIP_TITLES = new Set([
   "三一頌",
@@ -18,7 +19,43 @@ const HARD_SKIP_TITLES = new Set([
   "耶穌",
   "上主",
   "苦難",
+  "敬拜創造主",
+  "虛心的人有福",
+  "Amen!",
+  "Gloria",
+  "Hallelujah",
+  "Mighty Wind",
+  "基督精兵奮進",
+  "O COME",
+  "快樂的家",
+  "生命之河",
+  "耶和華基督是主",
 ]);
+
+const BLOCKED_VIDEO_IDS = new Set([
+  "VVr0MJX5Ovk", // Secular movie song with the same Chinese title as a TPMAC entry.
+  "WBJuLhsRk5Q", // Secular pop song with the same Chinese title as a TPMAC entry.
+  "5aCm-uUL7Co", // Worship-themed video, but not the TPMAC song title.
+  "WG_-7MLHoko", // Bible story video, not a singable hymn clip.
+  "rPYhpDT2ViI", // Devotional video, not a singable hymn clip.
+]);
+
+const BLOCKED_VIDEO_KEYWORDS = [
+  "電影《奪冠》",
+  "王菲",
+  "那英",
+  "劉明峰",
+  "超級星光大道",
+  "Bring Me The Horizon",
+  "鄧紫棋",
+  "Lucy Thomas",
+  "Fate/Stay Night",
+  "OST",
+  "聖經故事",
+  "每日單獨會主",
+  "Ying Na",
+  "講故事",
+];
 
 function parseSummaryCsv(text) {
   return text
@@ -179,10 +216,21 @@ function scoreMatch(candidateTitle, videoTitle) {
   return Math.round((shared / Math.max(candidate.length, 1)) * 70);
 }
 
+function isBlockedVideo(video) {
+  if (BLOCKED_VIDEO_IDS.has(video.videoId)) return true;
+  const text = `${video.youtubeTitle || ""} ${video.channel || ""}`;
+  return BLOCKED_VIDEO_KEYWORDS.some((keyword) => text.includes(keyword));
+}
+
 async function searchYouTube(row, usedVideoIds) {
   const queries = [
+    `"${row.title}"`,
     `${row.title} 詩歌`,
     `${row.title} 基督教詩歌`,
+    `${row.title} 歌詞`,
+    `${row.title} 敬拜`,
+    `${row.title} 聖詩`,
+    `${row.title} 粵語`,
     `${row.title} hymn`,
     `${row.title} YouTube`,
   ];
@@ -204,9 +252,9 @@ async function searchYouTube(row, usedVideoIds) {
       videos = data ? collectVideos(data) : [];
     }
     const ranked = videos
-      .filter((video) => !usedVideoIds.has(video.videoId))
+      .filter((video) => !usedVideoIds.has(video.videoId) && !isBlockedVideo(video))
       .map((video) => ({ ...video, score: scoreMatch(row.title, video.youtubeTitle), query }))
-      .filter((video) => video.score >= 92)
+      .filter((video) => video.score >= MATCH_SCORE_THRESHOLD)
       .sort((a, b) => b.score - a.score);
     if (ranked.length) return ranked[0];
     await sleep(180);
