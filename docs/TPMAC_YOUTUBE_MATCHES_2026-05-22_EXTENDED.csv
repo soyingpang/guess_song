@@ -1,435 +1,374 @@
-number,title,count,first_date,last_date,video_id,source,youtube_title,added_in_this_update
-HYMN-001,人們需要主,50,20220123,20241117,b-749mZx8fU,內巷 | withinlane / YouTube,[ 人們需要主  ] 中文歌詞字幕,no
-HYMN-002,賜福你,9,20211205,20220130,P0rEipirPzs,Tom Luk / YouTube,主賜福你 lyrics // ACM // full version,no
-HYMN-003,感恩祭,7,20230402,20251130,IbU42dENe2M,Tom Wan / YouTube,感恩祭,no
-HYMN-004,祢真偉大,7,20210822,20260315,V1LRpbz25SY,新心音樂事工 New Heart Music Ministries / YouTube,你真偉大,no
-HYMN-005,耶和華永遠至高,7,20230212,20250921,7x7Ve4jBmHQ,維珍妮亞 / YouTube,耶和華永遠至高,no
-HYMN-006,世界之光,6,20220123,20251109,zwdR8KM80nk,J.Praise青年音樂事工 / YouTube,世界之光,no
-HYMN-007,傳揚祢大愛,6,20211107,20250727,rKZ5bx-kdZM,基恩敬拜 Amazing Grace Worship / YouTube,傳揚祢大愛 Proclaiming Your Magnificent Love,no
-HYMN-008,成為神蹟的器皿,6,20210718,20250817,zYHUxoykI7w,生命河靈糧堂 / YouTube,成為神蹟的器皿,no
-HYMN-009,我們成為一家人,6,20210926,20250330,axJlfLJGwQk,777Worship 完全的敬拜 | 敬拜中裡合一 | Unity in Worship / YouTube,我們成為一家人,no
-HYMN-010,教會獨一的根基,6,20220522,20260412,9sxo44elABI,Teresa古今詩歌Hymns♬ / YouTube,【教會獨一的根基】The Church's One Foundation│詞：S. J. Stone│曲：S. S.Wesley│鋼琴：Julie Ann Kitchen│頌唱：Teresa H.,no
-HYMN-011,榮耀的呼召,6,20230226,20251026,v5wnpajW6jo,讚美之泉 Stream Of Praise Music Ministries / YouTube,【榮耀的呼召 Glorious Calling】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20),no
-HYMN-012,求祢以真理和愛引導我,6,20220717,20260419,vTG-LQPFtRg,More of Jesus Worship (更多有耶穌的敬拜) / YouTube,求祢以真理和愛引導我 | 同心圓 (TWS 敬拜者使團) | 歌詞MV,no
-HYMN-013,美哉主耶穌,6,20220410,20250921,uE_HAcwlxL8,宇宙光百人大合唱 / YouTube,美哉主耶穌,no
-HYMN-014,讚美耶和華,6,20210725,20250810,_I4wvMSOiw8,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讚美耶和華  Praise The Lord】官方歌詞版MV (Official Lyrics MV) - 讚美之泉台語敬拜讚美 (1),no
-HYMN-015,全地至高是我主,5,20220306,20230820,9AsBFAfnUjM,Fiona Hui / YouTube,全地至高是我主,no
-HYMN-016,同證主恩,5,20230416,20231029,ycl3KkFSe6U,sensorMusic / YouTube,同證主恩 sensorMusic (Demo)｜ 原創詩歌 粵語詩歌 詩歌敬拜,no
-HYMN-017,因祢榮耀,5,20230212,20260104,WCwTGlsfl5c,信•望•愛詩歌頻道 - Faith·Hope·Love Poetry Channel / YouTube,角聲使團 因祢榮耀,no
-HYMN-018,活出愛,5,20210912,20260301,xn0llwzGmTE,福茂唱片 / YouTube,范瑋琪 + 蘇以樂 + 蘇以行 + 蔡語涵 + 蔡岳辰 - 活出愛 Love Life (官方歌詞版) - 『LOVE LIFE』公益主題曲,no
-HYMN-019,祢的信實廣大,5,20210905,20251228,mbnRYggcPpw,Isaac Lam / YouTube,祢的信實廣大｜會眾詩歌｜台北懷恩堂主日崇拜,no
-HYMN-020,稱謝復活主,5,20220417,20260412,zniTLYgOw34,Penelope Chan / YouTube,稱謝復活主  普天頌讚新修訂版第273首,no
-HYMN-021,稱頌上主,5,20210718,20250907,XfEgUshJAmg,7davidpan / YouTube,【稱頌上主】,no
-HYMN-022,聖哉三一,5,20211121,20260104,pw5elBqhQMA,傳統聖詩 Traditional Hymns / YouTube,聖哉三一 Holy Holy Holy ｜生命聖詩5（國語）,no
-HYMN-023,興起發光,5,20220116,20250126,WehSVicC2M8,Release - Topic / YouTube,興起發光,no
-HYMN-024,萬代君主,5,20220130,20241215,PZhCPVB0dp8,RainbowPromise / YouTube,萬代君主,no
-HYMN-025,阿爸天父,5,20210801,20231001,KE8X-sG64nk,讚美之泉 Stream Of Praise Music Ministries / YouTube,【阿爸天父 Abba Father】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (13),no
-HYMN-026,除祢以外,5,20240107,20260510,a18vlQLgoCc,HKACM - Topic / YouTube,除祢以外,no
-HYMN-027,以愛還愛,4,20221002,20250511,2tX58dM4n1s,Release - Topic / YouTube,以愛還愛,no
-HYMN-028,何等恩典,4,20220911,20250914,u2M-zzt1Whc,讚美之泉 Stream Of Praise Music Ministries / YouTube,【何等恩典 How Could It Be】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14),no
-HYMN-029,在主前靜默,4,20241006,20241027,5oTLWdZ6m58,內巷 | withinlane / YouTube,[ 在主前靜默 Be still for the presence of the Lord ] - Cover ft. 簡愛 Christine Chien,no
-HYMN-030,奉獻什麼,4,20220814,20241117,4qL_VVKRMMY,刘文良 - Topic / YouTube,奉獻什麼,no
-HYMN-031,從這代到那代,4,20211114,20241027,kNnZXzsNYPo,讚美之泉 Stream Of Praise Music Ministries / YouTube,【從這代到那代 From Now till Evermore】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19),no
-HYMN-032,恩典之路,4,20220814,20260517,YaJ5gof0YNQ,讚美之泉 Stream Of Praise Music Ministries / YouTube,【恩典之路 The Path of Grace】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14),no
-HYMN-033,愛中相遇,4,20211010,20240804,Muq6RNaLjgU,讚美之泉 Stream Of Praise Music Ministries / YouTube,【愛中相遇 See You Face to Face】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19),no
-HYMN-034,愛如繁星,4,20220731,20250413,QHxdGXUkCFQ,Kennex in Jesus / YouTube,主愛如繁星 - 粵語詩歌 【官方歌詞版 MV】,no
-HYMN-035,愛有多少,4,20231105,20250406,SLnz3WWVAOA,天韻合唱團 Heavenly Melody / YouTube,【主愛有多少】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV,no
-HYMN-036,教會的主,4,20211024,20240428,Q8PtoXcgfMc,J A piano hymns / YouTube,教會的主 [ 純音樂 cover | 歌詞 ],no
-HYMN-037,榮耀歸與祂,4,20220911,20260208,EpVDF3OAY68,Heaven / YouTube,榮耀歸與祂,no
-HYMN-038,每一天,4,20220213,20250608,9VisPP2HLtc,Zonder's Music / YouTube,每一天,no
-HYMN-039,獻上活祭,4,20230709,20250216,OcfKXc6pItA,GOOD TV DAILY / YouTube,天堂敬拜~獻上活祭（單曲）,no
-HYMN-040,真神之愛,4,20220522,20260510,_8JkN8A5ukc,Teresa古今詩歌Hymns♬ / YouTube,【真神之愛】The Love of God│《生命聖詩》 第41首│詞曲 : Frederick M. Lehman│鋼琴：gracehome251│頌唱：Teresa Huang,no
-HYMN-041,祂是耶和華,4,20210620,20260111,TVHWJcJN4xg,Tony Xu / YouTube,祂是耶和華,no
-HYMN-042,神坐著為王,4,20221030,20260118,e-oDTeztqyE,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,神坐著為王,no
-HYMN-043,祢是神,4,20220529,20250119,9cSuojDc4iw,全人敬拜 Holistic Worship / YouTube,你是神,no
-HYMN-044,耶穌！耶穌！,4,20211205,20241208,kWvRXBLI0uk,讚美之泉 Stream Of Praise Music Ministries / YouTube,"【耶穌 耶穌 Jesus, Jesus】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (10)",no
-HYMN-045,萬邦之歌,4,20231105,20231126,rPidR2UgZHo,SCBC Choir・士嘉堡華人浸信會詩班・Toronto / YouTube,萬邦之歌,no
-HYMN-046,衷心稱頌上主,4,20210926,20260301,zIxxulCf9hg,elauwong2 / YouTube,衷心稱頌上主 ( 粵語，練習版  ),no
-HYMN-047,遍地細說主奇妙,4,20220206,20260222,lnAPNXfE16Q,wah yeung / YouTube,詩歌音樂分享:遍地細說主奇妙。,no
-HYMN-048,頌讚全能上帝,4,20210808,20250817,j2D4P98oXW0,All Nations worship & praise Ministries - Topic / YouTube,頌讚全能上帝,no
-HYMN-049,願祢的話,4,20210725,20260308,9Qjy1gKQ4dA,Vivian Huang / YouTube,願你的話,no
-HYMN-050,高舉尊貴的祢,4,20230101,20250216,WD8QpzZYzrk,Release - Topic / YouTube,高舉尊貴的祢,no
-HYMN-051,世上最好的愛,3,20240317,20241222,vLa1kd3yBxI,全人敬拜 Holistic Worship / YouTube,世上最好的愛,no
-HYMN-052,仍能讚美,3,20240428,20250622,Bm3j7cxqGP8,Worship Music-AM  / YouTube,仍能讚美,no
-HYMN-053,以感恩為祭,3,20230618,20260208,ozRtnVOvYvM,m2kmusic / YouTube,『以感恩為祭 』 團契遊樂園5 應許（基督教詩歌）,no
-HYMN-054,以馬內利,3,20211212,20251214,gB3vpIAYhIM,777Worship 完全的敬拜 | 敬拜中裡合一 | Unity in Worship / YouTube,以馬內利,no
-HYMN-055,傳承使命,3,20220206,20240915,Iz477EjWNX4,HKACM Official 香港基督徒音樂事工協會 / YouTube,【傳承使命】Official Lyric Video - 官方完整版 (大使命),no
-HYMN-056,充滿主馨香,3,20220213,20230611,AH-i_-I1PQg,Tze Bun Lee / YouTube,充滿主馨香,no
-HYMN-057,同領主餐,3,20210704,20230205,qFYsELkwt5E,Heaven / YouTube,同領主餐,no
-HYMN-058,唯有耶穌,3,20221009,20241124,cMFGl4jAp_w,9234 san / YouTube,唯有耶穌,no
-HYMN-059,在祢手中,3,20241117,20260412,_YpwaY6KY_Y,Joshua Band 約書亞樂團 / YouTube,在你手中,no
-HYMN-060,如明亮晨星,3,20221225,20260419,ZIi6z99ojQE,"潘敏珊, 天天頌揚 / YouTube",主如明亮晨星（國語詩歌）,no
-HYMN-061,寶貴十架,3,20211226,20240324,0YJZUyVOQVY,讚美之泉 Stream Of Praise Music Ministries / YouTube,【寶貴十架 Precious Cross】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11P),no
-HYMN-062,幽谷讚美聲,3,20240204,20250727,Pfp-sJRc6M4,彩虹約定 - Topic / YouTube,幽谷讚美聲,no
-HYMN-063,從罪灰走向活水,3,20240218,20260322,p4DocAb4LBM,衛理公會城中教會詩班 / YouTube,從罪灰走向活水,no
-HYMN-064,愛就是,3,20220327,20251207,aphnxDaW39Q,iTabernacle.net會幕文化 / YouTube,【詩歌】愛就是,no
-HYMN-065,我們的神,3,20250914,20251123,kvrRtRe9AoU,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我們的神 You Are Our God】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27),no
-HYMN-066,我心所慕,3,20210912,20220807,0CoDTJ5HnSw,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,我心所慕(這是天父世界),no
-HYMN-067,我是祢愛子,3,20241229,20260517,c2zgA20Bl6o,玻璃海樂團 - Topic / YouTube,我是你愛子,no
-HYMN-068,我要感謝上主,3,20211107,20250810,eJPxfrXs7y0,讚美的時刻 / YouTube,我要感謝上主（粵語詩歌）,no
-HYMN-069,我願為祢去,3,20220130,20250727,KgnklCi-k-Q,CantonHymn恢復粵語詩歌敬拜文化運動 / YouTube,我願為祢去 - 小羊詩歌（官方粵語核准版 CantonHymn Demo Cover）,no
-HYMN-070,我高舉祢的名,3,20220612,20260426,UbspCrEwMDA,上敬拜 Shang Worshippers / YouTube,上敬拜Shang Worshippers -主我高舉你的名 Lord I Lift Your Name On High（f.t 黃美珍JANE / 劉文瀚Yusof）,no
-HYMN-071,擁戴我主為王,3,20210606,20241027,BO5EyHp-8vM,天韻合唱團 Heavenly Melody / YouTube,【聖哉 聖哉 聖哉/擁戴我主為王】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV,no
-HYMN-072,是我一切,3,20240225,20260315,7zqwxDsvITQ,天韻合唱團 Heavenly Melody / YouTube,【祢是我一切】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV,no
-HYMN-073,是我一生的呼召,3,20230723,20260125,lspZOQhpu30,讚美之泉 Stream Of Praise Music Ministries / YouTube,【愛祢，是我一生的呼召 I Live My Life To Love You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27),no
-HYMN-074,是祢先愛我,3,20250427,20250601,Ta9_ny2SpWg,Worship Music-AM  / YouTube,是祢先愛我,no
-HYMN-075,晝夜思念神律法,3,20230723,20250713,CIxO_bbfy3c,香港聖詩會 Hong Kong Hymn Society / YouTube,晝夜思念神律法 Blessed is the Man - 2019 聖詩頌唱會「詩‧人」,no
-HYMN-076,有一位神,3,20211003,20260201,evguKWXIbjM,讚美之心 Singing Hearts / YouTube,有一位神,no
-HYMN-077,有祢同行,3,20220925,20251130,2KM6F_vQSD0,基恩敬拜 Amazing Grace Worship / YouTube,《有祢同行》With You by my side - 基恩敬拜AGWMM official MV,no
-HYMN-078,榮耀的王成肉身,3,20231224,20241215,9y9elbi43HM,讚美的時刻 / YouTube,榮耀的王成肉身（粵語詩歌）,no
-HYMN-079,永活基督,3,20220508,20260419,jPNcVV2TSCs,Penelope Chan / YouTube,永活基督  普天頌讚新修訂版第274首  吳仲廉,no
-HYMN-080,永生神就是靈,3,20220220,20250126,lsTdTiXfVBg,香港聖詩會 Hong Kong Hymn Society / YouTube,"永生神就是靈 Immortal, Invisible, God Only Wise - 第二屆聖詩頌唱會「耶穌基督我心所信」",no
-HYMN-081,永遠尊貴,3,20220501,20260301,-ZnOCvRnwaQ,讚美之泉 Stream Of Praise Music Ministries / YouTube,【永遠尊貴 All Honor To You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A),no
-HYMN-082,治萬方,3,20221127,20241117,XnJyM4VGaFc,傳統聖詩 Traditional Hymns / YouTube,主治萬方 Jesus Shall Reign Where'er the Sun｜生命聖詩16（國語）,no
-HYMN-083,為何揀選我,3,20230402,20250302,b5nij6n8_JM,團契遊樂園 - Topic / YouTube,為何揀選我,no
-HYMN-084,為我受傷,3,20221002,20260104,0IGQ_LRTmmk,Teresa古今詩歌Hymns♬ / YouTube,【為我受傷】Wounded for me│詞：Rober & Ovens│曲：William G. J. Ovens│鋼琴：朱素雲│頌唱：Teresa Huang│#基督教傳統詩歌 #受難節復活節詩歌,no
-HYMN-085,真光普照,3,20230430,20250824,BDIPIamUqEE,ekmanson / YouTube,純·敬拜隊：真光普照,no
-HYMN-086,祢是我神,3,20230423,20250706,RdoeAXXld10,touchmusichk - Topic / YouTube,祢是我神,no
-HYMN-087,給我子女名份,3,20210801,20240218,a3DiWZScTSU,611 Worship 敬拜 / YouTube,主給我子女名份/ 盡心盡性讚美祂,no
-HYMN-088,美哉錫安,3,20210725,20230709,3VWBvV6yisI,Teresa / YouTube,美哉錫安,no
-HYMN-089,耶和華以勒,3,20210613,20250928,-KNbJjsfGIo,栽蒔 / YouTube,耶和華以勒,no
-HYMN-090,耶穌奇妙的救恩,3,20221120,20250615,Za0hLucl6fI,宇宙光百人大合唱 / YouTube,耶穌奇妙的救恩,no
-HYMN-091,耶穌愛我,3,20220515,20250518,6vAILBz8cgo,活水囝仔 / YouTube,【 耶穌愛我 Jesus Loves Me】- 活水囝仔兒童敬拜舞蹈,no
-HYMN-092,耶穌配得至聖尊榮,3,20230723,20250511,YE34QiLu1sg,Jennifer Poon / YouTube,讚之歌_耶穌配得至聖尊榮,no
-HYMN-093,聖名榮光,3,20220213,20240505,dYHsbERCqTU,Taipei Trinity / YouTube,委身詩班20190210主日獻詩 聖名榮光,no
-HYMN-094,聖善夜,3,20211205,20251221,WiQbzG7Tew8,讚美之泉 Stream Of Praise Music Ministries / YouTube,【無伴奏合唱 Acapella】聖善夜 O Holy Night｜ 讚美之泉,no
-HYMN-095,至高尊貴的祢,3,20230115,20250316,_l7d2uvAXKE,影音使團有限公司 The Media Evangelism Limited / YouTube,至高尊貴的祢,no
-HYMN-096,萬國萬民讚美主,3,20221127,20241124,OxF1O_xboSA,基恩敬拜 Amazing Grace Worship / YouTube,萬國萬民讚美主 - 2018 基恩敬拜禱告更新｜詩班獻詩,no
-HYMN-097,薪火永傳,3,20220515,20240324,gdjd5T78rBc,m2kmusic / YouTube,『薪火永傳 』 團契遊樂園3 薪火永傳（基督教詩歌）,no
-HYMN-098,要忠心,3,20221127,20240414,yiApkyNmE5Y,SongsOfAscents上行詩 / YouTube,生命聖詩346 | 要忠心 | Be True  (We are going forth from the school of Jesus),no
-HYMN-099,讓我感恩,3,20220109,20260222,4n8UYvrGX44,Release - Topic / YouTube,讓我感恩,no
-HYMN-100,讚美我天父,3,20210613,20230604,YRrDoIw0ZuA,Jennifer Poon / YouTube,青年新歌_讚美我天父,no
-HYMN-101,至聖上帝,238,20210606,20260222,hS3fjCIHHvs,台北聖樂團 Taipei Oratorio Choir  |  台北聖樂推廣協會  / YouTube,至聖上帝真道 Cantique de Jean Racine｜台北聖樂團 ｜台語詩歌,no
-HYMN-102,分享主愛,114,20221016,20260517,mF5b6fWZV9Y,終極敬拜WorshipInHongKong / YouTube,分享主愛﹙粵語﹚伍偉基 Let There Be Love,no
-HYMN-103,遵主教導,43,20230108,20231231,WJm719-bz_I,Iglesia Cristiana China / YouTube,委身遵主教導而行 • Pon en práctica las enseñanzas del Señor,no
-HYMN-104,慈愛長存,3,20211010,20230910,SIVcv8xcJmQ,Greenee's Original Creation Storytelling 青草兒原創故事坊 / YouTube,《慈愛長存》 (粵) 原創詩歌,no
-HYMN-105,遠超萬名之名,3,20220814,20241110,n-8i5e3Sdok,藍影 / YouTube,遠超萬名之名,no
-HYMN-106,陪我走過春夏秋冬,3,20230115,20241229,AjL3gfY9SOA,joehuang90 / YouTube,陪我走過春夏秋冬-小羊詩歌(一粒麥子),no
-HYMN-107,預苦四十晝夜,3,20230326,20250309,Wvxe1XpvvwA,香港聖樂促進會 / YouTube,齊來學聖詩 (10)：預苦四十晝夜 (普天頌讚新修訂本第209首),no
-HYMN-108,一生敬拜祢,2,20241020,20251026,nGzADKIDf4A,讚美之泉 Stream Of Praise Music Ministries / YouTube,【一生敬拜祢 All the Days of My Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (22),no
-HYMN-109,世界最美的聲音,2,20211226,20240616,oO-dutjvxLY,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《世界最美的聲音(奇異恩典)》TWS 敬拜者使團「HEART」Live 專輯,no
-HYMN-110,這是天父世界,2,20240317,20250518,_1HnQN1OlPE,台北聖樂團 Taipei Oratorio Choir  |  台北聖樂推廣協會  / YouTube,這是天父世界｜This is my Father's world ｜台北聖樂團｜指揮 李珮琨｜伴奏 盧主芬｜台灣神學院｜中英歌詞,no
-HYMN-111,靠近十架,2,20230507,20250105,bb8hzK4Dmtc,Teresa古今詩歌Hymns♬ / YouTube,【靠近十架】Near the Cross│詞：Fanny Jane Crosby│曲：William Howard Doane│鋼琴：Julie Ann Kitchen│頌唱：Teresa Huang,no
-HYMN-112,願祢崇高,2,20221023,20231210,kX0u2irJc4c,Mii / YouTube,願你崇高－天韻詩歌,no
-HYMN-113,上主的國,2,20221023,20250601,A5Wb91e3stA,台中泰澤歌詠祈禱團體 / YouTube,Taizé 泰澤 - The kingdom of God 上主的國  《110》 ○  20150619_台中南屯 (Taize/taize),no
-HYMN-114,世界最美聲音,2,20240915,20250525,gg-W3l8S4Bc,Ceci Sum / YouTube,世界最美聲音 (with harmony line),no
-HYMN-115,亞伯拉罕的主,2,20220828,20240908,Mh8_sBMO12k,香港聖樂促進會 / YouTube,【聖詩薈萃】亞伯拉罕的主(粵) - 普天頌讚新修訂本39首,no
-HYMN-116,人人都應該知道,2,20221120,20240526,ZNP7eI_666w,Edison團契詩歌 / YouTube,D22人人都應該知道,no
-HYMN-117,人算甚麼,2,20220313,20250316,_nILV6V0NSc,GraceSong79 / YouTube,人算甚麼,no
-HYMN-118,仍然相信祢,2,20250622,20260329,VzmM9I0KqUM,HKACM Official 香港基督徒音樂事工協會 / YouTube,【仍然相信祢 / Still Believing】HKACM Official Music Video,no
-HYMN-119,以愛奉獻,2,20240428,20250330,7z6uarutMD8,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,以愛奉獻｜歌詞版,no
-HYMN-120,以馬內利來臨,2,20221204,20221218,aHVh-c5aejI,香港聖詩會 Hong Kong Hymn Society / YouTube,"以馬內利來臨歌 O Come, O Come Emmanuel - 2019 聖誕聖跡歌述崇拜",no
-HYMN-121,住在祢裡面,2,20241006,20260315,IKGazOdWmH4,讚美之泉 Stream Of Praise Music Ministries / YouTube,【住在祢裡面 Abiding in You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (16),no
-HYMN-122,來崇拜大君,2,20211031,20230205,ONdWpgIB8Pc,敬拜頌歌piano / YouTube,來崇拜大君,no
-HYMN-123,來稱頌真神,2,20211212,20231112,ARKKh2IA4Rg,Isaac Lam / YouTube,20160731 懷恩堂聖樂崇拜 來稱頌真神 亞薩詩班與會眾 ＠ GBC,no
-HYMN-124,信心的等待,2,20220508,20241201,0mn6wvX1l18,基恩敬拜 Amazing Grace Worship / YouTube,《信心的等待》Wait with faith - 基恩敬拜AGWMM official MV,no
-HYMN-125,全能父上帝,2,20220522,20240121,XgisFdhTr74,讚美的時刻 / YouTube,全能父上帝（粵語詩歌）,no
-HYMN-126,全能真神,2,20240303,20250323,_rJJsC4GYPE,台北靈糧堂聯合崇拜 / YouTube,Live Worship【宣告耶穌／我敬拜祢全能真神】CROSSMAN,no
-HYMN-127,創造奇功,2,20210829,20241103,3h3bQm6nBiI,循道衞理佈道團MEM / YouTube,創造奇功歌（詩集：普天頌讚 第11首）,no
-HYMN-128,勇敢走出去,2,20220904,20240128,w43QIZ79YbY,讚美之泉 Stream Of Praise Music Ministries / YouTube,【勇敢走出去 Stepping Out】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12P),no
-HYMN-129,十架犧牲的愛,2,20250323,20260308,PpsC-Satfsk,橄欖枝 / YouTube,十架犧牲的愛 - 薪火敬拜使團,no
-HYMN-130,同餅同杯,2,20240804,20250427,6zIEotjphl8,flow church 流堂 / YouTube,《同餅同杯》 // flow church 流堂10.13解慰聖餐聚會 主題曲,no
-HYMN-131,十架的冠冕,2,20210606,20240623,Pz10IS-TCmg,1Gmusic / YouTube,[高清HD] 十架的冠冕 - Peco Chui 徐偉賢 - 720P MV,yes
-HYMN-132,古舊十架,2,20220410,20221106,C9Iz8bliBwc,QQSUN / YouTube,【古舊十架 The Old Rugged Cross】生命聖詩Hymns of Life120  ENG SUB + Chinese Pinyin～歌词见⬇️,yes
-HYMN-133,向主唱新歌,2,20230716,20240421,zHrXuLRnBeo,jinjen yang / YouTube,cXc163向主唱新歌,yes
-HYMN-134,向君王歡呼,2,20250420,20260329,8TcnV9VjJvg,MIshajun東俊 / YouTube,向君王歡呼,yes
-HYMN-135,向耶和華唱樂歌,2,20250209,20260208,bfR1g9aX9XI,Lawrence Tsui / YouTube,"RCMBC Oct 02, 2016 Choir: 向耶和華唱樂歌",yes
-HYMN-136,向至高者讚美,2,20211107,20250907,Hx1lMCJ-d-Q,Jennifer Poon / YouTube,讚之歌_向至高者讚美,yes
-HYMN-137,君尊僕人,2,20240901,20250907,euFEoIYNcA4,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,君尊僕人｜2023年大齋期詩歌分享,yes
-HYMN-138,啊！祢慈愛是何等的寶貴,2,20211003,20220918,3yilTsFpRyw,終極敬拜WorshipInHongKong / YouTube,主啊你慈愛是何等的寶貴 伍偉基﹙粵語﹚How Precious Oh Lord,yes
-HYMN-139,回應偉大真神,2,20230611,20250914,rQwIiz71FQI,香港聖樂促進會 / YouTube,【聖詩薈萃】回應偉大真神(粵) - 普天頌讚新修訂本22首,yes
-HYMN-140,因祂寶架,2,20210808,20250713,i7txrulBsMo,TJCAC Choir / YouTube,20150403 (Good Friday) 因祂寶架 Without His Cross (Joseph M. Martin),yes
-HYMN-141,因祂活著,2,20230409,20260405,Mk_wb6RvHM8,"潘敏珊, 天天頌揚 / YouTube",因祂活著 (國語) Hymn: Because He Lives,yes
-HYMN-142,因祢堅持,2,20250406,20250720,4m6vjriw7a8,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,因祢堅持 - 鹹蛋音樂事工SEMM🍳,yes
-HYMN-143,基督-永恆之主,2,20220529,20230212,FAFnTEwl4fk,Isaac Lam / YouTube,基督--永恆之主｜主日崇拜｜台北懷恩堂｜普天頌讚 #54,yes
-HYMN-144,基督耶穌今復生,2,20250427,20260405,HfM4bwyNaHw,Teresa古今詩歌Hymns♬ / YouTube,【基督耶穌今復生】Christ The Lord Is Risen Today│詞：Charles Wesley│曲：Anonymous│鋼琴：Kaleb Brasee│頌唱：Teresa Huang,yes
-HYMN-145,天地讚美,2,20240714,20250713,2xT4SagZ_jg,C Jenny / YouTube,天地讚美,yes
-HYMN-146,天天歌唱,2,20250216,20251130,GTdvcPBu0UU,Serene workshop / YouTube,天天歌唱,yes
-HYMN-147,天涯咫尺,2,20221211,20251109,Zwk5B2A8aqw,jnX Worship / YouTube,【原創詩歌】天涯咫尺 (粵) Far and Near (2018 「天涯‧咫尺」差傳營會 主題曲)｜jnX 官方版,yes
-HYMN-148,天父世界真美麗,2,20240211,20250511,aOTaJx7163E,佳音詩班 / YouTube,天父世界真美麗(ALL THINS BRIGHT AND BEAUTIFUL；萬物光明極美麗)｜佳音詩班,yes
-HYMN-149,奇妙十架,2,20211003,20251026,WoGLg1ufBrM,"潘敏珊, 天天頌揚 / YouTube",奇妙十架 (國語) Hymn: When I Survey The Wondrous Cross,yes
-HYMN-150,奇妙的愛,2,20220501,20240714,ULyb-F9dJjM,Joshua Band 約書亞樂團 / YouTube,【奇妙的愛 / What He Has Done For Me】官方歌詞MV - 約書亞樂團 ft. 璽恩 SiEnVanessa,yes
-HYMN-151,奇異的愛,2,20230305,20260329,qaTmtc-g0DA,Teresa古今詩歌Hymns♬ / YouTube,【奇異的愛】And Can It Be That I Should Gain│詞：Charles Wesley│曲：Thomas Campbell│鋼琴：Julie Ann Kitchen,yes
-HYMN-152,如此認識我,2,20230924,20250831,nqNRef8sAnw,角聲使團 The Heralders / YouTube,角聲使團 The Heralders《如此認識我》[Official Lyric Video],yes
-HYMN-153,寶貝聖靈,2,20240225,20240811,nDltRKeqT60,WN X 玻璃海樂團 X PHOTIC / YouTube,寶貝聖靈  (Official Lyric MV) // Worship Nations // 玻璃海樂團,yes
-HYMN-154,尋求神的臉,2,20231008,20240519,Vm0AvpyoLq0,frankie choi 蔡賜輝 / YouTube,尋求神的臉12fc final,yes
-HYMN-155,復興聖潔,2,20231008,20260215,K3ibf2AjR3U,讚美之泉 Stream Of Praise Music Ministries / YouTube,【復興聖潔 Revive Holiness】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (7),yes
-HYMN-156,恩主美善愛眷,2,20221211,20251228,qFTOV4wcZY4,香港聖詩會 Hong Kong Hymn Society / YouTube,恩主美善愛眷 （所有美善力量 - 廣東話）By Gentle Powers (Von guten Mächten wunderbar geborgen) - 點解聖詩講座頌唱會(七)「聖詩故事(下)」,yes
-HYMN-157,恩典太美麗,2,20220424,20220703,JlTb0Sf7xUg,cantonworship / YouTube,恩典太美麗 // 團契遊樂園 // Lyric MV HD #粵語詩歌 #大使命,yes
-HYMN-158,慈悲仁愛上帝,2,20230312,20250323,59w6SXTrTyQ,香港聖詩會 Hong Kong Hymn Society / YouTube,慈悲仁愛上帝 Kind and Merciful God - 第六屆聖詩頌唱會「聖父」,yes
-HYMN-159,我需要有祢在我生命中,2,20250518,20251207,u_R17ihiM44,Rick詩歌庫 / YouTube,我需要有祢在我生命中 - 有情天,yes
-HYMN-160,罪人朋友,2,20240526,20250706,eOb7zMsA-7o,見福羅 / YouTube,PCT 2009 聖詩合唱 584 至聖救主，罪人朋友,yes
-HYMN-161,耶和華要保護你,2,20240310,20260517,vij9KnhNDpo,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《耶和華要保護你》TWS 敬拜者使團 (詩一二一),yes
-HYMN-162,聖哉全能主,2,20240310,20240317,ENRSR0phtxs,joehuang90 / YouTube,聖哉全能主-小羊詩歌(一粒麥子),yes
-HYMN-163,與神同行,2,20250323,20251130,QzdcleDl7mY,官方頻道阡陌社區浸信會 / YouTube,阡陌社區浸信會  原創詩歌《與神同行》【Official Lyrics MV】,yes
-HYMN-164,選擇上主祝福,2,20210620,20250112,sDUBnxyvCdw,Penelope Chan / YouTube,選擇上主祝福  普天頌讚新修訂版 第724首  霍顯煒  申命記 30：15-20,yes
-HYMN-165,My God,1,20211024,20211024,lzRW_HgT9G8,Joshua Band 約書亞樂團 / YouTube,"【主我神나의 하나님 / My Lord, My God】 | 박우정 | Live Worship - 璽恩 SiEnVanessa",yes
-HYMN-166,My King,1,20211024,20211024,l8E2xNp_GCk,Y H V H / YouTube,My King - New Creation Worship,yes
-HYMN-167,做個天父的小精兵,1,20230521,20230521,mMWttLRJgaE,基恩敬拜 Amazing Grace Worship / YouTube,《做個天父的小精兵》- 祈禱仔兒童敬拜系列 基恩敬拜AGWMM,yes
-HYMN-168,全獻在壇上,1,20231231,20231231,UR_k4KSJjmw,Penelope Chan / YouTube,全獻在壇上  青年聖歌合訂本第一册 第52首,yes
-HYMN-169,十架七言,1,20260201,20260201,ahz3WNruOjE,m2kmusic / YouTube,『 十架七言 』 團契遊樂園3 薪火永傳（基督教詩歌）,yes
-HYMN-170,十架的愛,1,20240303,20240303,dfVQ2nbrPnM,讚美之泉 Stream Of Praise Music Ministries / YouTube,【十架的愛 Great Is Your Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17),yes
-HYMN-171,在至高之處,1,20240922,20240922,azxcXb-7TfA,讚美之泉 Stream Of Praise Music Ministries / YouTube,【在至高之處 In the Highest】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (21),yes
-HYMN-172,基督是主,1,20260308,20260308,HMIRMam_CqY,Y H / YouTube,基督是主詩歌   若,yes
-HYMN-173,奉獻甚麼,1,20241124,20241124,6xMj-UwlJiM,SYUCFC / YouTube,奉獻甚麼,yes
-HYMN-174,最美好盡力愛祢,1,20220130,20220130,Rc78LOgNt5M,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《最美好...盡力愛祢》TWS 敬拜者使團「獻給祢」Live (可十二),yes
-HYMN-175,榮耀神羔羊,1,20250907,20250907,bdTgrrXQW94,馮麗娟 / YouTube,榮耀神羔羊 - KUA Worship,yes
-HYMN-176,樂歌榮神,1,20250112,20250112,edBrAMpsOFg,Penelope Chan / YouTube,樂歌榮神   普天頌讚新修訂版 第93首  譚靜芝,yes
-HYMN-177,歌頌父神偉大權能,1,20260503,20260503,2thztf2dXRo,Teresa / YouTube,歌頌父神偉大權能,yes
-HYMN-178,上帝請差遣我,51,20250601,20260517,rW1mbFso9TQ,TTV酸先生 / YouTube,榮美耶穌/讚美三一上帝/請差遣我 - 240524晚堂敬拜,yes
-HYMN-179,奮起之歌,2,20210822,20211128,xnhuZgkWx4M,gato chen / YouTube,奮起之歌,yes
-HYMN-180,愛主更深,2,20220501,20260301,1KxgjgqxD_M,Bee-Chung Chen / YouTube,愛主更深,yes
-HYMN-181,懇求降臨,2,20211212,20221211,doRkvw4gUKY,Jennifer Ou / YouTube,高雄正義教會 聖歌隊 「永望耶穌懇求降臨」,yes
-HYMN-182,我們渴望的耶穌,2,20231210,20241201,pOrOdTWqhh4,聖詩共享 HymnShare / YouTube,"【我們渴望的耶穌】Come, Thou Long-Expected Jesus (粵語 聖詩) Cantonese Hymn",yes
-HYMN-183,我全然獻上,2,20240602,20250921,zPw4JLB_AJ4,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我全然獻上 This Is My Offering】現場敬拜MV (Worship MV) - 讚美之泉敬拜讚美 (28),yes
-HYMN-184,我心靈得安寧,2,20240428,20240512,XC8OsGnoisg,KUA GLOBAL 跨越 / YouTube,【我心靈得安寧／내 영혼 평안해 】李聖雅 ASHLEY｜ONE ACCORD,yes
-HYMN-185,我曾捨命為你,2,20220306,20250406,ZbLm4LZ7Nxc,傳統聖詩 Traditional Hymns / YouTube,我曾捨命為你 I Gave My Life for Thee｜生命聖詩126（國語）,yes
-HYMN-186,我的千古保障,2,20240414,20260517,ioXkZuWQ0Ms,Tsz-Lam Mak / YouTube,頌恩旋律【我的千古保障】歌詞版 MV,yes
-HYMN-187,我的生命獻給祢,2,20220227,20220424,x5elrTM-t6k,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我的生命獻給祢 I Will Offer You My Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (26),yes
-HYMN-188,我要一心稱謝祢,2,20240310,20240922,Ai5QugWvJwg,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讚美之泉 feat. 柳子駿牧師】我要一心稱謝祢｜ 讚美之泉,yes
-HYMN-189,我要忠誠,2,20220403,20230226,LPjtd7aHF2o,Y H / YouTube,我要忠誠 基督是主詩歌(第三集),yes
-HYMN-190,我靈頌讚天上君王,2,20210919,20250629,XsR3B-OAODg,旺角浸信會 / YouTube,"【詩•情•説】我靈頌讚天上君王 Praise, My Soul, the King of Heaven",yes
-HYMN-191,我願像祢,2,20211226,20250824,whkfCmX0MSg,Roni Songbook / YouTube,主我願像祢 O To Be Like Thee - Thomas O. Chisholm / 分享聖樂團 [ 動態歌詞 ]  @roni-songbook,yes
-HYMN-192,救贖的恩典,2,20240107,20250907,WxrAYIaLQOk,讚美之泉 Stream Of Praise Music Ministries / YouTube,【救贖的恩典 The Grace of Redemption】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17),yes
-HYMN-193,新耶路撒冷,2,20221030,20251214,PO0-QmW54kI,讚美之泉 Stream Of Praise Music Ministries / YouTube,【新耶路撒冷 New Jerusalem】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17),yes
-HYMN-194,是為了我罪,2,20220417,20260405,Mt7CHPlMtqw,HKACM Official 香港基督徒音樂事工協會 / YouTube,"【是為了我罪】""齊唱短歌4"" Official Lyric Video - 官方完整版",yes
-HYMN-195,普世歡騰,2,20211226,20221218,1UKYcSzroio,天韻合唱團 Heavenly Melody / YouTube,【普世歡騰組曲】天韻合唱團 Official MV,yes
-HYMN-196,最大的福分,2,20240505,20250202,bqKLaKS-C9I,讚美之泉 Stream Of Praise Music Ministries / YouTube,【最大的福分 The Blessing】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (26),yes
-HYMN-197,有福的人,2,20230122,20240616,tGjYQ6f-Pqg,小羊詩歌 / YouTube,【中英字幕】有福的人 | F調 | 小羊詩歌,yes
-HYMN-198,有福的國,2,20231015,20240616,tEe5su-O25Q,天韻合唱團 Heavenly Melody / YouTube,【有福的國 】天韻合唱團 Official MV,yes
-HYMN-199,榮耀歸於真神,2,20221106,20250105,Hd5CF76Qe1Q,Grace Music / YouTube,榮耀歸於真神 To God Be the Glory,yes
-HYMN-200,每天的禱告,2,20230806,20240811,mnMhfwq4QwA,橄欖枝 / YouTube,每天的禱告 - 澆灌園子音樂事工,yes
-HYMN-201,永恆聖光,2,20240128,20260215,SkC6-UDbH1A,Penelope Chan / YouTube,"上主, 永恆聖光  普天頌讚新修訂版 第197首  蔡張敬玲",yes
-HYMN-202,永約的神,2,20211024,20250504,JcK3DnrXF0o,HKACM Official 香港基督徒音樂事工協會 / YouTube,【永約的神】HKACM Official Music Video,yes
-HYMN-203,求主給這世代看見異象,2,20210704,20250518,7CSnTSZKIh8,Milk&Honey Worship / YouTube,求主給這世代看見異象,yes
-HYMN-204,注目看耶穌,2,20220403,20230319,u1V5BpkHhEQ,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讚美之泉/注目看耶穌/愛，我願意/更深之處/Thou Art Worthy 主祢配得】｜讚美之泉 《天堂敬拜 ACOUSTIC》,yes
-HYMN-205,無言的讚頌,2,20220508,20241201,5gyQFFRFEiA,WAM Worship 沙田浸信會崇拜及聖樂事工 / YouTube,2020 新編 ｜無言的讚頌(遍地充滿) official lyrics Video,yes
-HYMN-206,獨一的真神,2,20230129,20240204,RnLhO50LSwU,新心音樂事工 New Heart Music Ministries / YouTube,獨一的真神 One True God (新心音樂事工),yes
-HYMN-207,獻上今天,2,20211017,20240922,ZW6SM5K1MhQ,HKACM Official 香港基督徒音樂事工協會 / YouTube,獻上今天 - 蘇如紅 (文化中心管弦樂Live),yes
-HYMN-208,獻給我天上的主,2,20220403,20230115,0rh6R51MRls,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《獻給我天上的主》TWS 敬拜者使團 (同心唱系列 | 歌詞領唱版),yes
-HYMN-209,當讚美聖父,2,20250525,20251026,amOj84e3URw,香港聖詩會 Hong Kong Hymn Society / YouTube,當讚美聖父 Praise Ye the Father - 十周年聖詩頌唱會「頌」,yes
-HYMN-210,偉大永生神,1,20220619,20220619,I6QjlvXLYpQ,香港聖樂促進會 / YouTube,【聖詩薈萃】偉大永生神(粵) - 普天頌讚新修訂本542首,yes
-HYMN-211,全為祢傾倒,1,20251005,20251005,rxE4p6Fqcx0,RainbowPromise / YouTube,【全為祢傾倒】[全然為你]粵語版,yes
-HYMN-212,全能右手,1,20230702,20230702,mRyGXSC5QPo,Penelope Chan / YouTube,全能右手歌  普天頌讚 第571首  黃永熙,yes
-HYMN-213,再次將我更新,1,20220626,20220626,6o262bSdFAg,小羊詩歌 / YouTube,【中英字幕】再次將我更新 | A調 | 小羊詩歌《再次將我更新》專輯,yes
-HYMN-214,向耶穌祈求,1,20260517,20260517,vferiN3Jcm8,HKACM Official 香港基督徒音樂事工協會 / YouTube,向耶穌祈求﹣齊唱兒歌DVD (官方動作版),yes
-HYMN-215,如鹿切慕溪水,1,20240609,20240609,NHwHhEWEG_0,開路者視頻 Kairos Media / YouTube,如鹿切慕溪水 As The Deer,yes
-HYMN-216,尋求祢面,1,20240825,20240825,6pKyphrDclA,建道神學院新祢呈敬拜隊 / YouTube,〈尋求祢面〉【建道神學院新祢呈敬拜隊詩歌創作】,yes
-HYMN-217,對我說話,1,20211017,20211017,7NhRgi_Bccc,天韻合唱團 Heavenly Melody / YouTube,【對我說話-字幕版MV】天韻合唱團Official MV,yes
-HYMN-218,憑信跨過,1,20240929,20240929,a9E7ZHvQNmE,More of Jesus Worship (更多有耶穌的敬拜) / YouTube,憑信跨過 | 鹹蛋音樂事工 SEMM | 歌詞MV,yes
-HYMN-219,我們來到主面前,1,20240630,20240630,msVlVp52qsw,Jennifer Poon / YouTube,讚之歌_我們來到主面前,yes
-HYMN-220,我們呼求,1,20240414,20240414,CigLPfxQ7Sc,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我們呼求 We Cry Out】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A),yes
-HYMN-221,我們愛因為神先愛,1,20230514,20230514,szBB3WqM9x4,基恩敬拜 Amazing Grace Worship / YouTube,《我們愛因為神先愛》We love because God first loved us - 基恩敬拜AGWMM official MV,yes
-HYMN-222,永恆國度,1,20210606,20210606,r-ZgxbHyenA,HKACM Official 香港基督徒音樂事工協會 / YouTube,【永恆國度】全是祢的 - 齊唱敬拜讚美(11) ACM Official Lyric Video,yes
-HYMN-223,求聖靈光照,1,20230219,20230219,vx7YbwU8Mqo,Heaven / YouTube,求聖靈光照,yes
-HYMN-224,泰理士卡農 The Tallis Canon,1,20240630,20240630,DnUbfPZBGKc,manfung li / YouTube,泰理士卡農 The Tallis Canon (曲詞：Thomas Tallis Arr. by Douglas E. Wagner；中文歌詞：高蔡慧君),yes
-HYMN-225,活祭獻呈,1,20250504,20250504,V6dcQOuUsAA,HK詩歌2021 / YouTube,活祭獻呈,yes
-HYMN-226,深恩厚愛,1,20250928,20250928,ySMMe-FbERI,YWAM Gateway Worship / YouTube,主深恩厚愛 Goodness of God | 粵語歌詞影片 Cantonese Lyric Video | 粵語原聲敬拜 Living Room Session,yes
-HYMN-227,燃亮這生光采,1,20240310,20240310,5wbM2sGbwaU,HKACM - Topic / YouTube,燃亮這生光采,yes
-HYMN-228,耶和華尼西,1,20250615,20250615,ZhCk1rgIAJ8,More of Jesus Worship (更多有耶穌的敬拜) / YouTube,耶和華尼西 | 李漫渟 Manting(Deborah) Lee | 原始和聲 Raw Harmony | 歌詞MV,yes
-HYMN-229,耶和華是我的牧者,1,20230212,20230212,hA9ulk2JVjU,水流之音聖樂團SOLSO / YouTube,11 耶和華是我的牧者,yes
-HYMN-230,自耶穌來住在我心,1,20220220,20220220,6AvjcXHPQpo,KUA GLOBAL 跨越 / YouTube,KUA MUSIC 【自耶穌來住在我心 / Since Jesus Came Into My Heart】蔡佳靈,yes
-HYMN-231,若非耶和華,1,20250622,20250622,o30mL1Ojbcs,Tracey Chui / YouTube,若非耶和華,yes
-HYMN-232,萬國讚美,1,20251109,20251109,bxghhrxuvbU,中華基督教音樂敬拜讚美協會 / YouTube,【萬國讚美 / All Nations Praise】邵益波/《獻上》共同創作專輯,yes
-HYMN-233,請堅固我,1,20231203,20231203,s0h93HvF3aY,基恩敬拜 Amazing Grace Worship / YouTube,《請堅固我》Lord Please Strengthen Me 基恩敬拜 AGWMM Official MV,yes
-HYMN-234,讓我讚美祢,1,20250518,20250518,f-PySFUv5Uw,ngaitinwai / YouTube,讓我讚美祢創造主     曲詞：魏天威,yes
-HYMN-235,讓讚美飛揚,1,20231015,20231015,LAokJhXevr8,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讓讚美飛揚  Let Praise Arise 古典版】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (1),yes
-HYMN-236,讚美主名,1,20251012,20251012,2WQ1w7YFBFk,wamax1000 / YouTube,ECCSKC Choir 讚美主名,yes
-HYMN-237,獻上頌讚,2,20210711,20230903,7akSZyq4PpA,Serene workshop / YouTube,獻上頌讚（粵語詩歌）,yes
-HYMN-238,生命活水充滿我,2,20240331,20250601,dD3-QDAOnMg,讚美之泉 Stream Of Praise Music Ministries / YouTube,【生命活水充滿我 Living Water】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A),yes
-HYMN-239,當轉眼仰望耶穌,2,20231001,20251207,ByzWCbDQzQQ,GOOD TV DAILY / YouTube,史茵茵 - 當轉眼仰望耶穌,yes
-HYMN-240,盡心盡性讚美祂,2,20220123,20240728,TAhJpJZr7ns,讚美的時刻 / YouTube,盡心盡性讚美祂（粵語詩歌）,yes
-HYMN-241,祂救了我,2,20210606,20240204,gwcyVNjOLAo,Jennifer Poon / YouTube,青年新歌_祂救了我,yes
-HYMN-242,神祢名尊貴,2,20231008,20231119,UQfAOwKTfmA,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,神祢名尊貴｜2023年復活期詩歌分享,yes
-HYMN-243,神臨在的器皿,2,20231015,20231029,hsErxZyNDsw,教會司琴培訓中心Church Pianist Training Centre / YouTube,神臨在的器皿,yes
-HYMN-244,神配得尊稱,2,20240225,20250824,_jGNzLo2TMQ,澳門白鴿巢浸信會 Macau Pak Kap Chao Baptist Church / YouTube,神配得尊稱︱You Are Worthy︱詩班獻詩︱澳門白鴿巢浸信會,yes
-HYMN-245,祢坐著為王,2,20250622,20251026,vPEGa8KGZmI,生命河 ROLCC Media / YouTube,你坐著為王 You Sit On The Throne 生命河敬拜讚美系列 2 動態 MV,yes
-HYMN-246,祢是恆久不變,2,20220821,20260419,LejjkpWT7zA,m2kmusic / YouTube,『祢是恆久不變』 團契遊樂園10 耶穌，我深愛你（基督教詩歌）,yes
-HYMN-247,祢的慈愛,2,20240512,20250330,CtEmco5_7Ys,讚美之泉 Stream Of Praise Music Ministries / YouTube,【祢的慈愛 Unfailing Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11J),yes
-HYMN-248,稱頌主為王,2,20230409,20260405,re3ouJU6sjA,中華基督教長老會台北信友堂 / YouTube,台北信友堂主日崇拜獻詩-禧爾詩班(稱頌主為王！)2016.11.27,yes
-HYMN-249,立志擺上,2,20221106,20221225,WLtqi4s29LQ,建道神學院新祢呈敬拜隊 / YouTube,〈立志擺上〉建道神學院新祢呈敬拜隊 官方歌詞版MV (曲詞:DJS 編曲:古丹青),yes
-HYMN-250,義人的路,2,20220821,20241013,tjxFw28Lp5E,Jennifer Poon / YouTube,天韻詩歌_義人的路,yes
-HYMN-251,耶和華是愛,2,20220821,20250209,z-SF-RvTF5Q,iTabernacle.net會幕文化 / YouTube,【詩歌】耶和華是愛（詩篇23篇）,yes
-HYMN-252,耶和華祢是我的神,2,20250202,20260111,y3QzV2WE-qw,讚美之泉 Stream Of Praise Music Ministries / YouTube,"【耶和華祢是我的神 Jehovah, You Are My God】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (5)",yes
-HYMN-253,耶穌不改變,2,20220703,20220828,kFJpJs0y2ck,Teresa古今詩歌Hymns♬ / YouTube,"【耶穌不改變】Yesterday,Today,Forever│詞：Albert B. Simpson│曲：J. H. Burke│鋼琴：朱素雲│頌唱：Teresa Huang#WorshipSongs",yes
-HYMN-254,耶穌愛你,2,20220515,20230521,OSjjpGHiozM,讚美之泉 Stream Of Praise Music Ministries / YouTube,【耶穌愛你 Jesus Loves You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (5),yes
-HYMN-255,耶穌的愛,2,20220109,20250309,RVA_Le5AJtk,讚美之泉 Stream Of Praise Music Ministries / YouTube,【耶穌的愛 The Love of Jesus】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12P),yes
-HYMN-256,聖潔的祢,2,20230924,20240707,RGbw2Nxh5dk,HKACM Official 香港基督徒音樂事工協會 / YouTube,【聖潔的祢】HKACM Official Music Video,yes
-HYMN-257,聽命勝於獻祭,2,20220807,20251012,uO1wRrH-ZiQ,Matthew Lee / YouTube,《聽命勝於獻祭》Demo｜Matthew Lee,yes
-HYMN-258,與主合一,2,20220605,20240602,9DBrF7iidaU,Rev Tommy Tam / YouTube,與主合一(聖餐),yes
-HYMN-259,興起為耶穌,2,20210822,20230108,-WJ0r95w6O4,多伦多基督福音堂 / YouTube,377 興起為耶穌,yes
-HYMN-260,萬有都歸祢,2,20240929,20241103,SOXdBgXWw4M,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《萬有都歸祢》TWS 敬拜者使團 (同心唱系列 | 歌詞領唱版),yes
-HYMN-261,萬物的結局近了,2,20240128,20260503,9b4BNQLj06A,dsan36 / YouTube,萬物的結局近了,yes
-HYMN-262,萬王之王萬主之主,2,20221106,20221120,-NiycB70174,Jennifer Poon / YouTube,新歌頌揚79萬王之王萬主之主,yes
-HYMN-263,萬福源頭,2,20230430,20240421,Qy85IAWenIs,chinglianglee / YouTube,"萬福源頭 Come, Thou Fount of Every Blessing",yes
-HYMN-264,向基督歡呼,1,20230611,20230611,1ZJxgyPqzxg,福音未來 Project EVA / YouTube,向基督歡呼 頌樂樂 6 All Hail King Jesus 樂譜純音樂學習版,yes
-HYMN-265,愛伴我高飛,1,20250720,20250720,YaUocCvsfeQ,MIC 好耶音樂 / YouTube,MIC (好耶音樂) //流行詩歌系列// - 01 愛伴我高飛 Official MV,yes
-HYMN-266,慈繩愛索,1,20260125,20260125,g0W4TYQX7NM,基恩敬拜 Amazing Grace Worship / YouTube,"《慈繩愛索》The Rein Of Love, The Rope Of Grace 基恩敬拜 AGWMM Official MV",yes
-HYMN-267,慶賀主受膏為王,1,20231203,20231203,dt0m_1rrxgw,Arthur Lee / YouTube,096 慶賀主受膏為王,yes
-HYMN-268,我能給祢什麼,1,20250817,20250817,ozwcBC4Or8o,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我能給你什麼 What Could I Bring To You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (29),yes
-HYMN-269,我要一生一世住在袮聖殿,1,20230312,20230312,SMK-OFG3fH8,WN X 玻璃海樂團 X PHOTIC / YouTube,我要一生一世住在你聖殿 (LIVE Version),yes
-HYMN-270,擁戴榮耀羊羔,1,20251116,20251116,P5aZ45ICk_U,Nottingham Chinese Christian Church / YouTube,Crown him with many crowns 擁戴榮耀羊羔,yes
-HYMN-271,擁戴耶穌為王,1,20250420,20250420,7FdnLj7hZvM,生命河 ROLCC Media / YouTube,擁戴耶穌為王 Crown Him with Many Crowns（生命河敬拜讚美系列 9 【神已經成就了】）小組敬拜用,yes
-HYMN-272,新的異象,1,20260104,20260104,mHSSuQA3LQo,讚美之泉 Stream Of Praise Music Ministries / YouTube,【新的異象，新的方向 Give Us Vision】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20),yes
-HYMN-273,更像我恩主,1,20230101,20230101,6YHdzBYqSO8,宇宙光百人大合唱 / YouTube,更像我恩主,yes
-HYMN-274,最好的福氣,1,20240519,20240519,HcpvUZoIv70,角聲使團 The Heralders / YouTube,角聲使團 The Heralders《最好的福氣》[Official Lyric Video],yes
-HYMN-275,最好的路徑,1,20260517,20260517,wfAmoadlCo0,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《最好的路徑》 | TWS 敬拜者使團 X SeeK敬拜小羊 (林後四),yes
-HYMN-276,祈求我恩主 Be Thou My Vision,1,20211024,20211024,rDcGb0N484Y,香港聖公會主誕堂聖樂部 HKSKHHNC Sacred Music / YouTube,《祈求我恩主》（Be Thou My Vision）｜曲：John Rutter｜詞：梁孟傑｜粵語詩歌｜SKHHNCC,yes
-HYMN-277,神是我們的避難所,1,20250629,20250629,remr_E98swY,Joseph / YouTube,神是我們的避難所,yes
-HYMN-278,神聖嬰孩,1,20231224,20231224,V_V-DyTGUU0,Heaven / YouTube,神聖嬰孩 The Holy Child,yes
-HYMN-279,聖潔耶穌,1,20260329,20260329,U2gJD4kpsSw,香港聖詩會 Hong Kong Hymn Society / YouTube,"啊 ! 聖潔耶穌 Ah, Holy Jesus - 第八屆聖詩頌唱會「耶穌基督　道路、真理、生命」",yes
-HYMN-280,萬有高歌,1,20240728,20240728,meZVDWLfg0s,DHBC Gabriel / YouTube,萬有高歌 Let All Creation Sing,yes
-HYMN-281,萬王之王,1,20221106,20221106,SlIyPb3siHM,旌旗音樂 Banner Music / YouTube,【萬王之王 King of Kings】Worship cover｜旌旗音樂,yes
-HYMN-282,誰會差派一個嬰孩？,1,20231217,20231217,75ijGDyimfI,主馨園 / YouTube,誰會差派一個嬰孩,yes
-HYMN-283,請差遣我,1,20220731,20220731,0zsxMkeEOL0,GOOD TV 好音樂 / YouTube,【我在這請差遣我 - 白裡透紅】官方歌詞MV | 好音樂金傳獎,yes
-HYMN-284,謝謝祢的愛,1,20251228,20251228,x5PC2zb_kLM,基恩敬拜 Amazing Grace Worship / YouTube,《謝謝祢的愛》Thank You for Your Love 基恩敬拜 AGWMM Official MV,yes
-HYMN-285,讚嘆主恩,1,20251005,20251005,pIzmcYDfnTM,Esmond Lim / YouTube,讚嘆主恩 （2015_05_24_BUCC）,yes
-HYMN-286,表彰我主大能,2,20220116,20220612,vkxho-5XEUM,Hymn Share / YouTube,"表彰我主大能 Tell Out, My Soul, the Greatest of the Lord (粵語 Cantonese)",yes
-HYMN-287,親眼看見祢,2,20221002,20260118,r6OF36e0-f4,基恩敬拜 Amazing Grace Worship / YouTube,《親眼看見祢》My eyes have seen You 詩班版  - 基恩敬拜AGWMM official MV,yes
-HYMN-288,觀看宇宙,2,20221023,20241027,mD9mRX9nN2k,"Christian Choir, HKU / YouTube",觀看宇宙 Look at the World,yes
-HYMN-289,讓我得見祢的榮面,2,20241006,20250223,jvI7dY6Mz-0,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讓我得見祢的榮面 See You Face to Face】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (21),yes
-HYMN-290,讚美中信心不斷升起,2,20251214,20251221,yFQn424qMKg,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讚美中信心不斷升起 Let Faith Arise In Our Praises】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27),yes
-HYMN-291,這一生最美的祝福,2,20220918,20260222,tPf7Ig1ebL4,讚美之泉 Stream Of Praise Music Ministries / YouTube,【這一生最美的祝福 The Gift of Knowing You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (8),yes
-HYMN-292,這樣的愛,2,20250413,20250525,2IhwdWRMqFI,cowcow coke / YouTube,這樣的愛,yes
-HYMN-293,願祢國度降臨,2,20220703,20230205,5QmE9psO71g,讚美之泉 Stream Of Praise Music Ministries / YouTube,【願祢國度降臨 When Your Kingdom Comes】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20),yes
-HYMN-294,EMMANUEL,1,20221218,20221218,PQuq4umpb3Q,Tommee Profitt / YouTube,O Come O Come Emmanuel - Tommee Profitt [OFFICIAL MUSIC VIDEO],yes
-HYMN-295,Gloria 榮耀頌,1,20241215,20241215,BGzWSk7wIBQ,山嵐合唱團 / YouTube,《Gloria榮耀頌》山嵐合唱團,yes
-HYMN-296,Hallelujah 讚美主,1,20240519,20240519,QAQ2T9QAT2g,HKACM Official 香港基督徒音樂事工協會 / YouTube,【Hallelujah讚美主】HKACM 兒童事工 Official Music Video｜齊唱兒歌 2（官方完整CD版）,yes
-HYMN-297,Immanuel,1,20241222,20241222,oKuKKE-WOK0,Joaquín Yoyaquim / YouTube,Immanuel-Songs Of Praise (subtitulado),yes
-HYMN-298,Joy in the Morning,1,20230430,20230430,uysGt7JVw9U,Tauren Wells / YouTube,"Tauren Wells, Elevation Worship - Joy In The Morning (Worship Version)",yes
-HYMN-299,Thy Praise I Sing,1,20211024,20211024,8dvfhpxl35w,Audiobook Passion / YouTube,My God My King Thy Praise I Sing - Henry Francis Lyte,yes
-HYMN-300,一生一世同在,1,20220904,20220904,YLxLKxGWlqw,Worship Music-AM  / YouTube,一生一世同在,yes
-HYMN-301,一生不枉過,1,20240908,20240908,E266iLVEa4A,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,一生不枉過,yes
-HYMN-302,一生之久,1,20260426,20260426,XHHxo4kErEQ,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,一生之久 - 鹹蛋音樂事工SEMM🍳//《刻在祢心底的名字》 Mini-Album 8th Track,yes
-HYMN-303,一生信靠,1,20211031,20211031,QQmZcmaah-A,Terence Ss  Channel / YouTube,一生信靠 (1982) cover,yes
-HYMN-304,一生愛祢,1,20260215,20260215,fgHBHUPiaJI,讚美之泉 Stream Of Praise Music Ministries / YouTube,【一生愛祢 With All My Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9),yes
-HYMN-305,一直都是祢,1,20241215,20241215,y7K-rMz3fUM,HTBBChurch / YouTube,一直都是祢 It's Always Been You // HTBB 敬拜,yes
-HYMN-306,千古保障,1,20220710,20220710,Hek9LKSnDss,Teresa古今詩歌Hymns♬ / YouTube,"【千古保障】O God, Our Help in Ages Past│詞：Isaac Watts│曲：William Croft│鋼琴：Julie Ann Kitchen│頌唱：Teresa H.",yes
-HYMN-307,只見耶穌,1,20230305,20230305,fJHzFVC2RH8,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,只見耶穌,yes
-HYMN-308,同心合意,1,20240623,20240623,KYSq-eyBP7o,拉蓊‧進成Daong Cinceng / YouTube,馬立雲部落同心合意讚美主,yes
-HYMN-309,宣教的中國,1,20231126,20231126,iRZDbba6JBM,神国赞美诗God's love / YouTube,《宣教的中國》China's Mission 讚美詩 Grace Music 中文字幕《宣教的中国》,yes
-HYMN-310,尊主偉大,1,20230219,20230219,qrIGqu4u1J8,香港聖詩會 Hong Kong Hymn Society / YouTube,【4K粵語原創聖誕歌】尊主偉大 Magnificat (馬利亞 尊主頌) - 2021 聖誕聖詩頌唱會,yes
-HYMN-311,小孩的讚頌,1,20230521,20230521,r0qDrlICcFQ,Kwan Natalie / YouTube,小孩的讚頌【童來頌讚】,yes
-HYMN-312,盡力地頌揚祢,1,20221016,20221016,AEIKt6vxA9E,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,盡力地頌揚祢【恢復粵語敬拜共建專輯 (五) 】- SEMM X Cantonhymn X 小羊詩歌,yes
-HYMN-313,真光耀照,1,20220109,20220109,FwAsPrgNYiE,HeArtz Senlok / YouTube,HeArtz 翻譯詩歌《真光耀照》【動態歌詞Lyrics Video】,yes
-HYMN-314,黑暗終必過去,1,20240225,20240225,S--IP6hEiSM,HKACM Official 香港基督徒音樂事工協會 / YouTube,【黑暗終必過去】- ACM Lyric MV,yes
-HYMN-315,默默回望,1,20251228,20251228,-Du7LGKtMec,基督徒青草原iGreenpastures / YouTube,【青草原詩歌】默默回望(粵)CD版,yes
-HYMN-316,一群大能的子民,1,20230521,20230521,dat7ws5RgZQ,jamesbox138 / YouTube,基督教詩歌：一群大能的子民,yes
-HYMN-317,一點小事,1,20220724,20220724,z7U-SgJlGEE,小羊詩歌 / YouTube,【中英字幕】一點小事｜小羊詩歌 · 基音原創《祢與我同在》 專輯,yes
-HYMN-318,上帝的兒女何等有福,1,20210801,20210801,QXIWuzw5ME0,陳贊一博士 / YouTube,上帝的兒女何等有福,yes
-HYMN-319,上帝聽禱告,1,20250608,20250608,GoVnszF3TmM,r33cat / YouTube,上帝聽禱告,yes
-HYMN-320,不曾配得的愛,1,20230423,20230423,t5lauYsm1OE,角聲使團 The Heralders / YouTube,角聲使團 The Heralders 《不曾配得的愛》 LOVE UNDESERVED  [Official MV] (4K UHD),yes
-HYMN-321,不朽的愛,1,20260322,20260322,1ioWVUiJQQA,LCHS SF 路德會聖靈堂 / YouTube,不朽的愛（曲/詞：高珮琳）,yes
-HYMN-322,不變的應許,1,20210905,20210905,JnXaTrJtbUA,Son Music 新音樂敬拜創作 / YouTube,不變的應許 | SON Music [討祢喜悅] ft. Brenda Li,yes
-HYMN-323,乘鷹翅膀,1,20240811,20240811,jS2ETrF3xrc,真理堂敬拜傳播中心 / YouTube,20241013詩班獻詩：乘鷹翅膀,yes
-HYMN-324,事奉祢最甘甜,1,20221204,20221204,1hHcJWFNIZs,內巷 | withinlane / YouTube,[ 事奉祢最甘甜 ] - 中文歌詞,yes
-HYMN-325,亞伯拉罕之神,1,20230813,20230813,93DFfzrit0A,lucy2716 / YouTube,萬14亞伯拉罕之神S,yes
-HYMN-326,亞伯拉罕的神,1,20250615,20250615,w8ch5_ehbvQ,kevin8788JB / YouTube,【真耶穌教會台北教會】亞伯拉罕的神,yes
-HYMN-327,今要主自己,1,20220501,20220501,OAp973VbG0M,橄欖枝 / YouTube,今要主自己,yes
-HYMN-328,他們曾這樣獻上,1,20221113,20221113,6LpRf6mlOpw,BunBun & PanPan / YouTube,他們曾這樣獻上,yes
-HYMN-329,以便以謝,1,20231126,20231126,272XIzb-osI,Kiki8857 / YouTube,20090914 黃國倫_帶領我_以便以謝,yes
-HYMN-330,以色列的聖者,1,20260308,20260308,gFaAPU11A64,祝瑞蓮 - 琴與爐敬拜 (神的帳幕團隊) Josie Chu - Naioth Ministries / YouTube,以色列的聖者 / 祝瑞蓮琴與爐詩歌專輯 (6) 以色列的聖者,yes
-HYMN-331,以馬內利來臨 O COME,1,20221218,20221218,2UKt7U2cYiM,小平心歌Ping Hymns / YouTube,"以馬內利來臨 O Come, O Come Emmanuel  —【经典圣诞诗歌】 Tenor《小平心歌Ping Hymns—Chinese Version》",yes
-HYMN-332,仿效聖徒,1,20211219,20211219,HX14Dgz7QcA,Arthur Lee / YouTube,219 仿效聖徒,yes
-HYMN-333,伴我成長,1,20210926,20210926,ef_qXm0vKlc,基督徒青草原iGreenpastures / YouTube,【青草原詩歌】伴我成長(粵),yes
-HYMN-334,何等尊貴,1,20240616,20240616,LoZmJyKZITk,Jennifer Poon / YouTube,新歌頌揚364何等尊貴,yes
-HYMN-335,你當無懼,1,20260222,20260222,sSDLTUWxtsQ,Heaven / YouTube,"你當無懼, 樂歡欣 Fear Not, Rejoice and Be Glad",yes
-HYMN-336,使我靈自由,1,20230716,20230716,icanBn6Fe_c,SS / YouTube,使我靈自由(ACBC詩歌班獻詩）,yes
-HYMN-337,數算主恩,1,20250323,20250323,Y_E1yD844sU,宇宙光百人大合唱 / YouTube,數算主恩,yes
-HYMN-338,新年齊蒙福,1,20240218,20240218,bFEyFcEQWWs,福音粵韻歌曲分享 / YouTube,曲64 新年齊蒙福 福音粤韻子喉分享,yes
-HYMN-339,新的一天,1,20260118,20260118,PjzutOwFo6s,讚美之泉 Stream Of Praise Music Ministries / YouTube,【新的一天 A Brand New Day】敬拜MV - 讚美之泉兒童敬拜讚美 (7),yes
-HYMN-340,新的方向,1,20260104,20260104,HwG387vpsVg,讚美之泉 Stream Of Praise Music Ministries / YouTube,【得勝的歌 /  新的異象，新的方向 /  一生敬拜祢 /  能不能 / 十字架】｜讚美之泉《天堂敬拜 TOUR LIVE》,yes
-HYMN-341,有福的確據,1,20241110,20241110,6xe1MgnKQuc,QQSUN / YouTube,【有福的確據 Blessed Assurance】生命聖詩414  ENG SUB / Chinese / Pinyin ⬇️描述,yes
-HYMN-342,榮耀歸與父神,1,20230416,20230416,kRiZ1FbKo8s,基督徒生命教會Foz / YouTube,基督徒生命教會 20220619 使榮耀歸與父神,yes
-HYMN-343,樂領聖餐,1,20210905,20210905,47pHVGfKZWY,Arthur Lee / YouTube,233 樂領聖餐 (喫這餅喝這杯是表明主的死),yes
-HYMN-344,聖哉 Sanctus,1,20210711,20210711,ulm6_hJq3VA,CCMM Sydney / YouTube,聖哉-Sanctus,yes
-HYMN-345,與主同死同活,1,20240310,20240310,FEhX9y9NNdM,香港聖樂促進會 / YouTube,齊來學聖詩 (11)：與主同死同活 (普天頌讚新修訂本第213首),yes
-HYMN-346,萬名之上的名,1,20211205,20211205,mhGrb31DD84,joehuang90 / YouTube,耶穌，萬名之上的名-小羊詩歌(再次將我更新),yes
-HYMN-347,赴主宴席,1,20260405,20260405,-Inuhqd0rQA,Li Ho / YouTube,"赴主宴席  ~ 长老会恩泽堂圣歌团献唱, PPC-Orchard.",yes
-HYMN-348,音樂榮神,1,20221023,20221023,6xXAnYLJ-M0,Susan Pang / YouTube,『音樂榮神』 北美真道浸信會神學院音樂會－全體演出者 6-8-13,yes
-HYMN-349,頌讚哈利路亞,1,20221009,20221009,JEuwXUD5yMc,鄧承軒 X MC Samuel / YouTube,頌讚哈利路亞（輕快版）｜粵語詩歌翻唱,yes
-HYMN-350,今生所盼,1,20251019,20251019,LzJP04JZ0z4,Saddleback Church Hong Kong / YouTube,Living Hope - 今生所盼 | Saddleback Worship (Hong Kong) | Live Capture 現場敬拜片段 | 敬拜歌曲粵語/廣東話翻譯,yes
-HYMN-351,你們是世上的鹽,1,20230813,20230813,3LaBVEwn2kI,Penelope Chan / YouTube,你們是世上的鹽  普天頌讚新修訂版 第544首   譚靜芝,yes
-HYMN-352,你要稱頌耶和華,1,20250608,20250608,GTbSQh0LOnE,讚美之泉 Stream Of Praise Music Ministries / YouTube,"【我的心，你要稱頌耶和華 Praise The Lord, O My Soul】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (3)",yes
-HYMN-353,使我播送和平,1,20260510,20260510,sc98ZU3HRIk,Clay Jar Missio & Musica / YouTube,主使我播送和平 Prayer Litany 分部練習 SATB Tutorial,yes
-HYMN-354,來敬拜榮耀王,1,20231126,20231126,HSTpPoLHoes,SongsOfAscents上行詩 / YouTube,生命聖詩33 | 來敬拜榮耀王 | O Worship the King | HANOVER | CROFT,yes
-HYMN-355,來讚美我上主,1,20240811,20240811,D069iqy4MJ0,終極敬拜WorshipInHongKong / YouTube,來讚美我上主 伍偉基﹙粵語﹚ Laudate Dominum 泰澤,yes
-HYMN-356,信靠順服,1,20240630,20240630,JvOpGCkg2Wc,宇宙光百人大合唱 / YouTube,信靠順服,yes
-HYMN-357,假使我喚叫你,1,20251109,20251109,banarnnGvwU,香港聖詩會 Hong Kong Hymn Society / YouTube,假使我喚叫你 Will You Come and Follow Me (The Summons) - 2019 聖詩頌唱會「詩‧人」,yes
-HYMN-358,僕人之歌,1,20230903,20230903,6E3Lnc19eS4,玻璃海樂團 - Topic / YouTube,僕人之歌,yes
-HYMN-359,儘管我尚未看見,1,20251019,20251019,PtJLd5GEyb4,HKACM Official 香港基督徒音樂事工協會 / YouTube,【儘管我尚未看見 (ft. Sunset Worship)】HKACM Official Music Video,yes
-HYMN-360,先求祂的國,1,20230716,20230716,rm3N_5VKbng,MIshajun東俊 / YouTube,「先求祂的國和義」,yes
-HYMN-361,先聖之神,1,20250914,20250914,dwVM7NG_o-U,SongsOfAscents上行詩 / YouTube,"生命聖詩37 | 先聖之神 | God of Our Fathers, Whose Almighty Hand | NATIONAL HYMN",yes
-HYMN-362,全地都屬主,1,20250525,20250525,-WK2MMrBKII,Isaac Lam / YouTube,全地都屬主 懷恩青年合唱團 2018乘著歌聲的翅膀音樂會 懷恩堂週五音樂會,yes
-HYMN-363,唱一首天上的歌,1,20221023,20221023,ZSOYluQXi5o,Andrew Vlogs / YouTube,唱一首天上的歌 - 迦南詩歌 -,yes
-HYMN-364,寰宇群生,1,20250608,20250608,rBfxOgQWaVQ,Teochew Service PLCMC 潮语崇拜 / YouTube,TS 诗歌 - 寰宇群生,yes
-HYMN-365,得力在乎祢,1,20260315,20260315,PvCQf0SejTU,耶穌是主Jesus is Lord / YouTube,粵語詩歌【得力在乎你】,yes
-HYMN-366,從亙古到永遠,1,20220918,20220918,4u_UQ4OQdTw,生命河 ROLCC Media / YouTube,從亙古到永遠 You Reign Eternally (生命河敬拜讚美系列 6：天開了) 小組敬拜用,yes
-HYMN-367,復活得勝主,1,20230409,20230409,tlvFs9ixEjw,Teresa古今詩歌Hymns♬ / YouTube,【復活得勝主】Thine Is the Glory│詞：Edmond L. Budry│曲：George F. Handel│鋼琴：Kaleb Brasee│頌唱：Teresa Huang,yes
-HYMN-368,感恩祭燃起,1,20240623,20240623,A0xGphDjmtg,角聲使團 The Heralders / YouTube,角聲使團 The Heralders 《感恩祭燃起》 THANKSGIVING OFFERING [Official MV] (4K UHD),yes
-HYMN-369,我以禱告來到祢跟前,1,20221218,20221218,z_9TqPE69Iw,Peace & Joy's Channel / YouTube,我以禱告來到你跟前 - 我心旋律,yes
-HYMN-370,我向祢禱告,1,20240929,20240929,-IVXs-rBonc,Son Music 新音樂敬拜創作 / YouTube,我向祢禱告 (歌詞MV) | SON Music ft. Brenda Li,yes
-HYMN-371,我從深處向袮求告,1,20230319,20230319,y4u4W7Glkb8,橄欖枝 / YouTube,詩篇130篇1-4節 (我從深處向祢求告) - 華人的讚美敬拜樂團,yes
-HYMN-372,救恩的記號,1,20240505,20240505,X3OpaMTRBCo,Tina K / YouTube,救恩的記號 - 基恩敬拜（主唱：Tina Kong) 歌詞版 適合預苦期、受難節、復活節默想歌頌,yes
-HYMN-373,是基督耶穌,1,20220710,20220710,NBodCpK7VqQ,Gary Cheung / YouTube,20151108 是基督、耶穌,yes
-HYMN-374,是我異象,1,20230604,20230604,vkNxpcQdB10,慕主音樂 FRCC Music / YouTube,你是我異象 Be Thou My Vision [列國馨香] Alvan Jiing,yes
-HYMN-375,無價至寶,1,20231119,20231119,ymKB9XqkQuE,beLoved144 / YouTube,無價至寶 Priceless [約書亞大衛帳幕的榮耀專輯 - 恢復榮耀],yes
-HYMN-376,煉淨過的生命,1,20260412,20260412,U8NlvgPXor8,讚美之泉 Stream Of Praise Music Ministries / YouTube,【煉淨過的生命 A Purified Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27),yes
-HYMN-377,當我抬頭仰望,1,20240623,20240623,vMjdPG60CS0,KUA GLOBAL 跨越 / YouTube,KUA MUSIC【當我抬頭仰望 / When I Look at the Sky】The  Lighters 萊特,yes
-HYMN-378,盡心盡性,1,20251116,20251116,ccrieZ92CAI,新聖城基督教會Heavenly City Christian Church / YouTube,盡心盡性,yes
-HYMN-379,祢是我力量,1,20220313,20220313,izOAxx2bRIc,讚美之泉 Stream Of Praise Music Ministries / YouTube,【主祢是我力量 You Are My Strength】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11P),yes
-HYMN-380,祢是榮耀君王,1,20220410,20220410,oGgK5BoYSuM,Lo chienchi / YouTube,你是榮耀君王,yes
-HYMN-381,祢是配得,1,20230305,20230305,Y3eE_e5rMvc,讚美之泉 Stream Of Praise Music Ministries / YouTube,【祢是配得 (聖哉聖哉全地唱) You Are Worthy】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (16),yes
-HYMN-382,祢永掌管世界,1,20250921,20250921,lzLeV-YyxRY,CCiL Online / YouTube,[粵語詩歌] 萬有都歸祢／祢永掌管世界／耶穌我感謝祢／我知誰掌管明天,yes
-HYMN-383,谷中百合花,1,20210613,20210613,uhGSFj5McAQ,KUA GLOBAL 跨越 / YouTube,KUA MUSIC【谷中百合花 / 내 진정 사모하는】李聖雅,yes
-HYMN-384,踏上彩虹,1,20250413,20250413,2gRpx6WFcko,950624 agape / YouTube,踏上彩虹,yes
-HYMN-385,先求祂的國和義,1,20240121,20240121,rhbAzx95NBo,盧家宏吉他 LuJiaHong Guitar / YouTube,先求祂的國和義Seek Ye First 盧家宏吉他演奏 GOOD TV LuJiaHong Guitar,yes
-HYMN-386,全地齊讚頌,1,20240623,20240623,U-7IH5Xk1T4,鄧承軒 X MC Samuel / YouTube,全地齊讚頌（行版、副歌和聲版）｜粵語詩歌翻唱,yes
-HYMN-387,凡事都能做,1,20250608,20250608,KLdSuKezMgs,讚美之泉 Stream Of Praise Music Ministries / YouTube,【凡事都能做 All Things are Possible】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9),yes
-HYMN-388,創造世界,1,20250810,20250810,1Hbce-TZczQ,Sharon Chang / YouTube,合唱團 主創造世界,yes
-HYMN-389,十架的大能,1,20240225,20240225,TaCqFTGNKGQ,讚美之泉 Stream Of Praise Music Ministries / YouTube,【十架的大能 The Power Of The Cross】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (28),yes
-HYMN-390,原是為我,1,20250831,20250831,Wg5LDm12jqg,基恩敬拜 Amazing Grace Worship / YouTube,《原是為我》All For My Sake 基恩敬拜 AGWMM Official MV,yes
-HYMN-391,受造奇妙可畏,1,20250928,20250928,xxboAVv2Q34,WN X 玻璃海樂團 X PHOTIC / YouTube,受造奇妙可畏 feat. BUCC (Stormproof live)  // 玻璃海樂團  //,yes
-HYMN-392,受難前夕,1,20230806,20230806,3VMn-jtKEAY,Arthur Lee / YouTube,236 受難前夕 (喫這逾越節的筵席),yes
-HYMN-393,常喜樂滿心間,1,20211219,20211219,uVJbsiuD92A,CNEC HHCC 中華傳道會紅磡基督教會 / YouTube,常喜樂滿心間,yes
-HYMN-394,恩惠隨著我,1,20260111,20260111,4MqHMYPs1ac,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,恩惠隨著我 - 鹹蛋音樂事工SEMM🍳//《刻在祢心底的名字》 Mini-Album 7th Track,yes
-HYMN-395,惟獨耶穌,1,20210620,20210620,nuUwlfQ8_oA,宇宙光百人大合唱 / YouTube,惟獨耶穌,yes
-HYMN-396,無以回報,1,20251102,20251102,WfOE7cBT6Lw,敬拜和弦资源站 WORSHIP&CHORD / YouTube,無以回報 Dengan Apa Kan Kubalas (好歌分享),yes
-HYMN-397,無愧的用人,1,20210627,20210627,Zpgtk4pbUic,Tom Lee / YouTube,無愧的用人,yes
-HYMN-398,真神名號當頌揚,1,20211010,20211010,X4g7ovempdI,Penelope Chan / YouTube,真神名號當頌揚  普天頌讚新修訂版第11首,yes
-HYMN-399,神啊！祢在哪兒,1,20260201,20260201,mbjAbHpetQc,crest712 / YouTube,神啊你在哪兒 (盧永亨作品),yes
-HYMN-400,神愛我和你,1,20230521,20230521,5x-0Coj-yR4,MrKoKei / YouTube,神愛我和你 - Christian Children Ministry,yes
-HYMN-401,祢話語是我亮光,1,20260419,20260419,8KtQjK0GFjE,基恩敬拜 Amazing Grace Worship / YouTube,《祢話語是我亮光》Thy Word Shines - 基恩敬拜 AGWMM Official MV,yes
-HYMN-402,耶和華是我的倚靠,1,20260125,20260125,Q1OaI5EEqGc,角聲使團 The Heralders / YouTube,角聲使團 The Heralders《耶和華是我的倚靠》[Official Lyric Video],yes
-HYMN-403,耶穌恩主今復生,1,20240331,20240331,uJ1WMooiWOI,香港聖詩會 Hong Kong Hymn Society / YouTube,【粵語聖詩】耶穌恩主今復生 (復活良辰歌) The Day of Resurrection - 「基督精兵奮進」2023 聖詩頌唱會,yes
-HYMN-404,青苗生長,1,20260405,20260405,oQTi5bcE-ec,Isaac Lam / YouTube,青苗生長歌｜懷恩堂復活節主日崇拜,yes
-HYMN-405,靠主有福,1,20211212,20211212,bYK21OoyRqc,小平心歌Ping Hymns / YouTube,靠主有福 Blessed is He That Is Trusting the Lord —【诗歌】Tenor《小平心歌Ping Hymns—Chinese Version》PINYIN SUB,yes
-HYMN-406,靠著祢寶血,1,20221106,20221106,y8EreEN33Uo,Son Music 新音樂敬拜創作 / YouTube,靠著祢寶血 (歌詞MV)--SON Music [渴想祢] ft. Brenda Li,yes
-HYMN-407,頌讚祢 hallelujah,1,20211121,20211121,02_VFh5ktVA,音樂世界MusicWorld / YouTube,頌讚祢 Hallelujah｜歌詞MV｜粵語兒童詩歌,yes
-HYMN-408,只有葉子,1,20241117,20241117,MIGZ1WniCkY,Simon Yeung / YouTube,只有葉子,yes
-HYMN-409,同入聖殿,1,20211128,20211128,F3TvFhJrVK0,Jennifer Poon / YouTube,讚之歌_同入聖殿,yes
-HYMN-410,向著前方,1,20251116,20251116,7fumXjstga0,Son Music 新音樂敬拜創作 / YouTube,向著前方 | SON Music [我向祢禱告] ft. Brenda Li & Simon Yu,yes
-HYMN-411,哈利路亞,1,20250126,20250126,A5zmSVyqxUA,小羊詩歌 / YouTube,哈利路亞 | 小羊詩歌《願祢的國降臨》專輯,yes
-HYMN-412,我心敬拜,1,20250525,20250525,GhOrDvCPbYo,KSC / YouTube,我心敬拜 PPT,yes
-HYMN-413,我心稱頌主,1,20241215,20241215,k4M9nttsLUg,香港聖樂促進會 / YouTube,【聖詩薈萃】我心稱頌主(粵) - 普天頌讚新修訂本142首,yes
-HYMN-414,我愛我主國度,1,20250126,20250126,ykBJXGzXozw,Chinchung Chen / YouTube,讚美詩179 我愛我主國度,yes
-HYMN-415,聖誕佳音,1,20241222,20241222,Zgau0NSws1M,陳盈君 / YouTube,#132聖誕佳音-陳盈君,yes
-HYMN-416,萬主之主,1,20221106,20221106,F4GBw5f1KlQ,cantonworship / YouTube,萬主之主 萬王之王 // 玻璃海樂團 // Lyric MV #粵語詩歌,yes
-HYMN-417,萬眾同路,1,20240128,20240128,phjQF0oqUYI,Praise the Lord / YouTube,萬眾同路,yes
-HYMN-418,蒙大恩蒼生當稱讚頌揚,1,20221002,20221002,oOuPYyO2zvk,香港聖詩會 Hong Kong Hymn Society / YouTube,"蒙大恩蒼生當稱讚頌揚 Sing Praise to the Lord, You People of Grace - 2019 聖詩頌唱會「詩‧人」",yes
-HYMN-419,單單仰望祢,1,20250720,20250720,x9olp0a1Tqo,Tony Lui / YouTube,單單仰望你 (video 製作),yes
-HYMN-420,在祢殿中,1,20241027,20241027,kdmiKMbn6ig,小羊詩歌 / YouTube,【中英字幕】在祢殿中 | 小羊詩歌 · 基音原創《聲合為一》專輯,yes
-HYMN-421,在祢面前蒙悅納,1,20210829,20210829,1FpP1binbLA,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《在祢面前蒙悅納》TWS 敬拜者使團「獻給祢」專輯Live (詩十九),yes
-HYMN-422,好像個父親,1,20220619,20220619,ge4PY3Dc9wU,Isaac Lam / YouTube,好像個父親｜亞薩詩班｜主日聖樂崇拜｜台北懷恩堂,yes
-HYMN-423,如鷹展翅,1,20210711,20210711,qF3RADPSlDs,生命河 ROLCC Media / YouTube,如鷹展翅上騰 I’ll Soar Like an Eagle (生命河敬拜讚美系列4：如鷹展翅上騰) 小組敬拜用,yes
-HYMN-424,無名的傳道者,1,20251130,20251130,xlUFRsPezIw,馮景賢 - 曰光之上 / YouTube,無名的傳道者（粵語）,yes
-HYMN-425,確實上主在這地方,1,20241027,20241027,e8lldmqNwcc,习近平 / YouTube,確實上主在這地方-聖餐主日序樂,yes
-HYMN-426,神啊！我要讚美祢,1,20241027,20241027,HPh0MezOgoI,Release - Topic / YouTube,神啊！我要讚美祢,yes
-HYMN-427,神是君王,1,20211024,20211024,VPuknASNY-8,Gary Cheung / YouTube,20151108 神是君王,yes
-HYMN-428,最美好的仗,1,20230430,20230430,p3M4V2Q0FUc,HKACM Official 香港基督徒音樂事工協會 / YouTube,【最美好的仗】HKACM Official Music Video,yes
-HYMN-429,榮耀十架,1,20251102,20251102,ofGv1rbBMCc,周日音樂匯 / YouTube,榮耀十架 - Cantonhymn (周日音樂匯2014-03-09),yes
-HYMN-430,榮耀歸於袮,1,20240331,20240331,t7SmnnNhdMI,花蓮博愛浸信會線上影音 / YouTube,所有的榮耀歸於祢＿花蓮博愛浸信會主日敬拜,yes
-HYMN-431,歡笑感恩,1,20240519,20240519,uiuWu_d4OPM,HKACM Official 香港基督徒音樂事工協會 / YouTube,歡笑感恩﹣齊唱兒歌DVD (官方動作版),yes
-HYMN-432,求主作我光,1,20220116,20220116,ryNrGFAqe5w,香港聖詩會 Hong Kong Hymn Society / YouTube,求主作我光 Longing For Light 點解聖詩(八)「聖詩中的社會議題」,yes
-HYMN-433,求基督差使我,1,20211114,20211114,VlYhses38wk,S / YouTube,求基督差使我,yes
-HYMN-434,開展主的國,1,20240211,20240211,MSo9dYTlr0E,Take Up Your Cross 背起十架 / YouTube,【默想詩歌】開展主的國(粵),yes
+number,title,count,first_date,last_date,video_id,source,youtube_title
+HYMN-001,人們需要主,50,20220123,20241117,b-749mZx8fU,內巷 | withinlane / YouTube,[ 人們需要主  ] 中文歌詞字幕
+HYMN-002,賜福你,9,20211205,20220130,P0rEipirPzs,Tom Luk / YouTube,主賜福你 lyrics // ACM // full version
+HYMN-003,祢真偉大,7,20210822,20260315,V1LRpbz25SY,新心音樂事工 New Heart Music Ministries / YouTube,你真偉大
+HYMN-004,耶和華永遠至高,7,20230212,20250921,7x7Ve4jBmHQ,維珍妮亞 / YouTube,耶和華永遠至高
+HYMN-005,世界之光,6,20220123,20251109,zwdR8KM80nk,J.Praise青年音樂事工 / YouTube,世界之光
+HYMN-006,傳揚祢大愛,6,20211107,20250727,rKZ5bx-kdZM,基恩敬拜 Amazing Grace Worship / YouTube,傳揚祢大愛 Proclaiming Your Magnificent Love
+HYMN-007,成為神蹟的器皿,6,20210718,20250817,zYHUxoykI7w,生命河靈糧堂 / YouTube,成為神蹟的器皿
+HYMN-008,我們成為一家人,6,20210926,20250330,axJlfLJGwQk,777Worship 完全的敬拜 | 敬拜中裡合一 | Unity in Worship / YouTube,我們成為一家人
+HYMN-009,教會獨一的根基,6,20220522,20260412,9sxo44elABI,Teresa古今詩歌Hymns♬ / YouTube,【教會獨一的根基】The Church's One Foundation│詞：S. J. Stone│曲：S. S.Wesley│鋼琴：Julie Ann Kitchen│頌唱：Teresa H.
+HYMN-010,榮耀的呼召,6,20230226,20251026,v5wnpajW6jo,讚美之泉 Stream Of Praise Music Ministries / YouTube,【榮耀的呼召 Glorious Calling】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20)
+HYMN-011,求祢以真理和愛引導我,6,20220717,20260419,vTG-LQPFtRg,More of Jesus Worship (更多有耶穌的敬拜) / YouTube,求祢以真理和愛引導我 | 同心圓 (TWS 敬拜者使團) | 歌詞MV
+HYMN-012,全地至高是我主,5,20220306,20230820,9AsBFAfnUjM,Fiona Hui / YouTube,全地至高是我主
+HYMN-013,因祢榮耀,5,20230212,20260104,WCwTGlsfl5c,信•望•愛詩歌頻道 - Faith·Hope·Love Poetry Channel / YouTube,角聲使團 因祢榮耀
+HYMN-014,祢的信實廣大,5,20210905,20251228,mbnRYggcPpw,Isaac Lam / YouTube,祢的信實廣大｜會眾詩歌｜台北懷恩堂主日崇拜
+HYMN-015,稱謝復活主,5,20220417,20260412,zniTLYgOw34,Penelope Chan / YouTube,稱謝復活主  普天頌讚新修訂版第273首
+HYMN-016,聖哉三一,5,20211121,20260104,pw5elBqhQMA,傳統聖詩 Traditional Hymns / YouTube,聖哉三一 Holy Holy Holy ｜生命聖詩5（國語）
+HYMN-017,興起發光,5,20220116,20250126,WehSVicC2M8,Release - Topic / YouTube,興起發光
+HYMN-018,萬代君主,5,20220130,20241215,PZhCPVB0dp8,RainbowPromise / YouTube,萬代君主
+HYMN-019,阿爸天父,5,20210801,20231001,KE8X-sG64nk,讚美之泉 Stream Of Praise Music Ministries / YouTube,【阿爸天父 Abba Father】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (13)
+HYMN-020,除祢以外,5,20240107,20260510,a18vlQLgoCc,HKACM - Topic / YouTube,除祢以外
+HYMN-021,以愛還愛,4,20221002,20250511,2tX58dM4n1s,Release - Topic / YouTube,以愛還愛
+HYMN-022,何等恩典,4,20220911,20250914,u2M-zzt1Whc,讚美之泉 Stream Of Praise Music Ministries / YouTube,【何等恩典 How Could It Be】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14)
+HYMN-023,奉獻什麼,4,20220814,20241117,4qL_VVKRMMY,刘文良 - Topic / YouTube,奉獻什麼
+HYMN-024,從這代到那代,4,20211114,20241027,kNnZXzsNYPo,讚美之泉 Stream Of Praise Music Ministries / YouTube,【從這代到那代 From Now till Evermore】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19)
+HYMN-025,恩典之路,4,20220814,20260517,YaJ5gof0YNQ,讚美之泉 Stream Of Praise Music Ministries / YouTube,【恩典之路 The Path of Grace】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14)
+HYMN-026,愛中相遇,4,20211010,20240804,Muq6RNaLjgU,讚美之泉 Stream Of Praise Music Ministries / YouTube,【愛中相遇 See You Face to Face】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19)
+HYMN-027,愛如繁星,4,20220731,20250413,QHxdGXUkCFQ,Kennex in Jesus / YouTube,主愛如繁星 - 粵語詩歌 【官方歌詞版 MV】
+HYMN-028,愛有多少,4,20231105,20250406,SLnz3WWVAOA,天韻合唱團 Heavenly Melody / YouTube,【主愛有多少】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV
+HYMN-029,教會的主,4,20211024,20240428,Q8PtoXcgfMc,J A piano hymns / YouTube,教會的主 [ 純音樂 cover | 歌詞 ]
+HYMN-030,榮耀歸與祂,4,20220911,20260208,EpVDF3OAY68,Heaven / YouTube,榮耀歸與祂
+HYMN-031,每一天,4,20220213,20250608,9VisPP2HLtc,Zonder's Music / YouTube,每一天
+HYMN-032,獻上活祭,4,20230709,20250216,OcfKXc6pItA,GOOD TV DAILY / YouTube,天堂敬拜~獻上活祭（單曲）
+HYMN-033,祂是耶和華,4,20210620,20260111,TVHWJcJN4xg,Tony Xu / YouTube,祂是耶和華
+HYMN-034,神坐著為王,4,20221030,20260118,e-oDTeztqyE,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,神坐著為王
+HYMN-035,祢是神,4,20220529,20250119,9cSuojDc4iw,全人敬拜 Holistic Worship / YouTube,你是神
+HYMN-036,耶穌！耶穌！,4,20211205,20241208,kWvRXBLI0uk,讚美之泉 Stream Of Praise Music Ministries / YouTube,"【耶穌 耶穌 Jesus, Jesus】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (10)"
+HYMN-037,萬邦之歌,4,20231105,20231126,rPidR2UgZHo,SCBC Choir・士嘉堡華人浸信會詩班・Toronto / YouTube,萬邦之歌
+HYMN-038,遍地細說主奇妙,4,20220206,20260222,lnAPNXfE16Q,wah yeung / YouTube,詩歌音樂分享:遍地細說主奇妙。
+HYMN-039,頌讚全能上帝,4,20210808,20250817,j2D4P98oXW0,All Nations worship & praise Ministries - Topic / YouTube,頌讚全能上帝
+HYMN-040,願祢的話,4,20210725,20260308,9Qjy1gKQ4dA,Vivian Huang / YouTube,願你的話
+HYMN-041,高舉尊貴的祢,4,20230101,20250216,WD8QpzZYzrk,Release - Topic / YouTube,高舉尊貴的祢
+HYMN-042,世上最好的愛,3,20240317,20241222,vLa1kd3yBxI,全人敬拜 Holistic Worship / YouTube,世上最好的愛
+HYMN-043,仍能讚美,3,20240428,20250622,Bm3j7cxqGP8,Worship Music-AM  / YouTube,仍能讚美
+HYMN-044,以感恩為祭,3,20230618,20260208,ozRtnVOvYvM,m2kmusic / YouTube,『以感恩為祭 』 團契遊樂園5 應許（基督教詩歌）
+HYMN-045,以馬內利,3,20211212,20251214,gB3vpIAYhIM,777Worship 完全的敬拜 | 敬拜中裡合一 | Unity in Worship / YouTube,以馬內利
+HYMN-046,傳承使命,3,20220206,20240915,Iz477EjWNX4,HKACM Official 香港基督徒音樂事工協會 / YouTube,【傳承使命】Official Lyric Video - 官方完整版 (大使命)
+HYMN-047,充滿主馨香,3,20220213,20230611,AH-i_-I1PQg,Tze Bun Lee / YouTube,充滿主馨香
+HYMN-048,同領主餐,3,20210704,20230205,qFYsELkwt5E,Heaven / YouTube,同領主餐
+HYMN-049,唯有耶穌,3,20221009,20241124,cMFGl4jAp_w,9234 san / YouTube,唯有耶穌
+HYMN-050,在祢手中,3,20241117,20260412,_YpwaY6KY_Y,Joshua Band 約書亞樂團 / YouTube,在你手中
+HYMN-051,如明亮晨星,3,20221225,20260419,ZIi6z99ojQE,"潘敏珊, 天天頌揚 / YouTube",主如明亮晨星（國語詩歌）
+HYMN-052,寶貴十架,3,20211226,20240324,0YJZUyVOQVY,讚美之泉 Stream Of Praise Music Ministries / YouTube,【寶貴十架 Precious Cross】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11P)
+HYMN-053,幽谷讚美聲,3,20240204,20250727,Pfp-sJRc6M4,彩虹約定 - Topic / YouTube,幽谷讚美聲
+HYMN-054,從罪灰走向活水,3,20240218,20260322,p4DocAb4LBM,衛理公會城中教會詩班 / YouTube,從罪灰走向活水
+HYMN-055,愛就是,3,20220327,20251207,aphnxDaW39Q,iTabernacle.net會幕文化 / YouTube,【詩歌】愛就是
+HYMN-056,我心所慕,3,20210912,20220807,0CoDTJ5HnSw,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,我心所慕(這是天父世界)
+HYMN-057,我是祢愛子,3,20241229,20260517,c2zgA20Bl6o,玻璃海樂團 - Topic / YouTube,我是你愛子
+HYMN-058,我要感謝上主,3,20211107,20250810,eJPxfrXs7y0,讚美的時刻 / YouTube,我要感謝上主（粵語詩歌）
+HYMN-059,我願為祢去,3,20220130,20250727,KgnklCi-k-Q,CantonHymn恢復粵語詩歌敬拜文化運動 / YouTube,我願為祢去 - 小羊詩歌（官方粵語核准版 CantonHymn Demo Cover）
+HYMN-060,擁戴我主為王,3,20210606,20241027,BO5EyHp-8vM,天韻合唱團 Heavenly Melody / YouTube,【聖哉 聖哉 聖哉/擁戴我主為王】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV
+HYMN-061,是我一切,3,20240225,20260315,7zqwxDsvITQ,天韻合唱團 Heavenly Melody / YouTube,【祢是我一切】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV
+HYMN-062,是我一生的呼召,3,20230723,20260125,lspZOQhpu30,讚美之泉 Stream Of Praise Music Ministries / YouTube,【愛祢，是我一生的呼召 I Live My Life To Love You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)
+HYMN-063,是祢先愛我,3,20250427,20250601,Ta9_ny2SpWg,Worship Music-AM  / YouTube,是祢先愛我
+HYMN-064,晝夜思念神律法,3,20230723,20250713,CIxO_bbfy3c,香港聖詩會 Hong Kong Hymn Society / YouTube,晝夜思念神律法 Blessed is the Man - 2019 聖詩頌唱會「詩‧人」
+HYMN-065,有祢同行,3,20220925,20251130,2KM6F_vQSD0,基恩敬拜 Amazing Grace Worship / YouTube,《有祢同行》With You by my side - 基恩敬拜AGWMM official MV
+HYMN-066,榮耀的王成肉身,3,20231224,20241215,9y9elbi43HM,讚美的時刻 / YouTube,榮耀的王成肉身（粵語詩歌）
+HYMN-067,永生神就是靈,3,20220220,20250126,lsTdTiXfVBg,香港聖詩會 Hong Kong Hymn Society / YouTube,"永生神就是靈 Immortal, Invisible, God Only Wise - 第二屆聖詩頌唱會「耶穌基督我心所信」"
+HYMN-068,為何揀選我,3,20230402,20250302,b5nij6n8_JM,團契遊樂園 - Topic / YouTube,為何揀選我
+HYMN-069,為我受傷,3,20221002,20260104,0IGQ_LRTmmk,Teresa古今詩歌Hymns♬ / YouTube,【為我受傷】Wounded for me│詞：Rober & Ovens│曲：William G. J. Ovens│鋼琴：朱素雲│頌唱：Teresa Huang│#基督教傳統詩歌 #受難節復活節詩歌
+HYMN-070,真光普照,3,20230430,20250824,BDIPIamUqEE,ekmanson / YouTube,純·敬拜隊：真光普照
+HYMN-071,祢是我神,3,20230423,20250706,RdoeAXXld10,touchmusichk - Topic / YouTube,祢是我神
+HYMN-072,耶和華以勒,3,20210613,20250928,-KNbJjsfGIo,栽蒔 / YouTube,耶和華以勒
+HYMN-073,耶穌奇妙的救恩,3,20221120,20250615,Za0hLucl6fI,宇宙光百人大合唱 / YouTube,耶穌奇妙的救恩
+HYMN-074,耶穌愛我,3,20220515,20250518,6vAILBz8cgo,活水囝仔 / YouTube,【 耶穌愛我 Jesus Loves Me】- 活水囝仔兒童敬拜舞蹈
+HYMN-075,耶穌配得至聖尊榮,3,20230723,20250511,YE34QiLu1sg,Jennifer Poon / YouTube,讚之歌_耶穌配得至聖尊榮
+HYMN-076,聖名榮光,3,20220213,20240505,dYHsbERCqTU,Taipei Trinity / YouTube,委身詩班20190210主日獻詩 聖名榮光
+HYMN-077,聖善夜,3,20211205,20251221,WiQbzG7Tew8,讚美之泉 Stream Of Praise Music Ministries / YouTube,【無伴奏合唱 Acapella】聖善夜 O Holy Night｜ 讚美之泉
+HYMN-078,至高尊貴的祢,3,20230115,20250316,_l7d2uvAXKE,影音使團有限公司 The Media Evangelism Limited / YouTube,至高尊貴的祢
+HYMN-079,萬國萬民讚美主,3,20221127,20241124,OxF1O_xboSA,基恩敬拜 Amazing Grace Worship / YouTube,萬國萬民讚美主 - 2018 基恩敬拜禱告更新｜詩班獻詩
+HYMN-080,薪火永傳,3,20220515,20240324,gdjd5T78rBc,m2kmusic / YouTube,『薪火永傳 』 團契遊樂園3 薪火永傳（基督教詩歌）
+HYMN-081,要忠心,3,20221127,20240414,yiApkyNmE5Y,SongsOfAscents上行詩 / YouTube,生命聖詩346 | 要忠心 | Be True  (We are going forth from the school of Jesus)
+HYMN-082,讓我感恩,3,20220109,20260222,4n8UYvrGX44,Release - Topic / YouTube,讓我感恩
+HYMN-083,讚美我天父,3,20210613,20230604,YRrDoIw0ZuA,Jennifer Poon / YouTube,青年新歌_讚美我天父
+HYMN-084,至聖上帝,238,20210606,20260222,hS3fjCIHHvs,台北聖樂團 Taipei Oratorio Choir  |  台北聖樂推廣協會  / YouTube,至聖上帝真道 Cantique de Jean Racine｜台北聖樂團 ｜台語詩歌
+HYMN-085,分享主愛,114,20221016,20260517,mF5b6fWZV9Y,終極敬拜WorshipInHongKong / YouTube,分享主愛﹙粵語﹚伍偉基 Let There Be Love
+HYMN-086,遠超萬名之名,3,20220814,20241110,n-8i5e3Sdok,藍影 / YouTube,遠超萬名之名
+HYMN-087,陪我走過春夏秋冬,3,20230115,20241229,AjL3gfY9SOA,joehuang90 / YouTube,陪我走過春夏秋冬-小羊詩歌(一粒麥子)
+HYMN-088,預苦四十晝夜,3,20230326,20250309,Wvxe1XpvvwA,香港聖樂促進會 / YouTube,齊來學聖詩 (10)：預苦四十晝夜 (普天頌讚新修訂本第209首)
+HYMN-089,一生敬拜祢,2,20241020,20251026,nGzADKIDf4A,讚美之泉 Stream Of Praise Music Ministries / YouTube,【一生敬拜祢 All the Days of My Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (22)
+HYMN-090,世界最美的聲音,2,20211226,20240616,oO-dutjvxLY,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《世界最美的聲音(奇異恩典)》TWS 敬拜者使團「HEART」Live 專輯
+HYMN-091,這是天父世界,2,20240317,20250518,_1HnQN1OlPE,台北聖樂團 Taipei Oratorio Choir  |  台北聖樂推廣協會  / YouTube,這是天父世界｜This is my Father's world ｜台北聖樂團｜指揮 李珮琨｜伴奏 盧主芬｜台灣神學院｜中英歌詞
+HYMN-092,靠近十架,2,20230507,20250105,bb8hzK4Dmtc,Teresa古今詩歌Hymns♬ / YouTube,【靠近十架】Near the Cross│詞：Fanny Jane Crosby│曲：William Howard Doane│鋼琴：Julie Ann Kitchen│頌唱：Teresa Huang
+HYMN-093,願祢崇高,2,20221023,20231210,kX0u2irJc4c,Mii / YouTube,願你崇高－天韻詩歌
+HYMN-094,上主的國,2,20221023,20250601,A5Wb91e3stA,台中泰澤歌詠祈禱團體 / YouTube,Taizé 泰澤 - The kingdom of God 上主的國  《110》 ○  20150619_台中南屯 (Taize/taize)
+HYMN-095,世界最美聲音,2,20240915,20250525,gg-W3l8S4Bc,Ceci Sum / YouTube,世界最美聲音 (with harmony line)
+HYMN-096,亞伯拉罕的主,2,20220828,20240908,Mh8_sBMO12k,香港聖樂促進會 / YouTube,【聖詩薈萃】亞伯拉罕的主(粵) - 普天頌讚新修訂本39首
+HYMN-097,人人都應該知道,2,20221120,20240526,ZNP7eI_666w,Edison團契詩歌 / YouTube,D22人人都應該知道
+HYMN-098,人算甚麼,2,20220313,20250316,_nILV6V0NSc,GraceSong79 / YouTube,人算甚麼
+HYMN-099,仍然相信祢,2,20250622,20260329,VzmM9I0KqUM,HKACM Official 香港基督徒音樂事工協會 / YouTube,【仍然相信祢 / Still Believing】HKACM Official Music Video
+HYMN-100,以愛奉獻,2,20240428,20250330,7z6uarutMD8,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,以愛奉獻｜歌詞版
+HYMN-101,以馬內利來臨,2,20221204,20221218,aHVh-c5aejI,香港聖詩會 Hong Kong Hymn Society / YouTube,"以馬內利來臨歌 O Come, O Come Emmanuel - 2019 聖誕聖跡歌述崇拜"
+HYMN-102,住在祢裡面,2,20241006,20260315,IKGazOdWmH4,讚美之泉 Stream Of Praise Music Ministries / YouTube,【住在祢裡面 Abiding in You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (16)
+HYMN-103,來崇拜大君,2,20211031,20230205,ONdWpgIB8Pc,敬拜頌歌piano / YouTube,來崇拜大君
+HYMN-104,來稱頌真神,2,20211212,20231112,ARKKh2IA4Rg,Isaac Lam / YouTube,20160731 懷恩堂聖樂崇拜 來稱頌真神 亞薩詩班與會眾 ＠ GBC
+HYMN-105,信心的等待,2,20220508,20241201,0mn6wvX1l18,基恩敬拜 Amazing Grace Worship / YouTube,《信心的等待》Wait with faith - 基恩敬拜AGWMM official MV
+HYMN-106,全能父上帝,2,20220522,20240121,XgisFdhTr74,讚美的時刻 / YouTube,全能父上帝（粵語詩歌）
+HYMN-107,創造奇功,2,20210829,20241103,3h3bQm6nBiI,循道衞理佈道團MEM / YouTube,創造奇功歌（詩集：普天頌讚 第11首）
+HYMN-108,勇敢走出去,2,20220904,20240128,w43QIZ79YbY,讚美之泉 Stream Of Praise Music Ministries / YouTube,【勇敢走出去 Stepping Out】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12P)
+HYMN-109,十架犧牲的愛,2,20250323,20260308,PpsC-Satfsk,橄欖枝 / YouTube,十架犧牲的愛 - 薪火敬拜使團
+HYMN-110,同餅同杯,2,20240804,20250427,6zIEotjphl8,flow church 流堂 / YouTube,《同餅同杯》 // flow church 流堂10.13解慰聖餐聚會 主題曲
+HYMN-111,十架的冠冕,2,20210606,20240623,Pz10IS-TCmg,1Gmusic / YouTube,[高清HD] 十架的冠冕 - Peco Chui 徐偉賢 - 720P MV
+HYMN-112,向主唱新歌,2,20230716,20240421,zHrXuLRnBeo,jinjen yang / YouTube,cXc163向主唱新歌
+HYMN-113,向耶和華唱樂歌,2,20250209,20260208,bfR1g9aX9XI,Lawrence Tsui / YouTube,"RCMBC Oct 02, 2016 Choir: 向耶和華唱樂歌"
+HYMN-114,向至高者讚美,2,20211107,20250907,Hx1lMCJ-d-Q,Jennifer Poon / YouTube,讚之歌_向至高者讚美
+HYMN-115,啊！祢慈愛是何等的寶貴,2,20211003,20220918,3yilTsFpRyw,終極敬拜WorshipInHongKong / YouTube,主啊你慈愛是何等的寶貴 伍偉基﹙粵語﹚How Precious Oh Lord
+HYMN-116,回應偉大真神,2,20230611,20250914,rQwIiz71FQI,香港聖樂促進會 / YouTube,【聖詩薈萃】回應偉大真神(粵) - 普天頌讚新修訂本22首
+HYMN-117,因祂寶架,2,20210808,20250713,i7txrulBsMo,TJCAC Choir / YouTube,20150403 (Good Friday) 因祂寶架 Without His Cross (Joseph M. Martin)
+HYMN-118,因祢堅持,2,20250406,20250720,4m6vjriw7a8,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,因祢堅持 - 鹹蛋音樂事工SEMM🍳
+HYMN-119,基督-永恆之主,2,20220529,20230212,FAFnTEwl4fk,Isaac Lam / YouTube,基督--永恆之主｜主日崇拜｜台北懷恩堂｜普天頌讚 #54
+HYMN-120,基督耶穌今復生,2,20250427,20260405,HfM4bwyNaHw,Teresa古今詩歌Hymns♬ / YouTube,【基督耶穌今復生】Christ The Lord Is Risen Today│詞：Charles Wesley│曲：Anonymous│鋼琴：Kaleb Brasee│頌唱：Teresa Huang
+HYMN-121,天地讚美,2,20240714,20250713,2xT4SagZ_jg,C Jenny / YouTube,天地讚美
+HYMN-122,天天歌唱,2,20250216,20251130,GTdvcPBu0UU,Serene workshop / YouTube,天天歌唱
+HYMN-123,天涯咫尺,2,20221211,20251109,Zwk5B2A8aqw,jnX Worship / YouTube,【原創詩歌】天涯咫尺 (粵) Far and Near (2018 「天涯‧咫尺」差傳營會 主題曲)｜jnX 官方版
+HYMN-124,天父世界真美麗,2,20240211,20250511,aOTaJx7163E,佳音詩班 / YouTube,天父世界真美麗(ALL THINS BRIGHT AND BEAUTIFUL；萬物光明極美麗)｜佳音詩班
+HYMN-125,奇妙十架,2,20211003,20251026,WoGLg1ufBrM,"潘敏珊, 天天頌揚 / YouTube",奇妙十架 (國語) Hymn: When I Survey The Wondrous Cross
+HYMN-126,奇異的愛,2,20230305,20260329,qaTmtc-g0DA,Teresa古今詩歌Hymns♬ / YouTube,【奇異的愛】And Can It Be That I Should Gain│詞：Charles Wesley│曲：Thomas Campbell│鋼琴：Julie Ann Kitchen
+HYMN-127,寶貝聖靈,2,20240225,20240811,nDltRKeqT60,WN X 玻璃海樂團 X PHOTIC / YouTube,寶貝聖靈  (Official Lyric MV) // Worship Nations // 玻璃海樂團
+HYMN-128,尋求神的臉,2,20231008,20240519,Vm0AvpyoLq0,frankie choi 蔡賜輝 / YouTube,尋求神的臉12fc final
+HYMN-129,復興聖潔,2,20231008,20260215,K3ibf2AjR3U,讚美之泉 Stream Of Praise Music Ministries / YouTube,【復興聖潔 Revive Holiness】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (7)
+HYMN-130,恩典太美麗,2,20220424,20220703,JlTb0Sf7xUg,cantonworship / YouTube,恩典太美麗 // 團契遊樂園 // Lyric MV HD #粵語詩歌 #大使命
+HYMN-131,慈悲仁愛上帝,2,20230312,20250323,59w6SXTrTyQ,香港聖詩會 Hong Kong Hymn Society / YouTube,慈悲仁愛上帝 Kind and Merciful God - 第六屆聖詩頌唱會「聖父」
+HYMN-132,我需要有祢在我生命中,2,20250518,20251207,u_R17ihiM44,Rick詩歌庫 / YouTube,我需要有祢在我生命中 - 有情天
+HYMN-133,罪人朋友,2,20240526,20250706,eOb7zMsA-7o,見福羅 / YouTube,PCT 2009 聖詩合唱 584 至聖救主，罪人朋友
+HYMN-134,耶和華要保護你,2,20240310,20260517,vij9KnhNDpo,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《耶和華要保護你》TWS 敬拜者使團 (詩一二一)
+HYMN-135,選擇上主祝福,2,20210620,20250112,sDUBnxyvCdw,Penelope Chan / YouTube,選擇上主祝福  普天頌讚新修訂版 第724首  霍顯煒  申命記 30：15-20
+HYMN-136,My God,1,20211024,20211024,lzRW_HgT9G8,Joshua Band 約書亞樂團 / YouTube,"【主我神나의 하나님 / My Lord, My God】 | 박우정 | Live Worship - 璽恩 SiEnVanessa"
+HYMN-137,My King,1,20211024,20211024,l8E2xNp_GCk,Y H V H / YouTube,My King - New Creation Worship
+HYMN-138,做個天父的小精兵,1,20230521,20230521,mMWttLRJgaE,基恩敬拜 Amazing Grace Worship / YouTube,《做個天父的小精兵》- 祈禱仔兒童敬拜系列 基恩敬拜AGWMM
+HYMN-139,十架七言,1,20260201,20260201,ahz3WNruOjE,m2kmusic / YouTube,『 十架七言 』 團契遊樂園3 薪火永傳（基督教詩歌）
+HYMN-140,十架的愛,1,20240303,20240303,dfVQ2nbrPnM,讚美之泉 Stream Of Praise Music Ministries / YouTube,【十架的愛 Great Is Your Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17)
+HYMN-141,在至高之處,1,20240922,20240922,azxcXb-7TfA,讚美之泉 Stream Of Praise Music Ministries / YouTube,【在至高之處 In the Highest】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (21)
+HYMN-142,基督是主,1,20260308,20260308,HMIRMam_CqY,Y H / YouTube,基督是主詩歌   若
+HYMN-143,奉獻甚麼,1,20241124,20241124,6xMj-UwlJiM,SYUCFC / YouTube,奉獻甚麼
+HYMN-144,最美好盡力愛祢,1,20220130,20220130,Rc78LOgNt5M,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《最美好...盡力愛祢》TWS 敬拜者使團「獻給祢」Live (可十二)
+HYMN-145,榮耀神羔羊,1,20250907,20250907,bdTgrrXQW94,馮麗娟 / YouTube,榮耀神羔羊 - KUA Worship
+HYMN-146,樂歌榮神,1,20250112,20250112,edBrAMpsOFg,Penelope Chan / YouTube,樂歌榮神   普天頌讚新修訂版 第93首  譚靜芝
+HYMN-147,歌頌父神偉大權能,1,20260503,20260503,2thztf2dXRo,Teresa / YouTube,歌頌父神偉大權能
+HYMN-148,上帝請差遣我,51,20250601,20260517,rW1mbFso9TQ,TTV酸先生 / YouTube,榮美耶穌/讚美三一上帝/請差遣我 - 240524晚堂敬拜
+HYMN-149,奮起之歌,2,20210822,20211128,xnhuZgkWx4M,gato chen / YouTube,奮起之歌
+HYMN-150,愛主更深,2,20220501,20260301,1KxgjgqxD_M,Bee-Chung Chen / YouTube,愛主更深
+HYMN-151,懇求降臨,2,20211212,20221211,doRkvw4gUKY,Jennifer Ou / YouTube,高雄正義教會 聖歌隊 「永望耶穌懇求降臨」
+HYMN-152,我們渴望的耶穌,2,20231210,20241201,pOrOdTWqhh4,聖詩共享 HymnShare / YouTube,"【我們渴望的耶穌】Come, Thou Long-Expected Jesus (粵語 聖詩) Cantonese Hymn"
+HYMN-153,我全然獻上,2,20240602,20250921,zPw4JLB_AJ4,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我全然獻上 This Is My Offering】現場敬拜MV (Worship MV) - 讚美之泉敬拜讚美 (28)
+HYMN-154,我心靈得安寧,2,20240428,20240512,XC8OsGnoisg,KUA GLOBAL 跨越 / YouTube,【我心靈得安寧／내 영혼 평안해 】李聖雅 ASHLEY｜ONE ACCORD
+HYMN-155,我曾捨命為你,2,20220306,20250406,ZbLm4LZ7Nxc,傳統聖詩 Traditional Hymns / YouTube,我曾捨命為你 I Gave My Life for Thee｜生命聖詩126（國語）
+HYMN-156,我的千古保障,2,20240414,20260517,ioXkZuWQ0Ms,Tsz-Lam Mak / YouTube,頌恩旋律【我的千古保障】歌詞版 MV
+HYMN-157,我的生命獻給祢,2,20220227,20220424,x5elrTM-t6k,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我的生命獻給祢 I Will Offer You My Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (26)
+HYMN-158,我要一心稱謝祢,2,20240310,20240922,Ai5QugWvJwg,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讚美之泉 feat. 柳子駿牧師】我要一心稱謝祢｜ 讚美之泉
+HYMN-159,我要忠誠,2,20220403,20230226,LPjtd7aHF2o,Y H / YouTube,我要忠誠 基督是主詩歌(第三集)
+HYMN-160,我靈頌讚天上君王,2,20210919,20250629,XsR3B-OAODg,旺角浸信會 / YouTube,"【詩•情•説】我靈頌讚天上君王 Praise, My Soul, the King of Heaven"
+HYMN-161,我願像祢,2,20211226,20250824,whkfCmX0MSg,Roni Songbook / YouTube,主我願像祢 O To Be Like Thee - Thomas O. Chisholm / 分享聖樂團 [ 動態歌詞 ]  @roni-songbook
+HYMN-162,救贖的恩典,2,20240107,20250907,WxrAYIaLQOk,讚美之泉 Stream Of Praise Music Ministries / YouTube,【救贖的恩典 The Grace of Redemption】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17)
+HYMN-163,新耶路撒冷,2,20221030,20251214,PO0-QmW54kI,讚美之泉 Stream Of Praise Music Ministries / YouTube,【新耶路撒冷 New Jerusalem】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17)
+HYMN-164,是為了我罪,2,20220417,20260405,Mt7CHPlMtqw,HKACM Official 香港基督徒音樂事工協會 / YouTube,"【是為了我罪】""齊唱短歌4"" Official Lyric Video - 官方完整版"
+HYMN-165,普世歡騰,2,20211226,20221218,1UKYcSzroio,天韻合唱團 Heavenly Melody / YouTube,【普世歡騰組曲】天韻合唱團 Official MV
+HYMN-166,最大的福分,2,20240505,20250202,bqKLaKS-C9I,讚美之泉 Stream Of Praise Music Ministries / YouTube,【最大的福分 The Blessing】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (26)
+HYMN-167,有福的國,2,20231015,20240616,tEe5su-O25Q,天韻合唱團 Heavenly Melody / YouTube,【有福的國 】天韻合唱團 Official MV
+HYMN-168,榮耀歸於真神,2,20221106,20250105,Hd5CF76Qe1Q,Grace Music / YouTube,榮耀歸於真神 To God Be the Glory
+HYMN-169,永恆聖光,2,20240128,20260215,SkC6-UDbH1A,Penelope Chan / YouTube,"上主, 永恆聖光  普天頌讚新修訂版 第197首  蔡張敬玲"
+HYMN-170,永約的神,2,20211024,20250504,JcK3DnrXF0o,HKACM Official 香港基督徒音樂事工協會 / YouTube,【永約的神】HKACM Official Music Video
+HYMN-171,求主給這世代看見異象,2,20210704,20250518,7CSnTSZKIh8,Milk&Honey Worship / YouTube,求主給這世代看見異象
+HYMN-172,無言的讚頌,2,20220508,20241201,5gyQFFRFEiA,WAM Worship 沙田浸信會崇拜及聖樂事工 / YouTube,2020 新編 ｜無言的讚頌(遍地充滿) official lyrics Video
+HYMN-173,獻上今天,2,20211017,20240922,ZW6SM5K1MhQ,HKACM Official 香港基督徒音樂事工協會 / YouTube,獻上今天 - 蘇如紅 (文化中心管弦樂Live)
+HYMN-174,獻給我天上的主,2,20220403,20230115,0rh6R51MRls,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《獻給我天上的主》TWS 敬拜者使團 (同心唱系列 | 歌詞領唱版)
+HYMN-175,當讚美聖父,2,20250525,20251026,amOj84e3URw,香港聖詩會 Hong Kong Hymn Society / YouTube,當讚美聖父 Praise Ye the Father - 十周年聖詩頌唱會「頌」
+HYMN-176,偉大永生神,1,20220619,20220619,I6QjlvXLYpQ,香港聖樂促進會 / YouTube,【聖詩薈萃】偉大永生神(粵) - 普天頌讚新修訂本542首
+HYMN-177,全為祢傾倒,1,20251005,20251005,rxE4p6Fqcx0,RainbowPromise / YouTube,【全為祢傾倒】[全然為你]粵語版
+HYMN-178,全能右手,1,20230702,20230702,mRyGXSC5QPo,Penelope Chan / YouTube,全能右手歌  普天頌讚 第571首  黃永熙
+HYMN-179,再次將我更新,1,20220626,20220626,6o262bSdFAg,小羊詩歌 / YouTube,【中英字幕】再次將我更新 | A調 | 小羊詩歌《再次將我更新》專輯
+HYMN-180,向耶穌祈求,1,20260517,20260517,vferiN3Jcm8,HKACM Official 香港基督徒音樂事工協會 / YouTube,向耶穌祈求﹣齊唱兒歌DVD (官方動作版)
+HYMN-181,如鹿切慕溪水,1,20240609,20240609,NHwHhEWEG_0,開路者視頻 Kairos Media / YouTube,如鹿切慕溪水 As The Deer
+HYMN-182,尋求祢面,1,20240825,20240825,6pKyphrDclA,建道神學院新祢呈敬拜隊 / YouTube,〈尋求祢面〉【建道神學院新祢呈敬拜隊詩歌創作】
+HYMN-183,對我說話,1,20211017,20211017,7NhRgi_Bccc,天韻合唱團 Heavenly Melody / YouTube,【對我說話-字幕版MV】天韻合唱團Official MV
+HYMN-184,憑信跨過,1,20240929,20240929,a9E7ZHvQNmE,More of Jesus Worship (更多有耶穌的敬拜) / YouTube,憑信跨過 | 鹹蛋音樂事工 SEMM | 歌詞MV
+HYMN-185,我們來到主面前,1,20240630,20240630,msVlVp52qsw,Jennifer Poon / YouTube,讚之歌_我們來到主面前
+HYMN-186,我們呼求,1,20240414,20240414,CigLPfxQ7Sc,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我們呼求 We Cry Out】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A)
+HYMN-187,我們愛因為神先愛,1,20230514,20230514,szBB3WqM9x4,基恩敬拜 Amazing Grace Worship / YouTube,《我們愛因為神先愛》We love because God first loved us - 基恩敬拜AGWMM official MV
+HYMN-188,永恆國度,1,20210606,20210606,r-ZgxbHyenA,HKACM Official 香港基督徒音樂事工協會 / YouTube,【永恆國度】全是祢的 - 齊唱敬拜讚美(11) ACM Official Lyric Video
+HYMN-189,求聖靈光照,1,20230219,20230219,vx7YbwU8Mqo,Heaven / YouTube,求聖靈光照
+HYMN-190,泰理士卡農 The Tallis Canon,1,20240630,20240630,DnUbfPZBGKc,manfung li / YouTube,泰理士卡農 The Tallis Canon (曲詞：Thomas Tallis Arr. by Douglas E. Wagner；中文歌詞：高蔡慧君)
+HYMN-191,活祭獻呈,1,20250504,20250504,V6dcQOuUsAA,HK詩歌2021 / YouTube,活祭獻呈
+HYMN-192,深恩厚愛,1,20250928,20250928,ySMMe-FbERI,YWAM Gateway Worship / YouTube,主深恩厚愛 Goodness of God | 粵語歌詞影片 Cantonese Lyric Video | 粵語原聲敬拜 Living Room Session
+HYMN-193,燃亮這生光采,1,20240310,20240310,5wbM2sGbwaU,HKACM - Topic / YouTube,燃亮這生光采
+HYMN-194,耶和華是我的牧者,1,20230212,20230212,hA9ulk2JVjU,水流之音聖樂團SOLSO / YouTube,11 耶和華是我的牧者
+HYMN-195,自耶穌來住在我心,1,20220220,20220220,6AvjcXHPQpo,KUA GLOBAL 跨越 / YouTube,KUA MUSIC 【自耶穌來住在我心 / Since Jesus Came Into My Heart】蔡佳靈
+HYMN-196,若非耶和華,1,20250622,20250622,o30mL1Ojbcs,Tracey Chui / YouTube,若非耶和華
+HYMN-197,請堅固我,1,20231203,20231203,s0h93HvF3aY,基恩敬拜 Amazing Grace Worship / YouTube,《請堅固我》Lord Please Strengthen Me 基恩敬拜 AGWMM Official MV
+HYMN-198,讓我讚美祢,1,20250518,20250518,f-PySFUv5Uw,ngaitinwai / YouTube,讓我讚美祢創造主     曲詞：魏天威
+HYMN-199,讓讚美飛揚,1,20231015,20231015,LAokJhXevr8,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讓讚美飛揚  Let Praise Arise 古典版】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (1)
+HYMN-200,讚美主名,1,20251012,20251012,2WQ1w7YFBFk,wamax1000 / YouTube,ECCSKC Choir 讚美主名
+HYMN-201,生命活水充滿我,2,20240331,20250601,dD3-QDAOnMg,讚美之泉 Stream Of Praise Music Ministries / YouTube,【生命活水充滿我 Living Water】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A)
+HYMN-202,當轉眼仰望耶穌,2,20231001,20251207,ByzWCbDQzQQ,GOOD TV DAILY / YouTube,史茵茵 - 當轉眼仰望耶穌
+HYMN-203,盡心盡性讚美祂,2,20220123,20240728,TAhJpJZr7ns,讚美的時刻 / YouTube,盡心盡性讚美祂（粵語詩歌）
+HYMN-204,祂救了我,2,20210606,20240204,gwcyVNjOLAo,Jennifer Poon / YouTube,青年新歌_祂救了我
+HYMN-205,神祢名尊貴,2,20231008,20231119,UQfAOwKTfmA,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,神祢名尊貴｜2023年復活期詩歌分享
+HYMN-206,神臨在的器皿,2,20231015,20231029,hsErxZyNDsw,教會司琴培訓中心Church Pianist Training Centre / YouTube,神臨在的器皿
+HYMN-207,神配得尊稱,2,20240225,20250824,_jGNzLo2TMQ,澳門白鴿巢浸信會 Macau Pak Kap Chao Baptist Church / YouTube,神配得尊稱︱You Are Worthy︱詩班獻詩︱澳門白鴿巢浸信會
+HYMN-208,祢是恆久不變,2,20220821,20260419,LejjkpWT7zA,m2kmusic / YouTube,『祢是恆久不變』 團契遊樂園10 耶穌，我深愛你（基督教詩歌）
+HYMN-209,祢的慈愛,2,20240512,20250330,CtEmco5_7Ys,讚美之泉 Stream Of Praise Music Ministries / YouTube,【祢的慈愛 Unfailing Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11J)
+HYMN-210,稱頌主為王,2,20230409,20260405,re3ouJU6sjA,中華基督教長老會台北信友堂 / YouTube,台北信友堂主日崇拜獻詩-禧爾詩班(稱頌主為王！)2016.11.27
+HYMN-211,立志擺上,2,20221106,20221225,WLtqi4s29LQ,建道神學院新祢呈敬拜隊 / YouTube,〈立志擺上〉建道神學院新祢呈敬拜隊 官方歌詞版MV (曲詞:DJS 編曲:古丹青)
+HYMN-212,義人的路,2,20220821,20241013,tjxFw28Lp5E,Jennifer Poon / YouTube,天韻詩歌_義人的路
+HYMN-213,耶和華祢是我的神,2,20250202,20260111,y3QzV2WE-qw,讚美之泉 Stream Of Praise Music Ministries / YouTube,"【耶和華祢是我的神 Jehovah, You Are My God】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (5)"
+HYMN-214,耶穌愛你,2,20220515,20230521,OSjjpGHiozM,讚美之泉 Stream Of Praise Music Ministries / YouTube,【耶穌愛你 Jesus Loves You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (5)
+HYMN-215,聖潔的祢,2,20230924,20240707,RGbw2Nxh5dk,HKACM Official 香港基督徒音樂事工協會 / YouTube,【聖潔的祢】HKACM Official Music Video
+HYMN-216,聽命勝於獻祭,2,20220807,20251012,uO1wRrH-ZiQ,Matthew Lee / YouTube,《聽命勝於獻祭》Demo｜Matthew Lee
+HYMN-217,與主合一,2,20220605,20240602,9DBrF7iidaU,Rev Tommy Tam / YouTube,與主合一(聖餐)
+HYMN-218,興起為耶穌,2,20210822,20230108,-WJ0r95w6O4,多伦多基督福音堂 / YouTube,377 興起為耶穌
+HYMN-219,萬有都歸祢,2,20240929,20241103,SOXdBgXWw4M,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《萬有都歸祢》TWS 敬拜者使團 (同心唱系列 | 歌詞領唱版)
+HYMN-220,萬物的結局近了,2,20240128,20260503,9b4BNQLj06A,dsan36 / YouTube,萬物的結局近了
+HYMN-221,萬王之王萬主之主,2,20221106,20221120,-NiycB70174,Jennifer Poon / YouTube,新歌頌揚79萬王之王萬主之主
+HYMN-222,萬福源頭,2,20230430,20240421,Qy85IAWenIs,chinglianglee / YouTube,"萬福源頭 Come, Thou Fount of Every Blessing"
+HYMN-223,向基督歡呼,1,20230611,20230611,1ZJxgyPqzxg,福音未來 Project EVA / YouTube,向基督歡呼 頌樂樂 6 All Hail King Jesus 樂譜純音樂學習版
+HYMN-224,愛伴我高飛,1,20250720,20250720,YaUocCvsfeQ,MIC 好耶音樂 / YouTube,MIC (好耶音樂) //流行詩歌系列// - 01 愛伴我高飛 Official MV
+HYMN-225,慈繩愛索,1,20260125,20260125,g0W4TYQX7NM,基恩敬拜 Amazing Grace Worship / YouTube,"《慈繩愛索》The Rein Of Love, The Rope Of Grace 基恩敬拜 AGWMM Official MV"
+HYMN-226,慶賀主受膏為王,1,20231203,20231203,dt0m_1rrxgw,Arthur Lee / YouTube,096 慶賀主受膏為王
+HYMN-227,我能給祢什麼,1,20250817,20250817,ozwcBC4Or8o,讚美之泉 Stream Of Praise Music Ministries / YouTube,【我能給你什麼 What Could I Bring To You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (29)
+HYMN-228,我要一生一世住在袮聖殿,1,20230312,20230312,SMK-OFG3fH8,WN X 玻璃海樂團 X PHOTIC / YouTube,我要一生一世住在你聖殿 (LIVE Version)
+HYMN-229,擁戴榮耀羊羔,1,20251116,20251116,P5aZ45ICk_U,Nottingham Chinese Christian Church / YouTube,Crown him with many crowns 擁戴榮耀羊羔
+HYMN-230,擁戴耶穌為王,1,20250420,20250420,7FdnLj7hZvM,生命河 ROLCC Media / YouTube,擁戴耶穌為王 Crown Him with Many Crowns（生命河敬拜讚美系列 9 【神已經成就了】）小組敬拜用
+HYMN-231,新的異象,1,20260104,20260104,mHSSuQA3LQo,讚美之泉 Stream Of Praise Music Ministries / YouTube,【新的異象，新的方向 Give Us Vision】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20)
+HYMN-232,更像我恩主,1,20230101,20230101,6YHdzBYqSO8,宇宙光百人大合唱 / YouTube,更像我恩主
+HYMN-233,最好的路徑,1,20260517,20260517,wfAmoadlCo0,同心圓敬拜福音平台 One Circle / YouTube,同心圓 |《最好的路徑》 | TWS 敬拜者使團 X SeeK敬拜小羊 (林後四)
+HYMN-234,祈求我恩主 Be Thou My Vision,1,20211024,20211024,rDcGb0N484Y,香港聖公會主誕堂聖樂部 HKSKHHNC Sacred Music / YouTube,《祈求我恩主》（Be Thou My Vision）｜曲：John Rutter｜詞：梁孟傑｜粵語詩歌｜SKHHNCC
+HYMN-235,神是我們的避難所,1,20250629,20250629,remr_E98swY,Joseph / YouTube,神是我們的避難所
+HYMN-236,神聖嬰孩,1,20231224,20231224,V_V-DyTGUU0,Heaven / YouTube,神聖嬰孩 The Holy Child
+HYMN-237,萬王之王,1,20221106,20221106,SlIyPb3siHM,旌旗音樂 Banner Music / YouTube,【萬王之王 King of Kings】Worship cover｜旌旗音樂
+HYMN-238,誰會差派一個嬰孩？,1,20231217,20231217,75ijGDyimfI,主馨園 / YouTube,誰會差派一個嬰孩
+HYMN-239,謝謝祢的愛,1,20251228,20251228,x5PC2zb_kLM,基恩敬拜 Amazing Grace Worship / YouTube,《謝謝祢的愛》Thank You for Your Love 基恩敬拜 AGWMM Official MV
+HYMN-240,讚嘆主恩,1,20251005,20251005,pIzmcYDfnTM,Esmond Lim / YouTube,讚嘆主恩 （2015_05_24_BUCC）
+HYMN-241,表彰我主大能,2,20220116,20220612,vkxho-5XEUM,Hymn Share / YouTube,"表彰我主大能 Tell Out, My Soul, the Greatest of the Lord (粵語 Cantonese)"
+HYMN-242,親眼看見祢,2,20221002,20260118,r6OF36e0-f4,基恩敬拜 Amazing Grace Worship / YouTube,《親眼看見祢》My eyes have seen You 詩班版  - 基恩敬拜AGWMM official MV
+HYMN-243,觀看宇宙,2,20221023,20241027,mD9mRX9nN2k,"Christian Choir, HKU / YouTube",觀看宇宙 Look at the World
+HYMN-244,讓我得見祢的榮面,2,20241006,20250223,jvI7dY6Mz-0,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讓我得見祢的榮面 See You Face to Face】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (21)
+HYMN-245,讚美中信心不斷升起,2,20251214,20251221,yFQn424qMKg,讚美之泉 Stream Of Praise Music Ministries / YouTube,【讚美中信心不斷升起 Let Faith Arise In Our Praises】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)
+HYMN-246,這一生最美的祝福,2,20220918,20260222,tPf7Ig1ebL4,讚美之泉 Stream Of Praise Music Ministries / YouTube,【這一生最美的祝福 The Gift of Knowing You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (8)
+HYMN-247,這樣的愛,2,20250413,20250525,2IhwdWRMqFI,cowcow coke / YouTube,這樣的愛
+HYMN-248,願祢國度降臨,2,20220703,20230205,5QmE9psO71g,讚美之泉 Stream Of Praise Music Ministries / YouTube,【願祢國度降臨 When Your Kingdom Comes】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20)
+HYMN-249,EMMANUEL,1,20221218,20221218,PQuq4umpb3Q,Tommee Profitt / YouTube,O Come O Come Emmanuel - Tommee Profitt [OFFICIAL MUSIC VIDEO]
+HYMN-250,Gloria 榮耀頌,1,20241215,20241215,BGzWSk7wIBQ,山嵐合唱團 / YouTube,《Gloria榮耀頌》山嵐合唱團
+HYMN-251,Hallelujah 讚美主,1,20240519,20240519,QAQ2T9QAT2g,HKACM Official 香港基督徒音樂事工協會 / YouTube,【Hallelujah讚美主】HKACM 兒童事工 Official Music Video｜齊唱兒歌 2（官方完整CD版）
+HYMN-252,Immanuel,1,20241222,20241222,oKuKKE-WOK0,Joaquín Yoyaquim / YouTube,Immanuel-Songs Of Praise (subtitulado)
+HYMN-253,Joy in the Morning,1,20230430,20230430,uysGt7JVw9U,Tauren Wells / YouTube,"Tauren Wells, Elevation Worship - Joy In The Morning (Worship Version)"
+HYMN-254,Thy Praise I Sing,1,20211024,20211024,8dvfhpxl35w,Audiobook Passion / YouTube,My God My King Thy Praise I Sing - Henry Francis Lyte
+HYMN-255,一生一世同在,1,20220904,20220904,YLxLKxGWlqw,Worship Music-AM  / YouTube,一生一世同在
+HYMN-256,一生不枉過,1,20240908,20240908,E266iLVEa4A,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,一生不枉過
+HYMN-257,一生之久,1,20260426,20260426,XHHxo4kErEQ,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,一生之久 - 鹹蛋音樂事工SEMM🍳//《刻在祢心底的名字》 Mini-Album 8th Track
+HYMN-258,一生信靠,1,20211031,20211031,QQmZcmaah-A,Terence Ss  Channel / YouTube,一生信靠 (1982) cover
+HYMN-259,一生愛祢,1,20260215,20260215,fgHBHUPiaJI,讚美之泉 Stream Of Praise Music Ministries / YouTube,【一生愛祢 With All My Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9)
+HYMN-260,一直都是祢,1,20241215,20241215,y7K-rMz3fUM,HTBBChurch / YouTube,一直都是祢 It's Always Been You // HTBB 敬拜
+HYMN-261,千古保障,1,20220710,20220710,Hek9LKSnDss,Teresa古今詩歌Hymns♬ / YouTube,"【千古保障】O God, Our Help in Ages Past│詞：Isaac Watts│曲：William Croft│鋼琴：Julie Ann Kitchen│頌唱：Teresa H."
+HYMN-262,只見耶穌,1,20230305,20230305,fJHzFVC2RH8,如此我信後製音樂事工 | The HOPE Music Ministry  / YouTube,只見耶穌
+HYMN-263,同心合意,1,20240623,20240623,KYSq-eyBP7o,拉蓊‧進成Daong Cinceng / YouTube,馬立雲部落同心合意讚美主
+HYMN-264,宣教的中國,1,20231126,20231126,iRZDbba6JBM,神国赞美诗God's love / YouTube,《宣教的中國》China's Mission 讚美詩 Grace Music 中文字幕《宣教的中国》
+HYMN-265,小孩的讚頌,1,20230521,20230521,r0qDrlICcFQ,Kwan Natalie / YouTube,小孩的讚頌【童來頌讚】
+HYMN-266,盡力地頌揚祢,1,20221016,20221016,AEIKt6vxA9E,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,盡力地頌揚祢【恢復粵語敬拜共建專輯 (五) 】- SEMM X Cantonhymn X 小羊詩歌
+HYMN-267,黑暗終必過去,1,20240225,20240225,S--IP6hEiSM,HKACM Official 香港基督徒音樂事工協會 / YouTube,【黑暗終必過去】- ACM Lyric MV
+HYMN-268,默默回望,1,20251228,20251228,-Du7LGKtMec,基督徒青草原iGreenpastures / YouTube,【青草原詩歌】默默回望(粵)CD版
+HYMN-269,一群大能的子民,1,20230521,20230521,dat7ws5RgZQ,jamesbox138 / YouTube,基督教詩歌：一群大能的子民
+HYMN-270,一點小事,1,20220724,20220724,z7U-SgJlGEE,小羊詩歌 / YouTube,【中英字幕】一點小事｜小羊詩歌 · 基音原創《祢與我同在》 專輯
+HYMN-271,上帝的兒女何等有福,1,20210801,20210801,QXIWuzw5ME0,陳贊一博士 / YouTube,上帝的兒女何等有福
+HYMN-272,上帝聽禱告,1,20250608,20250608,GoVnszF3TmM,r33cat / YouTube,上帝聽禱告
+HYMN-273,不曾配得的愛,1,20230423,20230423,t5lauYsm1OE,角聲使團 The Heralders / YouTube,角聲使團 The Heralders 《不曾配得的愛》 LOVE UNDESERVED  [Official MV] (4K UHD)
+HYMN-274,不朽的愛,1,20260322,20260322,1ioWVUiJQQA,LCHS SF 路德會聖靈堂 / YouTube,不朽的愛（曲/詞：高珮琳）
+HYMN-275,不變的應許,1,20210905,20210905,JnXaTrJtbUA,Son Music 新音樂敬拜創作 / YouTube,不變的應許 | SON Music [討祢喜悅] ft. Brenda Li
+HYMN-276,乘鷹翅膀,1,20240811,20240811,jS2ETrF3xrc,真理堂敬拜傳播中心 / YouTube,20241013詩班獻詩：乘鷹翅膀
+HYMN-277,事奉祢最甘甜,1,20221204,20221204,1hHcJWFNIZs,內巷 | withinlane / YouTube,[ 事奉祢最甘甜 ] - 中文歌詞
+HYMN-278,亞伯拉罕之神,1,20230813,20230813,93DFfzrit0A,lucy2716 / YouTube,萬14亞伯拉罕之神S
+HYMN-279,亞伯拉罕的神,1,20250615,20250615,w8ch5_ehbvQ,kevin8788JB / YouTube,【真耶穌教會台北教會】亞伯拉罕的神
+HYMN-280,今要主自己,1,20220501,20220501,OAp973VbG0M,橄欖枝 / YouTube,今要主自己
+HYMN-281,他們曾這樣獻上,1,20221113,20221113,6LpRf6mlOpw,BunBun & PanPan / YouTube,他們曾這樣獻上
+HYMN-282,以便以謝,1,20231126,20231126,272XIzb-osI,Kiki8857 / YouTube,20090914 黃國倫_帶領我_以便以謝
+HYMN-283,以色列的聖者,1,20260308,20260308,gFaAPU11A64,祝瑞蓮 - 琴與爐敬拜 (神的帳幕團隊) Josie Chu - Naioth Ministries / YouTube,以色列的聖者 / 祝瑞蓮琴與爐詩歌專輯 (6) 以色列的聖者
+HYMN-284,以馬內利來臨 O COME,1,20221218,20221218,2UKt7U2cYiM,小平心歌Ping Hymns / YouTube,"以馬內利來臨 O Come, O Come Emmanuel  —【经典圣诞诗歌】 Tenor《小平心歌Ping Hymns—Chinese Version》"
+HYMN-285,仿效聖徒,1,20211219,20211219,HX14Dgz7QcA,Arthur Lee / YouTube,219 仿效聖徒
+HYMN-286,伴我成長,1,20210926,20210926,ef_qXm0vKlc,基督徒青草原iGreenpastures / YouTube,【青草原詩歌】伴我成長(粵)
+HYMN-287,何等尊貴,1,20240616,20240616,LoZmJyKZITk,Jennifer Poon / YouTube,新歌頌揚364何等尊貴
+HYMN-288,你當無懼,1,20260222,20260222,sSDLTUWxtsQ,Heaven / YouTube,"你當無懼, 樂歡欣 Fear Not, Rejoice and Be Glad"
+HYMN-289,使我靈自由,1,20230716,20230716,icanBn6Fe_c,SS / YouTube,使我靈自由(ACBC詩歌班獻詩）
+HYMN-290,數算主恩,1,20250323,20250323,Y_E1yD844sU,宇宙光百人大合唱 / YouTube,數算主恩
+HYMN-291,新年齊蒙福,1,20240218,20240218,bFEyFcEQWWs,福音粵韻歌曲分享 / YouTube,曲64 新年齊蒙福 福音粤韻子喉分享
+HYMN-292,榮耀歸與父神,1,20230416,20230416,kRiZ1FbKo8s,基督徒生命教會Foz / YouTube,基督徒生命教會 20220619 使榮耀歸與父神
+HYMN-293,樂領聖餐,1,20210905,20210905,47pHVGfKZWY,Arthur Lee / YouTube,233 樂領聖餐 (喫這餅喝這杯是表明主的死)
+HYMN-294,聖哉 Sanctus,1,20210711,20210711,ulm6_hJq3VA,CCMM Sydney / YouTube,聖哉-Sanctus
+HYMN-295,與主同死同活,1,20240310,20240310,FEhX9y9NNdM,香港聖樂促進會 / YouTube,齊來學聖詩 (11)：與主同死同活 (普天頌讚新修訂本第213首)
+HYMN-296,萬名之上的名,1,20211205,20211205,mhGrb31DD84,joehuang90 / YouTube,耶穌，萬名之上的名-小羊詩歌(再次將我更新)
+HYMN-297,赴主宴席,1,20260405,20260405,-Inuhqd0rQA,Li Ho / YouTube,"赴主宴席  ~ 长老会恩泽堂圣歌团献唱, PPC-Orchard."
+HYMN-298,音樂榮神,1,20221023,20221023,6xXAnYLJ-M0,Susan Pang / YouTube,『音樂榮神』 北美真道浸信會神學院音樂會－全體演出者 6-8-13
+HYMN-299,頌讚哈利路亞,1,20221009,20221009,JEuwXUD5yMc,鄧承軒 X MC Samuel / YouTube,頌讚哈利路亞（輕快版）｜粵語詩歌翻唱
+HYMN-300,今生所盼,1,20251019,20251019,LzJP04JZ0z4,Saddleback Church Hong Kong / YouTube,Living Hope - 今生所盼 | Saddleback Worship (Hong Kong) | Live Capture 現場敬拜片段 | 敬拜歌曲粵語/廣東話翻譯
+HYMN-301,你們是世上的鹽,1,20230813,20230813,3LaBVEwn2kI,Penelope Chan / YouTube,你們是世上的鹽  普天頌讚新修訂版 第544首   譚靜芝
+HYMN-302,你要稱頌耶和華,1,20250608,20250608,GTbSQh0LOnE,讚美之泉 Stream Of Praise Music Ministries / YouTube,"【我的心，你要稱頌耶和華 Praise The Lord, O My Soul】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (3)"
+HYMN-303,使我播送和平,1,20260510,20260510,sc98ZU3HRIk,Clay Jar Missio & Musica / YouTube,主使我播送和平 Prayer Litany 分部練習 SATB Tutorial
+HYMN-304,來敬拜榮耀王,1,20231126,20231126,HSTpPoLHoes,SongsOfAscents上行詩 / YouTube,生命聖詩33 | 來敬拜榮耀王 | O Worship the King | HANOVER | CROFT
+HYMN-305,來讚美我上主,1,20240811,20240811,D069iqy4MJ0,終極敬拜WorshipInHongKong / YouTube,來讚美我上主 伍偉基﹙粵語﹚ Laudate Dominum 泰澤
+HYMN-306,信靠順服,1,20240630,20240630,JvOpGCkg2Wc,宇宙光百人大合唱 / YouTube,信靠順服
+HYMN-307,假使我喚叫你,1,20251109,20251109,banarnnGvwU,香港聖詩會 Hong Kong Hymn Society / YouTube,假使我喚叫你 Will You Come and Follow Me (The Summons) - 2019 聖詩頌唱會「詩‧人」
+HYMN-308,僕人之歌,1,20230903,20230903,6E3Lnc19eS4,玻璃海樂團 - Topic / YouTube,僕人之歌
+HYMN-309,儘管我尚未看見,1,20251019,20251019,PtJLd5GEyb4,HKACM Official 香港基督徒音樂事工協會 / YouTube,【儘管我尚未看見 (ft. Sunset Worship)】HKACM Official Music Video
+HYMN-310,先求祂的國,1,20230716,20230716,rm3N_5VKbng,MIshajun東俊 / YouTube,「先求祂的國和義」
+HYMN-311,先聖之神,1,20250914,20250914,dwVM7NG_o-U,SongsOfAscents上行詩 / YouTube,"生命聖詩37 | 先聖之神 | God of Our Fathers, Whose Almighty Hand | NATIONAL HYMN"
+HYMN-312,全地都屬主,1,20250525,20250525,-WK2MMrBKII,Isaac Lam / YouTube,全地都屬主 懷恩青年合唱團 2018乘著歌聲的翅膀音樂會 懷恩堂週五音樂會
+HYMN-313,唱一首天上的歌,1,20221023,20221023,ZSOYluQXi5o,Andrew Vlogs / YouTube,唱一首天上的歌 - 迦南詩歌 -
+HYMN-314,寰宇群生,1,20250608,20250608,rBfxOgQWaVQ,Teochew Service PLCMC 潮语崇拜 / YouTube,TS 诗歌 - 寰宇群生
+HYMN-315,得力在乎祢,1,20260315,20260315,PvCQf0SejTU,耶穌是主Jesus is Lord / YouTube,粵語詩歌【得力在乎你】
+HYMN-316,從亙古到永遠,1,20220918,20220918,4u_UQ4OQdTw,生命河 ROLCC Media / YouTube,從亙古到永遠 You Reign Eternally (生命河敬拜讚美系列 6：天開了) 小組敬拜用
+HYMN-317,復活得勝主,1,20230409,20230409,tlvFs9ixEjw,Teresa古今詩歌Hymns♬ / YouTube,【復活得勝主】Thine Is the Glory│詞：Edmond L. Budry│曲：George F. Handel│鋼琴：Kaleb Brasee│頌唱：Teresa Huang
+HYMN-318,感恩祭燃起,1,20240623,20240623,A0xGphDjmtg,角聲使團 The Heralders / YouTube,角聲使團 The Heralders 《感恩祭燃起》 THANKSGIVING OFFERING [Official MV] (4K UHD)
+HYMN-319,我以禱告來到祢跟前,1,20221218,20221218,z_9TqPE69Iw,Peace & Joy's Channel / YouTube,我以禱告來到你跟前 - 我心旋律
+HYMN-320,我向祢禱告,1,20240929,20240929,-IVXs-rBonc,Son Music 新音樂敬拜創作 / YouTube,我向祢禱告 (歌詞MV) | SON Music ft. Brenda Li
+HYMN-321,我從深處向袮求告,1,20230319,20230319,y4u4W7Glkb8,橄欖枝 / YouTube,詩篇130篇1-4節 (我從深處向祢求告) - 華人的讚美敬拜樂團
+HYMN-322,救恩的記號,1,20240505,20240505,X3OpaMTRBCo,Tina K / YouTube,救恩的記號 - 基恩敬拜（主唱：Tina Kong) 歌詞版 適合預苦期、受難節、復活節默想歌頌
+HYMN-323,是基督耶穌,1,20220710,20220710,NBodCpK7VqQ,Gary Cheung / YouTube,20151108 是基督、耶穌
+HYMN-324,煉淨過的生命,1,20260412,20260412,U8NlvgPXor8,讚美之泉 Stream Of Praise Music Ministries / YouTube,【煉淨過的生命 A Purified Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)
+HYMN-325,當我抬頭仰望,1,20240623,20240623,vMjdPG60CS0,KUA GLOBAL 跨越 / YouTube,KUA MUSIC【當我抬頭仰望 / When I Look at the Sky】The  Lighters 萊特
+HYMN-326,盡心盡性,1,20251116,20251116,ccrieZ92CAI,新聖城基督教會Heavenly City Christian Church / YouTube,盡心盡性
+HYMN-327,祢是榮耀君王,1,20220410,20220410,oGgK5BoYSuM,Lo chienchi / YouTube,你是榮耀君王
+HYMN-328,祢是配得,1,20230305,20230305,Y3eE_e5rMvc,讚美之泉 Stream Of Praise Music Ministries / YouTube,【祢是配得 (聖哉聖哉全地唱) You Are Worthy】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (16)
+HYMN-329,祢永掌管世界,1,20250921,20250921,lzLeV-YyxRY,CCiL Online / YouTube,[粵語詩歌] 萬有都歸祢／祢永掌管世界／耶穌我感謝祢／我知誰掌管明天
+HYMN-330,谷中百合花,1,20210613,20210613,uhGSFj5McAQ,KUA GLOBAL 跨越 / YouTube,KUA MUSIC【谷中百合花 / 내 진정 사모하는】李聖雅
+HYMN-331,踏上彩虹,1,20250413,20250413,2gRpx6WFcko,950624 agape / YouTube,踏上彩虹
+HYMN-332,先求祂的國和義,1,20240121,20240121,rhbAzx95NBo,盧家宏吉他 LuJiaHong Guitar / YouTube,先求祂的國和義Seek Ye First 盧家宏吉他演奏 GOOD TV LuJiaHong Guitar
+HYMN-333,全地齊讚頌,1,20240623,20240623,U-7IH5Xk1T4,鄧承軒 X MC Samuel / YouTube,全地齊讚頌（行版、副歌和聲版）｜粵語詩歌翻唱
+HYMN-334,凡事都能做,1,20250608,20250608,KLdSuKezMgs,讚美之泉 Stream Of Praise Music Ministries / YouTube,【凡事都能做 All Things are Possible】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9)
+HYMN-335,創造世界,1,20250810,20250810,1Hbce-TZczQ,Sharon Chang / YouTube,合唱團 主創造世界
+HYMN-336,十架的大能,1,20240225,20240225,TaCqFTGNKGQ,讚美之泉 Stream Of Praise Music Ministries / YouTube,【十架的大能 The Power Of The Cross】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (28)
+HYMN-337,原是為我,1,20250831,20250831,Wg5LDm12jqg,基恩敬拜 Amazing Grace Worship / YouTube,《原是為我》All For My Sake 基恩敬拜 AGWMM Official MV
+HYMN-338,受造奇妙可畏,1,20250928,20250928,xxboAVv2Q34,WN X 玻璃海樂團 X PHOTIC / YouTube,受造奇妙可畏 feat. BUCC (Stormproof live)  // 玻璃海樂團  //
+HYMN-339,受難前夕,1,20230806,20230806,3VMn-jtKEAY,Arthur Lee / YouTube,236 受難前夕 (喫這逾越節的筵席)
+HYMN-340,常喜樂滿心間,1,20211219,20211219,uVJbsiuD92A,CNEC HHCC 中華傳道會紅磡基督教會 / YouTube,常喜樂滿心間
+HYMN-341,恩惠隨著我,1,20260111,20260111,4MqHMYPs1ac,鹹蛋音樂事工Salted Egg Music Ministry / YouTube,恩惠隨著我 - 鹹蛋音樂事工SEMM🍳//《刻在祢心底的名字》 Mini-Album 7th Track
+HYMN-342,惟獨耶穌,1,20210620,20210620,nuUwlfQ8_oA,宇宙光百人大合唱 / YouTube,惟獨耶穌
+HYMN-343,無以回報,1,20251102,20251102,WfOE7cBT6Lw,敬拜和弦资源站 WORSHIP&CHORD / YouTube,無以回報 Dengan Apa Kan Kubalas (好歌分享)
+HYMN-344,無愧的用人,1,20210627,20210627,Zpgtk4pbUic,Tom Lee / YouTube,無愧的用人
+HYMN-345,真神名號當頌揚,1,20211010,20211010,X4g7ovempdI,Penelope Chan / YouTube,真神名號當頌揚  普天頌讚新修訂版第11首
+HYMN-346,神啊！祢在哪兒,1,20260201,20260201,mbjAbHpetQc,crest712 / YouTube,神啊你在哪兒 (盧永亨作品)
+HYMN-347,神愛我和你,1,20230521,20230521,5x-0Coj-yR4,MrKoKei / YouTube,神愛我和你 - Christian Children Ministry
+HYMN-348,祢話語是我亮光,1,20260419,20260419,8KtQjK0GFjE,基恩敬拜 Amazing Grace Worship / YouTube,《祢話語是我亮光》Thy Word Shines - 基恩敬拜 AGWMM Official MV
+HYMN-349,耶和華是我的倚靠,1,20260125,20260125,Q1OaI5EEqGc,角聲使團 The Heralders / YouTube,角聲使團 The Heralders《耶和華是我的倚靠》[Official Lyric Video]
+HYMN-350,耶穌恩主今復生,1,20240331,20240331,uJ1WMooiWOI,香港聖詩會 Hong Kong Hymn Society / YouTube,【粵語聖詩】耶穌恩主今復生 (復活良辰歌) The Day of Resurrection - 「基督精兵奮進」2023 聖詩頌唱會
+HYMN-351,青苗生長,1,20260405,20260405,oQTi5bcE-ec,Isaac Lam / YouTube,青苗生長歌｜懷恩堂復活節主日崇拜
+HYMN-352,靠主有福,1,20211212,20211212,bYK21OoyRqc,小平心歌Ping Hymns / YouTube,靠主有福 Blessed is He That Is Trusting the Lord —【诗歌】Tenor《小平心歌Ping Hymns—Chinese Version》PINYIN SUB
+HYMN-353,靠著祢寶血,1,20221106,20221106,y8EreEN33Uo,Son Music 新音樂敬拜創作 / YouTube,靠著祢寶血 (歌詞MV)--SON Music [渴想祢] ft. Brenda Li
+HYMN-354,頌讚祢 hallelujah,1,20211121,20211121,02_VFh5ktVA,音樂世界MusicWorld / YouTube,頌讚祢 Hallelujah｜歌詞MV｜粵語兒童詩歌
+HYMN-355,只有葉子,1,20241117,20241117,MIGZ1WniCkY,Simon Yeung / YouTube,只有葉子
+HYMN-356,同入聖殿,1,20211128,20211128,F3TvFhJrVK0,Jennifer Poon / YouTube,讚之歌_同入聖殿
+HYMN-357,向著前方,1,20251116,20251116,7fumXjstga0,Son Music 新音樂敬拜創作 / YouTube,向著前方 | SON Music [我向祢禱告] ft. Brenda Li & Simon Yu
+HYMN-358,我心敬拜,1,20250525,20250525,GhOrDvCPbYo,KSC / YouTube,我心敬拜 PPT
+HYMN-359,我心稱頌主,1,20241215,20241215,k4M9nttsLUg,香港聖樂促進會 / YouTube,【聖詩薈萃】我心稱頌主(粵) - 普天頌讚新修訂本142首
+HYMN-360,我愛我主國度,1,20250126,20250126,ykBJXGzXozw,Chinchung Chen / YouTube,讚美詩179 我愛我主國度
+HYMN-361,萬主之主,1,20221106,20221106,F4GBw5f1KlQ,cantonworship / YouTube,萬主之主 萬王之王 // 玻璃海樂團 // Lyric MV #粵語詩歌
+HYMN-362,萬眾同路,1,20240128,20240128,phjQF0oqUYI,Praise the Lord / YouTube,萬眾同路
+HYMN-363,蒙大恩蒼生當稱讚頌揚,1,20221002,20221002,oOuPYyO2zvk,香港聖詩會 Hong Kong Hymn Society / YouTube,"蒙大恩蒼生當稱讚頌揚 Sing Praise to the Lord, You People of Grace - 2019 聖詩頌唱會「詩‧人」"
+HYMN-364,單單仰望祢,1,20250720,20250720,x9olp0a1Tqo,Tony Lui / YouTube,單單仰望你 (video 製作)
+HYMN-365,好像個父親,1,20220619,20220619,ge4PY3Dc9wU,Isaac Lam / YouTube,好像個父親｜亞薩詩班｜主日聖樂崇拜｜台北懷恩堂
+HYMN-366,確實上主在這地方,1,20241027,20241027,e8lldmqNwcc,习近平 / YouTube,確實上主在這地方-聖餐主日序樂
+HYMN-367,神啊！我要讚美祢,1,20241027,20241027,HPh0MezOgoI,Release - Topic / YouTube,神啊！我要讚美祢
+HYMN-368,神是君王,1,20211024,20211024,VPuknASNY-8,Gary Cheung / YouTube,20151108 神是君王
+HYMN-369,榮耀十架,1,20251102,20251102,ofGv1rbBMCc,周日音樂匯 / YouTube,榮耀十架 - Cantonhymn (周日音樂匯2014-03-09)
+HYMN-370,榮耀歸於袮,1,20240331,20240331,t7SmnnNhdMI,花蓮博愛浸信會線上影音 / YouTube,所有的榮耀歸於祢＿花蓮博愛浸信會主日敬拜
+HYMN-371,求主作我光,1,20220116,20220116,ryNrGFAqe5w,香港聖詩會 Hong Kong Hymn Society / YouTube,求主作我光 Longing For Light 點解聖詩(八)「聖詩中的社會議題」
+HYMN-372,求基督差使我,1,20211114,20211114,VlYhses38wk,S / YouTube,求基督差使我
+HYMN-373,開展主的國,1,20240211,20240211,MSo9dYTlr0E,Take Up Your Cross 背起十架 / YouTube,【默想詩歌】開展主的國(粵)
