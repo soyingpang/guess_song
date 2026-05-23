@@ -76,7 +76,6 @@ const state = {
   voiceBroadcastCalls: new Map(),
   voiceBroadcastElements: new Map(),
   voiceBroadcastStreams: new Map(),
-  voiceBroadcastAudioNodes: new Map(),
   voiceBroadcastBlocked: false,
   outboundVoiceBroadcastCalls: new Map(),
 };
@@ -934,8 +933,6 @@ function attachVoiceBroadcastStream(sourcePlayerId, stream, sourceName) {
     previousAudio.srcObject = null;
     previousAudio.remove();
   }
-  disconnectVoiceBroadcastAudio(sourcePlayerId);
-
   const audio = document.createElement("audio");
   audio.autoplay = true;
   audio.controls = false;
@@ -944,7 +941,8 @@ function attachVoiceBroadcastStream(sourcePlayerId, stream, sourceName) {
   audio.srcObject = stream;
   audio.dataset.sourceName = sourceName;
   state.voiceBroadcastStreams.set(sourcePlayerId, stream);
-  audio.muted = connectVoiceBroadcastAudio(sourcePlayerId, stream);
+  audio.muted = false;
+  audio.volume = 1;
   audio.addEventListener("playing", () => {
     state.voiceBroadcastBlocked = false;
     renderHostAudioBroadcastUi();
@@ -968,68 +966,6 @@ function attachVoiceBroadcastStream(sourcePlayerId, stream, sourceName) {
   });
 
   playVoiceBroadcasts();
-}
-
-function getRemoteAudioContext() {
-  const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextConstructor) return null;
-  if (!state.remoteAudioContext) state.remoteAudioContext = new AudioContextConstructor();
-  return state.remoteAudioContext;
-}
-
-function connectVoiceBroadcastAudio(sourcePlayerId, stream) {
-  const context = getRemoteAudioContext();
-  if (!context || !stream?.getAudioTracks?.().length) return false;
-
-  try {
-    const source = context.createMediaStreamSource(stream);
-    const gain = context.createGain();
-    gain.gain.value = 1;
-    source.connect(gain).connect(context.destination);
-    state.voiceBroadcastAudioNodes.set(sourcePlayerId, { source, gain });
-    return true;
-  } catch {
-    disconnectVoiceBroadcastAudio(sourcePlayerId);
-    return false;
-  }
-}
-
-function disconnectVoiceBroadcastAudio(sourcePlayerId) {
-  const nodeSet = state.voiceBroadcastAudioNodes.get(sourcePlayerId);
-  state.voiceBroadcastAudioNodes.delete(sourcePlayerId);
-  if (!nodeSet) return;
-
-  try {
-    nodeSet.source.disconnect();
-  } catch {
-    // The node may already be disconnected.
-  }
-
-  try {
-    nodeSet.gain.disconnect();
-  } catch {
-    // The node may already be disconnected.
-  }
-}
-
-function resumeVoiceBroadcastAudio() {
-  const context = state.remoteAudioContext;
-  if (!context || !state.voiceBroadcastAudioNodes.size) return false;
-  if (context.state === "running") return true;
-
-  const resumePromise = context.resume?.();
-  if (resumePromise?.then) {
-    resumePromise
-      .then(() => {
-        state.voiceBroadcastBlocked = false;
-        renderHostAudioBroadcastUi();
-      })
-      .catch(() => {
-        state.voiceBroadcastBlocked = true;
-        renderHostAudioBroadcastUi();
-      });
-  }
-  return false;
 }
 
 function playHostAudioBroadcast() {
@@ -1072,19 +1008,22 @@ function playVoiceBroadcasts() {
     return;
   }
 
-  if (state.voiceBroadcastAudioNodes.size) {
-    const audioReady = resumeVoiceBroadcastAudio();
-    state.voiceBroadcastBlocked = !audioReady;
-    if (!audioReady) setHostAudioStatus("請按開聲收聽玩家說話");
-    else renderHostAudioBroadcastUi();
-    return;
-  }
-
   state.voiceBroadcastBlocked = false;
   Array.from(state.voiceBroadcastElements.values()).forEach((audio) => {
     audio.muted = false;
     audio.volume = 1;
     const playPromise = audio.play();
+    if (playPromise?.then) {
+      playPromise
+        .then(() => {
+          state.remoteAudioPrimed = true;
+          state.voiceBroadcastBlocked = false;
+          renderHostAudioBroadcastUi();
+        })
+        .catch(() => {});
+    } else {
+      state.remoteAudioPrimed = true;
+    }
     if (playPromise?.catch) {
       playPromise.catch(() => {
         state.voiceBroadcastBlocked = true;
@@ -1134,7 +1073,6 @@ function stopVoiceBroadcast(sourcePlayerId, options = {}) {
   state.voiceBroadcastCalls.delete(sourcePlayerId);
   state.voiceBroadcastElements.delete(sourcePlayerId);
   state.voiceBroadcastStreams.delete(sourcePlayerId);
-  disconnectVoiceBroadcastAudio(sourcePlayerId);
 
   if (closeCall) closePeerCall(call);
 
@@ -1196,14 +1134,12 @@ function renderHostAudioBroadcastUi() {
     return;
   }
 
-  const hasPlayableAudio = state.hostAudioStream || state.voiceBroadcastElements.size > 0;
-  const audioContextBlocked =
-    state.voiceBroadcastAudioNodes.size > 0 && state.remoteAudioContext?.state !== "running";
+  const hasHostAudio = Boolean(state.hostAudioStream);
+  const hasVoiceAudio = state.voiceBroadcastElements.size > 0;
+  const hasPlayableAudio = hasHostAudio || hasVoiceAudio;
   const needsUnlock = Boolean(
-    (state.hostAudioStream && state.hostAudioBlocked) ||
-      state.voiceBroadcastBlocked ||
-      audioContextBlocked ||
-      (hasPlayableAudio && !state.remoteAudioPrimed)
+    (hasHostAudio && (state.hostAudioBlocked || !state.remoteAudioPrimed)) ||
+      state.voiceBroadcastBlocked
   );
   const waitingForAudio = !hasPlayableAudio;
   const hasDefaultWaitingStatus =
