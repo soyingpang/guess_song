@@ -1,5 +1,7 @@
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
+const YOUTUBE_LOGIN_PROMPT_KEY = "guess-song-youtube-premium-login-v1";
+const YOUTUBE_LOGIN_URL = "https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com%2F";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
@@ -51,6 +53,10 @@ const els = {
   qrPanel: document.querySelector("#stageQrPanel"),
   qr: document.querySelector("#stageQr"),
   room: document.querySelector("#stageRoom"),
+  youtubeLoginPrompt: document.querySelector("#youtubeLoginPrompt"),
+  youtubeLoginButton: document.querySelector("#youtubeLoginButton"),
+  youtubeLoginReadyButton: document.querySelector("#youtubeLoginReadyButton"),
+  youtubeLoginSkipButton: document.querySelector("#youtubeLoginSkipButton"),
 };
 
 let latestFrameKey = "";
@@ -75,6 +81,11 @@ const displaySync = {
 };
 
 els.soundButton?.addEventListener("click", unlockStageSound);
+els.youtubeLoginButton?.addEventListener("click", openYouTubeLogin);
+els.youtubeLoginReadyButton?.addEventListener("click", () => finishYouTubeLoginPrompt({ reload: true }));
+els.youtubeLoginSkipButton?.addEventListener("click", () => finishYouTubeLoginPrompt());
+
+initYouTubeLoginPrompt();
 
 window.addEventListener("storage", (event) => {
   if (event.key === DISPLAY_STATE_KEY && !latestRemoteState) renderFromStorage();
@@ -155,6 +166,46 @@ function renderState(state) {
   renderLeaderboard(state);
   renderRoster(state);
   renderQr(state);
+}
+
+function initYouTubeLoginPrompt() {
+  if (!els.youtubeLoginPrompt) return;
+
+  try {
+    if (sessionStorage.getItem(YOUTUBE_LOGIN_PROMPT_KEY) === "done") return;
+  } catch {
+    // If storage is blocked, show the prompt for this page load.
+  }
+
+  els.youtubeLoginPrompt.hidden = false;
+  window.setTimeout(() => els.youtubeLoginButton?.focus(), 50);
+}
+
+function openYouTubeLogin() {
+  const popup = window.open(
+    YOUTUBE_LOGIN_URL,
+    "guessSongYouTubeLogin",
+    "popup,width=1120,height=760"
+  );
+
+  if (popup) {
+    popup.focus();
+    return;
+  }
+
+  window.open(YOUTUBE_LOGIN_URL, "_blank", "noopener");
+}
+
+function finishYouTubeLoginPrompt(options = {}) {
+  const { reload = false } = options;
+  try {
+    sessionStorage.setItem(YOUTUBE_LOGIN_PROMPT_KEY, "done");
+  } catch {
+    // Prompt state is only a convenience; it is fine if it cannot be stored.
+  }
+
+  if (els.youtubeLoginPrompt) els.youtubeLoginPrompt.hidden = true;
+  if (reload) window.location.reload();
 }
 
 function connectToHostDisplay({ resetAttempts = false } = {}) {
@@ -504,7 +555,7 @@ function postYouTubeCommand(command, args = []) {
 }
 
 function buildEmbedUrl(state) {
-  const url = new URL(`https://www.youtube-nocookie.com/embed/${state.videoId}`);
+  const url = new URL(`https://www.youtube.com/embed/${state.videoId}`);
   url.searchParams.set("start", String(Math.floor(currentPlaybackTime(state))));
   if (state.end) url.searchParams.set("end", String(state.end));
   url.searchParams.set("autoplay", state.isPlaying ? "1" : "0");

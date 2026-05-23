@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "onsite-2";
+const APP_BUILD_VERSION = "youtube-login-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -1578,7 +1578,7 @@ function isVideoMediaUrl(url) {
 }
 
 function buildEmbedUrl(song, autoplay) {
-  const url = new URL(`https://www.youtube-nocookie.com/embed/${song.videoId}`);
+  const url = new URL(`https://www.youtube.com/embed/${song.videoId}`);
   url.searchParams.set("start", String(clipStart(song)));
   url.searchParams.set("end", String(clipStart(song) + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
