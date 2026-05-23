@@ -1,13 +1,8 @@
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
-const ROOM_ID_CANDIDATES = [
-  DEFAULT_ROOM_ID,
-  `${DEFAULT_ROOM_ID}-2`,
-  `${DEFAULT_ROOM_ID}-3`,
-];
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
-const DISPLAY_CONNECTION_TIMEOUT_MS = 20000;
+const DISPLAY_CONNECTION_TIMEOUT_MS = 9000;
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",
@@ -19,12 +14,7 @@ const PEER_OPTIONS = {
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
       {
-        urls: [
-          "turn:eu-0.turn.peerjs.com:3478",
-          "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
-          "turn:us-0.turn.peerjs.com:3478",
-          "turn:us-0.turn.peerjs.com:3478?transport=tcp",
-        ],
+        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
         username: "peerjs",
         credential: "peerjsp",
       },
@@ -34,11 +24,8 @@ const PEER_OPTIONS = {
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 
 const params = new URLSearchParams(window.location.search);
-const urlRoomId = (params.get("room") || "").trim();
-const roomCandidates = urlRoomId ? [urlRoomId] : ROOM_ID_CANDIDATES;
-const roomId = roomCandidates[0] || DEFAULT_ROOM_ID;
-let activeRoomId = roomId;
-let roomCandidateIndex = 0;
+const roomId = (params.get("room") || DEFAULT_ROOM_ID).trim();
+const qrRoomId = roomId;
 
 const els = {
   hero: document.querySelector(".stage-hero"),
@@ -111,7 +98,7 @@ function renderFromStorage() {
   if (!state) {
     renderWaiting(
       "等待遠端同步",
-      `正在連接房間：${activeRoomId}`
+      `正在連接房間：${roomId}`
     );
     return;
   }
@@ -177,16 +164,12 @@ function connectToHostDisplay({ resetAttempts = false } = {}) {
   clearTimeout(displaySync.reconnectTimer);
   displaySync.reconnectTimer = null;
   clearDisplayConnectionTimeout();
-  if (resetAttempts) {
-    displaySync.reconnectAttempts = 0;
-    roomCandidateIndex = 0;
-  }
-  activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
+  if (resetAttempts) displaySync.reconnectAttempts = 0;
 
   const token = crypto.randomUUID();
   displaySync.token = token;
   closeDisplayPeer();
-  renderWaiting("連接主持中", `房間：${activeRoomId}`);
+  renderWaiting("連接主持中", `房間：${roomId}`);
 
   const peer = new Peer(undefined, PEER_OPTIONS);
   displaySync.peer = peer;
@@ -194,7 +177,7 @@ function connectToHostDisplay({ resetAttempts = false } = {}) {
 
   peer.on("open", () => {
     if (displaySync.token !== token) return;
-    const connection = peer.connect(activeRoomId, { reliable: true });
+    const connection = peer.connect(roomId, { reliable: true });
     displaySync.connection = connection;
     bindDisplayConnection(connection, token);
   });
@@ -259,18 +242,11 @@ function scheduleDisplayReconnect(message) {
   clearTimeout(displaySync.reconnectTimer);
   displaySync.reconnectAttempts += 1;
   const delay = Math.min(RECONNECT_MAX_DELAY, RECONNECT_BASE_DELAY * displaySync.reconnectAttempts);
-  advanceRoomCandidate();
-  renderWaiting(message, `${Math.ceil(delay / 1000)} 秒後重新連接房間：${activeRoomId}`);
+  renderWaiting(message, `${Math.ceil(delay / 1000)} 秒後重新連接房間：${roomId}`);
   displaySync.reconnectTimer = window.setTimeout(() => {
     displaySync.reconnectTimer = null;
     connectToHostDisplay();
   }, delay);
-}
-
-function advanceRoomCandidate() {
-  if (roomCandidates.length <= 1) return;
-  roomCandidateIndex = (roomCandidateIndex + 1) % roomCandidates.length;
-  activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
 }
 
 function clearDisplayConnectionTimeout() {
@@ -307,7 +283,7 @@ function closeDisplayPeer() {
 }
 
 function handleDisplayMicCall(call) {
-  if (call.metadata?.type !== "display-player-mic" || call.metadata?.roomId !== activeRoomId) {
+  if (call.metadata?.type !== "display-player-mic" || call.metadata?.roomId !== roomId) {
     try {
       call.answer();
       call.close();
@@ -417,7 +393,7 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   if (els.gameTitle) els.gameTitle.textContent = "估歌仔";
   els.round.textContent = "未連接";
   els.score.textContent = "0 / 0";
-  els.status.textContent = `房間：${activeRoomId}`;
+  els.status.textContent = `房間：${roomId}`;
   els.title.textContent = "等待主持開始";
   els.prompt.textContent = prompt;
   els.subPrompt.textContent = subPrompt;
@@ -430,8 +406,8 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   els.hero.classList.remove("is-winner-reveal");
   renderQr({
     playerUrl: buildFallbackPlayerUrl(),
-    roomId: activeRoomId,
-    roomReady: Boolean(activeRoomId),
+    roomId: qrRoomId,
+    roomReady: Boolean(qrRoomId),
   });
   els.playerHost.classList.add("is-masked");
   els.playerHost.replaceChildren();
@@ -876,7 +852,7 @@ function renderQr(state) {
   }
 
   const playerUrl = state.playerUrl || buildFallbackPlayerUrl();
-  const displayRoomId = state.roomId || activeRoomId;
+  const displayRoomId = state.roomId || qrRoomId;
 
   if (!playerUrl) {
     els.qrPanel.hidden = true;
@@ -894,9 +870,9 @@ function renderQr(state) {
 }
 
 function buildFallbackPlayerUrl() {
-  if (!activeRoomId) return "";
+  if (!qrRoomId) return "";
   const url = new URL("./player.html", window.location.href);
-  url.searchParams.set("room", activeRoomId);
+  url.searchParams.set("room", qrRoomId);
   return url.toString();
 }
 

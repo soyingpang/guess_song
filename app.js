@@ -42,11 +42,6 @@ const CLOUD_LIBRARY_OPTIONS = [
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
-const ROOM_ID_CANDIDATES = [
-  DEFAULT_ROOM_ID,
-  `${DEFAULT_ROOM_ID}-2`,
-  `${DEFAULT_ROOM_ID}-3`,
-];
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",
@@ -58,12 +53,7 @@ const PEER_OPTIONS = {
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
       {
-        urls: [
-          "turn:eu-0.turn.peerjs.com:3478",
-          "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
-          "turn:us-0.turn.peerjs.com:3478",
-          "turn:us-0.turn.peerjs.com:3478?transport=tcp",
-        ],
+        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
         username: "peerjs",
         credential: "peerjsp",
       },
@@ -329,7 +319,7 @@ function initMultiplayer() {
   }
 
   const roomId = resolveRoomId();
-  createRoomPeer(roomId, 0);
+  createRoomPeer(roomId);
 }
 
 function resolveRoomId() {
@@ -337,12 +327,7 @@ function resolveRoomId() {
   return DEFAULT_ROOM_ID;
 }
 
-function createRoomPeer(roomId, candidateIndex = 0) {
-  state.roomReady = false;
-  state.roomError = "";
-  state.roomId = roomId;
-  renderPlayers();
-
+function createRoomPeer(roomId) {
   state.peer = new Peer(roomId, PEER_OPTIONS);
 
   state.peer.on("open", (id) => {
@@ -376,17 +361,6 @@ function createRoomPeer(roomId, candidateIndex = 0) {
 
   state.peer.on("error", (error) => {
     if (error.type === "unavailable-id") {
-      const nextRoomId = ROOM_ID_CANDIDATES[candidateIndex + 1];
-      if (nextRoomId) {
-        try {
-          state.peer?.destroy();
-        } catch {
-          // PeerJS may already have closed the failed room.
-        }
-        createRoomPeer(nextRoomId, candidateIndex + 1);
-        return;
-      }
-
       state.roomReady = false;
       state.roomError = "固定房間已經有另一個後台開住，請關閉其他後台再重新整理";
       state.roomId = roomId;
