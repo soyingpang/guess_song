@@ -1191,7 +1191,7 @@ function startRound(preferredSongId, options = {}) {
   state.playEndsAt = autoplay ? Date.now() + clipDuration(song) * 1000 : 0;
   state.currentQuestionId = `${song.id}:${Date.now()}`;
   state.buzzWinnerId = "";
-  state.buzzOpen = false;
+  state.buzzOpen = autoplay && canAutoOpenBuzz();
   state.showLeaderboard = false;
   state.showWinner = false;
   els.guessInput.value = "";
@@ -1293,6 +1293,7 @@ function playCurrentClip() {
   state.fullPlayback = false;
   state.frontReady = true;
   state.playEndsAt = Date.now() + clipDuration(state.currentSong) * 1000;
+  state.buzzOpen = canAutoOpenBuzz();
   state.showLeaderboard = false;
   state.showWinner = false;
   renderYouTubeFrame({ autoplay: true });
@@ -1307,6 +1308,7 @@ function stopPlayback(message = "已停止播放") {
   state.isPlaying = false;
   state.fullPlayback = false;
   state.playEndsAt = 0;
+  if (state.mode === "buzz") state.buzzOpen = false;
   if (state.currentSong) renderYouTubeFrame({ autoplay: false });
   setResult(message, state.currentSong ? "可開估、重播或下一題播放" : "", "");
   render();
@@ -1551,10 +1553,16 @@ function scheduleClipStop() {
     state.fullPlayback = false;
     state.frontReady = false;
     state.playEndsAt = 0;
+    if (state.mode === "buzz") state.buzzOpen = false;
     setResult("時間到", state.currentSong ? "可以開估、重播或下一題播放" : "", "");
     renderYouTubeFrame({ autoplay: false });
     render();
   }, clipDuration(state.currentSong) * 1000);
+}
+
+function canAutoOpenBuzz() {
+  if (state.mode !== "buzz" || !state.currentSong || state.answered || state.buzzWinnerId) return false;
+  return !hasConnectedPlayers() || hasAvailableBuzzPlayers();
 }
 
 function showLeaderboard() {
