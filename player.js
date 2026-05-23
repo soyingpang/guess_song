@@ -188,7 +188,7 @@ els.phoneRemoteListenButton.addEventListener("click", () => {
 });
 setIconButton(els.openLeaderboardButton, "leaderboard", "排行榜");
 setIconButton(els.closeLeaderboardButton, "close", "關閉排行榜");
-setIconButton(els.phoneRemoteListenButton, "volume", "啟用收聽");
+setListenButtonState(false);
 updateMicUi();
 els.leaderboardModal.addEventListener("click", (event) => {
   if (event.target === els.leaderboardModal) closeLeaderboard();
@@ -621,6 +621,20 @@ function setIconButton(button, iconName, label) {
   const icon = ICONS[iconName] || "";
   button.innerHTML = `${icon}<span class="visually-hidden">${label}</span>`;
   button.classList.add("icon-action-button");
+  button.setAttribute("aria-label", label);
+  button.title = label;
+}
+
+function setListenButtonState(needsUnlock) {
+  const button = els.phoneRemoteListenButton;
+  if (!button) return;
+
+  const icon = ICONS.volume || "";
+  const visibleLabel = needsUnlock ? "開聲" : "收聽";
+  const label = needsUnlock ? "啟用手機收聽" : "手機收聽已準備";
+  button.innerHTML = `${icon}<span class="phone-listen-label">${visibleLabel}</span><span class="visually-hidden">${label}</span>`;
+  button.classList.add("icon-action-button");
+  button.classList.toggle("is-needed", needsUnlock);
   button.setAttribute("aria-label", label);
   button.title = label;
 }
@@ -1149,10 +1163,20 @@ function renderHostAudioBroadcastUi() {
   if (!isPhoneAudioListener() || !state.joined) {
     els.phoneRemoteListenStatus.textContent = "入房後可收聽其他手機開咪";
     els.phoneRemoteListenButton.hidden = true;
+    els.phoneRemoteListen?.classList.remove("needs-unlock");
+    setListenButtonState(false);
     return;
   }
 
   const hasPlayableAudio = state.hostAudioStream || state.voiceBroadcastElements.size > 0;
+  const audioContextBlocked =
+    state.voiceBroadcastAudioNodes.size > 0 && state.remoteAudioContext?.state !== "running";
+  const needsUnlock = Boolean(
+    (state.hostAudioStream && state.hostAudioBlocked) ||
+      state.voiceBroadcastBlocked ||
+      audioContextBlocked ||
+      (hasPlayableAudio && !state.remoteAudioPrimed)
+  );
   const waitingForAudio = !hasPlayableAudio;
   const hasDefaultWaitingStatus =
     !state.hostAudioStatus ||
@@ -1163,8 +1187,10 @@ function renderHostAudioBroadcastUi() {
       : waitingForAudio && state.remoteAudioPrimed && hasDefaultWaitingStatus
       ? primedListenStatus()
       : state.hostAudioStatus || defaultListenStatus();
-  els.phoneRemoteListenButton.hidden = false;
-  els.phoneRemoteListenButton.disabled = false;
+  els.phoneRemoteListen?.classList.toggle("needs-unlock", needsUnlock);
+  setListenButtonState(needsUnlock);
+  els.phoneRemoteListenButton.hidden = !needsUnlock;
+  els.phoneRemoteListenButton.disabled = !needsUnlock;
 }
 
 function setPlayerMode(mode) {

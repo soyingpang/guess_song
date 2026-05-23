@@ -50,6 +50,15 @@
         font-size: 0.78rem;
       }
 
+      .phone-listen-button .phone-listen-label {
+        display: none;
+      }
+
+      .phone-listen-button.is-needed .phone-listen-label {
+        display: inline;
+        font-weight: 1000;
+      }
+
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -263,7 +272,8 @@
       }
 
       .player-body.is-joined {
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
         background:
           linear-gradient(145deg, #221d2f 0%, #123f43 48%, #5c3b2c 100%);
         color: #fff8ec;
@@ -278,9 +288,9 @@
         position: relative;
         display: flex;
         min-height: calc(100svh - 8px);
-        max-height: calc(100svh - 8px);
+        max-height: none;
         flex-direction: column;
-        overflow: hidden;
+        overflow: visible;
         border: 1px solid rgba(255, 210, 115, 0.36);
         background:
           linear-gradient(180deg, rgba(38, 45, 56, 0.98), rgba(25, 28, 39, 0.99));
@@ -297,9 +307,7 @@
 
       .player-body.is-joined .player-card > h1,
       .player-body.is-joined .player-status,
-      .player-body.is-joined .mic-status,
-      .player-body.is-joined.is-remote-player .phone-remote-head,
-      .player-body.is-joined.is-remote-player .phone-remote-grid {
+      .player-body.is-joined .mic-status {
         display: none;
       }
 
@@ -369,6 +377,21 @@
         padding: 0;
       }
 
+      .player-body.is-joined .phone-listen-button.icon-action-button.is-needed {
+        display: inline-flex;
+        width: auto;
+        min-width: 74px;
+        max-width: none;
+        aspect-ratio: auto;
+        gap: 6px;
+        padding: 0 10px;
+        border-color: rgba(251, 191, 36, 0.58);
+        background:
+          linear-gradient(180deg, rgba(251, 191, 36, 0.28), rgba(14, 165, 233, 0.1)),
+          rgba(17, 24, 39, 0.92);
+        color: #fef3c7;
+      }
+
       .player-body.is-joined .mic-button.icon-action-button {
         display: flex;
         justify-content: center;
@@ -416,7 +439,7 @@
 
       .player-body.is-joined .phone-question {
         min-height: 0;
-        flex: 1 1 auto;
+        flex: 1 0 auto;
         gap: 6px;
         margin-top: 6px;
         border: 1px solid rgba(45, 212, 191, 0.18);
@@ -461,8 +484,8 @@
       }
 
       .player-body.is-joined .phone-hints {
-        max-height: 42px;
-        overflow: hidden;
+        max-height: none;
+        overflow: visible;
         gap: 4px;
         margin-top: 0;
       }
@@ -477,15 +500,15 @@
       .player-body.is-joined .phone-choices {
         display: grid;
         min-height: 0;
-        flex: 1 1 auto;
+        flex: 1 0 auto;
         gap: 5px;
         margin-top: 0;
-        overflow: hidden;
+        overflow: visible;
       }
 
       .player-body.is-joined .phone-choice {
         position: relative;
-        min-height: 0;
+        min-height: 54px;
         border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 10px;
         background:
@@ -546,7 +569,7 @@
         font-weight: 1000;
         line-height: 1.08;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
       }
 
       .player-body.is-joined .phone-result {
@@ -580,6 +603,13 @@
           linear-gradient(135deg, rgba(15, 118, 110, 0.32), rgba(251, 191, 36, 0.11)),
           rgba(15, 23, 42, 0.8);
         padding: 7px 8px;
+      }
+
+      .player-body.is-joined .phone-remote-listen.needs-unlock {
+        border-color: rgba(251, 191, 36, 0.46);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.12),
+          0 0 0 2px rgba(251, 191, 36, 0.14);
       }
 
       .player-body.is-joined .phone-remote-listen strong {
@@ -804,6 +834,6 @@
     </main>
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=all-phones-voice-2"></script>
+    <script src="./player.js?v=all-phones-voice-3"></script>
   </body>
 </html>
