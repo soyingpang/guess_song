@@ -2,6 +2,11 @@ const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
 const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
+const ROOM_ID_CANDIDATES = [
+  DEFAULT_ROOM_ID,
+  `${DEFAULT_ROOM_ID}-2`,
+  `${DEFAULT_ROOM_ID}-3`,
+];
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 const CONNECTION_TIMEOUT_MS = 20000;
@@ -34,7 +39,11 @@ const SILENT_UNLOCK_AUDIO_URI =
 const ENTRY_MODES = new Set(["onsite", "remote"]);
 
 const params = new URLSearchParams(window.location.search);
-const roomId = (params.get("room") || DEFAULT_ROOM_ID).trim();
+const urlRoomId = (params.get("room") || "").trim();
+const roomCandidates = urlRoomId ? [urlRoomId] : ROOM_ID_CANDIDATES;
+const roomId = roomCandidates[0] || DEFAULT_ROOM_ID;
+let activeRoomId = roomId;
+let roomCandidateIndex = 0;
 const urlName = params.get("name") || "";
 const initialEntryMode = normalizeEntryMode(localStorage.getItem(PLAYER_REMOTE_MODE_KEY));
 localStorage.setItem(PLAYER_REMOTE_MODE_KEY, initialEntryMode);
@@ -281,7 +290,11 @@ function connectToRoom({ resetAttempts = false } = {}) {
 
   clearTimeout(state.reconnectTimer);
   state.reconnectTimer = null;
-  if (resetAttempts) state.reconnectAttempts = 0;
+  if (resetAttempts) {
+    state.reconnectAttempts = 0;
+    roomCandidateIndex = 0;
+  }
+  activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
 
   const token = crypto.randomUUID();
   state.connectionToken = token;
@@ -298,7 +311,7 @@ function connectToRoom({ resetAttempts = false } = {}) {
 
   peer.on("open", () => {
     if (state.connectionToken !== token) return;
-    const connection = peer.connect(roomId, { reliable: true });
+    const connection = peer.connect(activeRoomId, { reliable: true });
     state.connection = connection;
     bindRoomConnection(connection, token);
   });
@@ -392,6 +405,7 @@ function handleConnectionFailure(message) {
   clearConnectionTimeout();
   state.connecting = false;
   const canRetryWithoutReset = Boolean(state.entryNameReady && state.modeLocked && roomId && state.name);
+  if (!state.joined && canRetryWithoutReset) advanceRoomCandidate();
   if (state.joined || canRetryWithoutReset) {
     scheduleReconnect(message);
     return;
@@ -417,7 +431,7 @@ function connectionFailureMessage(error) {
 }
 
 function scheduleReconnect(message) {
-  if (!roomId || !state.name) {
+  if (!activeRoomId || !state.name) {
     setStatus(`${message}，請重新掃 QR 加入`);
     unlockPlayerMode();
     showJoinFormAfterFailure();
@@ -439,6 +453,12 @@ function scheduleReconnect(message) {
     state.reconnectTimer = null;
     connectToRoom();
   }, delay);
+}
+
+function advanceRoomCandidate() {
+  if (roomCandidates.length <= 1) return;
+  roomCandidateIndex = (roomCandidateIndex + 1) % roomCandidates.length;
+  activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
 }
 
 function handleMessage(message) {
@@ -521,7 +541,7 @@ async function startMic(options = {}) {
       },
       video: false,
     });
-    const call = state.peer.call(roomId, stream, {
+    const call = state.peer.call(activeRoomId, stream, {
       metadata: {
         type: "player-mic",
         playerId: state.playerId,
@@ -622,7 +642,7 @@ function ensureDisplayMicBroadcast(target) {
     const call = state.peer.call(peerId, state.micStream, {
       metadata: {
         type: "display-player-mic",
-        roomId,
+        roomId: activeRoomId,
         playerId: state.playerId,
         playerName: state.displayName || state.name || "Open mic",
         targetType: "display",
@@ -842,7 +862,7 @@ function handlePeerCall(call) {
     return;
   }
 
-  if (!state.remoteMode || !state.joined || call.metadata?.roomId !== roomId) {
+  if (!state.remoteMode || !state.joined || call.metadata?.roomId !== activeRoomId) {
     closePeerCall(call);
     return;
   }
@@ -933,7 +953,7 @@ function handleVoiceBroadcastCall(call) {
   closePeerCall(call);
   return;
 
-  if (!state.joined || call.metadata?.roomId !== roomId) {
+  if (!state.joined || call.metadata?.roomId !== activeRoomId) {
     closePeerCall(call);
     return;
   }
