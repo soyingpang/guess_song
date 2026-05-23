@@ -570,33 +570,14 @@ function syncAllMicBroadcastTargets() {
 function syncPlayerMicTargets(sourcePlayer) {
   if (!sourcePlayer?.connection?.open || !sourcePlayer.micActive) return;
 
+  // Keep every listener on the host-relayed path. Direct phone-to-phone calls
+  // can race the relay and replace a working stream with a weaker connection.
   sendToPlayer(sourcePlayer, {
     type: "mic-targets",
     roomId: state.roomId,
-    targets: micBroadcastTargetsFor(sourcePlayer),
+    targets: [],
   });
   forwardPlayerMicToRemotePlayers(sourcePlayer);
-}
-
-function micBroadcastTargetsFor(sourcePlayer) {
-  return Object.values(state.players)
-    .filter((targetPlayer) => shouldReceivePlayerMic(sourcePlayer, targetPlayer))
-    .map((targetPlayer) => ({
-      playerId: targetPlayer.id,
-      peerId: targetPlayer.connection.peer,
-      name: targetPlayer.name,
-    }));
-}
-
-function shouldReceivePlayerMic(sourcePlayer, targetPlayer) {
-  return Boolean(
-    sourcePlayer?.id &&
-      targetPlayer?.id &&
-      sourcePlayer.id !== targetPlayer.id &&
-      targetPlayer.connected &&
-      targetPlayer.connection?.open &&
-      targetPlayer.connection?.peer
-  );
 }
 
 function forwardPlayerMicToRemotePlayers(sourcePlayer) {
