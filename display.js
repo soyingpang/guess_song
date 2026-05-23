@@ -28,6 +28,7 @@ const els = {
   gameTitle: document.querySelector("#stageGameTitle"),
   playerHost: document.querySelector("#stagePlayerHost"),
   mask: document.querySelector("#stageMask"),
+  soundButton: document.querySelector("#stageSoundButton"),
   prompt: document.querySelector("#stagePrompt"),
   subPrompt: document.querySelector("#stageSubPrompt"),
   round: document.querySelector("#stageRound"),
@@ -50,6 +51,8 @@ let latestPlaybackState = null;
 let latestPlaybackRevision = 0;
 let latestRemoteState = null;
 let currentDisplayState = null;
+let stageAudioUnlocked = false;
+let stagePlaybackBlocked = false;
 const stageMic = {
   calls: new Map(),
   items: new Map(),
@@ -63,6 +66,8 @@ const displaySync = {
   reconnectTimer: null,
   connectionTimeout: null,
 };
+
+els.soundButton?.addEventListener("click", unlockStageSound);
 
 window.addEventListener("storage", (event) => {
   if (event.key === DISPLAY_STATE_KEY && !latestRemoteState) renderFromStorage();
@@ -132,10 +137,11 @@ function renderState(state) {
   els.playerHost.classList.toggle("is-masked", !showFrontPlayer);
   document.body.classList.toggle("is-revealed", Boolean(state.revealed));
   document.body.classList.toggle("is-playing", Boolean(state.isPlaying));
-  document.body.classList.add("is-sound-unlocked");
+  document.body.classList.toggle("is-sound-unlocked", stageAudioUnlocked);
   els.hero.classList.toggle("is-winner-reveal", Boolean(state.showWinner));
 
   renderFrame(state);
+  updateStageSoundButton(state);
   renderMeta(state);
   renderHints(state.hints || []);
   renderChoices(state);
@@ -397,6 +403,7 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   latestFrameKey = "";
   latestPlaybackState = null;
   currentDisplayState = null;
+  updateStageSoundButton(null);
 }
 
 function renderFrame(state) {
@@ -445,9 +452,14 @@ function renderLocalMedia(state) {
   media.preload = "metadata";
   if (media.tagName === "VIDEO") media.playsInline = true;
   media.addEventListener("loadedmetadata", () => {
-    media.currentTime = Number(state.start || 0);
-    if (state.isPlaying) media.play().catch(() => {});
+    media.currentTime = currentPlaybackTime(state);
+    if (state.isPlaying) {
+      media.play()
+        .then(markStageAudioUnlocked)
+        .catch(markStagePlaybackBlocked);
+    }
   }, { once: true });
+  media.addEventListener("play", markStageAudioUnlocked);
   media.addEventListener("timeupdate", () => {
     if (state.end && media.currentTime >= state.end) media.pause();
   });
@@ -470,8 +482,10 @@ function syncFramePlayback(state) {
 
   if (state.audioUrl) {
     if (shouldPlay) {
-      media.currentTime = Number(state.start || 0);
-      media.play().catch(() => {});
+      media.currentTime = currentPlaybackTime(state);
+      media.play()
+        .then(markStageAudioUnlocked)
+        .catch(markStagePlaybackBlocked);
     } else {
       media.pause();
     }
@@ -490,12 +504,15 @@ function postYouTubeCommand(command, args = []) {
       "*"
     );
   }
-  iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: command, args: [] }), "*");
+  iframe.contentWindow.postMessage(
+    JSON.stringify({ event: "command", func: command, args: command === "playVideo" ? [] : args }),
+    "*"
+  );
 }
 
 function buildEmbedUrl(state) {
   const url = new URL(`https://www.youtube-nocookie.com/embed/${state.videoId}`);
-  url.searchParams.set("start", String(state.start || 0));
+  url.searchParams.set("start", String(Math.floor(currentPlaybackTime(state))));
   if (state.end) url.searchParams.set("end", String(state.end));
   url.searchParams.set("autoplay", state.isPlaying ? "1" : "0");
   url.searchParams.set("controls", state.frontReady && !state.revealed ? "1" : "0");
@@ -505,6 +522,72 @@ function buildEmbedUrl(state) {
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
   return url.toString();
+}
+
+async function unlockStageSound() {
+  stageAudioUnlocked = true;
+  stagePlaybackBlocked = false;
+  updateStageSoundButton(currentDisplayState);
+
+  const state = currentDisplayState;
+  const media = els.playerHost.firstElementChild;
+  if (!state) return;
+
+  if (state.audioUrl && media?.play) {
+    media.muted = false;
+    media.volume = 1;
+    if (!state.isPlaying) {
+      markStageAudioUnlocked();
+      return;
+    }
+
+    media.currentTime = currentPlaybackTime(state);
+    try {
+      await media.play();
+      markStageAudioUnlocked();
+    } catch {
+      markStagePlaybackBlocked();
+    }
+    return;
+  }
+
+  postYouTubeCommand("unMute");
+  postYouTubeCommand("setVolume", [100]);
+  if (state.isPlaying) postYouTubeCommand("playVideo", [currentPlaybackTime(state)]);
+  markStageAudioUnlocked();
+}
+
+function updateStageSoundButton(state) {
+  if (!els.soundButton) return;
+  const hasMedia = Boolean(state?.hasSong && (state.audioUrl || state.videoId));
+  const frontCanPlay = Boolean(state?.frontReady || state?.isPlaying || state?.revealed);
+  const needsUnlock = hasMedia && frontCanPlay && !stageAudioUnlocked;
+  els.soundButton.hidden = !needsUnlock;
+  document.body.classList.toggle("is-sound-unlocked", stageAudioUnlocked);
+}
+
+function markStageAudioUnlocked() {
+  stageAudioUnlocked = true;
+  stagePlaybackBlocked = false;
+  updateStageSoundButton(currentDisplayState);
+}
+
+function markStagePlaybackBlocked() {
+  stageAudioUnlocked = false;
+  stagePlaybackBlocked = true;
+  updateStageSoundButton(currentDisplayState);
+}
+
+function currentPlaybackTime(state) {
+  const start = Number(state?.start || 0);
+  const end = Number(state?.end || 0);
+  const duration = Number(state?.clipDuration || state?.playDuration || (end ? end - start : 0));
+  if (!state?.isPlaying || !state?.playEndsAt || !duration) return start;
+
+  const startedAt = Number(state.playEndsAt) - duration * 1000;
+  const elapsed = Math.max(0, (Date.now() - startedAt) / 1000);
+  const current = start + elapsed;
+  return end ? Math.min(end, current) : current;
 }
 
 function remainingSeconds(state) {
