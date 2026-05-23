@@ -11,7 +11,22 @@ const ROOM_ID_CANDIDATES = [
 ];
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
-const CONNECTION_TIMEOUT_MS = 9000;
+const CONNECTION_TIMEOUT_MS = 12000;
+const ICE_SERVERS = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+  { urls: "stun:stun2.l.google.com:19302" },
+  {
+    urls: [
+      "turn:eu-0.turn.peerjs.com:3478",
+      "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
+      "turn:us-0.turn.peerjs.com:3478",
+      "turn:us-0.turn.peerjs.com:3478?transport=tcp",
+    ],
+    username: "peerjs",
+    credential: "peerjsp",
+  },
+];
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",
@@ -19,17 +34,21 @@ const PEER_OPTIONS = {
   path: "/",
   secure: true,
   config: {
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" },
-      {
-        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
-        username: "peerjs",
-        credential: "peerjsp",
-      },
-    ],
+    iceServers: ICE_SERVERS,
+    iceCandidatePoolSize: 6,
   },
 };
+const VPN_PEER_OPTIONS = {
+  ...PEER_OPTIONS,
+  config: {
+    ...PEER_OPTIONS.config,
+    iceTransportPolicy: "relay",
+  },
+};
+const CONNECTION_PROFILES = [
+  { id: "standard", label: "標準線路", options: PEER_OPTIONS },
+  { id: "vpn", label: "VPN 兼容線路", options: VPN_PEER_OPTIONS },
+];
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
@@ -42,6 +61,7 @@ const roomCandidates = buildRoomCandidates(urlRoomId || storedRoomId);
 const roomId = roomCandidates[0] || DEFAULT_ROOM_ID;
 let activeRoomId = roomId;
 let roomCandidateIndex = 0;
+let connectionProfileIndex = 0;
 const urlName = params.get("name") || "";
 const initialEntryMode = "onsite";
 localStorage.setItem(PLAYER_REMOTE_MODE_KEY, initialEntryMode);
@@ -302,20 +322,22 @@ function connectToRoom({ resetAttempts = false } = {}) {
   if (resetAttempts) {
     state.reconnectAttempts = 0;
     roomCandidateIndex = 0;
+    connectionProfileIndex = 0;
   }
   activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
+  const connectionProfile = activeConnectionProfile();
 
   const token = crypto.randomUUID();
   state.connectionToken = token;
   state.connecting = true;
   closeCurrentPeer();
-  setStatus(state.reconnectAttempts ? "重新連線中..." : "連線中...");
+  setStatus(`${state.reconnectAttempts ? "重新連線中" : "連線中"}：${connectionProfile.label}`);
   state.connectionTimeout = window.setTimeout(() => {
     if (state.connectionToken !== token || state.joined) return;
-    handleConnectionFailure("連線逾時，請確認後台開住、關閉手機 VPN 後再試");
+    handleConnectionFailure("連線逾時，正在嘗試其他線路");
   }, CONNECTION_TIMEOUT_MS);
 
-  const peer = new Peer(undefined, PEER_OPTIONS);
+  const peer = new Peer(undefined, connectionProfile.options);
   state.peer = peer;
 
   peer.on("open", () => {
@@ -345,7 +367,9 @@ function connectToRoom({ resetAttempts = false } = {}) {
 
   peer.on("error", (error) => {
     if (state.connectionToken !== token) return;
-    handleConnectionFailure(connectionFailureMessage(error));
+    handleConnectionFailure(connectionFailureMessage(error), {
+      skipProfileRetry: String(error?.type || "").trim() === "peer-unavailable",
+    });
   });
 }
 
@@ -406,7 +430,8 @@ function closeCurrentPeer() {
   updateMicUi();
 }
 
-function handleConnectionFailure(message) {
+function handleConnectionFailure(message, options = {}) {
+  const { skipProfileRetry = false } = options;
   clearConnectionTimeout();
   state.connecting = false;
   if (state.joined) {
@@ -414,7 +439,14 @@ function handleConnectionFailure(message) {
     return;
   }
 
+  if (!skipProfileRetry && advanceConnectionProfile()) {
+    setStatus(`正在切換至 ${activeConnectionProfile().label}...`);
+    connectToRoom();
+    return;
+  }
+
   if (advanceRoomCandidate()) {
+    connectionProfileIndex = 0;
     setStatus("正在嘗試另一個房間...");
     connectToRoom();
     return;
@@ -458,10 +490,10 @@ function clearJoinHandshakeTimer() {
 
 function connectionFailureMessage(error) {
   const type = String(error?.type || "").trim();
-  if (type === "peer-unavailable") return "找不到主持房間，請確認後台保持開住，或關閉手機 VPN 再試";
-  if (type === "network") return "手機網絡 / VPN 暫時連不到同步服務";
+  if (type === "peer-unavailable") return "找不到主持房間，請確認後台保持開住";
+  if (type === "network") return "手機網絡暫時連不到同步服務，正在嘗試其他線路";
   if (type === "browser-incompatible") return "連線失敗：這個手機瀏覽器不支援同步連線";
-  return "連線失敗，請確認主持人後台仍然開住，或關閉 VPN 再試";
+  return "連線失敗，正在嘗試其他線路";
 }
 
 function scheduleReconnect(message) {
@@ -495,6 +527,16 @@ function advanceRoomCandidate() {
   roomCandidateIndex += 1;
   activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
   return true;
+}
+
+function advanceConnectionProfile() {
+  if (connectionProfileIndex >= CONNECTION_PROFILES.length - 1) return false;
+  connectionProfileIndex += 1;
+  return true;
+}
+
+function activeConnectionProfile() {
+  return CONNECTION_PROFILES[connectionProfileIndex] || CONNECTION_PROFILES[0];
 }
 
 function handleMessage(message) {

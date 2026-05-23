@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "stable-front-1";
+const APP_BUILD_VERSION = "vpn-onsite-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -55,6 +55,21 @@ const ROOM_UNAVAILABLE_RETRY_MS = 700;
 const ROOM_UNAVAILABLE_RETRY_LIMIT = 4;
 const hostInstanceId = createSessionId();
 let hostChannel = null;
+const ICE_SERVERS = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+  { urls: "stun:stun2.l.google.com:19302" },
+  {
+    urls: [
+      "turn:eu-0.turn.peerjs.com:3478",
+      "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
+      "turn:us-0.turn.peerjs.com:3478",
+      "turn:us-0.turn.peerjs.com:3478?transport=tcp",
+    ],
+    username: "peerjs",
+    credential: "peerjsp",
+  },
+];
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",
@@ -62,15 +77,8 @@ const PEER_OPTIONS = {
   path: "/",
   secure: true,
   config: {
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" },
-      {
-        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
-        username: "peerjs",
-        credential: "peerjsp",
-      },
-    ],
+    iceServers: ICE_SERVERS,
+    iceCandidatePoolSize: 6,
   },
 };
 const CLIP_START_SECONDS = 0;

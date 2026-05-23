@@ -5,7 +5,22 @@ const YOUTUBE_LOGIN_URL = "https://accounts.google.com/ServiceLogin?service=yout
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
-const DISPLAY_CONNECTION_TIMEOUT_MS = 9000;
+const DISPLAY_CONNECTION_TIMEOUT_MS = 12000;
+const ICE_SERVERS = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+  { urls: "stun:stun2.l.google.com:19302" },
+  {
+    urls: [
+      "turn:eu-0.turn.peerjs.com:3478",
+      "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
+      "turn:us-0.turn.peerjs.com:3478",
+      "turn:us-0.turn.peerjs.com:3478?transport=tcp",
+    ],
+    username: "peerjs",
+    credential: "peerjsp",
+  },
+];
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",
@@ -13,15 +28,8 @@ const PEER_OPTIONS = {
   path: "/",
   secure: true,
   config: {
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" },
-      {
-        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
-        username: "peerjs",
-        credential: "peerjsp",
-      },
-    ],
+    iceServers: ICE_SERVERS,
+    iceCandidatePoolSize: 6,
   },
 };
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
