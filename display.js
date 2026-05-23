@@ -24,6 +24,8 @@ const qrRoomId = roomId;
 
 const els = {
   hero: document.querySelector(".stage-hero"),
+  eyebrow: document.querySelector("#stageEyebrow"),
+  gameTitle: document.querySelector("#stageGameTitle"),
   playerHost: document.querySelector("#stagePlayerHost"),
   mask: document.querySelector("#stageMask"),
   prompt: document.querySelector("#stagePrompt"),
@@ -96,12 +98,15 @@ function renderFromStorage() {
 
 function renderState(state) {
   currentDisplayState = state;
+  const songlistLabel = state.songlistLabel || "估歌仔";
+  if (els.eyebrow) els.eyebrow.textContent = "估歌仔";
+  if (els.gameTitle) els.gameTitle.textContent = songlistLabel;
   els.round.textContent = state.hasSong ? `第 ${state.round} 題` : "未有題目";
   if (state.hasWord) els.round.textContent = `第 ${state.round} 題`;
   els.score.textContent = `${state.correct} / ${state.total}`;
   els.teams.textContent = `A ${state.teamScores?.A || 0} · B ${state.teamScores?.B || 0}`;
-  els.status.textContent = state.status || (state.hasSong ? "聽片段，估歌名" : "等候主持開始");
-  els.title.textContent = state.hasWord ? state.title : state.revealed ? state.title : "估呢首歌";
+  els.status.textContent = state.status || (state.hasSong ? `${songlistLabel} · 聽片段估歌名` : "等候主持開始");
+  els.title.textContent = state.hasWord ? state.title : state.revealed ? state.title : songlistLabel;
 
   const prepCover = Boolean(state.hasSong && !state.revealed);
   const showFrontPlayer = Boolean(state.revealed || prepCover);
@@ -117,7 +122,7 @@ function renderState(state) {
   els.subPrompt.textContent = state.revealed
     ? state.answer
     : prepCover
-      ? "答案已遮住，只留右下角廣告操作區"
+      ? `歌單：${songlistLabel}`
     : state.hasWord
       ? "鬥快唱出切合這個主題的歌"
       : "答案未公開，請留心聽";
@@ -367,6 +372,8 @@ function readDisplayState() {
 }
 
 function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟住後台更新") {
+  if (els.eyebrow) els.eyebrow.textContent = "估歌仔";
+  if (els.gameTitle) els.gameTitle.textContent = "估歌仔";
   els.round.textContent = "未連接";
   els.score.textContent = "0 / 0";
   els.status.textContent = `房間：${roomId}`;

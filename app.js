@@ -296,6 +296,7 @@ function bindEvents() {
   els.audioBroadcastButton.addEventListener("click", toggleAudioBroadcast);
   els.cloudLibrarySelect?.addEventListener("change", () => {
     state.cloudLibraryId = els.cloudLibrarySelect.value || DEFAULT_CLOUD_LIBRARY_ID;
+    render();
   });
   els.cloudButton?.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
@@ -1712,6 +1713,11 @@ function selectedCloudLibrary() {
   return cloudLibraryById(selectedId);
 }
 
+function activeSonglistLabel() {
+  if (state.category && state.category !== "all") return state.category;
+  return cloudLibraryById(state.cloudLibraryId).label || "估歌仔";
+}
+
 async function loadCloudLibrary({ silent, libraryId } = {}) {
   const library = libraryId ? cloudLibraryById(libraryId) : selectedCloudLibrary();
   state.cloudLibraryId = library.id;
@@ -1823,17 +1829,20 @@ function renderQuiz() {
   const hasSong = Boolean(state.currentSong);
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const roomBlocked = isRoomBlocked();
+  const songlistLabel = activeSonglistLabel();
   els.roundLabel.textContent = hasActiveQuestion() ? `第 ${state.round} 題` : "未有題目";
   els.quizTitle.textContent = hasWord
     ? `今題主題：${state.currentWord}`
     : hasSong
       ? state.answered
         ? state.currentSong.title
-        : "估呢首歌"
+        : songlistLabel
       : state.mode === "word"
         ? "主題搶唱"
         : state.songs.length
-          ? emptyPoolMessage()
+          ? playableSongs().length
+            ? `${songlistLabel} 已準備`
+            : emptyPoolMessage()
           : "先加入歌曲";
 
   els.maskLabel.textContent = hasSong ? "後台影片已靜音，只作預備和跳廣告" : "前台先會出聲";
@@ -2189,6 +2198,7 @@ function buildDisplayState() {
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const revealed = Boolean((song || hasWord) && state.answered);
   const hints = song ? getHints(song).slice(0, state.hintLevel) : [];
+  const songlistLabel = activeSonglistLabel();
 
   return {
     updatedAt: Date.now(),
@@ -2211,6 +2221,7 @@ function buildDisplayState() {
     playbackRevision: state.playbackRevision,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
+    songlistLabel,
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
     roomReady: state.roomReady,
@@ -2222,10 +2233,10 @@ function buildDisplayState() {
     players: leaderboardPlayers().map(stripPlayer),
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
-    prompt: hasWord ? "主題搶唱" : hasSong ? "聽前奏，估歌名" : "等候主持開始",
+    prompt: hasWord ? "主題搶唱" : hasSong ? `${songlistLabel} · 估歌名` : "等候主持開始",
     status: els.resultText.textContent || "",
     answer: revealed && song ? answerLabel(song) : hasWord ? `今題主題：${state.currentWord}` : "",
-    title: hasWord ? state.currentWord : revealed && song ? song.title : "估呢首歌",
+    title: hasWord ? state.currentWord : revealed && song ? song.title : songlistLabel,
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
     start: song && !state.fullPlayback ? clipStart(song) : CLIP_START_SECONDS,
@@ -2243,6 +2254,7 @@ function buildPlayerState(player) {
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const revealed = Boolean((song || hasWord) && state.answered);
   const choiceOptions = state.mode === "choice" && song && !revealed && state.isPlaying ? ensureChoiceOptions(song) : [];
+  const songlistLabel = activeSonglistLabel();
 
   return {
     type: "state",
@@ -2262,11 +2274,12 @@ function buildPlayerState(player) {
     playbackRevision: state.playbackRevision,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
+    songlistLabel,
     playerName: player.name,
     team: normalizeTeam(player.team),
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
-    title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : "估呢首歌",
+    title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : songlistLabel,
     status: els.resultText.textContent || "",
     score: player.score,
     choices: choiceOptions,

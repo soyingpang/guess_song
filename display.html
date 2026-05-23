@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>華語詩歌估歌仔 · 前台</title>
+    <title>估歌仔 · 前台</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./styles.css?v=prep-cover-art-1" />
   </head>
@@ -13,8 +13,8 @@
         <div class="stage-top">
           <div class="brand-block">
             <img class="brand-mark" src="./assets/worship-crest.svg" alt="" aria-hidden="true" />
-            <p class="eyebrow">團契詩歌時間</p>
-            <h1>華語詩歌估歌仔</h1>
+            <p class="eyebrow" id="stageEyebrow">估歌仔</p>
+            <h1 id="stageGameTitle">估歌仔</h1>
           </div>
           <div class="stage-score">
             <span id="stageRound">第 0 題</span>
@@ -28,7 +28,7 @@
           <div class="stage-mask" id="stageMask">
             <div class="pulse-disc stage-disc" aria-hidden="true"></div>
             <strong id="stagePrompt">等候主持開始</strong>
-            <span id="stageSubPrompt">請望住大畫面，聽片段估詩歌</span>
+            <span id="stageSubPrompt">請望住大畫面，聽片段估歌名</span>
           </div>
         </div>
 
@@ -56,6 +56,6 @@
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
     <script src="./local-qr.js?v=host-audio-broadcast-3"></script>
-    <script src="./display.js?v=mic-playback-guard-1"></script>
+    <script src="./display.js?v=songlist-label-1"></script>
   </body>
 </html>

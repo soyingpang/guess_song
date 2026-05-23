@@ -1095,7 +1095,8 @@ function updateLiveClock() {
 
 function phoneStatusText(game) {
   if (!game) return "等候主持";
-  if (game.isPlaying) return `前台播放中 · ${remainingSeconds(game)} 秒`;
+  const songlistLabel = game.songlistLabel || "歌單";
+  if (game.isPlaying) return `${songlistLabel} · 播放中 · ${remainingSeconds(game)} 秒`;
   if (game.revealed) return "已開估";
   if (game.frontReady) return "前台預備中";
   return game.status || "等候主持";
@@ -1462,7 +1463,7 @@ function renderGame() {
     ? `第 ${game.round} 題 · ${teamLabel(game.team)}`
     : `未開始 · ${teamLabel(state.team)}`;
   els.phoneStatus.textContent = phoneStatusText(game);
-  els.phoneTitle.textContent = game.revealed ? game.title : "估呢首歌";
+  els.phoneTitle.textContent = game.revealed ? game.title : game.hasQuestion ? game.title || game.songlistLabel || "估呢首歌" : "準備中";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
   els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `第一個${game.mode === "word" ? "搶唱" : "搶答"}：${game.buzzWinner.name}` : "");
 
