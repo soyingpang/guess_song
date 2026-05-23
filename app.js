@@ -148,7 +148,6 @@ const state = {
   displayUrl: "",
   peer: null,
   displayConnections: new Set(),
-  displayMicCalls: new Map(),
   remoteMicBroadcastCalls: new Map(),
   audioBroadcastSourceStream: null,
   audioBroadcastStream: null,
@@ -385,7 +384,6 @@ function setupPlayerConnection(connection) {
   connection.on("data", (message) => handlePlayerMessage(connection, message));
   connection.on("close", () => {
     if (connection.isDisplay) {
-      endDisplayMicForConnection(connection);
       state.displayConnections.delete(connection);
       renderPlayers();
       return;
@@ -411,7 +409,6 @@ function handlePlayerMessage(connection, message) {
     connection.isDisplay = true;
     state.displayConnections.add(connection);
     sendDisplayState(connection, buildDisplayState());
-    syncActiveMicsToDisplay(connection);
     renderPlayers();
     return;
   }
@@ -427,6 +424,8 @@ function handlePlayerMessage(connection, message) {
     player.connected = true;
     player.connection = connection;
     player.remoteMode = Boolean(message.remoteMode);
+    player.speakerMode = Boolean(message.speakerMode);
+    if (player.speakerMode) player.remoteMode = false;
     player.micActive = false;
     state.players[player.id] = player;
     connection.playerId = player.id;
@@ -453,6 +452,10 @@ function handlePlayerMessage(connection, message) {
 
   const player = state.players[connection.playerId];
   if (!player) return;
+
+  if (player.speakerMode && ["mic-start", "mic-stop", "answer", "buzz"].includes(message.type)) {
+    return;
+  }
 
   if (message.type === "mic-start") {
     player.micActive = true;
@@ -494,6 +497,16 @@ function setupPlayerMicCall(call) {
     return;
   }
 
+  if (player.speakerMode) {
+    try {
+      call.answer();
+      call.close();
+    } catch {
+      // The speaker phone is receive-only, so ignore any accidental mic call.
+    }
+    return;
+  }
+
   endPlayerMic(player.id, { closeCall: true, render: false });
   player.micCall = call;
   player.micActive = true;
@@ -512,8 +525,7 @@ function setupPlayerMicCall(call) {
     player.micStream = stream;
     player.micActive = true;
     keepPlaybackRunningDuringMic();
-    setResult("玩家開咪", `${player.name} 正在說話`, "");
-    forwardPlayerMicToDisplays(player);
+    setResult("玩家開咪", `${player.name} 正在說話，聲音由手機端播放`, "");
     forwardPlayerMicToRemotePlayers(player);
     renderPlayers();
     publishDisplayState();
@@ -539,7 +551,6 @@ function endPlayerMic(playerId, options = {}) {
   player.micCall = null;
   player.micStream = null;
   player.micActive = false;
-  endDisplayMicForPlayer(playerId);
   endRemoteMicForPlayer(playerId);
 
   if (closeCall && call) {
@@ -555,77 +566,6 @@ function endPlayerMic(playerId, options = {}) {
     renderPlayers();
     publishDisplayState();
   }
-}
-
-function syncActiveMicsToDisplay(connection) {
-  Object.values(state.players).forEach((player) => {
-    if (player.micStream && player.micActive) forwardPlayerMicToDisplay(player, connection);
-  });
-}
-
-function forwardPlayerMicToDisplays(player) {
-  state.displayConnections.forEach((connection) => forwardPlayerMicToDisplay(player, connection));
-}
-
-function forwardPlayerMicToDisplay(player, connection) {
-  if (!state.peer || !connection?.open || !connection.peer || !player?.micStream) return;
-
-  const key = displayMicCallKey(connection.peer, player.id);
-  if (state.displayMicCalls.has(key)) return;
-
-  try {
-    const call = state.peer.call(connection.peer, player.micStream, {
-      metadata: {
-        type: "display-player-mic",
-        playerId: player.id,
-        playerName: player.name,
-      },
-    });
-    if (!call) return;
-
-    call.playerId = player.id;
-    call.displayPeer = connection.peer;
-    state.displayMicCalls.set(key, call);
-    call.on("close", () => {
-      if (state.displayMicCalls.get(key) === call) state.displayMicCalls.delete(key);
-    });
-    call.on("error", () => {
-      if (state.displayMicCalls.get(key) === call) state.displayMicCalls.delete(key);
-    });
-  } catch {
-    state.displayMicCalls.delete(key);
-  }
-}
-
-function endDisplayMicForPlayer(playerId) {
-  Array.from(state.displayMicCalls.entries()).forEach(([key, call]) => {
-    if (call.playerId !== playerId) return;
-    state.displayMicCalls.delete(key);
-    try {
-      call.close();
-    } catch {
-      // PeerJS may already have closed the forwarded display call.
-    }
-  });
-}
-
-function endDisplayMicForConnection(connection) {
-  const displayPeer = connection?.peer;
-  if (!displayPeer) return;
-
-  Array.from(state.displayMicCalls.entries()).forEach(([key, call]) => {
-    if (call.displayPeer !== displayPeer) return;
-    state.displayMicCalls.delete(key);
-    try {
-      call.close();
-    } catch {
-      // PeerJS may already have closed the forwarded display call.
-    }
-  });
-}
-
-function displayMicCallKey(displayPeer, playerId) {
-  return `${displayPeer}:${playerId}`;
 }
 
 function syncActiveMicsToRemotePlayer(targetPlayer) {
@@ -681,7 +621,7 @@ function shouldForwardPlayerMicToRemote(sourcePlayer, targetPlayer) {
       sourcePlayer.id !== targetPlayer.id &&
       sourcePlayer.micStream &&
       sourcePlayer.micActive &&
-      targetPlayer.remoteMode &&
+      (targetPlayer.remoteMode || targetPlayer.speakerMode) &&
       targetPlayer.connected &&
       targetPlayer.connection?.open &&
       targetPlayer.connection?.peer
@@ -931,6 +871,7 @@ function renderAudioBroadcastUi() {
 }
 
 function handleChoiceAnswer(player, answer) {
+  if (player.speakerMode) return;
   if (state.mode !== "choice" || player.answers[state.currentQuestionId]) return;
   if (!state.currentSong || !state.isPlaying || state.fullPlayback) return;
 
@@ -951,6 +892,7 @@ function handleChoiceAnswer(player, answer) {
 }
 
 function handleBuzz(player) {
+  if (player.speakerMode) return;
   if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
 
   const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
@@ -1100,13 +1042,13 @@ function reopenBuzz() {
 
 function hasAvailableBuzzPlayers() {
   if (!state.currentQuestionId) return false;
-  return Object.values(state.players).some(
+  return participantPlayers().some(
     (player) => player.connected && !player.answers?.[state.currentQuestionId]
   );
 }
 
 function hasConnectedPlayers() {
-  return Object.values(state.players).some((player) => player.connected);
+  return participantPlayers().some((player) => player.connected);
 }
 
 function loadSongs() {
@@ -2039,7 +1981,7 @@ function renderLibrary() {
 }
 
 function renderPlayers() {
-  const players = leaderboardPlayers();
+  const players = rosterPlayers();
   els.playerCount.textContent = `${players.length} 位`;
   els.roomStatus.textContent = state.roomError
     ? state.roomError
@@ -2060,19 +2002,23 @@ function renderPlayers() {
   }
 
   players.forEach((player, index) => {
+    const isSpeaker = playerIsSpeaker(player);
     const item = document.createElement("article");
     item.className = "player-item";
+    item.classList.toggle("is-speaker-phone", isSpeaker);
 
     const info = document.createElement("div");
     const name = document.createElement("strong");
     const meta = document.createElement("span");
     name.textContent = `${index + 1}. ${player.name}`;
-    meta.textContent = `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}${player.micActive ? " · 開咪中" : ""}`;
+    meta.textContent = isSpeaker
+      ? `現場出聲手機 · ${player.connected ? "已連線" : "離線"}`
+      : `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}${player.micActive ? " · 開咪中" : ""}`;
     info.append(name, meta);
 
     const score = document.createElement("strong");
     score.className = "player-score";
-    score.textContent = `${player.score} 分`;
+    score.textContent = isSpeaker ? "出聲" : `${player.score} 分`;
 
     const actions = document.createElement("div");
     actions.className = "player-actions";
@@ -2097,7 +2043,8 @@ function renderPlayers() {
     const stopMic = miniButton("收咪", "中斷玩家咪高峰", () => endPlayerMic(player.id));
     stopMic.disabled = !player.micActive;
 
-    actions.append(teamSelect, stopMic, remove);
+    if (!isSpeaker) actions.append(teamSelect, stopMic);
+    actions.append(remove);
 
     item.append(info, score, actions);
 
@@ -2105,16 +2052,8 @@ function renderPlayers() {
       const micPanel = document.createElement("div");
       micPanel.className = "player-mic-panel";
       const micStatus = document.createElement("span");
-      micStatus.textContent = player.micStream ? "正在接收手機咪" : "等候手機咪連線";
-      const audio = document.createElement("audio");
-      audio.controls = true;
-      audio.autoplay = true;
-      audio.playsInline = true;
-      if (player.micStream) {
-        audio.srcObject = player.micStream;
-        audio.play().catch(() => {});
-      }
-      micPanel.append(micStatus, audio);
+      micStatus.textContent = player.micStream ? "手機端出聲中" : "等候手機咪連線";
+      micPanel.append(micStatus);
       item.append(micPanel);
     }
 
@@ -2379,7 +2318,23 @@ function sendToPlayer(player, message) {
 }
 
 function leaderboardPlayers() {
-  return Object.values(state.players).sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+  return participantPlayers().sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+}
+
+function rosterPlayers() {
+  return Object.values(state.players).sort((a, b) => {
+    const speakerDelta = Number(playerIsSpeaker(a)) - Number(playerIsSpeaker(b));
+    if (speakerDelta) return speakerDelta;
+    return b.score - a.score || a.name.localeCompare(b.name);
+  });
+}
+
+function participantPlayers() {
+  return Object.values(state.players).filter((player) => !playerIsSpeaker(player));
+}
+
+function playerIsSpeaker(player) {
+  return Boolean(player?.speakerMode);
 }
 
 function stripPlayer(player) {
@@ -2416,12 +2371,15 @@ function resolveJoiningPlayer(playerId, name) {
     micActive: false,
     micCall: null,
     micStream: null,
+    remoteMode: false,
+    speakerMode: false,
   };
 }
 
 function balancedJoiningTeam() {
   const counts = { A: 0, B: 0 };
   Object.values(state.players).forEach((player) => {
+    if (playerIsSpeaker(player)) return;
     counts[normalizeTeam(player.team)] += 1;
   });
 
