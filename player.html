@@ -8,14 +8,17 @@
     <link rel="stylesheet" href="./styles.css?v=prep-cover-art-1" />
     <style>
       .phone-remote-listen {
-        display: flex;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        border: 1px solid rgba(103, 151, 140, 0.25);
+        gap: 10px;
+        border: 1px solid rgba(42, 119, 105, 0.22);
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.58);
-        padding: 7px;
+        background:
+          linear-gradient(135deg, rgba(236, 253, 245, 0.92), rgba(255, 248, 236, 0.88)),
+          #fffaf2;
+        padding: 9px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
       }
 
       .phone-remote-listen > div {
@@ -25,7 +28,7 @@
       }
 
       .phone-remote-listen strong {
-        color: #2d6f50;
+        color: #226755;
         font-size: 0.8rem;
         font-weight: 950;
       }
@@ -33,7 +36,7 @@
       .phone-remote-listen span {
         min-width: 0;
         overflow: hidden;
-        color: #7b625b;
+        color: #6e5a54;
         font-size: 0.72rem;
         font-weight: 850;
         text-overflow: ellipsis;
@@ -106,13 +109,21 @@
       }
 
       .player-mode-field {
-        gap: 10px;
-        border-color: rgba(103, 151, 140, 0.32);
-        background: rgba(255, 252, 245, 0.82);
+        gap: 12px;
+        border-color: rgba(42, 119, 105, 0.22);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(255, 250, 242, 0.96), rgba(236, 253, 245, 0.82) 48%, rgba(239, 246, 255, 0.9));
+        padding: 12px;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.72),
+          0 12px 28px rgba(74, 40, 40, 0.08);
       }
 
       .player-mode-field > span {
-        font-size: 1rem;
+        color: #3f312d;
+        font-size: 1.02rem;
+        font-weight: 1000;
         line-height: 1.2;
       }
 
@@ -122,13 +133,34 @@
       }
 
       .player-mode-button {
+        position: relative;
         display: grid;
-        grid-template-columns: 42px minmax(0, 1fr);
+        grid-template-columns: 48px minmax(0, 1fr);
         align-items: center;
-        gap: 10px;
-        min-height: 72px;
-        padding: 10px 12px;
+        gap: 12px;
+        min-height: 86px;
+        overflow: hidden;
+        border-width: 1px;
+        border-radius: 8px;
+        padding: 12px 13px 12px 15px;
         text-align: left;
+        transition:
+          border-color 160ms ease,
+          box-shadow 160ms ease,
+          transform 160ms ease,
+          background 160ms ease;
+      }
+
+      .player-mode-button::before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        bottom: 10px;
+        left: 0;
+        width: 4px;
+        border-radius: 0 999px 999px 0;
+        background: var(--mode-accent, #2d6f50);
+        opacity: 0.82;
       }
 
       .player-mode-button strong,
@@ -138,25 +170,25 @@
       }
 
       .player-mode-button strong {
-        font-size: 1.08rem;
+        font-size: 1.12rem;
         line-height: 1.15;
       }
 
       .player-mode-button small {
         margin-top: 3px;
-        color: currentColor;
-        font-size: 0.78rem;
+        color: rgba(55, 43, 39, 0.76);
+        font-size: 0.8rem;
         font-weight: 850;
         line-height: 1.25;
-        opacity: 0.78;
       }
 
       .mode-card-icon {
         display: grid;
-        width: 42px;
-        height: 42px;
+        width: 48px;
+        height: 48px;
         place-items: center;
         border-radius: 8px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
       }
 
       .mode-card-icon svg {
@@ -170,19 +202,25 @@
       }
 
       #onsiteModeButton {
-        border-color: rgba(45, 111, 80, 0.42);
-        background: linear-gradient(180deg, rgba(232, 248, 235, 0.96), rgba(255, 248, 236, 0.9));
+        --mode-accent: #2f7a55;
+        border-color: rgba(47, 122, 85, 0.34);
+        background:
+          linear-gradient(180deg, rgba(238, 252, 244, 0.98), rgba(255, 248, 236, 0.94)),
+          #f7fbf1;
         color: #24543f;
-        box-shadow: 0 8px 18px rgba(45, 111, 80, 0.12);
+        box-shadow: 0 9px 18px rgba(47, 122, 85, 0.11);
       }
 
       #onsiteModeButton .mode-card-icon {
-        background: rgba(45, 111, 80, 0.14);
+        background: rgba(47, 122, 85, 0.13);
       }
 
       #remoteModeButton {
-        border-color: rgba(37, 99, 235, 0.38);
-        background: linear-gradient(180deg, rgba(239, 246, 255, 0.98), rgba(255, 248, 236, 0.92));
+        --mode-accent: #2563eb;
+        border-color: rgba(37, 99, 235, 0.32);
+        background:
+          linear-gradient(180deg, rgba(239, 246, 255, 0.98), rgba(244, 247, 255, 0.9)),
+          #f5f8ff;
         color: #163a73;
         box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
       }
@@ -192,9 +230,11 @@
       }
 
       .player-mode-button.is-active {
+        transform: translateY(-1px);
+        border-color: var(--mode-accent, #2d6f50);
         box-shadow:
-          0 0 0 3px rgba(241, 184, 75, 0.28),
-          0 10px 22px rgba(91, 53, 44, 0.16);
+          0 0 0 3px rgba(251, 191, 36, 0.25),
+          0 12px 24px rgba(74, 40, 40, 0.14);
       }
 
       .player-body:not(.is-joined):not(.is-connecting) .player-status,
@@ -225,7 +265,7 @@
       .player-body.is-joined {
         overflow: hidden;
         background:
-          linear-gradient(145deg, rgba(23, 23, 36, 0.98), rgba(17, 43, 44, 0.96) 52%, rgba(62, 38, 25, 0.96));
+          linear-gradient(145deg, #221d2f 0%, #123f43 48%, #5c3b2c 100%);
         color: #fff8ec;
       }
 
@@ -243,7 +283,7 @@
         overflow: hidden;
         border: 1px solid rgba(255, 210, 115, 0.36);
         background:
-          linear-gradient(180deg, rgba(37, 44, 58, 0.98), rgba(16, 24, 35, 0.99));
+          linear-gradient(180deg, rgba(38, 45, 56, 0.98), rgba(25, 28, 39, 0.99));
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.16),
           0 18px 36px rgba(0, 0, 0, 0.32);
@@ -265,7 +305,7 @@
 
       .player-body.is-joined .player-scoreline {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 42px;
-        gap: 5px;
+        gap: 6px;
         margin-top: 0;
       }
 
@@ -286,8 +326,8 @@
         display: grid;
         place-items: center;
         background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
-          rgba(10, 17, 28, 0.9);
+          linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)),
+          rgba(21, 27, 37, 0.92);
         color: #fff8ec;
         box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18);
       }
@@ -338,13 +378,13 @@
         max-width: none;
         min-height: 38px;
         padding: 6px 10px;
-        border-color: rgba(96, 165, 250, 0.68);
+        border-color: rgba(45, 212, 191, 0.62);
         border-radius: 8px;
         background:
-          linear-gradient(180deg, rgba(96, 165, 250, 0.26), rgba(14, 165, 233, 0.12)),
-          rgba(10, 17, 28, 0.92);
-        color: #dbeafe;
-        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+          linear-gradient(180deg, rgba(45, 212, 191, 0.24), rgba(20, 184, 166, 0.11)),
+          rgba(15, 38, 43, 0.92);
+        color: #ccfbf1;
+        box-shadow: 0 8px 18px rgba(13, 148, 136, 0.18);
       }
 
       .player-body.is-joined .mic-button.icon-action-button:disabled {
@@ -371,18 +411,18 @@
       .player-body.is-joined .phone-mic-panel {
         grid-template-columns: minmax(0, 1fr);
         gap: 0;
-        margin-top: 5px;
+        margin-top: 6px;
       }
 
       .player-body.is-joined .phone-question {
         min-height: 0;
         flex: 1 1 auto;
-        gap: 5px;
-        margin-top: 5px;
-        border: 1px solid rgba(125, 211, 252, 0.22);
+        gap: 6px;
+        margin-top: 6px;
+        border: 1px solid rgba(45, 212, 191, 0.18);
         border-radius: 10px;
         background:
-          linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(20, 36, 48, 0.82));
+          linear-gradient(180deg, rgba(23, 31, 44, 0.93), rgba(20, 42, 46, 0.82));
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         padding: 6px;
       }
@@ -391,9 +431,9 @@
         align-self: flex-start;
         min-height: 22px;
         margin: 0;
-        border: 1px solid rgba(125, 211, 252, 0.22);
+        border: 1px solid rgba(125, 211, 252, 0.2);
         border-radius: 999px;
-        background: rgba(8, 47, 73, 0.86);
+        background: rgba(16, 71, 79, 0.86);
         color: #bae6fd;
         padding: 4px 9px;
         font-size: 0.72rem;
@@ -405,11 +445,11 @@
         display: -webkit-box;
         overflow: hidden;
         margin: 0;
-        border: 1px solid rgba(251, 191, 36, 0.28);
+        border: 1px solid rgba(251, 191, 36, 0.24);
         border-radius: 10px;
         background:
-          linear-gradient(180deg, rgba(255, 248, 236, 0.12), rgba(251, 191, 36, 0.08)),
-          rgba(6, 12, 24, 0.76);
+          linear-gradient(180deg, rgba(255, 248, 236, 0.14), rgba(251, 191, 36, 0.08)),
+          rgba(26, 24, 32, 0.76);
         color: #fff8ec;
         padding: 7px 9px;
         font-size: clamp(1rem, 5vw, 1.28rem);
@@ -449,8 +489,8 @@
         border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 10px;
         background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)),
-          rgba(15, 23, 42, 0.92);
+          linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)),
+          rgba(23, 31, 44, 0.92);
         color: #fff8ec;
         padding: 6px 8px;
         gap: 8px;
@@ -523,24 +563,33 @@
       }
 
       .player-body.is-joined .phone-remote-panel {
-        gap: 4px;
-        margin-top: 5px;
-        border-color: rgba(96, 165, 250, 0.22);
-        background: rgba(15, 23, 42, 0.72);
-        padding: 5px;
+        gap: 6px;
+        margin-top: 6px;
+        border-color: rgba(45, 212, 191, 0.22);
+        background:
+          linear-gradient(135deg, rgba(17, 94, 89, 0.36), rgba(53, 43, 68, 0.3)),
+          rgba(18, 24, 35, 0.78);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        padding: 6px;
       }
 
       .player-body.is-joined .phone-remote-listen {
-        min-height: 30px;
-        padding: 4px 6px;
+        min-height: 40px;
+        border-color: rgba(45, 212, 191, 0.24);
+        background:
+          linear-gradient(135deg, rgba(15, 118, 110, 0.32), rgba(251, 191, 36, 0.11)),
+          rgba(15, 23, 42, 0.8);
+        padding: 7px 8px;
       }
 
       .player-body.is-joined .phone-remote-listen strong {
-        font-size: 0.72rem;
+        color: #ccfbf1;
+        font-size: 0.74rem;
       }
 
       .player-body.is-joined .phone-remote-listen span {
-        font-size: 0.68rem;
+        color: #e2e8f0;
+        font-size: 0.7rem;
       }
 
       .player-body.is-joined .phone-remote-media {
@@ -551,6 +600,25 @@
       .player-body.is-joined .phone-remote-frame {
         min-height: 48px;
         max-height: 62px;
+      }
+
+      .player-body.is-joined.is-remote-player .phone-remote-panel {
+        border-color: rgba(96, 165, 250, 0.28);
+        background:
+          linear-gradient(135deg, rgba(29, 78, 216, 0.28), rgba(15, 118, 110, 0.22)),
+          rgba(18, 24, 35, 0.84);
+      }
+
+      .player-body.is-joined.is-remote-player .phone-remote-listen {
+        min-height: 46px;
+        border-color: rgba(147, 197, 253, 0.32);
+        background:
+          linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(45, 212, 191, 0.16)),
+          rgba(17, 24, 39, 0.86);
+      }
+
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-panel {
+        flex: 0 0 auto;
       }
 
       .player-body.is-joined .buzz-button {
@@ -619,7 +687,7 @@
 
         <form class="join-form" id="joinForm">
           <div class="player-mode-field" id="playerModeField" hidden>
-            <span>請先確認你的位置</span>
+            <span>你現在在哪裡玩？</span>
             <div class="player-mode-switch" aria-label="遊玩方式">
               <button class="player-mode-button" id="onsiteModeButton" type="button" aria-label="我在現場，現場聽聲音">
                 <span class="mode-card-icon" aria-hidden="true">
@@ -627,7 +695,7 @@
                 </span>
                 <span>
                   <strong>我在現場</strong>
-                  <small>現場聽聲音，手機答題</small>
+                  <small>聽現場聲音，用手機答題同開咪</small>
                 </span>
               </button>
               <button class="player-mode-button" id="remoteModeButton" type="button" aria-label="我不在現場，手機同步播放">
@@ -636,11 +704,11 @@
                 </span>
                 <span>
                   <strong>我不在現場</strong>
-                  <small>手機同步播放，自動收聽</small>
+                  <small>用手機收聲，照樣答題同開咪</small>
                 </span>
               </button>
             </div>
-            <p class="join-note">按任何一個選項會即時加入；其他手機開咪時會由本機播出。</p>
+            <p class="join-note">其他玩家開咪時，所有已入房手機都會收到聲。</p>
           </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
@@ -685,7 +753,7 @@
           </div>
           <div class="phone-remote-listen" id="phoneRemoteListen">
             <div>
-              <strong>手機出聲</strong>
+              <strong>收聽狀態</strong>
               <span id="phoneRemoteListenStatus">等候玩家開咪或主持音訊</span>
             </div>
             <button class="ghost-button phone-listen-button" id="phoneRemoteListenButton" type="button" hidden>
