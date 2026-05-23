@@ -1284,12 +1284,16 @@ function renderRemotePanel(game) {
 
   const players = (game?.leaderboard || []).filter(Boolean);
   const livePlayers = players.filter((player) => player.micActive);
-  els.phoneRemoteMic.textContent = livePlayers.length
-    ? livePlayers.map((player) => player.name).slice(0, 3).join("、")
-    : "沒有";
+  els.phoneRemoteMic.textContent = liveMicSummary(livePlayers);
 
   renderRemoteMedia(game);
   renderRemoteRoster(players);
+}
+
+function liveMicSummary(players) {
+  if (!players.length) return "沒有";
+  const names = players.map((player) => player.name || "玩家").slice(0, 2);
+  return players.length > 2 ? `${names.join("、")} 等 ${players.length} 人` : names.join("、");
 }
 
 function remoteCountdownText(game) {

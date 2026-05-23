@@ -306,8 +306,7 @@
       }
 
       .player-body.is-joined .player-card > h1,
-      .player-body.is-joined .player-status,
-      .player-body.is-joined .mic-status {
+      .player-body.is-joined .player-status {
         display: none;
       }
 
@@ -433,8 +432,30 @@
 
       .player-body.is-joined .phone-mic-panel {
         grid-template-columns: minmax(0, 1fr);
-        gap: 0;
+        gap: 4px;
         margin-top: 6px;
+      }
+
+      .player-body.is-joined .mic-status {
+        min-height: 0;
+        overflow: hidden;
+        border: 1px solid rgba(45, 212, 191, 0.18);
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.64);
+        color: #cbd5e1;
+        padding: 4px 8px;
+        font-size: 0.68rem;
+        font-weight: 850;
+        line-height: 1.15;
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .player-body.is-joined .mic-button.is-live + .mic-status {
+        border-color: rgba(248, 113, 113, 0.34);
+        background: rgba(127, 29, 29, 0.38);
+        color: #fee2e2;
       }
 
       .player-body.is-joined .phone-question {
@@ -596,6 +617,35 @@
         padding: 6px;
       }
 
+      .player-body.is-joined .phone-remote-head {
+        align-items: flex-start;
+      }
+
+      .player-body.is-joined .phone-remote-head span {
+        max-width: 62%;
+        line-height: 1.15;
+        white-space: normal;
+      }
+
+      .player-body.is-joined .phone-remote-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px;
+      }
+
+      .player-body.is-joined .phone-remote-grid span {
+        min-height: 38px;
+        padding: 5px 6px;
+      }
+
+      .player-body.is-joined .phone-remote-grid span:nth-child(3) {
+        grid-column: 1 / -1;
+      }
+
+      .player-body.is-joined .phone-remote-grid strong {
+        line-height: 1.1;
+        white-space: normal;
+      }
+
       .player-body.is-joined .phone-remote-listen {
         min-height: 40px;
         border-color: rgba(45, 212, 191, 0.24);
@@ -618,8 +668,14 @@
       }
 
       .player-body.is-joined .phone-remote-listen span {
+        display: -webkit-box;
+        overflow: hidden;
         color: #e2e8f0;
         font-size: 0.7rem;
+        line-height: 1.15;
+        white-space: normal;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
       }
 
       .player-body.is-joined .phone-remote-media {
@@ -834,6 +890,6 @@
     </main>
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=all-phones-voice-3"></script>
+    <script src="./player.js?v=all-phones-voice-4"></script>
   </body>
 </html>
