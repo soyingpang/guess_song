@@ -462,7 +462,6 @@ function handlePlayerMessage(connection, message) {
   if (message.type === "mic-start") {
     player.micActive = true;
     syncPlayerMicTargets(player);
-    keepPlaybackRunningDuringMic();
     renderPlayers();
     publishDisplayState();
     return;
@@ -517,7 +516,6 @@ function setupPlayerMicCall(call) {
   call.on("stream", (stream) => {
     player.micStream = stream;
     player.micActive = true;
-    keepPlaybackRunningDuringMic();
     setResult("玩家開咪", `${player.name} 正在說話，聲音由手機端播放`, "");
     syncPlayerMicTargets(player);
     renderPlayers();
@@ -558,7 +556,6 @@ function endPlayerMic(playerId, options = {}) {
   }
 
   if (render) {
-    keepPlaybackRunningDuringMic();
     renderPlayers();
     publishDisplayState();
   }
@@ -924,7 +921,6 @@ function handleBuzz(player) {
   if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
 
   const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
-  pausePlaybackForBuzz();
   state.buzzWinnerId = player.id;
   state.buzzOpen = false;
   broadcastToPlayers({
@@ -936,49 +932,6 @@ function handleBuzz(player) {
   setResult(`第一個${actionLabel}`, `${player.name}（${teamLabel(player.team)}）`, "");
   render();
   openBuzzWinnerMic(player, actionLabel);
-}
-
-function pausePlaybackForBuzz() {
-  if (!state.currentSong || !state.isPlaying) return;
-
-  clearClipTimer();
-  state.isPlaying = false;
-  state.fullPlayback = false;
-  state.playEndsAt = 0;
-  pauseHostPlaybackFrame();
-}
-
-function pauseHostPlaybackFrame() {
-  const media = els.playerHost.firstElementChild;
-  if (!media) return;
-
-  if (state.currentSong?.audioUrl) {
-    media.pause?.();
-    return;
-  }
-
-  const frame = els.playerHost.querySelector("iframe");
-  frame?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "pauseVideo", args: [] }), "*");
-}
-
-function keepPlaybackRunningDuringMic() {
-  if (!state.currentSong || !state.isPlaying) return;
-
-  state.playbackRevision += 1;
-  resumeHostPlaybackFrame();
-}
-
-function resumeHostPlaybackFrame() {
-  const media = els.playerHost.firstElementChild;
-  if (!media) return;
-
-  if (state.currentSong?.audioUrl) {
-    media.play?.().catch(() => {});
-    return;
-  }
-
-  const frame = els.playerHost.querySelector("iframe");
-  frame?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "playVideo", args: [] }), "*");
 }
 
 function judgeBuzzWinner(isCorrect) {
