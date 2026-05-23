@@ -106,6 +106,7 @@ const els = {
   remoteModeButton: document.querySelector("#remoteModeButton"),
   speakerModeButton: document.querySelector("#speakerModeButton"),
   phoneRemotePanel: document.querySelector("#phoneRemotePanel"),
+  phoneRemoteTitle: document.querySelector("#phoneRemoteTitle"),
   phoneRemoteStatus: document.querySelector("#phoneRemoteStatus"),
   phoneRemoteCountdown: document.querySelector("#phoneRemoteCountdown"),
   phoneRemoteTeams: document.querySelector("#phoneRemoteTeams"),
@@ -1236,6 +1237,7 @@ function applyPlayerMode() {
   els.onsiteModeButton.setAttribute("aria-pressed", String(hasChosenMode && !state.remoteMode));
   els.remoteModeButton.setAttribute("aria-pressed", String(hasChosenMode && state.remoteMode));
   if (els.speakerModeButton) els.speakerModeButton.setAttribute("aria-pressed", "false");
+  updatePhoneAudioPanelLabels();
 
   if (!audioListener || !state.joined) {
     els.phoneRemotePanel.hidden = true;
@@ -1247,6 +1249,12 @@ function applyPlayerMode() {
 
   els.phoneRemotePanel.hidden = false;
   renderRemotePanel(state.game);
+}
+
+function updatePhoneAudioPanelLabels() {
+  const title = state.remoteMode ? "同步收聽" : "語音收聽";
+  if (els.phoneRemoteTitle) els.phoneRemoteTitle.textContent = title;
+  if (els.phoneRemotePanel) els.phoneRemotePanel.setAttribute("aria-label", `${title}狀態`);
 }
 
 function updateLiveClock() {

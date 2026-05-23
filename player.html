@@ -437,6 +437,7 @@
       }
 
       .player-body.is-joined .mic-status {
+        display: -webkit-box;
         min-height: 0;
         overflow: hidden;
         border: 1px solid rgba(45, 212, 191, 0.18);
@@ -448,8 +449,9 @@
         font-weight: 850;
         line-height: 1.15;
         text-align: center;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        white-space: normal;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
       }
 
       .player-body.is-joined .mic-button.is-live + .mic-status {
@@ -459,8 +461,9 @@
       }
 
       .player-body.is-joined .phone-question {
+        order: 1;
         min-height: 0;
-        flex: 1 0 auto;
+        flex: 1 1 auto;
         gap: 6px;
         margin-top: 6px;
         border: 1px solid rgba(45, 212, 191, 0.18);
@@ -607,6 +610,8 @@
       }
 
       .player-body.is-joined .phone-remote-panel {
+        order: 2;
+        flex: 0 0 auto;
         gap: 6px;
         margin-top: 6px;
         border-color: rgba(45, 212, 191, 0.22);
@@ -642,8 +647,12 @@
       }
 
       .player-body.is-joined .phone-remote-grid strong {
+        display: -webkit-box;
+        overflow: hidden;
         line-height: 1.1;
         white-space: normal;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
       }
 
       .player-body.is-joined .phone-remote-listen {
@@ -704,7 +713,35 @@
       }
 
       .player-body.is-joined:not(.is-remote-player) .phone-remote-panel {
-        flex: 0 0 auto;
+        gap: 4px;
+        padding: 5px;
+        border-color: rgba(45, 212, 191, 0.16);
+        background:
+          linear-gradient(135deg, rgba(15, 118, 110, 0.22), rgba(51, 65, 85, 0.18)),
+          rgba(15, 23, 42, 0.68);
+      }
+
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-head span {
+        display: none;
+      }
+
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-grid span:nth-child(1),
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-grid span:nth-child(2),
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-roster {
+        display: none;
+      }
+
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-grid span:nth-child(3) {
+        min-height: 32px;
+      }
+
+      .player-body.is-joined:not(.is-remote-player) .phone-remote-listen {
+        min-height: 34px;
+        padding: 5px 7px;
       }
 
       .player-body.is-joined .buzz-button {
@@ -818,9 +855,9 @@
           <div class="mic-status" id="phoneMicStatus">未開咪</div>
         </section>
 
-        <section class="phone-remote-panel" id="phoneRemotePanel" aria-label="手機同步狀態" hidden>
+        <section class="phone-remote-panel" id="phoneRemotePanel" aria-label="手機收聽狀態" hidden>
           <div class="phone-remote-head">
-            <strong>手機同步</strong>
+            <strong id="phoneRemoteTitle">手機收聽</strong>
             <span id="phoneRemoteStatus">等候主持開始</span>
           </div>
           <div class="phone-remote-grid">
@@ -890,6 +927,6 @@
     </main>
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=all-phones-voice-4"></script>
+    <script src="./player.js?v=all-phones-voice-5"></script>
   </body>
 </html>
