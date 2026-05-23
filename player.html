@@ -191,17 +191,6 @@
         background: rgba(37, 99, 235, 0.13);
       }
 
-      #speakerModeButton {
-        border-color: rgba(180, 83, 9, 0.34);
-        background: linear-gradient(180deg, rgba(255, 247, 237, 0.98), rgba(238, 252, 244, 0.9));
-        color: #7b3415;
-        box-shadow: 0 8px 18px rgba(180, 83, 9, 0.1);
-      }
-
-      #speakerModeButton .mode-card-icon {
-        background: rgba(180, 83, 9, 0.12);
-      }
-
       .player-mode-button.is-active {
         box-shadow:
           0 0 0 3px rgba(241, 184, 75, 0.28),
@@ -650,15 +639,6 @@
                   <small>手機同步播放，自動收聽</small>
                 </span>
               </button>
-              <button class="player-mode-button" id="speakerModeButton" type="button" aria-label="現場出聲手機，只播放玩家開咪聲">
-                <span class="mode-card-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 8.5a5 5 0 0 1 0 7"/><path d="M19 6a9 9 0 0 1 0 12"/></svg>
-                </span>
-                <span>
-                  <strong>現場出聲手機</strong>
-                  <small>只播玩家開咪聲</small>
-                </span>
-              </button>
             </div>
             <p class="join-note">按任何一個選項會即時加入；其他手機開咪時會由本機播出。</p>
           </div>
@@ -756,6 +736,6 @@
     </main>
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=direct-phone-mic-1"></script>
+    <script src="./player.js?v=all-phones-voice-2"></script>
   </body>
 </html>
