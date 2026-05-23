@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "join-stable-2";
+const APP_BUILD_VERSION = "onsite-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -314,7 +314,7 @@ function bindEvents() {
   els.resetGameButton.addEventListener("click", resetGameSession);
   els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
   els.copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
-  els.audioBroadcastButton.addEventListener("click", toggleAudioBroadcast);
+  els.audioBroadcastButton?.addEventListener("click", toggleAudioBroadcast);
   els.cloudLibrarySelect?.addEventListener("change", () => {
     state.cloudLibraryId = els.cloudLibrarySelect.value || DEFAULT_CLOUD_LIBRARY_ID;
     render();
@@ -396,7 +396,11 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
       }
       return;
     }
-    setupPlayerMicCall(call);
+    try {
+      call.close();
+    } catch {
+      // 現場版不接收手機媒體通話。
+    }
   });
 
   roomPeer.on("disconnected", () => {
@@ -618,7 +622,7 @@ function handlePlayerMessage(connection, message) {
     player.team = normalizeTeam(player.team);
     player.connected = true;
     player.connection = connection;
-    player.remoteMode = Boolean(message.remoteMode);
+    player.remoteMode = false;
     player.speakerMode = false;
     player.micActive = false;
     state.players[player.id] = player;
@@ -647,15 +651,10 @@ function handlePlayerMessage(connection, message) {
   if (!player) return;
 
   if (message.type === "mic-start") {
-    player.micActive = true;
-    syncPlayerMicTargets(player);
-    renderPlayers();
-    publishDisplayState();
     return;
   }
 
   if (message.type === "mic-stop") {
-    endPlayerMic(player.id, { closeCall: false });
     return;
   }
 
@@ -1097,7 +1096,6 @@ function handleBuzz(player) {
   });
   setResult(`第一個${actionLabel}`, `${player.name}（${teamLabel(player.team)}）`, "");
   render();
-  openBuzzWinnerMic(player, actionLabel);
 }
 
 function judgeBuzzWinner(isCorrect) {
@@ -1106,8 +1104,6 @@ function judgeBuzzWinner(isCorrect) {
     setResult("未有人搶答", "", "");
     return;
   }
-
-  closeBuzzWinnerMic(player);
 
   if (isCorrect) {
     const points = state.mode === "word" ? 2 : 2;
@@ -1171,20 +1167,11 @@ function judgeBuzzWinner(isCorrect) {
 }
 
 function openBuzzWinnerMic(player, actionLabel) {
-  sendToPlayer(player, {
-    type: "buzz-mic-open",
-    questionId: state.currentQuestionId,
-    message: `你搶到${actionLabel}，咪會自動開啟，請講答案`,
-  });
+  return;
 }
 
 function closeBuzzWinnerMic(player) {
-  sendToPlayer(player, {
-    type: "buzz-mic-close",
-    questionId: state.currentQuestionId,
-    message: "主持已判定，咪已關閉",
-  });
-  endPlayerMic(player.id, { closeCall: true, render: false });
+  return;
 }
 
 function reopenBuzz() {
@@ -2192,9 +2179,7 @@ function renderPlayers() {
     const name = document.createElement("strong");
     const meta = document.createElement("span");
     name.textContent = `${index + 1}. ${player.name}`;
-    meta.textContent = `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}${
-      player.micActive ? " · 開咪中" : ""
-    }`;
+    meta.textContent = `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}`;
     info.append(name, meta);
 
     const score = document.createElement("strong");
@@ -2221,22 +2206,10 @@ function renderPlayers() {
     remove.disabled = Boolean(player.connected);
     remove.title = player.connected ? "玩家仍在線，不能移除" : "移除離線玩家";
 
-    const stopMic = miniButton("收咪", "中斷玩家咪高峰", () => endPlayerMic(player.id));
-    stopMic.disabled = !player.micActive;
-
-    actions.append(teamSelect, stopMic);
+    actions.append(teamSelect);
     actions.append(remove);
 
     item.append(info, score, actions);
-
-    if (player.micActive) {
-      const micPanel = document.createElement("div");
-      micPanel.className = "player-mic-panel";
-      const micStatus = document.createElement("span");
-      micStatus.textContent = player.micStream ? "手機端出聲中" : "等候手機咪連線";
-      micPanel.append(micStatus);
-      item.append(micPanel);
-    }
 
     els.playerList.append(item);
   });
@@ -2523,7 +2496,7 @@ function stripPlayer(player) {
     team: normalizeTeam(player.team),
     score: player.score,
     connected: Boolean(player.connected),
-    micActive: Boolean(player.micActive),
+    micActive: false,
   };
 }
 

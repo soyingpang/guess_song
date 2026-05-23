@@ -853,6 +853,12 @@
           padding: 3px 6px;
         }
       }
+
+      .player-mode-field,
+      .phone-mic-panel,
+      .phone-remote-panel {
+        display: none !important;
+      }
     </style>
   </head>
   <body class="player-body">
@@ -863,7 +869,7 @@
         <h1>估歌仔</h1>
 
         <form class="join-form" id="joinForm">
-          <div class="player-mode-field" id="playerModeField" hidden>
+          <div class="player-mode-field" id="playerModeField" hidden aria-hidden="true">
             <span>你現在在哪裡玩？</span>
             <div class="player-mode-switch" aria-label="遊玩方式">
               <button class="player-mode-button" id="onsiteModeButton" type="button" aria-label="我在現場，現場聽聲音">
@@ -872,7 +878,7 @@
                 </span>
                 <span>
                   <strong>我在現場</strong>
-                  <small>聽現場聲音，用手機答題同開咪</small>
+                  <small>聽現場聲音，用手機答題</small>
                 </span>
               </button>
               <button class="player-mode-button" id="remoteModeButton" type="button" aria-label="我不在現場，手機同步播放">
@@ -885,14 +891,14 @@
                 </span>
               </button>
             </div>
-            <p class="join-note">其他玩家開咪時，所有已入房手機都會收到聲。</p>
+            <p class="join-note">現場版只用手機答題及搶答。</p>
           </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
-            <button class="primary-button" type="submit">下一步</button>
+            <button class="primary-button" type="submit">加入</button>
           </div>
-          <p class="join-note">系統會自動平均分 A/B 組，主持可即場微調。</p>
+          <p class="join-note">現場聽前台聲音，用手機答題或搶答。</p>
         </form>
 
         <div class="player-status" id="playerStatus">掃 QR 後輸入名字加入</div>
@@ -904,12 +910,12 @@
           </button>
         </div>
 
-        <section class="phone-mic-panel" aria-label="手機咪高峰">
+        <section class="phone-mic-panel" aria-label="手機咪高峰" hidden aria-hidden="true">
           <button class="mic-button" id="micToggleButton" type="button" disabled>開咪對話</button>
           <div class="mic-status" id="phoneMicStatus">未開咪</div>
         </section>
 
-        <section class="phone-remote-panel" id="phoneRemotePanel" aria-label="手機收聽狀態" hidden>
+        <section class="phone-remote-panel" id="phoneRemotePanel" aria-label="手機收聽狀態" hidden aria-hidden="true">
           <div class="phone-remote-head">
             <strong id="phoneRemoteTitle">手機收聽</strong>
             <span id="phoneRemoteStatus">等候主持開始</span>
@@ -981,6 +987,6 @@
     </main>
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=join-stable-2"></script>
+    <script src="./player.js?v=onsite-1"></script>
   </body>
 </html>

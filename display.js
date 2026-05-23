@@ -285,31 +285,11 @@ function closeDisplayPeer() {
 }
 
 function handleDisplayMicCall(call) {
-  if (call.metadata?.type !== "display-player-mic" || call.metadata?.roomId !== roomId) {
-    try {
-      call.answer();
-      call.close();
-    } catch {
-      // Ignore unknown media calls.
-    }
-    return;
-  }
-
-  const playerId = String(call.metadata?.playerId || call.peer || crypto.randomUUID());
-  const playerName = String(call.metadata?.playerName || "玩家").trim() || "玩家";
-  closeStageMicCall(playerId);
-  stageMic.calls.set(playerId, call);
-
-  call.on("stream", (stream) => {
-    renderStageMic(playerId, playerName, stream);
-  });
-  call.on("close", () => closeStageMicCall(playerId));
-  call.on("error", () => closeStageMicCall(playerId));
-
   try {
     call.answer();
+    call.close();
   } catch {
-    closeStageMicCall(playerId);
+    // 現場版不接收手機咪聲。
   }
 }
 
@@ -715,7 +695,6 @@ function renderRoster(state) {
   els.roster.hidden = players.length === 0;
   if (!players.length) return;
 
-  const liveCount = players.filter((player) => player.micActive).length;
   const header = document.createElement("div");
   header.className = "stage-roster-header";
 
@@ -723,7 +702,7 @@ function renderRoster(state) {
   title.textContent = "已加入玩家";
 
   const summary = document.createElement("span");
-  summary.textContent = `${players.length} 位${liveCount ? ` · ${liveCount} 開咪` : ""}`;
+  summary.textContent = `${players.length} 位`;
 
   header.append(title, summary);
 
@@ -733,7 +712,7 @@ function renderRoster(state) {
   players.slice(0, 12).forEach((player) => {
     const item = document.createElement("div");
     item.className = "stage-roster-player";
-    item.classList.toggle("is-live", Boolean(player.micActive));
+    item.classList.remove("is-live");
     item.classList.toggle("is-offline", !player.connected);
 
     const name = document.createElement("span");
@@ -750,10 +729,10 @@ function renderRoster(state) {
 
     item.append(name, meta, score);
 
-    if (player.micActive || !player.connected) {
+    if (!player.connected) {
       const badge = document.createElement("span");
-      badge.className = `stage-roster-badge${player.micActive ? "" : " is-muted"}`;
-      badge.textContent = player.micActive ? "開咪" : "離線";
+      badge.className = "stage-roster-badge is-muted";
+      badge.textContent = "離線";
       item.append(badge);
     }
 
