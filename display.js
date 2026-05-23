@@ -2,7 +2,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
-const DISPLAY_CONNECTION_TIMEOUT_MS = 9000;
+const DISPLAY_CONNECTION_TIMEOUT_MS = 20000;
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",

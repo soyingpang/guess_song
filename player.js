@@ -4,7 +4,7 @@ const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
-const CONNECTION_TIMEOUT_MS = 9000;
+const CONNECTION_TIMEOUT_MS = 20000;
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",
