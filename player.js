@@ -78,6 +78,8 @@ const state = {
   voiceBroadcastStreams: new Map(),
   voiceBroadcastBlocked: false,
   outboundVoiceBroadcastCalls: new Map(),
+  outboundVoiceBroadcastTargets: new Map(),
+  outboundVoiceBroadcastRetryTimers: new Map(),
 };
 
 const els = {
@@ -584,16 +586,24 @@ function stopMic(options = {}) {
 function syncOutboundMicTargets(targets = []) {
   const normalizedTargets = Array.isArray(targets) ? targets : [];
   const ownPeerId = state.peer?.id || "";
-  const wantedPeerIds = new Set(
-    normalizedTargets
-      .map((target) => String(target?.peerId || ""))
-      .filter((peerId) => peerId && peerId !== ownPeerId),
-  );
+  const targetsByPeerId = new Map();
+
+  normalizedTargets.forEach((target) => {
+    const peerId = String(target?.peerId || "");
+    if (!peerId || peerId === ownPeerId) return;
+    targetsByPeerId.set(peerId, target);
+  });
+  state.outboundVoiceBroadcastTargets = targetsByPeerId;
 
   Array.from(state.outboundVoiceBroadcastCalls.entries()).forEach(([peerId, call]) => {
-    if (wantedPeerIds.has(peerId)) return;
+    if (targetsByPeerId.has(peerId)) return;
     state.outboundVoiceBroadcastCalls.delete(peerId);
     closePeerCall(call);
+  });
+
+  Array.from(state.outboundVoiceBroadcastRetryTimers.keys()).forEach((peerId) => {
+    if (targetsByPeerId.has(peerId)) return;
+    clearOutboundMicRetry(peerId);
   });
 
   if (!state.micActive || !state.micStream || !state.peer) {
@@ -601,38 +611,73 @@ function syncOutboundMicTargets(targets = []) {
     return;
   }
 
-  normalizedTargets.forEach((target) => {
-    const peerId = String(target?.peerId || "");
-    if (!peerId || peerId === ownPeerId || state.outboundVoiceBroadcastCalls.has(peerId)) return;
-
-    try {
-      const call = state.peer.call(peerId, state.micStream, {
-        metadata: {
-          type: "remote-player-mic-broadcast",
-          roomId,
-          sourcePlayerId: state.playerId,
-          sourcePlayerName: state.displayName || state.name || "Open mic",
-          targetPlayerId: String(target?.playerId || ""),
-        },
-      });
-
-      if (!call) return;
-      state.outboundVoiceBroadcastCalls.set(peerId, call);
-      call.on("close", () => removeOutboundMicBroadcast(peerId, call));
-      call.on("error", () => removeOutboundMicBroadcast(peerId, call));
-    } catch {
-      state.outboundVoiceBroadcastCalls.delete(peerId);
-    }
+  targetsByPeerId.forEach((target) => {
+    ensureOutboundMicBroadcast(target);
   });
 }
 
-function removeOutboundMicBroadcast(peerId, call) {
-  if (state.outboundVoiceBroadcastCalls.get(peerId) === call) {
+function ensureOutboundMicBroadcast(target) {
+  const peerId = String(target?.peerId || "");
+  if (!peerId || state.outboundVoiceBroadcastCalls.has(peerId)) return;
+  if (!state.micActive || !state.micStream || !state.peer) return;
+
+  try {
+    const call = state.peer.call(peerId, state.micStream, {
+      metadata: {
+        type: "remote-player-mic-broadcast",
+        roomId,
+        sourcePlayerId: state.playerId,
+        sourcePlayerName: state.displayName || state.name || "Open mic",
+        targetPlayerId: String(target?.playerId || ""),
+      },
+    });
+
+    if (!call) {
+      scheduleOutboundMicRetry(peerId);
+      return;
+    }
+
+    clearOutboundMicRetry(peerId);
+    state.outboundVoiceBroadcastCalls.set(peerId, call);
+    call.on("close", () => removeOutboundMicBroadcast(peerId, call, { retry: true }));
+    call.on("error", () => removeOutboundMicBroadcast(peerId, call, { retry: true }));
+  } catch {
     state.outboundVoiceBroadcastCalls.delete(peerId);
+    scheduleOutboundMicRetry(peerId);
   }
 }
 
+function removeOutboundMicBroadcast(peerId, call, options = {}) {
+  const { retry = false } = options;
+  if (state.outboundVoiceBroadcastCalls.get(peerId) === call) {
+    state.outboundVoiceBroadcastCalls.delete(peerId);
+    if (retry) scheduleOutboundMicRetry(peerId);
+  }
+}
+
+function scheduleOutboundMicRetry(peerId) {
+  if (!peerId || state.outboundVoiceBroadcastRetryTimers.has(peerId)) return;
+  if (!state.micActive || !state.micStream || !state.peer) return;
+  if (!state.outboundVoiceBroadcastTargets.has(peerId)) return;
+
+  const timer = window.setTimeout(() => {
+    state.outboundVoiceBroadcastRetryTimers.delete(peerId);
+    ensureOutboundMicBroadcast(state.outboundVoiceBroadcastTargets.get(peerId));
+  }, 1200);
+  state.outboundVoiceBroadcastRetryTimers.set(peerId, timer);
+}
+
+function clearOutboundMicRetry(peerId) {
+  const timer = state.outboundVoiceBroadcastRetryTimers.get(peerId);
+  if (!timer) return;
+  window.clearTimeout(timer);
+  state.outboundVoiceBroadcastRetryTimers.delete(peerId);
+}
+
 function clearOutboundMicBroadcasts() {
+  Array.from(state.outboundVoiceBroadcastRetryTimers.values()).forEach((timer) => window.clearTimeout(timer));
+  state.outboundVoiceBroadcastRetryTimers.clear();
+  state.outboundVoiceBroadcastTargets.clear();
   Array.from(state.outboundVoiceBroadcastCalls.values()).forEach(closePeerCall);
   state.outboundVoiceBroadcastCalls.clear();
 }
@@ -894,11 +939,15 @@ function handleVoiceBroadcastCall(call) {
   }
 
   const sourcePlayerId = String(call.metadata?.sourcePlayerId || call.peer || crypto.randomUUID());
-  stopVoiceBroadcast(sourcePlayerId, { closeCall: true });
-  state.voiceBroadcastCalls.set(sourcePlayerId, call);
+  if (sourcePlayerId === state.playerId) {
+    closePeerCall(call);
+    return;
+  }
 
   call.on("stream", (stream) => {
-    if (state.voiceBroadcastCalls.get(sourcePlayerId) !== call) return;
+    const previousCall = state.voiceBroadcastCalls.get(sourcePlayerId);
+    if (previousCall && previousCall !== call) closePeerCall(previousCall);
+    state.voiceBroadcastCalls.set(sourcePlayerId, call);
     attachVoiceBroadcastStream(sourcePlayerId, stream, call.metadata?.sourcePlayerName || "開咪玩家");
   });
 
@@ -917,7 +966,7 @@ function handleVoiceBroadcastCall(call) {
   try {
     call.answer();
   } catch {
-    stopVoiceBroadcast(sourcePlayerId, { closeCall: true });
+    closePeerCall(call);
   }
 }
 
@@ -936,11 +985,19 @@ function attachVoiceBroadcastStream(sourcePlayerId, stream, sourceName) {
   const audio = document.createElement("audio");
   audio.autoplay = true;
   audio.controls = false;
-  audio.hidden = true;
   audio.playsInline = true;
+  audio.setAttribute("playsinline", "");
+  audio.setAttribute("webkit-playsinline", "");
+  audio.style.position = "absolute";
+  audio.style.left = "-9999px";
+  audio.style.width = "1px";
+  audio.style.height = "1px";
+  audio.style.opacity = "0";
+  audio.style.pointerEvents = "none";
   audio.srcObject = stream;
   audio.dataset.sourceName = sourceName;
   state.voiceBroadcastStreams.set(sourcePlayerId, stream);
+  audio.defaultMuted = false;
   audio.muted = false;
   audio.volume = 1;
   audio.addEventListener("playing", () => {
@@ -957,6 +1014,9 @@ function attachVoiceBroadcastStream(sourcePlayerId, stream, sourceName) {
     state.voiceBroadcastBlocked = true;
     setHostAudioStatus("請按「啟用收聽」");
   });
+
+  audio.addEventListener("loadedmetadata", playVoiceBroadcasts, { once: true });
+  audio.addEventListener("canplay", playVoiceBroadcasts, { once: true });
 
   state.voiceBroadcastElements.set(sourcePlayerId, audio);
   els.phoneRemoteListen?.append(audio);
@@ -1020,15 +1080,12 @@ function playVoiceBroadcasts() {
           state.voiceBroadcastBlocked = false;
           renderHostAudioBroadcastUi();
         })
-        .catch(() => {});
+        .catch(() => {
+          state.voiceBroadcastBlocked = true;
+          setHostAudioStatus("請按開聲收聽玩家說話");
+        });
     } else {
       state.remoteAudioPrimed = true;
-    }
-    if (playPromise?.catch) {
-      playPromise.catch(() => {
-        state.voiceBroadcastBlocked = true;
-        setHostAudioStatus("請按「啟用收聽」");
-      });
     }
   });
   renderHostAudioBroadcastUi();
