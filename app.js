@@ -2316,6 +2316,7 @@ function buildPlayerState(player) {
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
     answered: Boolean(player.answers[state.currentQuestionId]),
+    selectedAnswer: player.answers[state.currentQuestionId]?.answer || "",
   };
 }
 

@@ -54,6 +54,7 @@ const state = {
   connectionToken: "",
   game: null,
   lastResult: "",
+  selectedAnswer: "",
   micStream: null,
   micCall: null,
   micActive: false,
@@ -456,7 +457,11 @@ function handleMessage(message) {
     lockPlayerMode();
     els.joinForm.hidden = true;
     setStatus(joinedStatus());
-    if (previousQuestionId !== message.questionId) state.lastResult = "";
+    if (previousQuestionId !== message.questionId) {
+      state.lastResult = "";
+      state.selectedAnswer = "";
+    }
+    if (message.selectedAnswer) state.selectedAnswer = message.selectedAnswer;
     renderGame();
     updateMicUi();
   }
@@ -1695,12 +1700,19 @@ function renderChoices(game) {
       title.className = "phone-choice-title";
       title.textContent = choice;
       button.append(number, title);
+      const selected = sameChoice(state.selectedAnswer, choice);
+      button.classList.toggle("is-selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
       button.disabled = Boolean(game.answered);
       button.addEventListener("click", () => {
+        state.selectedAnswer = choice;
         send({ type: "answer", questionId: game.questionId, answer: choice });
         [...els.phoneChoices.querySelectorAll("button")].forEach((item) => {
           item.disabled = true;
+          item.classList.toggle("is-selected", item === button);
+          item.setAttribute("aria-pressed", String(item === button));
         });
+        els.phoneResult.textContent = `已提交答案：${choice}`;
       });
       els.phoneChoices.append(button);
     });
@@ -1754,6 +1766,10 @@ function renderPhoneTeamSummary(teamScores) {
   summary.className = "phone-team-summary";
   summary.innerHTML = `<span>A 組 <strong>${aScore}</strong></span><span>B 組 <strong>${bScore}</strong></span>`;
   return summary;
+}
+
+function sameChoice(left, right) {
+  return String(left || "").trim() === String(right || "").trim();
 }
 
 function send(message) {
