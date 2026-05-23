@@ -476,9 +476,31 @@ function handleMessage(message) {
   if (message.type === "mic-targets") {
     syncOutboundMicTargets(message.targets);
   }
+
+  if (message.type === "buzz-mic-open" && message.questionId === state.game?.questionId) {
+    setMicStatus(message.message || "你搶到，正在開咪");
+    startMic({ requestedByHost: true });
+  }
+
+  if (message.type === "buzz-mic-close") {
+    const status = message.message || "主持已收咪";
+    if (state.micActive || state.micCall || state.micStream) {
+      stopMic({ notifyHost: false, message: status });
+    } else {
+      setMicStatus(status);
+      updateMicUi();
+    }
+  }
 }
 
-async function startMic() {
+async function startMic(options = {}) {
+  const { requestedByHost = false } = options;
+  if (state.micActive) {
+    setMicStatus(requestedByHost ? "你已開咪，請講答案" : "咪已開啟");
+    updateMicUi();
+    return;
+  }
+
   if (!state.joined || !state.peer || !state.connection?.open) {
     setMicStatus("連線後才可開咪");
     updateMicUi();

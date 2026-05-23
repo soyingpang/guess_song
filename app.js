@@ -935,6 +935,7 @@ function handleBuzz(player) {
   });
   setResult(`第一個${actionLabel}`, `${player.name}（${teamLabel(player.team)}）`, "");
   render();
+  openBuzzWinnerMic(player, actionLabel);
 }
 
 function pausePlaybackForBuzz() {
@@ -986,6 +987,8 @@ function judgeBuzzWinner(isCorrect) {
     setResult("未有人搶答", "", "");
     return;
   }
+
+  closeBuzzWinnerMic(player);
 
   if (isCorrect) {
     const points = state.mode === "word" ? 2 : 2;
@@ -1046,6 +1049,23 @@ function judgeBuzzWinner(isCorrect) {
       : `${player.name} 未中，今題沒有其他人可補${actionLabel}`,
   });
   render();
+}
+
+function openBuzzWinnerMic(player, actionLabel) {
+  sendToPlayer(player, {
+    type: "buzz-mic-open",
+    questionId: state.currentQuestionId,
+    message: `你搶到${actionLabel}，咪會自動開啟，請講答案`,
+  });
+}
+
+function closeBuzzWinnerMic(player) {
+  sendToPlayer(player, {
+    type: "buzz-mic-close",
+    questionId: state.currentQuestionId,
+    message: "主持已判定，咪已關閉",
+  });
+  endPlayerMic(player.id, { closeCall: true, render: false });
 }
 
 function reopenBuzz() {
