@@ -53,7 +53,12 @@ const PEER_OPTIONS = {
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
       {
-        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
+        urls: [
+          "turn:eu-0.turn.peerjs.com:3478",
+          "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
+          "turn:us-0.turn.peerjs.com:3478",
+          "turn:us-0.turn.peerjs.com:3478?transport=tcp",
+        ],
         username: "peerjs",
         credential: "peerjsp",
       },

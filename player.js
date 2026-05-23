@@ -16,7 +16,12 @@ const PEER_OPTIONS = {
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
       {
-        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
+        urls: [
+          "turn:eu-0.turn.peerjs.com:3478",
+          "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
+          "turn:us-0.turn.peerjs.com:3478",
+          "turn:us-0.turn.peerjs.com:3478?transport=tcp",
+        ],
         username: "peerjs",
         credential: "peerjsp",
       },
@@ -285,7 +290,7 @@ function connectToRoom({ resetAttempts = false } = {}) {
   setStatus(state.reconnectAttempts ? "重新連線中..." : "連線中...");
   state.connectionTimeout = window.setTimeout(() => {
     if (state.connectionToken !== token || state.joined) return;
-    handleConnectionFailure("連線逾時，請重新掃前台 QR 或檢查手機網絡");
+    handleConnectionFailure("連線逾時，請確認後台開住、關閉手機 VPN 後再試");
   }, CONNECTION_TIMEOUT_MS);
 
   const peer = new Peer(undefined, PEER_OPTIONS);
@@ -405,10 +410,10 @@ function clearConnectionTimeout() {
 
 function connectionFailureMessage(error) {
   const type = String(error?.type || "").trim();
-  if (type === "peer-unavailable") return "找不到主持房間，請確認後台保持開住";
-  if (type === "network") return "手機網絡暫時連不到同步服務";
+  if (type === "peer-unavailable") return "找不到主持房間，請確認後台保持開住，或關閉手機 VPN 再試";
+  if (type === "network") return "手機網絡 / VPN 暫時連不到同步服務";
   if (type === "browser-incompatible") return "連線失敗：這個手機瀏覽器不支援同步連線";
-  return "連線失敗，請確認主持人後台仍然開住";
+  return "連線失敗，請確認主持人後台仍然開住，或關閉 VPN 再試";
 }
 
 function scheduleReconnect(message) {

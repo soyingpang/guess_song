@@ -14,7 +14,12 @@ const PEER_OPTIONS = {
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
       {
-        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
+        urls: [
+          "turn:eu-0.turn.peerjs.com:3478",
+          "turn:eu-0.turn.peerjs.com:3478?transport=tcp",
+          "turn:us-0.turn.peerjs.com:3478",
+          "turn:us-0.turn.peerjs.com:3478?transport=tcp",
+        ],
         username: "peerjs",
         credential: "peerjsp",
       },
@@ -257,7 +262,7 @@ function clearDisplayConnectionTimeout() {
 function displayConnectionFailureMessage(error) {
   const type = String(error?.type || "").trim();
   if (type === "peer-unavailable") return "找不到主持房間";
-  if (type === "network") return "網絡暫時連不到同步服務";
+  if (type === "network") return "網絡 / VPN 暫時連不到同步服務";
   if (type === "browser-incompatible") return "此瀏覽器不支援同步連線";
   return "未能連接主持";
 }
