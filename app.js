@@ -622,7 +622,6 @@ function shouldForwardPlayerMicToRemote(sourcePlayer, targetPlayer) {
       sourcePlayer.id !== targetPlayer.id &&
       sourcePlayer.micStream &&
       sourcePlayer.micActive &&
-      (targetPlayer.remoteMode || targetPlayer.speakerMode) &&
       targetPlayer.connected &&
       targetPlayer.connection?.open &&
       targetPlayer.connection?.peer

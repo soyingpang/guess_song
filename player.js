@@ -158,7 +158,10 @@ els.micToggleButton.addEventListener("click", () => {
 
 els.openLeaderboardButton.addEventListener("click", openLeaderboard);
 els.closeLeaderboardButton.addEventListener("click", closeLeaderboard);
-els.onsiteModeButton.addEventListener("click", () => setPlayerMode("onsite"));
+els.onsiteModeButton.addEventListener("click", () => {
+  primeRemoteListening();
+  setPlayerMode("onsite");
+});
 els.remoteModeButton.addEventListener("click", () => {
   primeRemoteListening();
   setPlayerMode("remote");
@@ -786,7 +789,7 @@ function attachHostAudioBroadcastStream(stream) {
 }
 
 function handleVoiceBroadcastCall(call) {
-  if (!isPhoneAudioListener() || !state.joined || call.metadata?.roomId !== roomId) {
+  if (!state.joined || call.metadata?.roomId !== roomId) {
     closePeerCall(call);
     return;
   }
@@ -993,15 +996,20 @@ function setHostAudioStatus(message) {
 }
 
 function isPhoneAudioListener() {
-  return Boolean(state.remoteMode || state.speakerMode);
+  // Host routing excludes the speaking phone, so every other joined phone can listen.
+  return true;
 }
 
 function defaultListenStatus() {
-  return state.speakerMode ? "等候玩家開咪" : "等候玩家開咪或主持音訊";
+  if (state.speakerMode) return "等候玩家開咪";
+  if (state.remoteMode) return "等候玩家開咪或主持音訊";
+  return "等候其他手機開咪";
 }
 
 function primedListenStatus() {
-  return state.speakerMode ? "已啟用出聲手機，等候玩家開咪" : "已啟用自動收聽，等候玩家開咪或主持音訊";
+  if (state.speakerMode) return "已啟用出聲手機，等候玩家開咪";
+  if (state.remoteMode) return "已啟用自動收聽，等候玩家開咪或主持音訊";
+  return "已啟用手機收聽，等候其他手機開咪";
 }
 
 function renderHostAudioBroadcastUi() {
@@ -1018,7 +1026,7 @@ function renderHostAudioBroadcastUi() {
   const waitingForAudio = !hasPlayableAudio;
   const hasDefaultWaitingStatus =
     !state.hostAudioStatus ||
-    ["等候主持音訊廣播", "等候玩家開咪或主持音訊", "等候玩家開咪"].includes(state.hostAudioStatus);
+    ["等候主持音訊廣播", "等候玩家開咪或主持音訊", "等候玩家開咪", "等候其他手機開咪"].includes(state.hostAudioStatus);
   els.phoneRemoteListenStatus.textContent =
     waitingForAudio && state.remoteAudioPriming
       ? "正在啟用手機出聲"
@@ -1061,7 +1069,7 @@ function unlockPlayerMode() {
 function applyPlayerMode() {
   const hasChosenMode = state.modeLocked || state.joined || state.connecting;
   const audioListener = isPhoneAudioListener();
-  document.body.classList.toggle("is-remote-player", audioListener);
+  document.body.classList.toggle("is-remote-player", state.remoteMode || state.speakerMode);
   document.body.classList.toggle("is-speaker-phone", state.speakerMode);
   document.body.classList.toggle("is-mode-locked", state.modeLocked);
   els.onsiteModeButton.classList.toggle("is-active", hasChosenMode && !state.remoteMode && !state.speakerMode);
