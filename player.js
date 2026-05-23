@@ -1,8 +1,14 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
 const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
+const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const ONSITE_ONLY = true;
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
+const ROOM_ID_CANDIDATES = [
+  DEFAULT_ROOM_ID,
+  `${DEFAULT_ROOM_ID}-2`,
+  `${DEFAULT_ROOM_ID}-3`,
+];
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 const CONNECTION_TIMEOUT_MS = 9000;
@@ -30,10 +36,25 @@ const SILENT_UNLOCK_AUDIO_URI =
 const ENTRY_MODES = new Set(["onsite", "remote"]);
 
 const params = new URLSearchParams(window.location.search);
-const roomId = (params.get("room") || DEFAULT_ROOM_ID).trim();
+const urlRoomId = (params.get("room") || "").trim();
+const storedRoomId = localStorage.getItem(ROOM_ID_KEY) || "";
+const roomCandidates = buildRoomCandidates(urlRoomId || storedRoomId);
+const roomId = roomCandidates[0] || DEFAULT_ROOM_ID;
+let activeRoomId = roomId;
+let roomCandidateIndex = 0;
 const urlName = params.get("name") || "";
 const initialEntryMode = "onsite";
 localStorage.setItem(PLAYER_REMOTE_MODE_KEY, initialEntryMode);
+
+function buildRoomCandidates(preferredRoomId) {
+  const candidates = [];
+  const preferred = String(preferredRoomId || "").trim();
+  if (preferred) candidates.push(preferred);
+  ROOM_ID_CANDIDATES.forEach((candidate) => {
+    if (!candidates.includes(candidate)) candidates.push(candidate);
+  });
+  return candidates;
+}
 
 function normalizeEntryMode(mode) {
   return ENTRY_MODES.has(mode) ? mode : "onsite";
@@ -277,7 +298,11 @@ function connectToRoom({ resetAttempts = false } = {}) {
 
   clearTimeout(state.reconnectTimer);
   state.reconnectTimer = null;
-  if (resetAttempts) state.reconnectAttempts = 0;
+  if (resetAttempts) {
+    state.reconnectAttempts = 0;
+    roomCandidateIndex = 0;
+  }
+  activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
 
   const token = crypto.randomUUID();
   state.connectionToken = token;
@@ -294,7 +319,7 @@ function connectToRoom({ resetAttempts = false } = {}) {
 
   peer.on("open", () => {
     if (state.connectionToken !== token) return;
-    const connection = peer.connect(roomId, { reliable: true });
+    const connection = peer.connect(activeRoomId, { reliable: true });
     state.connection = connection;
     bindRoomConnection(connection, token);
   });
@@ -392,6 +417,12 @@ function handleConnectionFailure(message) {
     return;
   }
 
+  if (advanceRoomCandidate()) {
+    setStatus("正在嘗試另一個房間...");
+    connectToRoom();
+    return;
+  }
+
   setStatus(message);
   updateMicUi();
   unlockPlayerMode();
@@ -412,7 +443,7 @@ function connectionFailureMessage(error) {
 }
 
 function scheduleReconnect(message) {
-  if (!roomId || !state.name) {
+  if (!activeRoomId || !state.name) {
     setStatus(`${message}，請重新掃 QR 加入`);
     unlockPlayerMode();
     showJoinFormAfterFailure();
@@ -434,6 +465,14 @@ function scheduleReconnect(message) {
     state.reconnectTimer = null;
     connectToRoom();
   }, delay);
+}
+
+function advanceRoomCandidate() {
+  if (roomCandidates.length <= 1) return false;
+  if (roomCandidateIndex >= roomCandidates.length - 1) return false;
+  roomCandidateIndex += 1;
+  activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
+  return true;
 }
 
 function handleMessage(message) {
