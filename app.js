@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "youtube-login-1";
+const APP_BUILD_VERSION = "stable-front-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -169,6 +169,7 @@ const state = {
   roomRetryTimer: null,
   displayConnections: new Set(),
   displayMicBroadcastCalls: new Map(),
+  playerStateRetryTimers: new Map(),
   audioBroadcastSourceStream: null,
   audioBroadcastStream: null,
   audioBroadcastCalls: new Map(),
@@ -581,6 +582,7 @@ function setupPlayerConnection(connection) {
     if (player) {
       player.connected = false;
       player.connection = null;
+      clearPlayerStateRetries(player.id);
       endPlayerMic(player.id, { closeCall: true, render: false });
       endAudioBroadcastForPlayer(player.id);
       syncAllMicBroadcastTargets();
@@ -629,6 +631,7 @@ function handlePlayerMessage(connection, message) {
     connection.playerId = player.id;
 
     if (previousConnection && previousConnection !== connection) {
+      clearPlayerStateRetries(player.id);
       endPlayerMic(player.id, { closeCall: true, render: false });
       endAudioBroadcastForPlayer(player.id);
       try {
@@ -638,7 +641,9 @@ function handlePlayerMessage(connection, message) {
       }
     }
 
+    sendJoinAck(player);
     sendPlayerState(player);
+    schedulePlayerStateRetries(player, connection);
     renderPlayers();
     publishDisplayState();
     broadcastToPlayers();
@@ -2468,6 +2473,32 @@ function sendDisplayState(connection, payload) {
 
 function sendPlayerState(player) {
   sendToPlayer(player, buildPlayerState(player));
+}
+
+function sendJoinAck(player) {
+  sendToPlayer(player, {
+    type: "join-ack",
+    roomId: state.roomId,
+    playerName: player.name,
+    team: normalizeTeam(player.team),
+  });
+}
+
+function schedulePlayerStateRetries(player, connection) {
+  clearPlayerStateRetries(player.id);
+  const timers = [250, 900, 1800, 3500].map((delay) =>
+    window.setTimeout(() => {
+      if (player.connection !== connection || !connection.open) return;
+      sendPlayerState(player);
+    }, delay)
+  );
+  state.playerStateRetryTimers.set(player.id, timers);
+}
+
+function clearPlayerStateRetries(playerId) {
+  const timers = state.playerStateRetryTimers.get(playerId) || [];
+  timers.forEach((timer) => window.clearTimeout(timer));
+  state.playerStateRetryTimers.delete(playerId);
 }
 
 function sendToPlayer(player, message) {

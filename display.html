@@ -59,7 +59,9 @@
         gap: 10px;
       }
 
-      .youtube-login-actions button {
+      .youtube-login-actions :is(button, a) {
+        display: grid;
+        place-items: center;
         min-height: 48px;
         border: 1px solid rgba(111, 67, 52, 0.22);
         border-radius: 8px;
@@ -68,6 +70,8 @@
         font: inherit;
         font-size: 0.95rem;
         font-weight: 950;
+        text-align: center;
+        text-decoration: none;
         cursor: pointer;
       }
 
@@ -84,9 +88,32 @@
         background: rgba(255, 236, 213, 0.72);
         padding: 10px 12px;
       }
+
+      .youtube-login-chip {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        z-index: 900;
+        transform: translateX(-50%);
+        min-height: 42px;
+        border: 1px solid rgba(198, 84, 36, 0.38);
+        border-radius: 999px;
+        background:
+          linear-gradient(180deg, rgba(255, 250, 242, 0.96), rgba(255, 238, 216, 0.94)),
+          #fff8ec;
+        color: #6a3529;
+        padding: 0 16px;
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 950;
+        box-shadow: 0 12px 28px rgba(45, 25, 20, 0.22);
+        cursor: pointer;
+      }
     </style>
   </head>
   <body class="display-body">
+    <button class="youtube-login-chip" id="youtubeLoginOpenButton" type="button">YouTube Premium 登入</button>
+
     <main class="stage-shell">
       <section class="stage-hero" aria-live="polite">
         <div class="stage-top">
@@ -142,7 +169,7 @@
         <p>為了減少 YouTube 廣告，請先用這個 Chrome 視窗登入有 Premium 的 YouTube 帳號。登入完成後回到這個前台頁面，按「我已登入」重新載入前台。</p>
         <p class="youtube-login-note">登入頁會用 YouTube 官方新視窗開啟。這個 App 不能直接讀取或儲存你的 Google 帳號資料。</p>
         <div class="youtube-login-actions">
-          <button class="primary" id="youtubeLoginButton" type="button">開啟 YouTube 登入</button>
+          <a class="primary" id="youtubeLoginButton" href="https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com%2F" target="_blank" rel="noopener">開啟 YouTube 登入</a>
           <button id="youtubeLoginReadyButton" type="button">我已登入，重新載入前台</button>
           <button id="youtubeLoginSkipButton" type="button">略過今次</button>
         </div>
@@ -151,6 +178,6 @@
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
     <script src="./local-qr.js?v=host-audio-broadcast-3"></script>
-    <script src="./display.js?v=youtube-login-1"></script>
+    <script src="./display.js?v=stable-front-1"></script>
   </body>
 </html>

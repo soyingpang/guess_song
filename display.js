@@ -1,6 +1,6 @@
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
-const YOUTUBE_LOGIN_PROMPT_KEY = "guess-song-youtube-premium-login-v1";
+const YOUTUBE_LOGIN_PROMPT_KEY = "guess-song-youtube-premium-login-v2";
 const YOUTUBE_LOGIN_URL = "https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com%2F";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
@@ -55,11 +55,13 @@ const els = {
   room: document.querySelector("#stageRoom"),
   youtubeLoginPrompt: document.querySelector("#youtubeLoginPrompt"),
   youtubeLoginButton: document.querySelector("#youtubeLoginButton"),
+  youtubeLoginOpenButton: document.querySelector("#youtubeLoginOpenButton"),
   youtubeLoginReadyButton: document.querySelector("#youtubeLoginReadyButton"),
   youtubeLoginSkipButton: document.querySelector("#youtubeLoginSkipButton"),
 };
 
 let latestFrameKey = "";
+let latestRenderSignature = "";
 let latestPlaybackState = null;
 let latestPlaybackRevision = 0;
 let latestRemoteState = null;
@@ -81,8 +83,8 @@ const displaySync = {
 };
 
 els.soundButton?.addEventListener("click", unlockStageSound);
-els.youtubeLoginButton?.addEventListener("click", openYouTubeLogin);
-els.youtubeLoginReadyButton?.addEventListener("click", () => finishYouTubeLoginPrompt({ reload: true }));
+els.youtubeLoginOpenButton?.addEventListener("click", () => showYouTubeLoginPrompt());
+els.youtubeLoginReadyButton?.addEventListener("click", () => finishYouTubeLoginPrompt({ reload: true, remember: true }));
 els.youtubeLoginSkipButton?.addEventListener("click", () => finishYouTubeLoginPrompt());
 
 initYouTubeLoginPrompt();
@@ -98,12 +100,7 @@ if (roomId) {
 }
 
 window.setInterval(() => {
-  if (latestRemoteState) {
-    renderState(latestRemoteState);
-    return;
-  }
-
-  renderFromStorage();
+  updateLiveDisplay(latestRemoteState || readDisplayState());
 }, 700);
 
 function renderFromStorage() {
@@ -121,6 +118,13 @@ function renderFromStorage() {
 
 function renderState(state) {
   currentDisplayState = state;
+  const signature = displayStateSignature(state);
+  if (signature === latestRenderSignature) {
+    updateLiveDisplay(state);
+    return;
+  }
+  latestRenderSignature = signature;
+
   const songlistLabel = state.songlistLabel || "估歌仔";
   if (els.eyebrow) els.eyebrow.textContent = "估歌仔";
   if (els.gameTitle) els.gameTitle.textContent = songlistLabel;
@@ -168,6 +172,45 @@ function renderState(state) {
   renderQr(state);
 }
 
+function updateLiveDisplay(state) {
+  if (!state || !currentDisplayState) return;
+  currentDisplayState = state;
+  const songlistLabel = state.songlistLabel || "估歌仔";
+  const prepCover = Boolean(state.hasSong && !state.revealed);
+
+  els.status.textContent = state.status || (state.hasSong ? `${songlistLabel} · 聽片段估歌名` : "等候主持開始");
+  els.prompt.textContent = state.revealed
+    ? "答案"
+    : state.isPlaying
+      ? `播放中 · ${remainingSeconds(state)} 秒`
+      : prepCover
+        ? "答案遮罩中"
+      : state.hasWord
+        ? "主題搶唱"
+        : "聽前奏，估歌名";
+  els.subPrompt.textContent = state.revealed
+    ? state.answer
+    : prepCover
+      ? `歌單：${songlistLabel}`
+    : state.hasWord
+      ? "鬥快唱出切合這個主題的歌"
+      : "答案未公開，請留心聽";
+
+  document.body.classList.toggle("is-playing", Boolean(state.isPlaying));
+  document.body.classList.toggle("is-sound-unlocked", stageAudioUnlocked);
+  syncFramePlayback(state);
+  updateStageSoundButton(state);
+}
+
+function displayStateSignature(state) {
+  try {
+    const { playEndsAt, ...stableState } = state || {};
+    return JSON.stringify(stableState);
+  } catch {
+    return "";
+  }
+}
+
 function initYouTubeLoginPrompt() {
   if (!els.youtubeLoginPrompt) return;
 
@@ -177,11 +220,17 @@ function initYouTubeLoginPrompt() {
     // If storage is blocked, show the prompt for this page load.
   }
 
+  showYouTubeLoginPrompt();
+}
+
+function showYouTubeLoginPrompt() {
+  if (!els.youtubeLoginPrompt) return;
   els.youtubeLoginPrompt.hidden = false;
   window.setTimeout(() => els.youtubeLoginButton?.focus(), 50);
 }
 
-function openYouTubeLogin() {
+function openYouTubeLogin(event) {
+  event?.preventDefault();
   const popup = window.open(
     YOUTUBE_LOGIN_URL,
     "guessSongYouTubeLogin",
@@ -197,11 +246,13 @@ function openYouTubeLogin() {
 }
 
 function finishYouTubeLoginPrompt(options = {}) {
-  const { reload = false } = options;
-  try {
-    sessionStorage.setItem(YOUTUBE_LOGIN_PROMPT_KEY, "done");
-  } catch {
-    // Prompt state is only a convenience; it is fine if it cannot be stored.
+  const { reload = false, remember = false } = options;
+  if (remember) {
+    try {
+      sessionStorage.setItem(YOUTUBE_LOGIN_PROMPT_KEY, "done");
+    } catch {
+      // Prompt state is only a convenience; it is fine if it cannot be stored.
+    }
   }
 
   if (els.youtubeLoginPrompt) els.youtubeLoginPrompt.hidden = true;
@@ -445,6 +496,7 @@ function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟�
   els.playerHost.classList.add("is-masked");
   els.playerHost.replaceChildren();
   latestFrameKey = "";
+  latestRenderSignature = "";
   latestPlaybackState = null;
   currentDisplayState = null;
   updateStageSoundButton(null);

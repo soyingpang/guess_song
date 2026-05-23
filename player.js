@@ -73,6 +73,7 @@ const state = {
   reconnectAttempts: 0,
   reconnectTimer: null,
   connectionTimeout: null,
+  joinHandshakeTimer: null,
   connectionToken: "",
   game: null,
   lastResult: "",
@@ -356,13 +357,8 @@ function bindRoomConnection(connection, token) {
     state.connecting = false;
     state.reconnectAttempts = 0;
     lockPlayerMode();
-    send({
-      type: "join",
-      playerId: state.playerId,
-      name: state.name,
-      remoteMode: false,
-      speakerMode: false,
-    });
+    sendJoinMessage();
+    scheduleJoinHandshakeRetry();
     setStatus("已連線，等候同步");
     updateMicUi();
   });
@@ -389,6 +385,7 @@ function bindRoomConnection(connection, token) {
 
 function closeCurrentPeer() {
   clearConnectionTimeout();
+  clearJoinHandshakeTimer();
   stopMic({ notifyHost: false, message: "重新連線，咪已關閉" });
   stopHostAudioBroadcast({ closeCall: true, message: defaultListenStatus() });
 
@@ -432,6 +429,31 @@ function handleConnectionFailure(message) {
 function clearConnectionTimeout() {
   clearTimeout(state.connectionTimeout);
   state.connectionTimeout = null;
+}
+
+function sendJoinMessage() {
+  send({
+    type: "join",
+    playerId: state.playerId,
+    name: state.name,
+    remoteMode: false,
+    speakerMode: false,
+  });
+}
+
+function scheduleJoinHandshakeRetry() {
+  clearJoinHandshakeTimer();
+  state.joinHandshakeTimer = window.setTimeout(() => {
+    state.joinHandshakeTimer = null;
+    if (!state.connection?.open) return;
+    sendJoinMessage();
+    scheduleJoinHandshakeRetry();
+  }, 1800);
+}
+
+function clearJoinHandshakeTimer() {
+  clearTimeout(state.joinHandshakeTimer);
+  state.joinHandshakeTimer = null;
 }
 
 function connectionFailureMessage(error) {
@@ -478,7 +500,22 @@ function advanceRoomCandidate() {
 function handleMessage(message) {
   if (!message || typeof message !== "object") return;
 
+  if (message.type === "join-ack") {
+    state.displayName = message.playerName || state.name;
+    state.team = normalizeTeam(message.team);
+    state.joined = true;
+    state.connecting = false;
+    state.reconnectAttempts = 0;
+    lockPlayerMode();
+    els.joinForm.hidden = true;
+    setStatus("已加入，等候主持同步");
+    renderJoinedWaiting();
+    updateMicUi();
+    return;
+  }
+
   if (message.type === "state") {
+    clearJoinHandshakeTimer();
     const previousQuestionId = state.game?.questionId;
     state.game = message;
     state.displayName = message.playerName || state.name;
@@ -516,6 +553,18 @@ function handleMessage(message) {
   if (message.type === "buzz-mic-close") {
     return;
   }
+}
+
+function renderJoinedWaiting() {
+  syncBodyState();
+  els.playerScore.textContent = "0 分";
+  els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
+  els.phoneStatus.textContent = "已加入遊戲";
+  els.phoneTitle.textContent = "等候主持開始";
+  els.phoneHints.replaceChildren();
+  els.phoneChoices.replaceChildren();
+  els.buzzButton.hidden = true;
+  els.phoneResult.textContent = "手機已連到後台，等候題目同步。";
 }
 
 async function startMic(options = {}) {
