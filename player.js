@@ -73,6 +73,9 @@ const state = {
   remoteAudioPriming: false,
   remoteUnlockAudioElement: null,
   remoteAudioContext: null,
+  displayMicBroadcastCalls: new Map(),
+  displayMicBroadcastTargets: new Map(),
+  displayMicBroadcastRetryTimers: new Map(),
 };
 
 const els = {
@@ -464,7 +467,7 @@ function handleMessage(message) {
   }
 
   if (message.type === "mic-targets") {
-    return;
+    syncDisplayMicTargets(message.targets);
   }
 
   if (message.type === "buzz-mic-open" && message.questionId === state.game?.questionId) {
@@ -565,9 +568,110 @@ function stopMic(options = {}) {
     stream.getTracks().forEach((track) => track.stop());
   }
 
+  clearDisplayMicBroadcasts();
+
   if (notifyHost) send({ type: "mic-stop", playerId: state.playerId });
   setMicStatus(message);
   updateMicUi();
+}
+
+function syncDisplayMicTargets(targets = []) {
+  const normalizedTargets = Array.isArray(targets) ? targets : [];
+  const ownPeerId = state.peer?.id || "";
+  const targetsByPeerId = new Map();
+
+  normalizedTargets.forEach((target) => {
+    const peerId = String(target?.peerId || "");
+    if (!peerId || peerId === ownPeerId) return;
+    targetsByPeerId.set(peerId, target);
+  });
+  state.displayMicBroadcastTargets = targetsByPeerId;
+
+  Array.from(state.displayMicBroadcastCalls.entries()).forEach(([peerId, call]) => {
+    if (targetsByPeerId.has(peerId)) return;
+    state.displayMicBroadcastCalls.delete(peerId);
+    closePeerCall(call);
+  });
+
+  Array.from(state.displayMicBroadcastRetryTimers.keys()).forEach((peerId) => {
+    if (targetsByPeerId.has(peerId)) return;
+    clearDisplayMicRetry(peerId);
+  });
+
+  if (!state.micActive || !state.micStream || !state.peer) {
+    clearDisplayMicBroadcasts();
+    return;
+  }
+
+  targetsByPeerId.forEach((target) => {
+    ensureDisplayMicBroadcast(target);
+  });
+}
+
+function ensureDisplayMicBroadcast(target) {
+  const peerId = String(target?.peerId || "");
+  if (!peerId || state.displayMicBroadcastCalls.has(peerId)) return;
+  if (!state.micActive || !state.micStream || !state.peer) return;
+
+  try {
+    const call = state.peer.call(peerId, state.micStream, {
+      metadata: {
+        type: "display-player-mic",
+        roomId,
+        playerId: state.playerId,
+        playerName: state.displayName || state.name || "Open mic",
+        targetType: "display",
+      },
+    });
+
+    if (!call) {
+      scheduleDisplayMicRetry(peerId);
+      return;
+    }
+
+    clearDisplayMicRetry(peerId);
+    state.displayMicBroadcastCalls.set(peerId, call);
+    call.on("close", () => removeDisplayMicBroadcast(peerId, call, { retry: true }));
+    call.on("error", () => removeDisplayMicBroadcast(peerId, call, { retry: true }));
+  } catch {
+    state.displayMicBroadcastCalls.delete(peerId);
+    scheduleDisplayMicRetry(peerId);
+  }
+}
+
+function removeDisplayMicBroadcast(peerId, call, options = {}) {
+  const { retry = false } = options;
+  if (state.displayMicBroadcastCalls.get(peerId) === call) {
+    state.displayMicBroadcastCalls.delete(peerId);
+    if (retry) scheduleDisplayMicRetry(peerId);
+  }
+}
+
+function scheduleDisplayMicRetry(peerId) {
+  if (!peerId || state.displayMicBroadcastRetryTimers.has(peerId)) return;
+  if (!state.micActive || !state.micStream || !state.peer) return;
+  if (!state.displayMicBroadcastTargets.has(peerId)) return;
+
+  const timer = window.setTimeout(() => {
+    state.displayMicBroadcastRetryTimers.delete(peerId);
+    ensureDisplayMicBroadcast(state.displayMicBroadcastTargets.get(peerId));
+  }, 1200);
+  state.displayMicBroadcastRetryTimers.set(peerId, timer);
+}
+
+function clearDisplayMicRetry(peerId) {
+  const timer = state.displayMicBroadcastRetryTimers.get(peerId);
+  if (!timer) return;
+  window.clearTimeout(timer);
+  state.displayMicBroadcastRetryTimers.delete(peerId);
+}
+
+function clearDisplayMicBroadcasts() {
+  Array.from(state.displayMicBroadcastRetryTimers.values()).forEach((timer) => window.clearTimeout(timer));
+  state.displayMicBroadcastRetryTimers.clear();
+  state.displayMicBroadcastTargets.clear();
+  Array.from(state.displayMicBroadcastCalls.values()).forEach(closePeerCall);
+  state.displayMicBroadcastCalls.clear();
 }
 
 function micErrorMessage(error) {

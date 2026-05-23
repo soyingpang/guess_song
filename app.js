@@ -392,6 +392,7 @@ function setupPlayerConnection(connection) {
     if (connection.isDisplay) {
       state.displayConnections.delete(connection);
       endDisplayMicForConnection(connection.peer);
+      syncAllMicBroadcastTargets();
       renderPlayers();
       return;
     }
@@ -416,7 +417,7 @@ function handlePlayerMessage(connection, message) {
     connection.isDisplay = true;
     state.displayConnections.add(connection);
     sendDisplayState(connection, buildDisplayState());
-    syncAllDisplayMicsToConnection(connection);
+    syncAllMicBroadcastTargets();
     renderPlayers();
     return;
   }
@@ -516,9 +517,8 @@ function setupPlayerMicCall(call) {
   call.on("stream", (stream) => {
     player.micStream = stream;
     player.micActive = true;
-    setResult("玩家開咪", `${player.name} 正在說話，聲音由手機端播放`, "");
+    setResult("玩家開咪", `${player.name} 正在說話，聲音送到前台`, "");
     syncPlayerMicTargets(player);
-    forwardPlayerMicToDisplays(player);
     renderPlayers();
     publishDisplayState();
   });
@@ -574,8 +574,18 @@ function syncPlayerMicTargets(sourcePlayer) {
   sendToPlayer(sourcePlayer, {
     type: "mic-targets",
     roomId: state.roomId,
-    targets: [],
+    targets: displayMicTargets(),
   });
+}
+
+function displayMicTargets() {
+  return Array.from(state.displayConnections)
+    .filter((connection) => connection?.isDisplay && connection.open && connection.peer)
+    .map((connection) => ({
+      peerId: connection.peer,
+      name: "前台",
+      type: "display",
+    }));
 }
 
 function forwardPlayerMicToDisplays(sourcePlayer) {

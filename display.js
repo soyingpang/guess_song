@@ -13,6 +13,11 @@ const PEER_OPTIONS = {
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
+      {
+        urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"],
+        username: "peerjs",
+        credential: "peerjsp",
+      },
     ],
   },
 };
@@ -189,6 +194,7 @@ function connectToHostDisplay({ resetAttempts = false } = {}) {
 
   peer.on("error", (error) => {
     if (displaySync.token !== token) return;
+    if (displaySync.connection?.open && ["peer-unavailable", "webrtc"].includes(String(error?.type || ""))) return;
     scheduleDisplayReconnect(displayConnectionFailureMessage(error));
   });
 }
@@ -277,7 +283,7 @@ function closeDisplayPeer() {
 }
 
 function handleDisplayMicCall(call) {
-  if (call.metadata?.type !== "display-player-mic") {
+  if (call.metadata?.type !== "display-player-mic" || call.metadata?.roomId !== roomId) {
     try {
       call.answer();
       call.close();
