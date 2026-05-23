@@ -386,8 +386,7 @@ function closeCurrentPeer() {
 function handleConnectionFailure(message) {
   clearConnectionTimeout();
   state.connecting = false;
-  const canRetryWithoutReset = Boolean(state.entryNameReady && state.modeLocked && roomId && state.name);
-  if (state.joined || canRetryWithoutReset) {
+  if (state.joined) {
     scheduleReconnect(message);
     return;
   }

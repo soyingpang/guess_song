@@ -41,7 +41,20 @@ const CLOUD_LIBRARY_OPTIONS = [
 ];
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
+const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
+const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
+const APP_BUILD_VERSION = "join-stable-2";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
+const ROOM_ID_CANDIDATES = [
+  DEFAULT_ROOM_ID,
+  `${DEFAULT_ROOM_ID}-2`,
+  `${DEFAULT_ROOM_ID}-3`,
+];
+const HOST_TAKEOVER_DELAY_MS = 350;
+const ROOM_UNAVAILABLE_RETRY_MS = 700;
+const ROOM_UNAVAILABLE_RETRY_LIMIT = 4;
+const hostInstanceId = createSessionId();
+let hostChannel = null;
 const PEER_OPTIONS = {
   debug: 1,
   host: "0.peerjs.com",
@@ -152,6 +165,8 @@ const state = {
   playerUrl: "",
   displayUrl: "",
   peer: null,
+  hostClaimTimer: null,
+  roomRetryTimer: null,
   displayConnections: new Set(),
   displayMicBroadcastCalls: new Map(),
   audioBroadcastSourceStream: null,
@@ -239,6 +254,7 @@ const els = {
 
 populateCloudLibrarySelect();
 bindEvents();
+initHostTakeover();
 initMultiplayer();
 render();
 if (!state.songs.length) {
@@ -319,7 +335,11 @@ function initMultiplayer() {
   }
 
   const roomId = resolveRoomId();
-  createRoomPeer(roomId);
+  claimHostRoom();
+  clearTimeout(state.hostClaimTimer);
+  state.hostClaimTimer = window.setTimeout(() => {
+    createRoomPeer(roomId, 0, 0);
+  }, HOST_TAKEOVER_DELAY_MS);
 }
 
 function resolveRoomId() {
@@ -327,40 +347,99 @@ function resolveRoomId() {
   return DEFAULT_ROOM_ID;
 }
 
-function createRoomPeer(roomId) {
-  state.peer = new Peer(roomId, PEER_OPTIONS);
+function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
+  clearTimeout(state.roomRetryTimer);
+  state.roomReady = false;
+  state.roomError = retryAttempt
+    ? "固定房間正在交接，重新連線中"
+    : "";
+  state.roomId = roomId;
+  state.playerUrl = "";
+  state.displayUrl = "";
+  renderPlayers();
 
-  state.peer.on("open", (id) => {
+  const roomPeer = new Peer(roomId, PEER_OPTIONS);
+  state.peer = roomPeer;
+
+  roomPeer.on("open", (id) => {
+    if (state.peer !== roomPeer) return;
     state.roomReady = true;
     state.roomError = "";
     state.roomId = id;
     state.playerUrl = buildPlayerUrl(id);
     state.displayUrl = buildDisplayUrl(id);
     localStorage.setItem(ROOM_ID_KEY, id);
+    if (id !== DEFAULT_ROOM_ID) {
+      setResult("已改用備用房間", "舊後台仍佔用固定房間，請用這頁的新玩家 QR / 前台連結", "");
+    }
     render();
   });
 
-  state.peer.on("connection", (connection) => {
+  roomPeer.on("connection", (connection) => {
+    if (state.peer !== roomPeer) {
+      try {
+        connection.close();
+      } catch {
+        // Ignore stale connections from a replaced room peer.
+      }
+      return;
+    }
     setupPlayerConnection(connection);
   });
 
-  state.peer.on("call", (call) => {
+  roomPeer.on("call", (call) => {
+    if (state.peer !== roomPeer) {
+      try {
+        call.close();
+      } catch {
+        // Ignore stale calls from a replaced room peer.
+      }
+      return;
+    }
     setupPlayerMicCall(call);
   });
 
-  state.peer.on("disconnected", () => {
+  roomPeer.on("disconnected", () => {
+    if (state.peer !== roomPeer) return;
     state.roomReady = false;
     state.roomError = "房間同步服務暫時斷線，正在重連";
     render();
     try {
-      state.peer.reconnect();
+      roomPeer.reconnect();
     } catch {
       setResult("房間同步服務斷線", "請重新整理後台再開前台", "wrong");
     }
   });
 
-  state.peer.on("error", (error) => {
+  roomPeer.on("error", (error) => {
+    if (state.peer !== roomPeer) return;
     if (error.type === "unavailable-id") {
+      destroyRoomPeer();
+
+      if (retryAttempt < ROOM_UNAVAILABLE_RETRY_LIMIT) {
+        state.roomReady = false;
+        state.roomError = "固定房間被舊後台佔用，正在嘗試接管";
+        render();
+        claimHostRoom();
+        requestRemoteHostRelease(roomId);
+        state.roomRetryTimer = window.setTimeout(() => {
+          createRoomPeer(roomId, candidateIndex, retryAttempt + 1);
+        }, ROOM_UNAVAILABLE_RETRY_MS);
+        return;
+      }
+
+      const nextRoomId = ROOM_ID_CANDIDATES[candidateIndex + 1];
+      if (nextRoomId) {
+        state.roomReady = false;
+        state.roomError = "固定房間被舊後台佔用，正在改用備用房間";
+        state.roomId = nextRoomId;
+        render();
+        state.roomRetryTimer = window.setTimeout(() => {
+          createRoomPeer(nextRoomId, candidateIndex + 1, 0);
+        }, ROOM_UNAVAILABLE_RETRY_MS);
+        return;
+      }
+
       state.roomReady = false;
       state.roomError = "固定房間已經有另一個後台開住，請關閉其他後台再重新整理";
       state.roomId = roomId;
@@ -376,6 +455,103 @@ function createRoomPeer(roomId) {
     setResult("房間連線失敗", "請檢查網絡、關閉重複後台，或重新整理", "wrong");
     render();
   });
+}
+
+function initHostTakeover() {
+  try {
+    hostChannel = new BroadcastChannel(HOST_CHANNEL_NAME);
+    hostChannel.onmessage = (event) => handleHostClaim(event.data);
+  } catch {
+    hostChannel = null;
+  }
+
+  window.addEventListener("storage", (event) => {
+    if (event.key !== HOST_INSTANCE_KEY || !event.newValue) return;
+    try {
+      handleHostClaim(JSON.parse(event.newValue));
+    } catch {
+      // Ignore malformed host takeover notices from old tabs.
+    }
+  });
+}
+
+function claimHostRoom() {
+  const payload = {
+    type: "host-claim",
+    instanceId: hostInstanceId,
+    createdAt: Date.now(),
+  };
+
+  try {
+    localStorage.setItem(HOST_INSTANCE_KEY, JSON.stringify(payload));
+  } catch {
+    // A blocked storage write should not stop the room from opening.
+  }
+
+  try {
+    hostChannel?.postMessage(payload);
+  } catch {
+    // BroadcastChannel may be blocked in private browsing.
+  }
+}
+
+function handleHostClaim(payload) {
+  if (!payload || payload.type !== "host-claim") return;
+  if (!payload.instanceId || payload.instanceId === hostInstanceId) return;
+  releaseHostRoom("已由另一個新後台接管，這個後台已停止連線");
+}
+
+function releaseHostRoom(message) {
+  clearTimeout(state.hostClaimTimer);
+  clearTimeout(state.roomRetryTimer);
+  destroyRoomPeer();
+  state.roomReady = false;
+  state.roomError = message;
+  state.playerUrl = "";
+  state.displayUrl = "";
+  render();
+}
+
+function destroyRoomPeer() {
+  try {
+    state.peer?.destroy();
+  } catch {
+    // PeerJS can throw if the room is already closed.
+  }
+  state.peer = null;
+}
+
+function requestRemoteHostRelease(roomId) {
+  if (!window.Peer || !roomId) return;
+
+  let takeoverPeer = null;
+  let cleanupTimer = null;
+  const cleanup = () => {
+    clearTimeout(cleanupTimer);
+    cleanupTimer = window.setTimeout(() => {
+      try {
+        takeoverPeer?.destroy();
+      } catch {
+        // Ignore cleanup failures from the temporary takeover peer.
+      }
+    }, 400);
+  };
+
+  try {
+    takeoverPeer = new Peer(undefined, PEER_OPTIONS);
+    takeoverPeer.on("open", () => {
+      const connection = takeoverPeer.connect(roomId, { reliable: true });
+      connection.on("open", () => {
+        connection.send({ type: "host-takeover", instanceId: hostInstanceId });
+        cleanup();
+      });
+      connection.on("close", cleanup);
+      connection.on("error", cleanup);
+    });
+    takeoverPeer.on("error", cleanup);
+  } catch {
+    cleanup();
+  }
 }
 
 function roomFailureMessage(error) {
@@ -412,6 +588,16 @@ function setupPlayerConnection(connection) {
 
 function handlePlayerMessage(connection, message) {
   if (!message || typeof message !== "object") return;
+
+  if (message.type === "host-takeover" && message.instanceId !== hostInstanceId) {
+    releaseHostRoom("已由另一個新後台接管，這個後台已停止連線");
+    try {
+      connection.close();
+    } catch {
+      // The takeover connection may already be closed.
+    }
+    return;
+  }
 
   if (message.type === "display-join") {
     connection.isDisplay = true;
@@ -2399,13 +2585,24 @@ function uniquePlayerName(name, playerId) {
 function buildPlayerUrl(roomId) {
   const url = new URL("./player.html", window.location.href);
   url.searchParams.set("room", roomId);
+  url.searchParams.set("v", APP_BUILD_VERSION);
   return url.toString();
 }
 
 function buildDisplayUrl(roomId) {
   const url = new URL("./display.html", window.location.href);
   url.searchParams.set("room", roomId);
+  url.searchParams.set("v", APP_BUILD_VERSION);
   return url.toString();
+}
+
+function createSessionId() {
+  try {
+    if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  } catch {
+    // Fall back below.
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 function cleanPlayerName(name) {

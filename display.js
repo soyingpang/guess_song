@@ -1,4 +1,5 @@
 const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
+const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
@@ -24,7 +25,8 @@ const PEER_OPTIONS = {
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 
 const params = new URLSearchParams(window.location.search);
-const roomId = (params.get("room") || DEFAULT_ROOM_ID).trim();
+const storedRoomId = localStorage.getItem(ROOM_ID_KEY) || "";
+const roomId = (params.get("room") || storedRoomId || DEFAULT_ROOM_ID).trim();
 const qrRoomId = roomId;
 
 const els = {
