@@ -148,7 +148,6 @@ const state = {
   displayUrl: "",
   peer: null,
   displayConnections: new Set(),
-  remoteMicBroadcastCalls: new Map(),
   audioBroadcastSourceStream: null,
   audioBroadcastStream: null,
   audioBroadcastCalls: new Map(),
@@ -396,7 +395,7 @@ function setupPlayerConnection(connection) {
       player.connection = null;
       endPlayerMic(player.id, { closeCall: true, render: false });
       endAudioBroadcastForPlayer(player.id);
-      endRemoteMicForConnection(player.id);
+      syncAllMicBroadcastTargets();
       renderPlayers();
       syncSurfaces();
     }
@@ -434,7 +433,6 @@ function handlePlayerMessage(connection, message) {
     if (previousConnection && previousConnection !== connection) {
       endPlayerMic(player.id, { closeCall: true, render: false });
       endAudioBroadcastForPlayer(player.id);
-      endRemoteMicForConnection(player.id);
       try {
         previousConnection.close();
       } catch {
@@ -447,7 +445,7 @@ function handlePlayerMessage(connection, message) {
     publishDisplayState();
     broadcastToPlayers();
     syncAudioBroadcastToPlayer(player);
-    syncActiveMicsToRemotePlayer(player);
+    syncAllMicBroadcastTargets();
     return;
   }
 
@@ -460,6 +458,7 @@ function handlePlayerMessage(connection, message) {
 
   if (message.type === "mic-start") {
     player.micActive = true;
+    syncPlayerMicTargets(player);
     keepPlaybackRunningDuringMic();
     renderPlayers();
     publishDisplayState();
@@ -527,7 +526,7 @@ function setupPlayerMicCall(call) {
     player.micActive = true;
     keepPlaybackRunningDuringMic();
     setResult("玩家開咪", `${player.name} 正在說話，聲音由手機端播放`, "");
-    forwardPlayerMicToRemotePlayers(player);
+    syncPlayerMicTargets(player);
     renderPlayers();
     publishDisplayState();
   });
@@ -549,10 +548,12 @@ function endPlayerMic(playerId, options = {}) {
   if (!player) return;
 
   const call = player.micCall;
+  if (player.connection?.open) {
+    sendToPlayer(player, { type: "mic-targets", targets: [] });
+  }
   player.micCall = null;
   player.micStream = null;
   player.micActive = false;
-  endRemoteMicForPlayer(playerId);
 
   if (closeCall && call) {
     try {
@@ -569,91 +570,41 @@ function endPlayerMic(playerId, options = {}) {
   }
 }
 
-function syncActiveMicsToRemotePlayer(targetPlayer) {
-  Object.values(state.players).forEach((sourcePlayer) => {
-    if (sourcePlayer.micStream && sourcePlayer.micActive) forwardPlayerMicToRemotePlayer(sourcePlayer, targetPlayer);
+function syncAllMicBroadcastTargets() {
+  Object.values(state.players).forEach((player) => {
+    if (player.micActive) syncPlayerMicTargets(player);
   });
 }
 
-function forwardPlayerMicToRemotePlayers(sourcePlayer) {
-  Object.values(state.players).forEach((targetPlayer) => forwardPlayerMicToRemotePlayer(sourcePlayer, targetPlayer));
+function syncPlayerMicTargets(sourcePlayer) {
+  if (!sourcePlayer?.connection?.open || !sourcePlayer.micActive || sourcePlayer.speakerMode) return;
+
+  sendToPlayer(sourcePlayer, {
+    type: "mic-targets",
+    roomId: state.roomId,
+    targets: micBroadcastTargetsFor(sourcePlayer),
+  });
 }
 
-function forwardPlayerMicToRemotePlayer(sourcePlayer, targetPlayer) {
-  if (!shouldForwardPlayerMicToRemote(sourcePlayer, targetPlayer)) {
-    endRemoteMicForPair(sourcePlayer?.id, targetPlayer?.id);
-    return;
-  }
-
-  const key = remoteMicBroadcastKey(targetPlayer.id, sourcePlayer.id);
-  if (state.remoteMicBroadcastCalls.has(key)) return;
-
-  try {
-    const call = state.peer.call(targetPlayer.connection.peer, sourcePlayer.micStream, {
-      metadata: {
-        type: "remote-player-mic-broadcast",
-        roomId: state.roomId,
-        sourcePlayerId: sourcePlayer.id,
-        sourcePlayerName: sourcePlayer.name,
-        targetPlayerId: targetPlayer.id,
-      },
-    });
-    if (!call) return;
-
-    call.sourcePlayerId = sourcePlayer.id;
-    call.targetPlayerId = targetPlayer.id;
-    state.remoteMicBroadcastCalls.set(key, call);
-    call.on("close", () => {
-      if (state.remoteMicBroadcastCalls.get(key) === call) state.remoteMicBroadcastCalls.delete(key);
-    });
-    call.on("error", () => {
-      if (state.remoteMicBroadcastCalls.get(key) === call) state.remoteMicBroadcastCalls.delete(key);
-    });
-  } catch {
-    state.remoteMicBroadcastCalls.delete(key);
-  }
+function micBroadcastTargetsFor(sourcePlayer) {
+  return Object.values(state.players)
+    .filter((targetPlayer) => shouldReceivePlayerMic(sourcePlayer, targetPlayer))
+    .map((targetPlayer) => ({
+      playerId: targetPlayer.id,
+      peerId: targetPlayer.connection.peer,
+      name: targetPlayer.name,
+    }));
 }
 
-function shouldForwardPlayerMicToRemote(sourcePlayer, targetPlayer) {
+function shouldReceivePlayerMic(sourcePlayer, targetPlayer) {
   return Boolean(
-    state.peer &&
-      sourcePlayer?.id &&
+    sourcePlayer?.id &&
       targetPlayer?.id &&
       sourcePlayer.id !== targetPlayer.id &&
-      sourcePlayer.micStream &&
-      sourcePlayer.micActive &&
       targetPlayer.connected &&
       targetPlayer.connection?.open &&
       targetPlayer.connection?.peer
   );
-}
-
-function endRemoteMicForPlayer(sourcePlayerId) {
-  Array.from(state.remoteMicBroadcastCalls.entries()).forEach(([key, call]) => {
-    if (call.sourcePlayerId !== sourcePlayerId) return;
-    state.remoteMicBroadcastCalls.delete(key);
-    closePeerMediaCall(call);
-  });
-}
-
-function endRemoteMicForConnection(targetPlayerId) {
-  Array.from(state.remoteMicBroadcastCalls.entries()).forEach(([key, call]) => {
-    if (call.targetPlayerId !== targetPlayerId) return;
-    state.remoteMicBroadcastCalls.delete(key);
-    closePeerMediaCall(call);
-  });
-}
-
-function endRemoteMicForPair(sourcePlayerId, targetPlayerId) {
-  if (!sourcePlayerId || !targetPlayerId) return;
-  const key = remoteMicBroadcastKey(targetPlayerId, sourcePlayerId);
-  const call = state.remoteMicBroadcastCalls.get(key);
-  state.remoteMicBroadcastCalls.delete(key);
-  closePeerMediaCall(call);
-}
-
-function remoteMicBroadcastKey(targetPlayerId, sourcePlayerId) {
-  return `${targetPlayerId}:${sourcePlayerId}`;
 }
 
 function closePeerMediaCall(call) {
