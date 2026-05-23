@@ -323,6 +323,11 @@ function renderStageMic(playerId, playerName, stream) {
   audio.controls = true;
   audio.autoplay = true;
   audio.playsInline = true;
+  audio.setAttribute("playsinline", "");
+  audio.setAttribute("webkit-playsinline", "");
+  audio.defaultMuted = false;
+  audio.muted = false;
+  audio.volume = 1;
   audio.srcObject = stream;
   audio.addEventListener("play", () => {
     status.textContent = "前台播放中";

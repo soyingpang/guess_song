@@ -154,6 +154,7 @@ const state = {
   peer: null,
   displayConnections: new Set(),
   remoteMicBroadcastCalls: new Map(),
+  displayMicBroadcastCalls: new Map(),
   audioBroadcastSourceStream: null,
   audioBroadcastStream: null,
   audioBroadcastCalls: new Map(),
@@ -391,6 +392,7 @@ function setupPlayerConnection(connection) {
   connection.on("close", () => {
     if (connection.isDisplay) {
       state.displayConnections.delete(connection);
+      endDisplayMicForConnection(connection.peer);
       renderPlayers();
       return;
     }
@@ -416,6 +418,7 @@ function handlePlayerMessage(connection, message) {
     connection.isDisplay = true;
     state.displayConnections.add(connection);
     sendDisplayState(connection, buildDisplayState());
+    syncAllDisplayMicsToConnection(connection);
     renderPlayers();
     return;
   }
@@ -518,6 +521,7 @@ function setupPlayerMicCall(call) {
     player.micActive = true;
     setResult("玩家開咪", `${player.name} 正在說話，聲音由手機端播放`, "");
     syncPlayerMicTargets(player);
+    forwardPlayerMicToDisplays(player);
     renderPlayers();
     publishDisplayState();
   });
@@ -546,6 +550,7 @@ function endPlayerMic(playerId, options = {}) {
   player.micStream = null;
   player.micActive = false;
   endRemoteMicForPlayer(playerId);
+  endDisplayMicForPlayer(playerId);
 
   if (closeCall && call) {
     try {
@@ -670,6 +675,81 @@ function endRemoteMicForPair(sourcePlayerId, targetPlayerId) {
   const call = state.remoteMicBroadcastCalls.get(key);
   state.remoteMicBroadcastCalls.delete(key);
   closePeerMediaCall(call);
+}
+
+function forwardPlayerMicToDisplays(sourcePlayer) {
+  state.displayConnections.forEach((connection) => {
+    forwardPlayerMicToDisplay(sourcePlayer, connection);
+  });
+}
+
+function syncAllDisplayMicsToConnection(connection) {
+  Object.values(state.players).forEach((player) => {
+    if (player.micActive && player.micStream) forwardPlayerMicToDisplay(player, connection);
+  });
+}
+
+function forwardPlayerMicToDisplay(sourcePlayer, connection) {
+  if (!shouldForwardPlayerMicToDisplay(sourcePlayer, connection)) return;
+
+  const key = displayMicBroadcastKey(connection.peer, sourcePlayer.id);
+  if (state.displayMicBroadcastCalls.has(key)) return;
+
+  try {
+    const call = state.peer.call(connection.peer, sourcePlayer.micStream, {
+      metadata: {
+        type: "display-player-mic",
+        roomId: state.roomId,
+        playerId: sourcePlayer.id,
+        playerName: sourcePlayer.name,
+      },
+    });
+    if (!call) return;
+
+    call.displayPeer = connection.peer;
+    call.sourcePlayerId = sourcePlayer.id;
+    state.displayMicBroadcastCalls.set(key, call);
+    call.on("close", () => {
+      if (state.displayMicBroadcastCalls.get(key) === call) state.displayMicBroadcastCalls.delete(key);
+    });
+    call.on("error", () => {
+      if (state.displayMicBroadcastCalls.get(key) === call) state.displayMicBroadcastCalls.delete(key);
+    });
+  } catch {
+    state.displayMicBroadcastCalls.delete(key);
+  }
+}
+
+function shouldForwardPlayerMicToDisplay(sourcePlayer, connection) {
+  return Boolean(
+    state.peer &&
+      sourcePlayer?.id &&
+      sourcePlayer.micStream &&
+      sourcePlayer.micActive &&
+      connection?.isDisplay &&
+      connection.open &&
+      connection.peer
+  );
+}
+
+function endDisplayMicForPlayer(sourcePlayerId) {
+  Array.from(state.displayMicBroadcastCalls.entries()).forEach(([key, call]) => {
+    if (call.sourcePlayerId !== sourcePlayerId) return;
+    state.displayMicBroadcastCalls.delete(key);
+    closePeerMediaCall(call);
+  });
+}
+
+function endDisplayMicForConnection(displayPeer) {
+  Array.from(state.displayMicBroadcastCalls.entries()).forEach(([key, call]) => {
+    if (call.displayPeer !== displayPeer) return;
+    state.displayMicBroadcastCalls.delete(key);
+    closePeerMediaCall(call);
+  });
+}
+
+function displayMicBroadcastKey(displayPeer, sourcePlayerId) {
+  return `${displayPeer}:${sourcePlayerId}`;
 }
 
 function remoteMicBroadcastKey(targetPlayerId, sourcePlayerId) {
