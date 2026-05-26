@@ -336,7 +336,7 @@ async function main() {
     "",
     `- 近25年熱門新歌：${songs.length} 首`,
     `- 全部流行曲：${popAll.length} 首（80年代 50 首 + 90年代 50 首 + 近25年 ${songs.length} 首）`,
-    `- 全部歌單：${allSonglists.length} 首（教會詩歌 ${hymns.length} 首 + 流行曲 ${popAll.length} 首）`,
+    `- 全部歌單：${allSonglists.length} 首（詩歌 ${hymns.length} 首 + 流行曲 ${popAll.length} 首）`,
     `- YouTube 自動配對成功：${matches.length} 首`,
     `- 未能配對：${misses.length} 首`,
     "",

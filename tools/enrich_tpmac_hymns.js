@@ -269,7 +269,7 @@ function buildSong(row, match, index) {
     videoId: match.videoId,
     start: 0,
     duration: 60,
-    category: "教會詩歌",
+    category: "詩歌",
     source: `${match.channel || "YouTube"} / YouTube`,
     hint: `TPMAC 近5年程序表出現 ${row.count} 次；YouTube：${match.youtubeTitle}`,
     number: `HYMN-${String(index).padStart(3, "0")}`,
@@ -289,8 +289,8 @@ function shouldTry(row, existingTitleKeys) {
 async function main() {
   const summary = parseSummaryCsv(fs.readFileSync(SUMMARY_PATH, "utf8"));
   const allSongs = JSON.parse(fs.readFileSync(ALL_SONGLISTS_PATH, "utf8"));
-  const currentHymns = allSongs.filter((song) => song.category === "教會詩歌");
-  const otherSongs = allSongs.filter((song) => song.category !== "教會詩歌");
+  const currentHymns = allSongs.filter((song) => song.category === "詩歌" || song.category === "教會詩歌");
+  const otherSongs = allSongs.filter((song) => song.category !== "詩歌" && song.category !== "教會詩歌");
   const existingTitleKeys = new Set(currentHymns.map((song) => normalizeTitle(song.title)));
   const usedVideoIds = new Set(allSongs.map((song) => song.videoId).filter(Boolean));
 

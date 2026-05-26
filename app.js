@@ -1,4 +1,4 @@
-const STORAGE_KEY = "guess-song-library-v8";
+const STORAGE_KEY = "guess-song-library-v9";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const DEFAULT_CLOUD_LIBRARY_ID = "allSonglists";
 const CLOUD_LIBRARY_OPTIONS = [
@@ -10,9 +10,9 @@ const CLOUD_LIBRARY_OPTIONS = [
   },
   {
     id: "hymns",
-    label: "教會詩歌",
+    label: "詩歌",
     url: "./hymns.json",
-    loadedMessage: "已載入教會詩歌",
+    loadedMessage: "已載入詩歌",
   },
   {
     id: "recentPop25",

@@ -12,7 +12,7 @@ const REPORT_PATH = `docs/YOUTUBE_VIEW_FILTER_${RUN_DATE}.md`;
 const CSV_PATH = `docs/YOUTUBE_VIEW_FILTER_${RUN_DATE}.csv`;
 
 const SOURCE_LISTS = [
-  { name: "都會詩歌", path: "hymns.json" },
+  { name: "詩歌", path: "hymns.json" },
   { name: "80s 歌單", path: "songlists/pop-80s.json" },
   { name: "90s 歌單", path: "songlists/pop-90s.json" },
   { name: "最近25年熱門新歌", path: "songlists/pop-recent-25.json" },

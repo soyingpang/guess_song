@@ -335,9 +335,9 @@ function buildSong(candidate, match, index) {
     videoId: match.videoId,
     start: 0,
     duration: 60,
-    category: "教會詩歌",
+    category: "詩歌",
     source: `${match.channel || "YouTube"} / YouTube`,
-    hint: `熱門華人教會詩歌；參考來源：${candidate.artist}；YouTube：${match.youtubeTitle}`,
+    hint: `熱門華人詩歌；參考來源：${candidate.artist}；YouTube：${match.youtubeTitle}`,
     number: `HYMN-${String(index).padStart(3, "0")}`,
     language: "中文",
   };
@@ -406,12 +406,12 @@ async function main() {
   fs.writeFileSync(MATCHES_PATH, `${csvRows.map((row) => row.map(csvEscape).join(",")).join("\n")}\n`);
 
   const report = [
-    "# 熱門教會詩歌補充 - 2026-05-23",
+    "# 熱門詩歌補充 - 2026-05-23",
     "",
     "## 摘要",
     "",
-    `- 新增熱門教會詩歌：${additions.length} 首`,
-    `- 教會詩歌總數：${nextHymns.length} 首`,
+    `- 新增熱門詩歌：${additions.length} 首`,
+    `- 詩歌總數：${nextHymns.length} 首`,
     `- 全部歌單總數：${nextHymns.length + popAll.length} 首`,
     `- 候選中已存在而略過：${skipped.length} 首`,
     `- 未能自動配對：${misses.length} 首`,
