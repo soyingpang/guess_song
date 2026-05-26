@@ -3,10 +3,12 @@ const fs = require("fs");
 const RUN_DATE = process.env.BULK_SONGLIST_DATE || "2026-05-26";
 const TARGET_PER_LIST = Number(process.env.BULK_TARGET_PER_LIST || 500);
 const MIN_VIEWS = Number(process.env.MIN_YOUTUBE_VIEWS || 3000);
+const MIN_ADDED_VIEWS = Number(process.env.MIN_ADDED_YOUTUBE_VIEWS || MIN_VIEWS);
 const SEARCH_LIMIT_PER_QUERY = Number(process.env.BULK_SEARCH_LIMIT || 24);
 const MAX_FETCHES_PER_LIST = Number(process.env.BULK_MAX_FETCHES_PER_LIST || 1800);
 const QUERY_DELAY_MS = Number(process.env.BULK_QUERY_DELAY_MS || 120);
 const PLAYER_DELAY_MS = Number(process.env.BULK_PLAYER_DELAY_MS || 40);
+const GOLDEN_ONLY = process.env.BULK_GOLDEN_ONLY === "1";
 const DRY_RUN = process.env.DRY_RUN === "1";
 
 const HYMNS_PATH = "hymns.json";
@@ -16,6 +18,172 @@ const SEARCH_CACHE_PATH = `.cache/bulk-pop-searches-${RUN_DATE}.json`;
 const VIDEO_CACHE_PATH = `.cache/youtubei-video-metadata-${RUN_DATE}.json`;
 const REPORT_PATH = `docs/BULK_POP_ADDITIONS_${RUN_DATE}.md`;
 const CSV_PATH = `docs/BULK_POP_ADDITIONS_${RUN_DATE}.csv`;
+
+const TAIWAN_80S_GOLDEN_QUERIES = [
+  "鄧麗君 我只在乎你 官方",
+  "鄧麗君 月亮代表我的心 官方",
+  "鄧麗君 甜蜜蜜 官方",
+  "鄧麗君 小城故事 官方",
+  "鳳飛飛 追夢人 官方",
+  "鳳飛飛 掌聲響起 官方",
+  "鳳飛飛 流水年華 官方",
+  "蔡琴 你的眼神 官方",
+  "蔡琴 被遺忘的時光 官方",
+  "蔡琴 恰似你的溫柔 官方",
+  "蘇芮 酒干倘賣無 官方",
+  "蘇芮 一樣的月光 官方",
+  "蘇芮 是否 官方",
+  "羅大佑 童年 官方",
+  "羅大佑 鹿港小鎮 官方",
+  "羅大佑 光陰的故事 官方",
+  "李宗盛 凡人歌 官方",
+  "李宗盛 鬼迷心竅 官方",
+  "李宗盛 漂洋過海來看你 官方",
+  "齊秦 大約在冬季 官方",
+  "齊秦 外面的世界 官方",
+  "齊秦 狼 官方",
+  "齊豫 橄欖樹 官方",
+  "齊豫 歡顏 官方",
+  "潘越雲 天天天藍 官方",
+  "潘越雲 桂花巷 官方",
+  "陳淑樺 夢醒時分 官方",
+  "陳淑樺 滾滾紅塵 官方",
+  "張清芳 激情過後 官方",
+  "姜育恆 驛動的心 官方",
+  "王芷蕾 台北的天空 官方",
+  "黃鶯鶯 哭砂 官方",
+  "童安格 其實你不懂我的心 官方",
+  "費玉清 一剪梅 官方",
+  "費玉清 夢駝鈴 官方",
+  "費翔 冬天里的一把火 官方",
+  "高勝美 千年等一回 官方",
+  "李建復 龍的傳人 官方",
+  "費玉清 晚安曲 官方",
+  "林慧萍 走在陽光裡 官方",
+  "林慧萍 倩影 官方",
+  "林慧萍 往昔 官方",
+  "葉璦菱 因為所以 官方",
+  "王夢麟 阿美阿美 官方",
+  "文章 三百六十五里路 官方",
+  "陳淑樺 問 官方",
+  "陳淑樺 聰明糊塗心 官方",
+  "張清芳 大雨的夜裡 官方",
+  "姜育恆 跟往事乾杯 官方",
+  "趙傳 我很醜可是我很溫柔 官方",
+  "趙傳 我終於失去了你 官方",
+];
+
+const TAIWAN_90S_GOLDEN_QUERIES = [
+  "張雨生 大海 官方",
+  "張雨生 我的未來不是夢 官方",
+  "張雨生 口是心非 官方",
+  "張惠妹 聽海 官方",
+  "張惠妹 剪愛 官方",
+  "張惠妹 原來你什麼都不要 官方",
+  "伍佰 浪人情歌 官方",
+  "伍佰 挪威的森林 官方",
+  "伍佰 愛你一萬年 官方",
+  "張信哲 愛如潮水 官方",
+  "張信哲 過火 官方",
+  "張信哲 太想愛你 官方",
+  "任賢齊 心太軟 官方",
+  "任賢齊 傷心太平洋 官方",
+  "任賢齊 對面的女孩看過來 官方",
+  "周華健 朋友 官方",
+  "周華健 花心 官方",
+  "張宇 月亮惹的禍 官方",
+  "張宇 用心良苦 官方",
+  "張宇 曲終人散 官方",
+  "林志炫 單身情歌 官方",
+  "優客李林 認錯 官方",
+  "動力火車 當 官方",
+  "動力火車 無情的情書 官方",
+  "李玟 Di Da Di 官方",
+  "李玟 月光愛人 官方",
+  "辛曉琪 領悟 官方",
+  "萬芳 新不了情 官方",
+  "蘇慧倫 檸檬樹 官方",
+  "孟庭葦 你看你看月亮的臉 官方",
+  "趙詠華 最浪漫的事 官方",
+  "李翊君 雨蝶 官方",
+  "高勝美 千年等一回 官方",
+  "張震嶽 愛我別走 官方",
+  "張震嶽 思念是一種病 官方",
+  "林志炫 蒙娜麗莎的眼淚 官方",
+  "林志炫 沒離開過 官方",
+  "孟庭葦 冬季到台北來看雨 官方",
+  "孟庭葦 風中有朵雨做的雲 官方",
+  "趙詠華 求婚 官方",
+  "蘇慧倫 鴨子 官方",
+  "黃舒駿 戀愛症候群 官方",
+  "張洪量 廣島之戀 官方",
+  "高明駿 我悄悄蒙上你的眼睛 官方",
+  "李翊君 萍聚 官方",
+  "李翊君 諾言 官方",
+  "范曉萱 眼淚 官方",
+  "范曉萱 雪人 官方",
+];
+
+const RECENT_TAIWAN_ZHOU_GOLDEN_QUERIES = [
+  "周杰倫 晴天 官方 MV",
+  "周杰倫 稻香 官方 MV",
+  "周杰倫 青花瓷 官方 MV",
+  "周杰倫 七里香 官方 MV",
+  "周杰倫 愛在西元前 官方 MV",
+  "五月天 知足 官方 MV",
+  "五月天 倔強 官方 MV",
+  "五月天 溫柔 官方 MV",
+  "五月天 突然好想你 官方 MV",
+  "五月天 乾杯 官方 MV",
+  "蔡依林 日不落 官方 MV",
+  "蔡依林 倒帶 官方 MV",
+  "蔡依林 說愛你 官方 MV",
+  "蔡依林 舞孃 官方 MV",
+  "張惠妹 如果你也聽說 官方 MV",
+  "張惠妹 連名帶姓 官方 MV",
+  "S.H.E 戀人未滿 官方 MV",
+  "S.H.E Super Star 官方 MV",
+  "S.H.E 你曾是少年 官方 MV",
+  "田馥甄 小幸運 官方 MV",
+  "田馥甄 寂寞寂寞就好 官方 MV",
+  "王心凌 愛你 官方 MV",
+  "王心凌 第一次愛的人 官方 MV",
+  "王心凌 睫毛彎彎 官方 MV",
+  "楊丞琳 雨愛 官方 MV",
+  "楊丞琳 曖昧 官方 MV",
+  "梁靜茹 勇氣 官方 MV",
+  "梁靜茹 分手快樂 官方 MV",
+  "梁靜茹 可惜不是你 官方 MV",
+  "劉若英 後來 官方 MV",
+  "劉若英 很愛很愛你 官方 MV",
+  "孫燕姿 遇見 官方 MV",
+  "孫燕姿 天黑黑 官方 MV",
+  "王力宏 唯一 官方 MV",
+  "王力宏 大城小愛 官方 MV",
+  "陶喆 愛很簡單 官方 MV",
+  "陶喆 就是愛你 官方 MV",
+  "林宥嘉 兜圈 官方 MV",
+  "韋禮安 如果可以 官方 MV",
+  "告五人 愛人錯過 官方 MV",
+  "告五人 披星戴月的想你 官方 MV",
+  "茄子蛋 浪子回頭 官方 MV",
+  "八三夭 想見你想見你想見你 官方 MV",
+  "蕭敬騰 王妃 官方 MV",
+  "周深 大魚 官方 MV",
+  "周深 光亮 官方 MV",
+  "周深 若夢 官方 MV",
+  "周深 起風了 官方 MV",
+  "周深 化身孤島的鯨 官方 MV",
+  "周深 達拉崩吧 官方 MV",
+  "周深 花開忘憂 官方 MV",
+  "周深 小美滿 官方 MV",
+  "周深 望 官方 MV",
+  "周深 花西子 官方 MV",
+  "周深 生活總該迎著光亮 官方 MV",
+  "周深 繁花依舊 官方 MV",
+  "周深 如願 官方 MV",
+  "周深 只字不提 官方 MV",
+];
 
 const LISTS = [
   {
@@ -34,6 +202,7 @@ const LISTS = [
       "台灣 校園民歌 80年代 官方",
       "1980s Cantopop official mv",
     ],
+    goldenQueries: TAIWAN_80S_GOLDEN_QUERIES,
     artists: [
       "張國榮",
       "譚詠麟",
@@ -89,6 +258,9 @@ const LISTS = [
       "趙傳",
       "小虎隊",
       "王傑",
+      "費玉清",
+      "費翔",
+      "高勝美",
     ],
   },
   {
@@ -107,6 +279,7 @@ const LISTS = [
       "台灣 90年代 華語金曲 官方 MV",
       "1990s Cantopop official mv",
     ],
+    goldenQueries: TAIWAN_90S_GOLDEN_QUERIES,
     artists: [
       "張學友",
       "劉德華",
@@ -165,6 +338,12 @@ const LISTS = [
       "五月天",
       "陶晶瑩",
       "游鴻明",
+      "林志炫",
+      "孟庭葦",
+      "趙詠華",
+      "李翊君",
+      "費玉清",
+      "高勝美",
     ],
   },
   {
@@ -185,6 +364,7 @@ const LISTS = [
       "2020年代 台灣 華語 流行曲 Official MV",
       "台灣 華語 金曲 官方 MV 熱門",
     ],
+    goldenQueries: RECENT_TAIWAN_ZHOU_GOLDEN_QUERIES,
     artists: [
       "陳奕迅",
       "容祖兒",
@@ -261,6 +441,10 @@ const LISTS = [
       "吳青峰",
       "蘇打綠",
       "家家",
+      "劉若英",
+      "梁靜茹",
+      "王力宏",
+      "陶喆",
       "王心凌",
       "蕭亞軒",
       "羅志祥",
@@ -283,6 +467,8 @@ const LISTS = [
       "高爾宣",
       "Karencici",
       "TRASH",
+      "周深",
+      "周琛",
     ],
   },
 ];
@@ -394,6 +580,25 @@ function normalize(value) {
     .normalize("NFKC")
     .replace(/[袮你]/g, "祢")
     .replace(/[臺台]/g, "台")
+    .replace(/[梦]/g, "夢")
+    .replace(/[时]/g, "時")
+    .replace(/[听]/g, "聽")
+    .replace(/[见]/g, "見")
+    .replace(/[爱]/g, "愛")
+    .replace(/[过]/g, "過")
+    .replace(/[风]/g, "風")
+    .replace(/[龙]/g, "龍")
+    .replace(/[传]/g, "傳")
+    .replace(/[从]/g, "從")
+    .replace(/[还]/g, "還")
+    .replace(/[对]/g, "對")
+    .replace(/[开]/g, "開")
+    .replace(/[里]/g, "裡")
+    .replace(/[为]/g, "為")
+    .replace(/[伤]/g, "傷")
+    .replace(/[泪]/g, "淚")
+    .replace(/[欢]/g, "歡")
+    .replace(/[翦]/g, "剪")
     .replace(/[^\p{Letter}\p{Number}]/gu, "")
     .toLowerCase();
 }
@@ -736,7 +941,8 @@ function renumberRows(rows, prefix) {
 }
 
 function buildQueries(list) {
-  const queries = [...list.genericQueries];
+  if (GOLDEN_ONLY) return [...new Set(list.goldenQueries || [])];
+  const queries = [...list.genericQueries, ...(list.goldenQueries || [])];
   for (const artist of list.artists) {
     queries.push(`${artist} 官方 MV`);
     queries.push(`${artist} Official MV`);
@@ -747,6 +953,40 @@ function buildQueries(list) {
     }
   }
   return [...new Set(queries)];
+}
+
+function goldenQueryTitle(query, list) {
+  let value = String(query || "")
+    .replace(/\bOfficial\b/gi, "")
+    .replace(/\bMV\b/gi, "")
+    .replace(/官方|歌詞|歌词|金曲/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const artists = [...list.artists].sort((a, b) => b.length - a.length);
+  let removedArtist = false;
+  for (const artist of artists) {
+    if (value.startsWith(artist)) {
+      value = value.slice(artist.length).trim();
+      removedArtist = true;
+      break;
+    }
+  }
+  if (!removedArtist) {
+    const parts = value.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) value = parts.slice(1).join(" ");
+  }
+  return value.trim();
+}
+
+function matchesGoldenQuery(query, list, title, video) {
+  if (!GOLDEN_ONLY) return true;
+  const target = goldenQueryTitle(query, list);
+  if (!target) return true;
+  const targetKey = normalize(target);
+  const titleKey = normalize(title);
+  const rawKey = normalize(`${video.rawTitle || ""} ${video.youtubeTitle || ""}`);
+  if (!targetKey || !titleKey || titleKey.length < 3) return false;
+  return titleKey.includes(targetKey) || targetKey.includes(titleKey) || rawKey.includes(targetKey);
 }
 
 function candidateScore(candidate) {
@@ -825,10 +1065,16 @@ async function expandList(list, globalVideoIds, reportRows) {
       for (const video of videos) {
         if (globalVideoIds.has(video.videoId)) continue;
         const artists = list.artists.filter((artist) => query.includes(artist));
-        const title = cleanTitle(video.rawTitle, artists);
+        const goldenTitle = GOLDEN_ONLY ? goldenQueryTitle(query, list) : "";
+        const title = goldenTitle || cleanTitle(video.rawTitle, artists);
         const reason = rejectReason(video, title, artists);
+        const queryMatched = matchesGoldenQuery(query, list, title, video);
         if (reason) {
           reportRows.push({ list: list.category, status: "skipped", reason, title, videoId: video.videoId, views: video.searchViews, channel: video.channel, youtubeTitle: video.rawTitle });
+          continue;
+        }
+        if (!queryMatched) {
+          reportRows.push({ list: list.category, status: "skipped", reason: "golden-query-mismatch", title, videoId: video.videoId, views: video.searchViews, channel: video.channel, youtubeTitle: video.rawTitle });
           continue;
         }
         const titleKey = normalize(title);
@@ -868,11 +1114,13 @@ async function expandList(list, globalVideoIds, reportRows) {
       continue;
     }
 
-    const refinedTitle = cleanTitle(metadata.youtubeTitle || candidate.rawTitle, [candidate.artist].filter(Boolean));
+    const goldenTitle = GOLDEN_ONLY ? goldenQueryTitle(candidate.query, list) : "";
+    const refinedTitle = goldenTitle || cleanTitle(metadata.youtubeTitle || candidate.rawTitle, [candidate.artist].filter(Boolean));
     const reason = rejectReason({ ...candidate, ...metadata, rawTitle: metadata.youtubeTitle || candidate.rawTitle }, refinedTitle, [candidate.artist].filter(Boolean));
+    const queryMatched = matchesGoldenQuery(candidate.query, list, refinedTitle, { ...candidate, ...metadata, rawTitle: metadata.youtubeTitle || candidate.rawTitle });
     const viewCount = Number(metadata.viewCount || 0);
-    if (reason || viewCount < MIN_VIEWS) {
-      reportRows.push({ list: list.category, status: "skipped", reason: reason || `views<${MIN_VIEWS}`, title: refinedTitle || candidate.title, videoId: candidate.videoId, views: viewCount, channel: metadata.channel || candidate.channel, youtubeTitle: metadata.youtubeTitle || candidate.rawTitle });
+    if (reason || !queryMatched || viewCount < MIN_ADDED_VIEWS) {
+      reportRows.push({ list: list.category, status: "skipped", reason: reason || (!queryMatched ? "golden-query-mismatch" : `views<${MIN_ADDED_VIEWS}`), title: refinedTitle || candidate.title, videoId: candidate.videoId, views: viewCount, channel: metadata.channel || candidate.channel, youtubeTitle: metadata.youtubeTitle || candidate.rawTitle });
       continue;
     }
 
@@ -934,7 +1182,7 @@ function writeReport(reportRows, summary) {
   const lines = [
     `# Bulk Pop Additions (${RUN_DATE})`,
     "",
-    `目標：每個主要歌單至少 ${TARGET_PER_LIST} 首；新增歌曲需有 YouTube 瀏覽量 >= ${MIN_VIEWS.toLocaleString("en-US")}。`,
+    `目標：每個主要歌單至少 ${TARGET_PER_LIST} 首；新增歌曲需有 YouTube 瀏覽量 >= ${MIN_ADDED_VIEWS.toLocaleString("en-US")}；既有歌曲保留最低門檻 ${MIN_VIEWS.toLocaleString("en-US")}。`,
     "",
     "## Summary",
     "",
