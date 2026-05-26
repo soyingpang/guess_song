@@ -1,4 +1,4 @@
-const STORAGE_KEY = "guess-song-library-v9";
+const STORAGE_KEY = "guess-song-library-v10";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const DEFAULT_CLOUD_LIBRARY_ID = "allSonglists";
 const CLOUD_LIBRARY_OPTIONS = [
@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "vpn-onsite-1";
+const APP_BUILD_VERSION = "onsite-songlists-650";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
