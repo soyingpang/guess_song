@@ -66,7 +66,6 @@ const CANDIDATES = [
   { title: "天父的花園", artist: "讚美之泉 Stream of Praise" },
   { title: "主的喜樂是我力量", artist: "讚美之泉 Stream of Praise" },
   { title: "祢是配得", artist: "讚美之泉 Stream of Praise" },
-  { title: "尊貴全能神", artist: "讚美之泉 Stream of Praise" },
   { title: "我心屬於祢", artist: "讚美之泉 Stream of Praise" },
   { title: "永遠尊貴", artist: "讚美之泉 Stream of Praise" },
   { title: "我要唱耶和華的大慈愛", artist: "讚美之泉 Stream of Praise" },

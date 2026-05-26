@@ -5478,22 +5478,6 @@
     "viewCheckedAt": "2026-05-26"
   },
   {
-    "title": "羞辱",
-    "aliases": [
-      "香江望神州"
-    ],
-    "videoId": "85KsHshWfnc",
-    "start": 0,
-    "duration": 60,
-    "category": "詩歌",
-    "source": "香江望神州 / YouTube",
-    "hint": "50,000+ 粵語詩歌；來源：建道神學院新祢呈 官方歌詞版MV；YouTube：習近平訪港時當著高官面拒絕握手「羞辱」梁振英？",
-    "number": "HYMN-353",
-    "language": "國語",
-    "viewCount": 3085137,
-    "viewCheckedAt": "2026-05-26"
-  },
-  {
     "title": "十字架、十字架",
     "aliases": [
       "ChicagoCCC"
@@ -5504,7 +5488,7 @@
     "category": "詩歌",
     "source": "ChicagoCCC / YouTube",
     "hint": "50,000+ 粵語詩歌；來源：十架的冠冕 徐偉賢；YouTube：十字架、十字架 Near The Cross",
-    "number": "HYMN-354",
+    "number": "HYMN-353",
     "language": "國語",
     "viewCount": 700679,
     "viewCheckedAt": "2026-05-26"
@@ -5520,7 +5504,7 @@
     "category": "詩歌",
     "source": "敬拜計劃 Worship Project / YouTube",
     "hint": "50,000+ 粵語詩歌；來源：HKACM Official 詩歌；YouTube：【仍能讚美】Still I Will Praise | Official Music Video",
-    "number": "HYMN-355",
+    "number": "HYMN-354",
     "language": "國語",
     "viewCount": 608301,
     "viewCheckedAt": "2026-05-26"
@@ -5534,7 +5518,7 @@
     "category": "詩歌",
     "source": "新心音樂事工 New Heart Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 7 次；YouTube：你真偉大",
-    "number": "HYMN-356",
+    "number": "HYMN-355",
     "language": "國語",
     "viewCount": 67659,
     "viewCheckedAt": "2026-05-26"
@@ -5548,7 +5532,7 @@
     "category": "詩歌",
     "source": "生命河靈糧堂 / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：成為神蹟的器皿",
-    "number": "HYMN-357",
+    "number": "HYMN-356",
     "language": "國語",
     "viewCount": 111143,
     "viewCheckedAt": "2026-05-26"
@@ -5562,7 +5546,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 6 次；YouTube：【榮耀的呼召 Glorious Calling】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20)",
-    "number": "HYMN-358",
+    "number": "HYMN-357",
     "language": "國語",
     "viewCount": 1112792,
     "viewCheckedAt": "2026-05-26"
@@ -5576,7 +5560,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 5 次；YouTube：【阿爸天父 Abba Father】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (13)",
-    "number": "HYMN-359",
+    "number": "HYMN-358",
     "language": "國語",
     "viewCount": 1270920,
     "viewCheckedAt": "2026-05-26"
@@ -5590,7 +5574,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【何等恩典 How Could It Be】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14)",
-    "number": "HYMN-360",
+    "number": "HYMN-359",
     "language": "國語",
     "viewCount": 4920087,
     "viewCheckedAt": "2026-05-26"
@@ -5604,7 +5588,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【從這代到那代 From Now till Evermore】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19)",
-    "number": "HYMN-361",
+    "number": "HYMN-360",
     "language": "國語",
     "viewCount": 895164,
     "viewCheckedAt": "2026-05-26"
@@ -5618,7 +5602,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【恩典之路 The Path of Grace】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14)",
-    "number": "HYMN-362",
+    "number": "HYMN-361",
     "language": "國語",
     "viewCount": 1561318,
     "viewCheckedAt": "2026-05-26"
@@ -5632,7 +5616,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【愛中相遇 See You Face to Face】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19)",
-    "number": "HYMN-363",
+    "number": "HYMN-362",
     "language": "國語",
     "viewCount": 1337969,
     "viewCheckedAt": "2026-05-26"
@@ -5646,7 +5630,7 @@
     "category": "詩歌",
     "source": "天韻合唱團 Heavenly Melody / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【主愛有多少】動態歌詞版＊＊祢是我一切 ( 天韻與聖詩的頌讚 ) 天韻合唱團 Official MV",
-    "number": "HYMN-364",
+    "number": "HYMN-363",
     "language": "國語",
     "viewCount": 53809,
     "viewCheckedAt": "2026-05-26"
@@ -5660,7 +5644,7 @@
     "category": "詩歌",
     "source": "GOOD TV DAILY / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：天堂敬拜~獻上活祭（單曲）",
-    "number": "HYMN-365",
+    "number": "HYMN-364",
     "language": "國語",
     "viewCount": 67123,
     "viewCheckedAt": "2026-05-26"
@@ -5674,7 +5658,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：【耶穌 耶穌 Jesus, Jesus】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (10)",
-    "number": "HYMN-366",
+    "number": "HYMN-365",
     "language": "國語",
     "viewCount": 515666,
     "viewCheckedAt": "2026-05-26"
@@ -5688,7 +5672,7 @@
     "category": "詩歌",
     "source": "Vivian Huang / YouTube",
     "hint": "TPMAC 近5年程序表出現 4 次；YouTube：願你的話",
-    "number": "HYMN-367",
+    "number": "HYMN-366",
     "language": "國語",
     "viewCount": 477714,
     "viewCheckedAt": "2026-05-26"
@@ -5702,7 +5686,7 @@
     "category": "詩歌",
     "source": "9234 san / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：唯有耶穌",
-    "number": "HYMN-368",
+    "number": "HYMN-367",
     "language": "國語",
     "viewCount": 316045,
     "viewCheckedAt": "2026-05-26"
@@ -5716,7 +5700,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：在你手中",
-    "number": "HYMN-369",
+    "number": "HYMN-368",
     "language": "國語",
     "viewCount": 126237,
     "viewCheckedAt": "2026-05-26"
@@ -5730,7 +5714,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【寶貴十架 Precious Cross】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11P)",
-    "number": "HYMN-370",
+    "number": "HYMN-369",
     "language": "國語",
     "viewCount": 5699828,
     "viewCheckedAt": "2026-05-26"
@@ -5744,7 +5728,7 @@
     "category": "詩歌",
     "source": "iTabernacle.net會幕文化 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【詩歌】愛就是",
-    "number": "HYMN-371",
+    "number": "HYMN-370",
     "language": "國語",
     "viewCount": 50508,
     "viewCheckedAt": "2026-05-26"
@@ -5758,7 +5742,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【愛祢，是我一生的呼召 I Live My Life To Love You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "HYMN-372",
+    "number": "HYMN-371",
     "language": "國語",
     "viewCount": 539767,
     "viewCheckedAt": "2026-05-26"
@@ -5772,7 +5756,7 @@
     "category": "詩歌",
     "source": "ekmanson / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：純·敬拜隊：真光普照",
-    "number": "HYMN-373",
+    "number": "HYMN-372",
     "language": "國語",
     "viewCount": 78880,
     "viewCheckedAt": "2026-05-26"
@@ -5786,7 +5770,7 @@
     "category": "詩歌",
     "source": "活水囝仔 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：【 耶穌愛我 Jesus Loves Me】- 活水囝仔兒童敬拜舞蹈",
-    "number": "HYMN-374",
+    "number": "HYMN-373",
     "language": "國語",
     "viewCount": 252359,
     "viewCheckedAt": "2026-05-26"
@@ -5800,7 +5784,7 @@
     "category": "詩歌",
     "source": "joehuang90 / YouTube",
     "hint": "TPMAC 近5年程序表出現 3 次；YouTube：陪我走過春夏秋冬-小羊詩歌(一粒麥子)",
-    "number": "HYMN-375",
+    "number": "HYMN-374",
     "language": "國語",
     "viewCount": 8935415,
     "viewCheckedAt": "2026-05-26"
@@ -5814,7 +5798,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【一生敬拜祢 All the Days of My Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (22)",
-    "number": "HYMN-376",
+    "number": "HYMN-375",
     "language": "國語",
     "viewCount": 1704745,
     "viewCheckedAt": "2026-05-26"
@@ -5828,7 +5812,7 @@
     "category": "詩歌",
     "source": "Mii / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：願你崇高－天韻詩歌",
-    "number": "HYMN-377",
+    "number": "HYMN-376",
     "language": "國語",
     "viewCount": 174949,
     "viewCheckedAt": "2026-05-26"
@@ -5842,7 +5826,7 @@
     "category": "詩歌",
     "source": "GraceSong79 / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：人算甚麼",
-    "number": "HYMN-378",
+    "number": "HYMN-377",
     "language": "國語",
     "viewCount": 292633,
     "viewCheckedAt": "2026-05-26"
@@ -5856,7 +5840,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【住在祢裡面 Abiding in You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (16)",
-    "number": "HYMN-379",
+    "number": "HYMN-378",
     "language": "國語",
     "viewCount": 1015698,
     "viewCheckedAt": "2026-05-26"
@@ -5870,7 +5854,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【勇敢走出去 Stepping Out】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12P)",
-    "number": "HYMN-380",
+    "number": "HYMN-379",
     "language": "國語",
     "viewCount": 837966,
     "viewCheckedAt": "2026-05-26"
@@ -5884,7 +5868,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【復興聖潔 Revive Holiness】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (7)",
-    "number": "HYMN-381",
+    "number": "HYMN-380",
     "language": "國語",
     "viewCount": 897288,
     "viewCheckedAt": "2026-05-26"
@@ -5898,7 +5882,7 @@
     "category": "詩歌",
     "source": "Rick詩歌庫 / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：我需要有祢在我生命中 - 有情天",
-    "number": "HYMN-382",
+    "number": "HYMN-381",
     "language": "國語",
     "viewCount": 975779,
     "viewCheckedAt": "2026-05-26"
@@ -5912,7 +5896,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【十架的愛 Great Is Your Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17)",
-    "number": "HYMN-383",
+    "number": "HYMN-382",
     "language": "國語",
     "viewCount": 9079684,
     "viewCheckedAt": "2026-05-26"
@@ -5926,7 +5910,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【在至高之處 In the Highest】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (21)",
-    "number": "HYMN-384",
+    "number": "HYMN-383",
     "language": "國語",
     "viewCount": 661910,
     "viewCheckedAt": "2026-05-26"
@@ -5940,7 +5924,7 @@
     "category": "詩歌",
     "source": "Y H / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：基督是主詩歌   若",
-    "number": "HYMN-385",
+    "number": "HYMN-384",
     "language": "國語",
     "viewCount": 60145,
     "viewCheckedAt": "2026-05-26"
@@ -5954,7 +5938,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【我全然獻上 This Is My Offering】現場敬拜MV (Worship MV) - 讚美之泉敬拜讚美 (28)",
-    "number": "HYMN-386",
+    "number": "HYMN-385",
     "language": "國語",
     "viewCount": 1351665,
     "viewCheckedAt": "2026-05-26"
@@ -5968,7 +5952,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【我的生命獻給祢 I Will Offer You My Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (26)",
-    "number": "HYMN-387",
+    "number": "HYMN-386",
     "language": "國語",
     "viewCount": 4126149,
     "viewCheckedAt": "2026-05-26"
@@ -5982,7 +5966,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【讚美之泉 feat. 柳子駿牧師】我要一心稱謝祢｜ 讚美之泉",
-    "number": "HYMN-388",
+    "number": "HYMN-387",
     "language": "國語",
     "viewCount": 473677,
     "viewCheckedAt": "2026-05-26"
@@ -5996,7 +5980,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【救贖的恩典 The Grace of Redemption】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17)",
-    "number": "HYMN-389",
+    "number": "HYMN-388",
     "language": "國語",
     "viewCount": 1964185,
     "viewCheckedAt": "2026-05-26"
@@ -6010,7 +5994,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【新耶路撒冷 New Jerusalem】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (17)",
-    "number": "HYMN-390",
+    "number": "HYMN-389",
     "language": "國語",
     "viewCount": 1479884,
     "viewCheckedAt": "2026-05-26"
@@ -6024,7 +6008,7 @@
     "category": "詩歌",
     "source": "天韻合唱團 Heavenly Melody / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【普世歡騰組曲】天韻合唱團 Official MV",
-    "number": "HYMN-391",
+    "number": "HYMN-390",
     "language": "國語",
     "viewCount": 760684,
     "viewCheckedAt": "2026-05-26"
@@ -6038,7 +6022,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【最大的福分 The Blessing】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (26)",
-    "number": "HYMN-392",
+    "number": "HYMN-391",
     "language": "國語",
     "viewCount": 344767,
     "viewCheckedAt": "2026-05-26"
@@ -6052,7 +6036,7 @@
     "category": "詩歌",
     "source": "天韻合唱團 Heavenly Melody / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【有福的國 】天韻合唱團 Official MV",
-    "number": "HYMN-393",
+    "number": "HYMN-392",
     "language": "國語",
     "viewCount": 98402,
     "viewCheckedAt": "2026-05-26"
@@ -6066,7 +6050,7 @@
     "category": "詩歌",
     "source": "Grace Music / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：榮耀歸於真神 To God Be the Glory",
-    "number": "HYMN-394",
+    "number": "HYMN-393",
     "language": "國語",
     "viewCount": 148326,
     "viewCheckedAt": "2026-05-26"
@@ -6080,7 +6064,7 @@
     "category": "詩歌",
     "source": "開路者視頻 Kairos Media / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：如鹿切慕溪水 As The Deer",
-    "number": "HYMN-395",
+    "number": "HYMN-394",
     "language": "國語",
     "viewCount": 820669,
     "viewCheckedAt": "2026-05-26"
@@ -6094,7 +6078,7 @@
     "category": "詩歌",
     "source": "天韻合唱團 Heavenly Melody / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【對我說話-字幕版MV】天韻合唱團Official MV",
-    "number": "HYMN-396",
+    "number": "HYMN-395",
     "language": "國語",
     "viewCount": 155055,
     "viewCheckedAt": "2026-05-26"
@@ -6108,7 +6092,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【我們呼求 We Cry Out】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A)",
-    "number": "HYMN-397",
+    "number": "HYMN-396",
     "language": "國語",
     "viewCount": 12398725,
     "viewCheckedAt": "2026-05-26"
@@ -6122,7 +6106,7 @@
     "category": "詩歌",
     "source": "水流之音聖樂團SOLSO / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：11 耶和華是我的牧者",
-    "number": "HYMN-398",
+    "number": "HYMN-397",
     "language": "國語",
     "viewCount": 104017,
     "viewCheckedAt": "2026-05-26"
@@ -6136,7 +6120,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【讓讚美飛揚  Let Praise Arise 古典版】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (1)",
-    "number": "HYMN-399",
+    "number": "HYMN-398",
     "language": "國語",
     "viewCount": 793088,
     "viewCheckedAt": "2026-05-26"
@@ -6150,7 +6134,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【生命活水充滿我 Living Water】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A)",
-    "number": "HYMN-400",
+    "number": "HYMN-399",
     "language": "國語",
     "viewCount": 6836373,
     "viewCheckedAt": "2026-05-26"
@@ -6164,7 +6148,7 @@
     "category": "詩歌",
     "source": "GOOD TV DAILY / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：史茵茵 - 當轉眼仰望耶穌",
-    "number": "HYMN-401",
+    "number": "HYMN-400",
     "language": "國語",
     "viewCount": 292093,
     "viewCheckedAt": "2026-05-26"
@@ -6178,7 +6162,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【祢的慈愛 Unfailing Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (11J)",
-    "number": "HYMN-402",
+    "number": "HYMN-401",
     "language": "國語",
     "viewCount": 167002,
     "viewCheckedAt": "2026-05-26"
@@ -6192,7 +6176,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【耶和華祢是我的神 Jehovah, You Are My God】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (5)",
-    "number": "HYMN-403",
+    "number": "HYMN-402",
     "language": "國語",
     "viewCount": 8393596,
     "viewCheckedAt": "2026-05-26"
@@ -6206,7 +6190,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【耶穌愛你 Jesus Loves You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (5)",
-    "number": "HYMN-404",
+    "number": "HYMN-403",
     "language": "國語",
     "viewCount": 1085047,
     "viewCheckedAt": "2026-05-26"
@@ -6220,7 +6204,7 @@
     "category": "詩歌",
     "source": "dsan36 / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：萬物的結局近了",
-    "number": "HYMN-405",
+    "number": "HYMN-404",
     "language": "國語",
     "viewCount": 188187,
     "viewCheckedAt": "2026-05-26"
@@ -6234,7 +6218,7 @@
     "category": "詩歌",
     "source": "chinglianglee / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：萬福源頭 Come, Thou Fount of Every Blessing",
-    "number": "HYMN-406",
+    "number": "HYMN-405",
     "language": "國語",
     "viewCount": 225436,
     "viewCheckedAt": "2026-05-26"
@@ -6248,7 +6232,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【我能給你什麼 What Could I Bring To You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (29)",
-    "number": "HYMN-407",
+    "number": "HYMN-406",
     "language": "國語",
     "viewCount": 381630,
     "viewCheckedAt": "2026-05-26"
@@ -6262,7 +6246,7 @@
     "category": "詩歌",
     "source": "生命河 ROLCC Media / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：擁戴耶穌為王 Crown Him with Many Crowns（生命河敬拜讚美系列 9 【神已經成就了】）小組敬拜用",
-    "number": "HYMN-408",
+    "number": "HYMN-407",
     "language": "國語",
     "viewCount": 207158,
     "viewCheckedAt": "2026-05-26"
@@ -6276,7 +6260,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【新的異象，新的方向 Give Us Vision】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20)",
-    "number": "HYMN-409",
+    "number": "HYMN-408",
     "language": "國語",
     "viewCount": 5243016,
     "viewCheckedAt": "2026-05-26"
@@ -6290,7 +6274,7 @@
     "category": "詩歌",
     "source": "Joseph / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：神是我們的避難所",
-    "number": "HYMN-410",
+    "number": "HYMN-409",
     "language": "國語",
     "viewCount": 87609,
     "viewCheckedAt": "2026-05-26"
@@ -6304,7 +6288,7 @@
     "category": "詩歌",
     "source": "旌旗音樂 Banner Music / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【萬王之王 King of Kings】Worship cover｜旌旗音樂",
-    "number": "HYMN-411",
+    "number": "HYMN-410",
     "language": "國語",
     "viewCount": 188039,
     "viewCheckedAt": "2026-05-26"
@@ -6318,7 +6302,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【讓我得見祢的榮面 See You Face to Face】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (21)",
-    "number": "HYMN-412",
+    "number": "HYMN-411",
     "language": "國語",
     "viewCount": 4737615,
     "viewCheckedAt": "2026-05-26"
@@ -6332,7 +6316,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【讚美中信心不斷升起 Let Faith Arise In Our Praises】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "HYMN-413",
+    "number": "HYMN-412",
     "language": "國語",
     "viewCount": 2760938,
     "viewCheckedAt": "2026-05-26"
@@ -6346,7 +6330,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【這一生最美的祝福 The Gift of Knowing You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (8)",
-    "number": "HYMN-414",
+    "number": "HYMN-413",
     "language": "國語",
     "viewCount": 5637083,
     "viewCheckedAt": "2026-05-26"
@@ -6360,7 +6344,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 2 次；YouTube：【願祢國度降臨 When Your Kingdom Comes】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (20)",
-    "number": "HYMN-415",
+    "number": "HYMN-414",
     "language": "國語",
     "viewCount": 1804942,
     "viewCheckedAt": "2026-05-26"
@@ -6374,23 +6358,9 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【一生愛祢 With All My Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9)",
-    "number": "HYMN-416",
+    "number": "HYMN-415",
     "language": "國語",
     "viewCount": 1578075,
-    "viewCheckedAt": "2026-05-26"
-  },
-  {
-    "title": "宣教的中國",
-    "aliases": [],
-    "videoId": "iRZDbba6JBM",
-    "start": 0,
-    "duration": 60,
-    "category": "詩歌",
-    "source": "神国赞美诗God's love / YouTube",
-    "hint": "TPMAC 近5年程序表出現 1 次；YouTube：《宣教的中國》China's Mission 讚美詩 Grace Music 中文字幕《宣教的中国》",
-    "number": "HYMN-417",
-    "language": "國語",
-    "viewCount": 180339,
     "viewCheckedAt": "2026-05-26"
   },
   {
@@ -6402,7 +6372,7 @@
     "category": "詩歌",
     "source": "jamesbox138 / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：基督教詩歌：一群大能的子民",
-    "number": "HYMN-418",
+    "number": "HYMN-416",
     "language": "國語",
     "viewCount": 90999,
     "viewCheckedAt": "2026-05-26"
@@ -6416,7 +6386,7 @@
     "category": "詩歌",
     "source": "r33cat / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：上帝聽禱告",
-    "number": "HYMN-419",
+    "number": "HYMN-417",
     "language": "國語",
     "viewCount": 784080,
     "viewCheckedAt": "2026-05-26"
@@ -6430,7 +6400,7 @@
     "category": "詩歌",
     "source": "Kiki8857 / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：20090914 黃國倫_帶領我_以便以謝",
-    "number": "HYMN-420",
+    "number": "HYMN-418",
     "language": "國語",
     "viewCount": 272909,
     "viewCheckedAt": "2026-05-26"
@@ -6444,7 +6414,7 @@
     "category": "詩歌",
     "source": "joehuang90 / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：耶穌，萬名之上的名-小羊詩歌(再次將我更新)",
-    "number": "HYMN-421",
+    "number": "HYMN-419",
     "language": "國語",
     "viewCount": 698366,
     "viewCheckedAt": "2026-05-26"
@@ -6458,7 +6428,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【我的心，你要稱頌耶和華 Praise The Lord, O My Soul】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (3)",
-    "number": "HYMN-422",
+    "number": "HYMN-420",
     "language": "國語",
     "viewCount": 1500917,
     "viewCheckedAt": "2026-05-26"
@@ -6472,7 +6442,7 @@
     "category": "詩歌",
     "source": "MIshajun東俊 / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：「先求祂的國和義」",
-    "number": "HYMN-423",
+    "number": "HYMN-421",
     "language": "國語",
     "viewCount": 50668,
     "viewCheckedAt": "2026-05-26"
@@ -6486,7 +6456,7 @@
     "category": "詩歌",
     "source": "Peace & Joy's Channel / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：我以禱告來到你跟前 - 我心旋律",
-    "number": "HYMN-424",
+    "number": "HYMN-422",
     "language": "國語",
     "viewCount": 238857,
     "viewCheckedAt": "2026-05-26"
@@ -6500,7 +6470,7 @@
     "category": "詩歌",
     "source": "橄欖枝 / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：詩篇130篇1-4節 (我從深處向祢求告) - 華人的讚美敬拜樂團",
-    "number": "HYMN-425",
+    "number": "HYMN-423",
     "language": "國語",
     "viewCount": 284021,
     "viewCheckedAt": "2026-05-26"
@@ -6514,7 +6484,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【煉淨過的生命 A Purified Life】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "HYMN-426",
+    "number": "HYMN-424",
     "language": "國語",
     "viewCount": 471387,
     "viewCheckedAt": "2026-05-26"
@@ -6528,7 +6498,7 @@
     "category": "詩歌",
     "source": "Lo chienchi / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：你是榮耀君王",
-    "number": "HYMN-427",
+    "number": "HYMN-425",
     "language": "國語",
     "viewCount": 729289,
     "viewCheckedAt": "2026-05-26"
@@ -6542,7 +6512,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【祢是配得 (聖哉聖哉全地唱) You Are Worthy】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (16)",
-    "number": "HYMN-428",
+    "number": "HYMN-426",
     "language": "國語",
     "viewCount": 550790,
     "viewCheckedAt": "2026-05-26"
@@ -6556,7 +6526,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【凡事都能做 All Things are Possible】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9)",
-    "number": "HYMN-429",
+    "number": "HYMN-427",
     "language": "國語",
     "viewCount": 777348,
     "viewCheckedAt": "2026-05-26"
@@ -6570,7 +6540,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：【十架的大能 The Power Of The Cross】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (28)",
-    "number": "HYMN-430",
+    "number": "HYMN-428",
     "language": "國語",
     "viewCount": 467287,
     "viewCheckedAt": "2026-05-26"
@@ -6584,7 +6554,7 @@
     "category": "詩歌",
     "source": "敬拜和弦资源站 WORSHIP&CHORD / YouTube",
     "hint": "TPMAC 近5年程序表出現 1 次；YouTube：無以回報 Dengan Apa Kan Kubalas (好歌分享)",
-    "number": "HYMN-431",
+    "number": "HYMN-429",
     "language": "國語",
     "viewCount": 223502,
     "viewCheckedAt": "2026-05-26"
@@ -6600,7 +6570,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【讚美之泉 Stream of Praise】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (1)",
-    "number": "HYMN-432",
+    "number": "HYMN-430",
     "language": "國語",
     "viewCount": 4679625,
     "viewCheckedAt": "2026-05-26"
@@ -6616,7 +6586,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【彩虹下的約定 The Covenant Under the Rainbow】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (4)",
-    "number": "HYMN-433",
+    "number": "HYMN-431",
     "language": "國語",
     "viewCount": 477158,
     "viewCheckedAt": "2026-05-26"
@@ -6632,7 +6602,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【全能的創造主 Wonderful Creator】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (6)",
-    "number": "HYMN-434",
+    "number": "HYMN-432",
     "language": "國語",
     "viewCount": 315943,
     "viewCheckedAt": "2026-05-26"
@@ -6649,7 +6619,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【祢是信實的上帝 You Are A Faithful God】官方歌詞版MV (Official Lyrics MV) - 讚美之泉台語敬拜讚美 (1)",
-    "number": "HYMN-435",
+    "number": "HYMN-433",
     "language": "國語",
     "viewCount": 321978,
     "viewCheckedAt": "2026-05-26"
@@ -6665,7 +6635,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【我們愛 (讓世界不一樣) We Will Love (We Can Make a Difference)】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (13)",
-    "number": "HYMN-436",
+    "number": "HYMN-434",
     "language": "國語",
     "viewCount": 4363486,
     "viewCheckedAt": "2026-05-26"
@@ -6681,7 +6651,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【我對祢的愛永不變 My Love for You Will Never Change】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (4)",
-    "number": "HYMN-437",
+    "number": "HYMN-435",
     "language": "國語",
     "viewCount": 240861,
     "viewCheckedAt": "2026-05-26"
@@ -6697,7 +6667,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【主祢是我力量 You Are My Strength】敬拜MV - 讚美之泉兒童敬拜讚美 (6)",
-    "number": "HYMN-438",
+    "number": "HYMN-436",
     "language": "國語",
     "viewCount": 1522209,
     "viewCheckedAt": "2026-05-26"
@@ -6713,7 +6683,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【每一天我需要祢 I Need You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (21)",
-    "number": "HYMN-439",
+    "number": "HYMN-437",
     "language": "國語",
     "viewCount": 3777131,
     "viewCheckedAt": "2026-05-26"
@@ -6729,7 +6699,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【展開清晨的翅膀 Wings of the Dawn】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (7)",
-    "number": "HYMN-440",
+    "number": "HYMN-438",
     "language": "國語",
     "viewCount": 1093759,
     "viewCheckedAt": "2026-05-26"
@@ -6745,7 +6715,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【祢使我生命美麗 You Have Made My Life Beautiful】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12P)",
-    "number": "HYMN-441",
+    "number": "HYMN-439",
     "language": "國語",
     "viewCount": 188344,
     "viewCheckedAt": "2026-05-26"
@@ -6761,7 +6731,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【這裡有榮耀 Glory】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (19)",
-    "number": "HYMN-442",
+    "number": "HYMN-440",
     "language": "國語",
     "viewCount": 1742514,
     "viewCheckedAt": "2026-05-26"
@@ -6777,7 +6747,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【我要看見 I Want to See】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (21)",
-    "number": "HYMN-443",
+    "number": "HYMN-441",
     "language": "國語",
     "viewCount": 5502424,
     "viewCheckedAt": "2026-05-26"
@@ -6793,7 +6763,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【我要全心讚美 My Heart Will Praise You, Lord】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (15)",
-    "number": "HYMN-444",
+    "number": "HYMN-442",
     "language": "國語",
     "viewCount": 2490096,
     "viewCheckedAt": "2026-05-26"
@@ -6809,7 +6779,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【更深之處 Take Me Deeper】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (21)",
-    "number": "HYMN-445",
+    "number": "HYMN-443",
     "language": "國語",
     "viewCount": 1031499,
     "viewCheckedAt": "2026-05-26"
@@ -6825,7 +6795,7 @@
     "category": "詩歌",
     "source": "Garden of Perfume / YouTube",
     "hint": "熱門華人詩歌；參考來源：小羊詩歌 Lamb Music；YouTube：小羊詩歌-親愛主聽我禱告 (Lamb Music: Dear LORD, hear my prayer)",
-    "number": "HYMN-446",
+    "number": "HYMN-444",
     "language": "國語",
     "viewCount": 103425,
     "viewCheckedAt": "2026-05-26"
@@ -6841,7 +6811,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：小羊詩歌 Lamb Music；YouTube：【主我跟祢走 Lord, I Walk With You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (10)",
-    "number": "HYMN-447",
+    "number": "HYMN-445",
     "language": "國語",
     "viewCount": 494117,
     "viewCheckedAt": "2026-05-26"
@@ -6857,7 +6827,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：生命河靈糧堂 River of Life；YouTube：【有一位神 There Is A God】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (1)",
-    "number": "HYMN-448",
+    "number": "HYMN-446",
     "language": "國語",
     "viewCount": 3813911,
     "viewCheckedAt": "2026-05-26"
@@ -6873,7 +6843,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：生命河靈糧堂 River of Life；YouTube：【從早晨到夜晚 Morning to Night】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (22)",
-    "number": "HYMN-449",
+    "number": "HYMN-447",
     "language": "國語",
     "viewCount": 11213192,
     "viewCheckedAt": "2026-05-26"
@@ -6889,7 +6859,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：生命河靈糧堂 River of Life；YouTube：【主我敬拜祢 Lord, I Worship You / 哈利路亞 Hallelujah】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (3)",
-    "number": "HYMN-450",
+    "number": "HYMN-448",
     "language": "國語",
     "viewCount": 212814,
     "viewCheckedAt": "2026-05-26"
@@ -6905,7 +6875,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：約書亞樂團 Joshua Band；YouTube：【將天敞開/行神蹟的神/一生敬拜祢/這是聖潔之地】｜讚美之泉《天堂敬拜 LIVE》",
-    "number": "HYMN-451",
+    "number": "HYMN-449",
     "language": "國語",
     "viewCount": 1319180,
     "viewCheckedAt": "2026-05-26"
@@ -6921,7 +6891,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "熱門華人詩歌；參考來源：約書亞樂團 Joshua Band；YouTube：約書亞樂團 -【 榮美的救主 / Beautiful Savior 】官方歌詞MV",
-    "number": "HYMN-452",
+    "number": "HYMN-450",
     "language": "國語",
     "viewCount": 597465,
     "viewCheckedAt": "2026-05-26"
@@ -6937,7 +6907,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：約書亞樂團 Joshua Band；YouTube：【深深愛祢 Deeper In Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9)",
-    "number": "HYMN-453",
+    "number": "HYMN-451",
     "language": "國語",
     "viewCount": 1241937,
     "viewCheckedAt": "2026-05-26"
@@ -6953,7 +6923,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：【我要向高山舉目 Lift My Eyes to the Hills】敬拜MV - 讚美之泉兒童敬拜讚美 (1)",
-    "number": "HYMN-454",
+    "number": "HYMN-452",
     "language": "國語",
     "viewCount": 10348647,
     "viewCheckedAt": "2026-05-26"
@@ -6969,7 +6939,7 @@
     "category": "詩歌",
     "source": "Faith Flower Floral信心花舍 / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：好聽中文詩歌《主啊我到你面前》唐瑛琦-願我一生蒙你悅納（附歌詞）",
-    "number": "HYMN-455",
+    "number": "HYMN-453",
     "language": "國語",
     "viewCount": 142192,
     "viewCheckedAt": "2026-05-26"
@@ -6985,7 +6955,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【祢的恩典夠我用 Your Grace Is Enough】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (23)",
-    "number": "HYMN-456",
+    "number": "HYMN-454",
     "language": "國語",
     "viewCount": 5675643,
     "viewCheckedAt": "2026-05-26"
@@ -7001,7 +6971,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【天父的花園 Father's Garden】敬拜MV - 讚美之泉兒童敬拜讚美 (2)",
-    "number": "HYMN-457",
+    "number": "HYMN-455",
     "language": "國語",
     "viewCount": 7176727,
     "viewCheckedAt": "2026-05-26"
@@ -7017,7 +6987,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【主的喜樂是我力量 The Joy of the Lord is My Strength】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (9)",
-    "number": "HYMN-458",
+    "number": "HYMN-456",
     "language": "國語",
     "viewCount": 1783297,
     "viewCheckedAt": "2026-05-26"
@@ -7033,7 +7003,7 @@
     "category": "詩歌",
     "source": "樂筆 x 日光實驗室 / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：詩歌【我心屬於祢】樂筆手寫歌詞 Worship Song Lyrics Calligraphy",
-    "number": "HYMN-459",
+    "number": "HYMN-457",
     "language": "國語",
     "viewCount": 753799,
     "viewCheckedAt": "2026-05-26"
@@ -7049,7 +7019,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美之泉 Stream of Praise；YouTube：【永遠尊貴 All Honor To You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A)",
-    "number": "HYMN-460",
+    "number": "HYMN-458",
     "language": "國語",
     "viewCount": 562568,
     "viewCheckedAt": "2026-05-26"
@@ -7065,7 +7035,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：【耶和華靠近傷心的人 The Lord Is Close to the Broken】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (13)",
-    "number": "HYMN-461",
+    "number": "HYMN-459",
     "language": "國語",
     "viewCount": 436522,
     "viewCheckedAt": "2026-05-26"
@@ -7081,7 +7051,7 @@
     "category": "詩歌",
     "source": "GOOD TV DAILY / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：有情天音樂事工 - 你愛的大能",
-    "number": "HYMN-462",
+    "number": "HYMN-460",
     "language": "國語",
     "viewCount": 157920,
     "viewCheckedAt": "2026-05-26"
@@ -7097,7 +7067,7 @@
     "category": "詩歌",
     "source": "新店行道會 TOPCHURCH / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：讓我 官方歌詞版｜新店行道會敬拜讚美",
-    "number": "HYMN-463",
+    "number": "HYMN-461",
     "language": "國語",
     "viewCount": 194095,
     "viewCheckedAt": "2026-05-26"
@@ -7113,7 +7083,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：【我在這裡 Here I Am】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (25)",
-    "number": "HYMN-464",
+    "number": "HYMN-462",
     "language": "國語",
     "viewCount": 2270378,
     "viewCheckedAt": "2026-05-26"
@@ -7129,7 +7099,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：【耶穌我愛祢 Jesus I Love You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (12A)",
-    "number": "HYMN-465",
+    "number": "HYMN-463",
     "language": "國語",
     "viewCount": 601345,
     "viewCheckedAt": "2026-05-26"
@@ -7145,7 +7115,7 @@
     "category": "詩歌",
     "source": "立約敬拜 Promise Worship / YouTube",
     "hint": "熱門華人詩歌；參考來源：讚美詩歌；YouTube：我的神我要敬拜你 -  詩集：我心旋律",
-    "number": "HYMN-466",
+    "number": "HYMN-464",
     "language": "國語",
     "viewCount": 290890,
     "viewCheckedAt": "2026-05-26"
@@ -7161,7 +7131,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【求充滿這地 / Come and Fill This Land】官方歌詞MV - 大衛帳幕的榮耀 ft. 陳雅玲",
-    "number": "HYMN-467",
+    "number": "HYMN-465",
     "language": "國語",
     "viewCount": 4295695,
     "viewCheckedAt": "2026-05-26"
@@ -7177,7 +7147,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【禱告的力量 The Power of Prayer】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (24)",
-    "number": "HYMN-468",
+    "number": "HYMN-466",
     "language": "國語",
     "viewCount": 4104292,
     "viewCheckedAt": "2026-05-26"
@@ -7193,7 +7163,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【豐盛的應許 By Faith, I Receive】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (15)",
-    "number": "HYMN-469",
+    "number": "HYMN-467",
     "language": "國語",
     "viewCount": 3761405,
     "viewCheckedAt": "2026-05-26"
@@ -7209,7 +7179,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：約書亞樂團 -【 重來的力量 / The Power To Start Over 】官方歌詞MV",
-    "number": "HYMN-470",
+    "number": "HYMN-468",
     "language": "國語",
     "viewCount": 3212634,
     "viewCheckedAt": "2026-05-26"
@@ -7225,7 +7195,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 敬拜MV；YouTube：【能不能 Let Me Stay】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (20)",
-    "number": "HYMN-471",
+    "number": "HYMN-469",
     "language": "國語",
     "viewCount": 16992752,
     "viewCheckedAt": "2026-05-26"
@@ -7241,7 +7211,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：No.24【如祢 / Like You】官方歌詞 MV - 約書亞樂團、璽恩 SiEnVanessa",
-    "number": "HYMN-472",
+    "number": "HYMN-470",
     "language": "國語",
     "viewCount": 2670117,
     "viewCheckedAt": "2026-05-26"
@@ -7257,7 +7227,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【深不見底的愛 Endless Love】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (26)",
-    "number": "HYMN-473",
+    "number": "HYMN-471",
     "language": "國語",
     "viewCount": 2269090,
     "viewCheckedAt": "2026-05-26"
@@ -7273,7 +7243,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【與祢更靠近 / Closer to You】官方歌詞MV - 大衛帳幕的榮耀 ft. 曹婉甄",
-    "number": "HYMN-474",
+    "number": "HYMN-472",
     "language": "國語",
     "viewCount": 2190780,
     "viewCheckedAt": "2026-05-26"
@@ -7289,7 +7259,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 敬拜MV；YouTube：【奔跑不放棄 Won't Give Up】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (20)",
-    "number": "HYMN-475",
+    "number": "HYMN-473",
     "language": "國語",
     "viewCount": 13359670,
     "viewCheckedAt": "2026-05-26"
@@ -7305,7 +7275,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【找到我 / Bring Me Back】官方歌詞MV - 約書亞樂團 ft. 璽恩 SiEnVanessa",
-    "number": "HYMN-476",
+    "number": "HYMN-474",
     "language": "國語",
     "viewCount": 2033762,
     "viewCheckedAt": "2026-05-26"
@@ -7321,7 +7291,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【充滿在這裡 Fill This Place】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (24)",
-    "number": "HYMN-477",
+    "number": "HYMN-475",
     "language": "國語",
     "viewCount": 1818620,
     "viewCheckedAt": "2026-05-26"
@@ -7337,7 +7307,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【不動搖的信心 Unshakeable Faith】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (26)",
-    "number": "HYMN-478",
+    "number": "HYMN-476",
     "language": "國語",
     "viewCount": 1750508,
     "viewCheckedAt": "2026-05-26"
@@ -7353,7 +7323,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【被愛 Loved by You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (23)",
-    "number": "HYMN-479",
+    "number": "HYMN-477",
     "language": "國語",
     "viewCount": 1390313,
     "viewCheckedAt": "2026-05-26"
@@ -7369,7 +7339,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 敬拜MV；YouTube：【我們歡迎君王降臨 We Long to Meet】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (19)",
-    "number": "HYMN-480",
+    "number": "HYMN-478",
     "language": "國語",
     "viewCount": 8318426,
     "viewCheckedAt": "2026-05-26"
@@ -7385,7 +7355,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【何等榮美的名 /  What A Beautiful Name】官方歌詞MV - Hillsong Worship ft. 約書亞樂團、璽恩 SiEnVanessa",
-    "number": "HYMN-481",
+    "number": "HYMN-479",
     "language": "國語",
     "viewCount": 1258387,
     "viewCheckedAt": "2026-05-26"
@@ -7401,7 +7371,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【耶穌永遠掌權 You Reign Forevermore】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (25)",
-    "number": "HYMN-482",
+    "number": "HYMN-480",
     "language": "國語",
     "viewCount": 1241364,
     "viewCheckedAt": "2026-05-26"
@@ -7417,7 +7387,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【獻上讚美祭 Sacrifice Of Praise】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (26)",
-    "number": "HYMN-483",
+    "number": "HYMN-481",
     "language": "國語",
     "viewCount": 792072,
     "viewCheckedAt": "2026-05-26"
@@ -7433,7 +7403,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【真實的悔改 Turn My Life To You】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (14)",
-    "number": "HYMN-484",
+    "number": "HYMN-482",
     "language": "國語",
     "viewCount": 772280,
     "viewCheckedAt": "2026-05-26"
@@ -7449,7 +7419,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【厚恩待我 Your Grace Covers Me】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (26)",
-    "number": "HYMN-485",
+    "number": "HYMN-483",
     "language": "國語",
     "viewCount": 646067,
     "viewCheckedAt": "2026-05-26"
@@ -7465,7 +7435,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【純潔的心 / A Pure Heart】官方歌詞MV - 大衛帳幕的榮耀 ft. 史茵茵",
-    "number": "HYMN-486",
+    "number": "HYMN-484",
     "language": "國語",
     "viewCount": 627665,
     "viewCheckedAt": "2026-05-26"
@@ -7481,7 +7451,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【數不盡 Grace Beyond All Measure】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (28)",
-    "number": "HYMN-487",
+    "number": "HYMN-485",
     "language": "國語",
     "viewCount": 607290,
     "viewCheckedAt": "2026-05-26"
@@ -7497,7 +7467,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方 現場敬拜MV；YouTube：【祢永遠如此深愛著我 More Than I Could Know】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (24)",
-    "number": "HYMN-488",
+    "number": "HYMN-486",
     "language": "國語",
     "viewCount": 4682464,
     "viewCheckedAt": "2026-05-26"
@@ -7513,7 +7483,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 敬拜MV；YouTube：【我們的神 You Are Our God】現場敬拜MV (Worship MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "HYMN-489",
+    "number": "HYMN-487",
     "language": "國語",
     "viewCount": 3227663,
     "viewCheckedAt": "2026-05-26"
@@ -7529,7 +7499,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【你讓我勇敢 / You Make Me Brave】官方歌詞MV",
-    "number": "HYMN-490",
+    "number": "HYMN-488",
     "language": "國語",
     "viewCount": 511109,
     "viewCheckedAt": "2026-05-26"
@@ -7545,7 +7515,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：No.24【敬畏的心 / A Reverent Heart】官方歌詞 MV - 約書亞樂團、曾晨恩",
-    "number": "HYMN-491",
+    "number": "HYMN-489",
     "language": "國語",
     "viewCount": 500617,
     "viewCheckedAt": "2026-05-26"
@@ -7561,7 +7531,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方 現場敬拜MV；YouTube：【曠野中唯一的力量 My Strength In The Wilderness】現場敬拜MV (Worship MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "HYMN-492",
+    "number": "HYMN-490",
     "language": "國語",
     "viewCount": 2841009,
     "viewCheckedAt": "2026-05-26"
@@ -7577,7 +7547,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方歌詞版MV；YouTube：【恢復敬拜 Revive Our Worship】官方歌詞版MV (Official Lyrics MV) - 讚美之泉敬拜讚美 (28)",
-    "number": "HYMN-493",
+    "number": "HYMN-491",
     "language": "國語",
     "viewCount": 431641,
     "viewCheckedAt": "2026-05-26"
@@ -7593,7 +7563,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【甦醒 / Wake】官方歌詞MV - 約書亞樂團 ft. 璽恩 SiEnVanessa",
-    "number": "HYMN-494",
+    "number": "HYMN-492",
     "language": "國語",
     "viewCount": 428610,
     "viewCheckedAt": "2026-05-26"
@@ -7609,7 +7579,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：約書亞樂團 -【 相信擁抱 / Embrace 】官方歌詞MV",
-    "number": "HYMN-495",
+    "number": "HYMN-493",
     "language": "國語",
     "viewCount": 400728,
     "viewCheckedAt": "2026-05-26"
@@ -7625,7 +7595,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【信靠跟隨 / Trust and Follow】官方歌詞 MV - 約書亞樂團、璽恩 SiEnVanessa",
-    "number": "HYMN-496",
+    "number": "HYMN-494",
     "language": "國語",
     "viewCount": 306914,
     "viewCheckedAt": "2026-05-26"
@@ -7641,7 +7611,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 敬拜MV；YouTube：【十字架 The Cross】現場敬拜MV (Live Worship MV) - 讚美之泉敬拜讚美 (24)",
-    "number": "HYMN-497",
+    "number": "HYMN-495",
     "language": "國語",
     "viewCount": 1737611,
     "viewCheckedAt": "2026-05-26"
@@ -7657,7 +7627,7 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方 現場敬拜MV；YouTube：【深深地敬拜 Deeply, I Worship】現場敬拜MV (Worship MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "HYMN-498",
+    "number": "HYMN-496",
     "language": "國語",
     "viewCount": 1638947,
     "viewCheckedAt": "2026-05-26"
@@ -7673,7 +7643,7 @@
     "category": "詩歌",
     "source": "Joshua Band 約書亞樂團 / YouTube",
     "hint": "白名單熱門詩歌；來源：約書亞樂團 官方歌詞MV 詩歌；YouTube：【祢寶血為我而流 / Your Blood Shed for Me】官方歌詞 MV - 約書亞樂團、璽恩 SiEnVanessa",
-    "number": "HYMN-499",
+    "number": "HYMN-497",
     "language": "國語",
     "viewCount": 220679,
     "viewCheckedAt": "2026-05-26"
@@ -7689,9 +7659,41 @@
     "category": "詩歌",
     "source": "讚美之泉 Stream Of Praise Music Ministries / YouTube",
     "hint": "白名單熱門詩歌；來源：讚美之泉 官方 現場敬拜MV；YouTube：【我心堅定於祢 My Heart's Steadfast On You】現場敬拜MV (Worship MV) - 讚美之泉敬拜讚美 (27)",
-    "number": "HYMN-500",
+    "number": "HYMN-498",
     "language": "國語",
     "viewCount": 1372540,
+    "viewCheckedAt": "2026-05-26"
+  },
+  {
+    "title": "愛的揀選",
+    "aliases": [
+      "Son Music 新音樂敬拜創作"
+    ],
+    "videoId": "I38Mm-6GOBU",
+    "start": 0,
+    "duration": 60,
+    "category": "詩歌",
+    "source": "Son Music 新音樂敬拜創作 / YouTube",
+    "hint": "50,000+ 粵語詩歌；來源：SON Music Brenda Li 詩歌；YouTube：愛的揀選 - SON Music | ft. Brenda Li",
+    "number": "HYMN-499",
+    "language": "粵語",
+    "viewCount": 116574,
+    "viewCheckedAt": "2026-05-26"
+  },
+  {
+    "title": "賜我力量",
+    "aliases": [
+      "基恩敬拜 Amazing Grace Worship"
+    ],
+    "videoId": "-1hotIathug",
+    "start": 0,
+    "duration": 60,
+    "category": "詩歌",
+    "source": "基恩敬拜 Amazing Grace Worship / YouTube",
+    "hint": "50,000+ 粵語詩歌；來源：基恩敬拜 Official Lyric；YouTube：《賜我力量》Give me strength - 基恩敬拜AGWMM official MV",
+    "number": "HYMN-500",
+    "language": "粵語",
+    "viewCount": 510790,
     "viewCheckedAt": "2026-05-26"
   }
 ]

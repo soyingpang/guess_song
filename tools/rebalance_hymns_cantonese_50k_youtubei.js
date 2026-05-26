@@ -151,6 +151,23 @@ const BLOCKED_KEYWORDS = [
   "訪問",
   "見證",
   "全能神",
+  "全能神教會",
+  "全能神教会",
+  "東方閃電",
+  "东方闪电",
+  "Church of Almighty God",
+  "The Church of Almighty God",
+  "國度降臨福音",
+  "国度降临福音",
+  "神国赞美诗",
+  "神國讚美詩",
+  "神国赞美诗God's love",
+  "香江望神州",
+  "習近平",
+  "梁振英",
+  "訪港",
+  "政治",
+  "新聞",
   "公主",
   "城堡",
   "(國)",
@@ -694,7 +711,7 @@ async function main() {
   const currentCantonese = [];
   const currentOther = [];
   for (const song of original) {
-    const language = classifyLanguage(song);
+    const language = song.language === "粵語" ? "粵語" : classifyLanguage(song);
     if (language === "粵語") currentCantonese.push({ ...song, language: "粵語" });
     else currentOther.push({ ...song, language: "國語" });
   }
@@ -765,6 +782,14 @@ async function main() {
   for (const song of currentOther) {
     if (finalRows.length >= TOTAL_TARGET) break;
     addUnique(finalRows, song, seenVideoIds, seenTitleKeys);
+  }
+  for (const song of currentCantonese.slice(finalCantonese.length)) {
+    if (finalRows.length >= TOTAL_TARGET) break;
+    addUnique(finalRows, song, seenVideoIds, seenTitleKeys);
+  }
+  for (const candidate of candidates) {
+    if (finalRows.length >= TOTAL_TARGET) break;
+    addUnique(finalRows, toSong(candidate, ""), seenVideoIds, seenTitleKeys);
   }
 
   const finalHymns = renumber(finalRows.map(({ originalIndex, ...song }) => song));
