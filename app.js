@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "birthday-mystery-1";
+const APP_BUILD_VERSION = "birthday-mystery-2";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -91,15 +91,15 @@ const RANDOM_START_MAX_END_SECONDS = 180;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const BIRTHDAY_SONG = {
   id: "special-birthday-song",
-  title: "Happy Birthday Song",
-  aliases: ["CoComelon Nursery Rhymes & Kids Songs"],
-  videoId: "ho08YLYDM88",
+  title: "Birthday song",
+  aliases: ["Happy Birthday song", "Happy Birthday to you song remix", "Ava video"],
+  videoId: "VPB1rKd19RM",
   audioUrl: "",
   start: CLIP_START_SECONDS,
-  duration: 151,
+  duration: 64,
   category: "生日歌",
-  source: "CoComelon - Nursery Rhymes / YouTube",
-  hint: "YouTube 核對約 11.65 億瀏覽；Happy Birthday Song | CoComelon Nursery Rhymes & Kids Songs",
+  source: "Ava video / YouTube",
+  hint: "用戶指定生日歌；YouTube：Birthday song | Happy Birthday song | Happy Birthday to you song remix",
   number: "SPECIAL-BIRTHDAY",
   language: "English",
 };
@@ -1479,7 +1479,7 @@ function playBirthdaySong() {
   state.playbackRevision += 1;
   els.guessInput.value = "";
 
-  setResult("生日歌播放中", "Happy Birthday Song · CoComelon", "correct");
+  setResult("生日歌播放中", `${BIRTHDAY_SONG.title} · ${BIRTHDAY_SONG.source.replace(" / YouTube", "")}`, "correct");
   render();
   renderYouTubeFrame({ autoplay: true });
 }
