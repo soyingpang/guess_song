@@ -435,7 +435,7 @@ h2 {
 
 .transport-grid {
   display: grid;
-  grid-template-columns: 1.25fr repeat(5, 1fr);
+  grid-template-columns: 1.25fr repeat(5, minmax(0, 1fr)) minmax(48px, 0.42fr);
   gap: 10px;
 }
 
@@ -656,6 +656,46 @@ select:focus {
     linear-gradient(180deg, rgba(241, 184, 75, 0.16), transparent),
     #2b211b;
   color: var(--accent-2);
+}
+
+.mystery-button {
+  min-width: 48px;
+  padding: 0;
+}
+
+.birthday-icon {
+  position: relative;
+  display: block;
+  width: 26px;
+  height: 24px;
+}
+
+.birthday-icon::before {
+  position: absolute;
+  right: 2px;
+  bottom: 1px;
+  left: 2px;
+  height: 14px;
+  border: 1px solid rgba(255, 242, 220, 0.72);
+  border-radius: 5px 5px 4px 4px;
+  content: "";
+  background:
+    linear-gradient(90deg, transparent 0 20%, rgba(108, 58, 69, 0.82) 20% 27%, transparent 27% 47%, rgba(108, 58, 69, 0.82) 47% 54%, transparent 54% 74%, rgba(108, 58, 69, 0.82) 74% 81%, transparent 81%),
+    linear-gradient(180deg, #fff0d7 0 42%, #e99d67 42% 100%);
+  box-shadow: inset 0 -2px 0 rgba(104, 54, 48, 0.2);
+}
+
+.birthday-icon::after {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 12px;
+  border-radius: 999px;
+  content: "";
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #fff2a7 0 30%, #d46453 30% 100%);
+  box-shadow: 0 -3px 8px rgba(255, 220, 109, 0.8);
 }
 
 .danger-button {
@@ -1639,6 +1679,10 @@ select:focus {
   .topbar-actions > .ghost-button {
     width: 100%;
     margin-top: 10px;
+  }
+
+  .transport-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .stage-top,
@@ -4662,7 +4706,7 @@ textarea {
   }
 
   .quiz-panel > .transport-grid {
-    grid-template-columns: 1.25fr repeat(5, 1fr);
+    grid-template-columns: 1.25fr repeat(5, minmax(0, 1fr)) minmax(48px, 0.42fr);
   }
 
   .quiz-panel > .choices {

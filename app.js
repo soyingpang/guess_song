@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "onsite-hymns-risk-filter-1";
+const APP_BUILD_VERSION = "birthday-mystery-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -89,6 +89,20 @@ const PLAY_START_MODES = ["beginning", "random"];
 const RANDOM_START_MIN_SECONDS = 45;
 const RANDOM_START_MAX_END_SECONDS = 180;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
+const BIRTHDAY_SONG = {
+  id: "special-birthday-song",
+  title: "Happy Birthday Song",
+  aliases: ["CoComelon Nursery Rhymes & Kids Songs"],
+  videoId: "ho08YLYDM88",
+  audioUrl: "",
+  start: CLIP_START_SECONDS,
+  duration: 151,
+  category: "生日歌",
+  source: "CoComelon - Nursery Rhymes / YouTube",
+  hint: "YouTube 核對約 11.65 億瀏覽；Happy Birthday Song | CoComelon Nursery Rhymes & Kids Songs",
+  number: "SPECIAL-BIRTHDAY",
+  language: "English",
+};
 const WORD_BANK = [
   "平安", "恩典", "愛", "信", "盼望", "喜樂", "感謝", "讚美",
   "敬拜", "禱告", "耶穌", "天父", "聖靈", "十架", "救恩", "生命",
@@ -199,6 +213,7 @@ const els = {
   hintButton: document.querySelector("#hintButton"),
   skipButton: document.querySelector("#skipButton"),
   nextButton: document.querySelector("#nextButton"),
+  birthdayButton: document.querySelector("#birthdayButton"),
   toggleVideoButton: document.querySelector("#toggleVideoButton"),
   duration60Button: document.querySelector("#duration60Button"),
   duration30Button: document.querySelector("#duration30Button"),
@@ -280,6 +295,7 @@ function bindEvents() {
   els.hintButton.addEventListener("click", () => showNextHint());
   els.skipButton.addEventListener("click", () => finishRound(false, "開估"));
   els.nextButton.addEventListener("click", () => startNextQuestion());
+  els.birthdayButton?.addEventListener("click", () => playBirthdaySong());
   els.toggleVideoButton.addEventListener("click", () => toggleVideo());
 
   els.duration60Button.addEventListener("click", () => setPlayDuration(60));
@@ -1442,6 +1458,32 @@ function playCurrentClip() {
   scheduleClipStop();
 }
 
+function playBirthdaySong() {
+  clearClipTimer();
+  state.currentSong = { ...BIRTHDAY_SONG };
+  state.currentChoices = [];
+  state.currentWord = "";
+  state.revealed = true;
+  state.answered = true;
+  state.hintLevel = 0;
+  state.isPlaying = true;
+  state.fullPlayback = true;
+  state.frontReady = true;
+  state.currentClipStart = CLIP_START_SECONDS;
+  state.playEndsAt = 0;
+  state.currentQuestionId = `birthday:${Date.now()}`;
+  state.buzzWinnerId = "";
+  state.buzzOpen = false;
+  state.showLeaderboard = false;
+  state.showWinner = false;
+  state.playbackRevision += 1;
+  els.guessInput.value = "";
+
+  setResult("生日歌播放中", "Happy Birthday Song · CoComelon", "correct");
+  render();
+  renderYouTubeFrame({ autoplay: true });
+}
+
 function stopPlayback(message = "已停止播放") {
   clearClipTimer();
   state.isPlaying = false;
@@ -1592,8 +1634,9 @@ function isVideoMediaUrl(url) {
 
 function buildEmbedUrl(song, autoplay) {
   const url = new URL(`https://www.youtube.com/embed/${song.videoId}`);
-  url.searchParams.set("start", String(clipStart(song)));
-  url.searchParams.set("end", String(clipStart(song) + clipDuration(song)));
+  const start = state.fullPlayback ? CLIP_START_SECONDS : clipStart(song);
+  url.searchParams.set("start", String(start));
+  if (!state.fullPlayback) url.searchParams.set("end", String(start + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
   url.searchParams.set("controls", "1");
   url.searchParams.set("enablejsapi", "1");
@@ -2048,6 +2091,7 @@ function renderQuiz() {
   els.hintButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
   els.skipButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered;
   els.nextButton.disabled = roomBlocked;
+  if (els.birthdayButton) els.birthdayButton.disabled = false;
   els.duration60Button.disabled = roomBlocked;
   els.duration30Button.disabled = roomBlocked;
   els.duration15Button.disabled = roomBlocked;
