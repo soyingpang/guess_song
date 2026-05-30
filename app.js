@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "birthday-mystery-2";
+const APP_BUILD_VERSION = "firebase-b1-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -196,6 +196,13 @@ const state = {
   audioBroadcastStream: null,
   audioBroadcastCalls: new Map(),
   audioBroadcastRetryTimers: new Map(),
+  firebase: null,
+  firebaseReady: false,
+  firebaseError: "",
+  firebaseStartedAt: 0,
+  firebaseSeenEventKeys: new Set(),
+  firebaseAudioPeers: new Map(),
+  firebaseAudioSessionId: "",
   audioBroadcastActive: false,
   audioBroadcastStarting: false,
   players: {},
@@ -350,11 +357,15 @@ function bindEvents() {
 }
 
 function initMultiplayer() {
+  initFirebaseHost();
+
   if (!window.Peer) {
-    state.roomReady = false;
-    state.roomId = "";
-    state.playerUrl = "";
-    state.displayUrl = "";
+    if (!state.firebaseReady) {
+      state.roomReady = false;
+      state.roomId = "";
+      state.playerUrl = "";
+      state.displayUrl = "";
+    }
     renderPlayers();
     return;
   }
@@ -365,6 +376,51 @@ function initMultiplayer() {
   state.hostClaimTimer = window.setTimeout(() => {
     createRoomPeer(roomId, 0, 0);
   }, HOST_TAKEOVER_DELAY_MS);
+}
+
+async function initFirebaseHost() {
+  if (!window.GuessSongFirebase?.isConfigured?.()) return;
+
+  const roomId = resolveRoomId();
+  state.roomId = roomId;
+  state.playerUrl = buildPlayerUrl(roomId);
+  state.displayUrl = buildDisplayUrl(roomId);
+  state.firebaseStartedAt = Date.now();
+
+  try {
+    const firebase = await window.GuessSongFirebase.createRoomClient({
+      roomId,
+      role: "host",
+    });
+    if (!firebase) return;
+
+    state.firebase = firebase;
+    state.firebaseReady = true;
+    state.firebaseError = "";
+    state.roomReady = true;
+    state.roomError = "";
+    state.roomId = roomId;
+    state.playerUrl = buildPlayerUrl(roomId);
+    state.displayUrl = buildDisplayUrl(roomId);
+
+    await firebase.update(["meta"], {
+      hostOnline: true,
+      buildVersion: APP_BUILD_VERSION,
+      updatedAt: Date.now(),
+    });
+    firebase.onDisconnectSet(["meta", "hostOnline"], false);
+    firebase.onValue(["players"], handleFirebasePlayersSnapshot);
+    firebase.onChildAdded(["events"], handleFirebasePlayerEvent);
+
+    render();
+    syncSurfaces();
+  } catch (error) {
+    state.firebaseReady = false;
+    state.firebaseError = "Firebase 房間未能連線";
+    state.roomError = state.roomReady ? state.roomError : "Firebase 房間未能連線，現用本機同步後備";
+    render();
+    console.warn("Firebase host init failed", error);
+  }
 }
 
 function resolveRoomId() {
@@ -430,6 +486,12 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
 
   roomPeer.on("disconnected", () => {
     if (state.peer !== roomPeer) return;
+    if (state.firebaseReady) {
+      state.roomReady = true;
+      state.roomError = "";
+      render();
+      return;
+    }
     state.roomReady = false;
     state.roomError = "房間同步服務暫時斷線，正在重連";
     render();
@@ -442,6 +504,12 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
 
   roomPeer.on("error", (error) => {
     if (state.peer !== roomPeer) return;
+    if (state.firebaseReady) {
+      state.roomReady = true;
+      state.roomError = "";
+      render();
+      return;
+    }
     if (error.type === "unavailable-id") {
       destroyRoomPeer();
 
@@ -648,8 +716,8 @@ function handlePlayerMessage(connection, message) {
     player.team = normalizeTeam(player.team);
     player.connected = true;
     player.connection = connection;
-    player.remoteMode = false;
-    player.speakerMode = false;
+    player.remoteMode = Boolean(message.remoteMode);
+    player.speakerMode = Boolean(message.speakerMode);
     player.micActive = false;
     state.players[player.id] = player;
     connection.playerId = player.id;
@@ -888,7 +956,7 @@ function closePeerMediaCall(call) {
 
 async function toggleAudioBroadcast() {
   if (state.audioBroadcastActive || state.audioBroadcastStarting) {
-    stopAudioBroadcast("不在現場音訊廣播已停止");
+    stopAudioBroadcast("全球手機聲音廣播已停止");
     return;
   }
 
@@ -897,23 +965,23 @@ async function toggleAudioBroadcast() {
     return;
   }
 
-  if (!navigator.mediaDevices?.getDisplayMedia) {
-    setResult("瀏覽器不支援音訊廣播", "請用桌面版 Chrome / Edge 開主持後台", "wrong");
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setResult("瀏覽器不支援音訊廣播", "請改用 Chrome / Safari，並允許咪高峰", "wrong");
     return;
   }
 
   try {
     state.audioBroadcastStarting = true;
     renderAudioBroadcastUi();
-    setResult("選擇音訊來源", "請選播放 YouTube 的 Chrome 分頁，並勾選分享音訊", "");
+    setResult("準備現場聲音", "請允許使用主持裝置的咪高峰", "");
 
-    const sourceStream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
+    const sourceStream = await navigator.mediaDevices.getUserMedia({
       audio: {
-        echoCancellation: false,
+        echoCancellation: true,
         noiseSuppression: false,
-        autoGainControl: false,
+        autoGainControl: true,
       },
+      video: false,
     });
     const audioTracks = sourceStream.getAudioTracks();
 
@@ -921,13 +989,14 @@ async function toggleAudioBroadcast() {
       sourceStream.getTracks().forEach((track) => track.stop());
       state.audioBroadcastStarting = false;
       renderAudioBroadcastUi();
-      setResult("沒有取得音訊", "請重新開始，選 Chrome 分頁並勾選分享音訊", "wrong");
+      setResult("沒有取得音訊", "請重新開始，並允許使用咪高峰", "wrong");
       return;
     }
 
     stopAudioBroadcast("", { silent: true });
     state.audioBroadcastSourceStream = sourceStream;
     state.audioBroadcastStream = new MediaStream(audioTracks);
+    state.firebaseAudioSessionId = createSessionId();
     state.audioBroadcastActive = true;
     state.audioBroadcastStarting = false;
 
@@ -942,22 +1011,23 @@ async function toggleAudioBroadcast() {
     broadcastAudioToRemotePlayers();
     renderPlayers();
     renderAudioBroadcastUi();
-    setResult("不在現場音訊廣播中", "只會送到選了「不在現場」的玩家手機", "correct");
+    setResult("現場聲音廣播中", "請用這部裝置的咪收主持播放的 YouTube 聲音", "correct");
   } catch (error) {
     state.audioBroadcastStarting = false;
     renderAudioBroadcastUi();
     setResult(
       error?.name === "NotAllowedError" ? "已取消音訊廣播" : "音訊廣播失敗",
-      "請用桌面 Chrome / Edge，選 Chrome 分頁並勾選分享音訊",
+      "請允許使用咪高峰，再按一次開始廣播",
       "wrong"
     );
   }
 }
 
-function stopAudioBroadcast(message = "不在現場音訊廣播已停止", options = {}) {
+function stopAudioBroadcast(message = "全球手機聲音廣播已停止", options = {}) {
   const { silent = false } = options;
   state.audioBroadcastStarting = false;
   state.audioBroadcastActive = false;
+  state.firebaseAudioSessionId = "";
   clearAllAudioBroadcastRetries();
 
   Array.from(state.audioBroadcastCalls.values()).forEach((call) => {
@@ -968,6 +1038,7 @@ function stopAudioBroadcast(message = "不在現場音訊廣播已停止", optio
     }
   });
   state.audioBroadcastCalls.clear();
+  clearAllFirebaseAudioPeers();
 
   state.audioBroadcastSourceStream?.getTracks().forEach((track) => track.stop());
   state.audioBroadcastStream?.getTracks().forEach((track) => track.stop());
@@ -976,7 +1047,7 @@ function stopAudioBroadcast(message = "不在現場音訊廣播已停止", optio
 
   renderAudioBroadcastUi();
   renderPlayers();
-  if (!silent && message) setResult(message, "不在現場玩家將聽不到主持電腦音訊", "");
+  if (!silent && message) setResult(message, "不在現場玩家將聽不到主持咪高峰聲音", "");
 }
 
 function broadcastAudioToRemotePlayers() {
@@ -987,6 +1058,11 @@ function broadcastAudioToRemotePlayers() {
 function syncAudioBroadcastToPlayer(player) {
   if (!shouldAudioBroadcastToPlayer(player)) {
     endAudioBroadcastForPlayer(player?.id);
+    return;
+  }
+
+  if (state.firebaseReady && player.firebase) {
+    syncFirebaseAudioBroadcastToPlayer(player);
     return;
   }
 
@@ -1017,20 +1093,23 @@ function syncAudioBroadcastToPlayer(player) {
 }
 
 function shouldAudioBroadcastToPlayer(player) {
+  const hasTransport = state.firebaseReady && player?.firebase
+    ? Boolean(state.firebase)
+    : Boolean(state.peer && player?.connection?.open && player.connection?.peer);
+
   return Boolean(
     state.audioBroadcastActive &&
       state.audioBroadcastStream &&
-      state.peer &&
+      hasTransport &&
       player?.remoteMode &&
-      player.connected &&
-      player.connection?.open &&
-      player.connection?.peer
+      player.connected
   );
 }
 
 function endAudioBroadcastForPlayer(playerId) {
   if (!playerId) return;
   clearAudioBroadcastRetry(playerId);
+  endFirebaseAudioForPlayer(playerId);
   const call = state.audioBroadcastCalls.get(playerId);
   state.audioBroadcastCalls.delete(playerId);
   if (!call) return;
@@ -1079,16 +1158,209 @@ function renderAudioBroadcastUi() {
   if (!els.audioBroadcastButton || !els.audioBroadcastStatus) return;
 
   const remoteConnected = Object.values(state.players).filter((player) => player.connected && player.remoteMode).length;
-  const connectedCalls = state.audioBroadcastCalls.size;
+  const connectedCalls = state.audioBroadcastCalls.size + state.firebaseAudioPeers.size;
   els.audioBroadcastButton.disabled = state.audioBroadcastStarting || !state.roomReady || isRoomBlocked();
-  els.audioBroadcastButton.textContent = state.audioBroadcastActive ? "停止音訊廣播" : state.audioBroadcastStarting ? "準備廣播..." : "開始音訊廣播";
+  els.audioBroadcastButton.textContent = state.audioBroadcastActive ? "停止現場聲音廣播" : state.audioBroadcastStarting ? "準備廣播..." : "開始現場聲音廣播";
   els.audioBroadcastStatus.textContent = state.audioBroadcastActive
     ? remoteConnected
-      ? `不在現場聲音：廣播中 · 已送出 ${connectedCalls}/${remoteConnected} 部手機`
-      : "不在現場聲音：廣播中 · 等候不在現場玩家"
+      ? `全球手機聲音：廣播中 · 已送出 ${connectedCalls}/${remoteConnected} 部手機`
+      : "全球手機聲音：廣播中 · 等候不在現場玩家"
     : state.audioBroadcastStarting
-      ? "不在現場聲音：等待主持選擇分頁音訊"
-      : "不在現場聲音：未廣播";
+      ? "全球手機聲音：等待咪高峰授權"
+      : "全球手機聲音：未廣播";
+}
+
+function handleFirebasePlayersSnapshot(playersById) {
+  if (!state.firebaseReady) return;
+  const rows = playersById && typeof playersById === "object" ? Object.entries(playersById) : [];
+
+  rows.forEach(([playerId, record]) => {
+    if (!record || typeof record !== "object") return;
+    const name = cleanPlayerName(record.name);
+    const player = resolveJoiningPlayer(playerId, name);
+    player.name = uniquePlayerName(name, player.id);
+    player.team = normalizeTeam(player.team || record.team);
+    player.connected = Boolean(record.connected);
+    player.firebase = true;
+    player.remoteMode = Boolean(record.remoteMode);
+    player.speakerMode = false;
+    state.players[player.id] = player;
+  });
+
+  Object.values(state.players).forEach((player) => {
+    if (!player.firebase) return;
+    const record = playersById?.[player.id];
+    if (!record) {
+      player.connected = false;
+      endAudioBroadcastForPlayer(player.id);
+    }
+  });
+
+  renderPlayers();
+  publishDisplayState();
+  broadcastToPlayers();
+  if (state.audioBroadcastActive) broadcastAudioToRemotePlayers();
+}
+
+function handleFirebasePlayerEvent(event, key) {
+  if (!state.firebaseReady || !event || typeof event !== "object") return;
+  if (state.firebaseSeenEventKeys.has(key)) return;
+  state.firebaseSeenEventKeys.add(key);
+
+  const createdAt = Number(event.createdAt || 0);
+  if (createdAt && createdAt < state.firebaseStartedAt - 3000) return;
+
+  const player = state.players[String(event.playerId || "")];
+  const message = event.message || event;
+  if (!player || !message || typeof message !== "object") return;
+
+  if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
+
+  if (message.type === "answer") handleChoiceAnswer(player, message.answer);
+  if (message.type === "buzz") handleBuzz(player);
+}
+
+function publishFirebaseDisplayState(payload = buildDisplayState()) {
+  if (!state.firebaseReady || !state.firebase) return;
+  state.firebase.set(["displayState"], payload).catch(() => {
+    state.firebaseError = "Firebase 顯示同步失敗";
+  });
+}
+
+function publishFirebasePlayerRecord(player) {
+  if (!state.firebaseReady || !state.firebase || !player?.id) return;
+  state.firebase.update(["players", player.id], {
+    id: player.id,
+    name: player.name,
+    team: normalizeTeam(player.team),
+    score: Number(player.score || 0),
+    connected: Boolean(player.connected),
+    remoteMode: Boolean(player.remoteMode),
+    updatedAt: Date.now(),
+  }).catch(() => {
+    state.firebaseError = "Firebase 玩家同步失敗";
+  });
+}
+
+function publishFirebasePlayerState(player) {
+  if (!state.firebaseReady || !state.firebase || !player?.id) return;
+  state.firebase.set(["playerStates", player.id], buildPlayerState(player)).catch(() => {
+    state.firebaseError = "Firebase 題目同步失敗";
+  });
+}
+
+function sendFirebasePlayerMessage(player, message) {
+  if (!state.firebaseReady || !state.firebase || !player?.id || !message) return;
+  state.firebase.push(["messages", player.id], {
+    ...message,
+    createdAt: Date.now(),
+  }).catch(() => {
+    state.firebaseError = "Firebase 訊息同步失敗";
+  });
+}
+
+async function syncFirebaseAudioBroadcastToPlayer(player) {
+  if (!state.firebaseReady || !state.firebase || !state.audioBroadcastStream || !player?.id) return;
+  if (state.firebaseAudioPeers.has(player.id)) return;
+
+  const peerConnection = new RTCPeerConnection({
+    iceServers: ICE_SERVERS,
+    iceCandidatePoolSize: 4,
+  });
+  const cleanup = [];
+  const sessionId = state.firebaseAudioSessionId || createSessionId();
+  state.firebaseAudioSessionId = sessionId;
+
+  const entry = {
+    peerConnection,
+    cleanup,
+    playerId: player.id,
+    sessionId,
+  };
+  state.firebaseAudioPeers.set(player.id, entry);
+
+  peerConnection.onicecandidate = (event) => {
+    if (!event.candidate || state.firebaseAudioPeers.get(player.id) !== entry) return;
+    state.firebase.push(["rtc", player.id, "hostCandidates"], {
+      sessionId,
+      candidate: event.candidate.toJSON(),
+      createdAt: Date.now(),
+    }).catch(() => {});
+  };
+  peerConnection.onconnectionstatechange = () => {
+    if (["failed", "closed", "disconnected"].includes(peerConnection.connectionState)) {
+      endFirebaseAudioForPlayer(player.id, { retry: peerConnection.connectionState !== "closed" });
+    }
+  };
+
+  state.audioBroadcastStream.getAudioTracks().forEach((track) => {
+    peerConnection.addTrack(track, state.audioBroadcastStream);
+  });
+
+  try {
+    await state.firebase.set(["rtc", player.id], null);
+    cleanup.push(state.firebase.onValue(["rtc", player.id, "answer"], (answer) => {
+      if (!answer || answer.sessionId !== sessionId || peerConnection.remoteDescription) return;
+      peerConnection.setRemoteDescription(answer.description).catch(() => {
+        endFirebaseAudioForPlayer(player.id, { retry: true });
+      });
+    }));
+    cleanup.push(state.firebase.onChildAdded(["rtc", player.id, "playerCandidates"], (payload) => {
+      if (!payload || payload.sessionId !== sessionId || !payload.candidate) return;
+      addIceCandidateWhenReady(peerConnection, payload.candidate);
+    }));
+
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    await state.firebase.set(["rtc", player.id, "offer"], {
+      sessionId,
+      roomId: state.roomId,
+      description: peerConnection.localDescription.toJSON(),
+      createdAt: Date.now(),
+    });
+    renderAudioBroadcastUi();
+  } catch {
+    endFirebaseAudioForPlayer(player.id, { retry: true });
+  }
+}
+
+function addIceCandidateWhenReady(peerConnection, candidate, attempt = 0) {
+  if (peerConnection.remoteDescription) {
+    peerConnection.addIceCandidate(candidate).catch(() => {});
+    return;
+  }
+
+  if (attempt > 20) return;
+  window.setTimeout(() => addIceCandidateWhenReady(peerConnection, candidate, attempt + 1), 150);
+}
+
+function endFirebaseAudioForPlayer(playerId, options = {}) {
+  const entry = state.firebaseAudioPeers.get(playerId);
+  if (!entry) return;
+
+  state.firebaseAudioPeers.delete(playerId);
+  entry.cleanup.forEach((unsubscribe) => {
+    try {
+      unsubscribe();
+    } catch {
+      // Ignore cleanup failures.
+    }
+  });
+  try {
+    entry.peerConnection.close();
+  } catch {
+    // Ignore closed peer connections.
+  }
+  state.firebase?.set(["rtc", playerId], null).catch(() => {});
+  renderAudioBroadcastUi();
+
+  if (options.retry) queueAudioBroadcastRetry(playerId);
+}
+
+function clearAllFirebaseAudioPeers() {
+  Array.from(state.firebaseAudioPeers.keys()).forEach((playerId) => {
+    endFirebaseAudioForPlayer(playerId);
+  });
 }
 
 function handleChoiceAnswer(player, answer) {
@@ -2212,7 +2484,9 @@ function renderPlayers() {
   els.playerCount.textContent = `${players.length} 位`;
   els.roomStatus.textContent = state.roomError
     ? state.roomError
-    : state.roomReady
+    : state.firebaseReady
+      ? `Firebase 全球房間：${state.roomId} · 可連線`
+      : state.roomReady
       ? `固定房間：${state.roomId} · 前台 ${state.displayConnections.size} 個 · 可連線`
       : `固定房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
@@ -2236,7 +2510,7 @@ function renderPlayers() {
     const name = document.createElement("strong");
     const meta = document.createElement("span");
     name.textContent = `${index + 1}. ${player.name}`;
-    meta.textContent = `${teamLabel(player.team)} · ${player.connected ? "已連線" : "離線"}`;
+    meta.textContent = `${teamLabel(player.team)} · ${player.remoteMode ? "不在現場" : "現場"} · ${player.connected ? "已連線" : "離線"}`;
     info.append(name, meta);
 
     const score = document.createElement("strong");
@@ -2301,6 +2575,9 @@ function removeOfflinePlayer(playerId) {
   }
 
   endPlayerMic(playerId, { closeCall: true, render: false });
+  state.firebase?.set(["players", playerId], null).catch(() => {});
+  state.firebase?.set(["playerStates", playerId], null).catch(() => {});
+  state.firebase?.set(["messages", playerId], null).catch(() => {});
   delete state.players[playerId];
   if (state.buzzWinnerId === playerId) state.buzzWinnerId = "";
   setResult("已移除離線玩家", player.name, "");
@@ -2387,6 +2664,7 @@ function publishDisplayState() {
   const payload = buildDisplayState();
   localStorage.setItem(DISPLAY_STATE_KEY, JSON.stringify(payload));
   broadcastToDisplays(payload);
+  publishFirebaseDisplayState(payload);
 }
 
 function syncSurfaces(extraMessage = null) {
@@ -2525,6 +2803,7 @@ function sendDisplayState(connection, payload) {
 
 function sendPlayerState(player) {
   sendToPlayer(player, buildPlayerState(player));
+  publishFirebasePlayerState(player);
 }
 
 function sendJoinAck(player) {
@@ -2556,6 +2835,9 @@ function clearPlayerStateRetries(playerId) {
 function sendToPlayer(player, message) {
   if (player?.connection?.open) {
     player.connection.send(message);
+  }
+  if (player?.firebase && message?.type !== "state") {
+    sendFirebasePlayerMessage(player, message);
   }
 }
 

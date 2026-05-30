@@ -2,7 +2,7 @@ const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
 const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
-const ONSITE_ONLY = true;
+const ONSITE_ONLY = false;
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -111,7 +111,14 @@ const state = {
   hostAudioStream: null,
   hostAudioElement: null,
   hostAudioBlocked: false,
-  hostAudioStatus: "等候玩家開咪或主持音訊",
+  hostAudioStatus: "等候主持現場聲音",
+  firebase: null,
+  firebaseReady: false,
+  firebaseConnectedAt: 0,
+  firebaseMessageKeys: new Set(),
+  firebaseRtcPeer: null,
+  firebaseRtcCleanup: [],
+  firebaseRtcSessionId: "",
   remoteAudioPrimed: false,
   remoteAudioPriming: false,
   remoteUnlockAudioElement: null,
@@ -212,7 +219,7 @@ els.onsiteModeButton?.addEventListener("click", () => {
   setPlayerMode("onsite");
 });
 els.remoteModeButton?.addEventListener("click", () => {
-  setPlayerMode("onsite");
+  setPlayerMode("remote");
 });
 els.speakerModeButton?.addEventListener("click", () => {
   setPlayerMode("onsite");
@@ -250,6 +257,10 @@ document.addEventListener("visibilitychange", () => {
 });
 
 window.addEventListener("beforeunload", () => {
+  if (state.firebaseReady && state.firebase) {
+    state.firebase.set(["players", state.playerId, "connected"], false).catch(() => {});
+  }
+  stopFirebaseHostAudio();
   stopMic({ notifyHost: false, message: "已離開" });
   stopHostAudioBroadcast({ closeCall: true, message: defaultListenStatus() });
 });
@@ -272,10 +283,8 @@ function joinGame() {
   state.name = name.slice(0, 18);
   state.displayName = "";
   state.entryNameReady = true;
-  state.remoteMode = false;
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
-  localStorage.setItem(PLAYER_REMOTE_MODE_KEY, "onsite");
-  startJoinWithSelectedMode();
+  showModeStep();
 }
 
 function showNameStep() {
@@ -291,13 +300,12 @@ function showModeStep() {
   if (els.playerNameLabel) els.playerNameLabel.hidden = true;
   if (els.playerNameLine) els.playerNameLine.hidden = true;
   if (els.playerNameNote) els.playerNameNote.hidden = true;
-  setStatus("正在加入現場遊戲");
+  setStatus("請選擇你是否在現場");
   applyPlayerMode();
 }
 
 function startJoinWithSelectedMode() {
   if (!state.entryNameReady || state.joined || state.connecting) return;
-  state.remoteMode = false;
   state.speakerMode = false;
   lockPlayerMode();
   els.joinForm.hidden = true;
@@ -309,7 +317,84 @@ function showJoinFormAfterFailure() {
   showNameStep();
 }
 
-function connectToRoom({ resetAttempts = false } = {}) {
+async function connectToRoom({ resetAttempts = false } = {}) {
+  if (window.GuessSongFirebase?.isConfigured?.()) {
+    await connectToFirebaseRoom({ resetAttempts });
+    return;
+  }
+
+  connectToRoomViaPeer({ resetAttempts });
+}
+
+async function connectToFirebaseRoom({ resetAttempts = false } = {}) {
+  clearTimeout(state.reconnectTimer);
+  state.reconnectTimer = null;
+  if (resetAttempts) {
+    state.reconnectAttempts = 0;
+    roomCandidateIndex = 0;
+    connectionProfileIndex = 0;
+  }
+  activeRoomId = roomCandidates[roomCandidateIndex] || roomId;
+
+  state.connecting = true;
+  closeCurrentPeer();
+  stopFirebaseHostAudio();
+  setStatus("連接 Firebase 全球房間中");
+
+  try {
+    const firebase = await window.GuessSongFirebase.createRoomClient({
+      roomId: activeRoomId,
+      role: "player",
+    });
+    if (!firebase) throw new Error("Firebase not configured");
+
+    state.firebase = firebase;
+    state.firebaseReady = true;
+    state.firebaseConnectedAt = Date.now();
+    state.joined = true;
+    state.connecting = false;
+    state.reconnectAttempts = 0;
+    lockPlayerMode();
+    els.joinForm.hidden = true;
+
+    await firebase.set(["players", state.playerId], {
+      id: state.playerId,
+      name: state.name,
+      connected: true,
+      remoteMode: state.remoteMode,
+      speakerMode: false,
+      updatedAt: Date.now(),
+    });
+    firebase.onDisconnectSet(["players", state.playerId, "connected"], false);
+    firebase.onValue(["playerStates", state.playerId], (message) => {
+      if (!message) return;
+      handleMessage(message);
+    });
+    firebase.onChildAdded(["messages", state.playerId], (message, key) => {
+      if (!message || state.firebaseMessageKeys.has(key)) return;
+      state.firebaseMessageKeys.add(key);
+      if (Number(message.createdAt || 0) < state.firebaseConnectedAt - 3000) return;
+      handleMessage(message);
+    });
+    firebase.onValue(["rtc", state.playerId, "offer"], handleFirebaseAudioOffer);
+
+    setStatus("已加入 Firebase 全球房間");
+    renderJoinedWaiting();
+    updateMicUi();
+    applyPlayerMode();
+  } catch (error) {
+    state.firebaseReady = false;
+    state.firebase = null;
+    console.warn("Firebase player connect failed", error);
+    if (window.Peer) {
+      connectToRoomViaPeer({ resetAttempts: false });
+      return;
+    }
+    handleConnectionFailure("Firebase 全球房間連線失敗，請確認設定和網絡");
+  }
+}
+
+function connectToRoomViaPeer({ resetAttempts = false } = {}) {
   if (!window.Peer) {
     setStatus("未能載入連線工具，請重新整理");
     unlockPlayerMode();
@@ -468,8 +553,8 @@ function sendJoinMessage() {
     type: "join",
     playerId: state.playerId,
     name: state.name,
-    remoteMode: false,
-    speakerMode: false,
+    remoteMode: state.remoteMode,
+    speakerMode: state.speakerMode,
   });
 }
 
@@ -955,6 +1040,97 @@ function finishRemoteAudioPriming(unlocked) {
   return Promise.resolve(state.remoteAudioPrimed);
 }
 
+async function handleFirebaseAudioOffer(offer) {
+  if (!state.firebaseReady || !state.firebase || !offer?.description) return;
+  if (!state.remoteMode || !state.joined) return;
+  if (offer.sessionId && offer.sessionId === state.firebaseRtcSessionId) return;
+
+  stopFirebaseHostAudio({ message: "正在接駁主持音訊" });
+  state.firebaseRtcSessionId = offer.sessionId || "";
+  setHostAudioStatus("正在接駁主持音訊");
+
+  const peerConnection = new RTCPeerConnection({
+    iceServers: ICE_SERVERS,
+    iceCandidatePoolSize: 4,
+  });
+  state.firebaseRtcPeer = peerConnection;
+
+  peerConnection.ontrack = (event) => {
+    const stream = event.streams?.[0];
+    if (!stream || state.firebaseRtcPeer !== peerConnection) return;
+    attachHostAudioBroadcastStream(stream);
+  };
+
+  peerConnection.onicecandidate = (event) => {
+    if (!event.candidate || state.firebaseRtcPeer !== peerConnection) return;
+    state.firebase.push(["rtc", state.playerId, "playerCandidates"], {
+      sessionId: state.firebaseRtcSessionId,
+      candidate: event.candidate.toJSON(),
+      createdAt: Date.now(),
+    }).catch(() => {});
+  };
+
+  peerConnection.onconnectionstatechange = () => {
+    if (["failed", "closed", "disconnected"].includes(peerConnection.connectionState)) {
+      stopFirebaseHostAudio({ message: "主持音訊連線中斷" });
+    }
+  };
+
+  state.firebaseRtcCleanup.push(state.firebase.onChildAdded(["rtc", state.playerId, "hostCandidates"], (payload) => {
+    if (!payload || payload.sessionId !== state.firebaseRtcSessionId || !payload.candidate) return;
+    addFirebaseIceCandidateWhenReady(peerConnection, payload.candidate);
+  }));
+
+  try {
+    await peerConnection.setRemoteDescription(offer.description);
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    await state.firebase.set(["rtc", state.playerId, "answer"], {
+      sessionId: state.firebaseRtcSessionId,
+      description: peerConnection.localDescription.toJSON(),
+      createdAt: Date.now(),
+    });
+  } catch {
+    stopFirebaseHostAudio({ message: "無法接駁主持音訊" });
+  }
+}
+
+function addFirebaseIceCandidateWhenReady(peerConnection, candidate, attempt = 0) {
+  if (peerConnection.remoteDescription) {
+    peerConnection.addIceCandidate(candidate).catch(() => {});
+    return;
+  }
+
+  if (attempt > 20) return;
+  window.setTimeout(() => addFirebaseIceCandidateWhenReady(peerConnection, candidate, attempt + 1), 150);
+}
+
+function stopFirebaseHostAudio(options = {}) {
+  const { keepStatus = false, message = defaultListenStatus() } = options;
+  state.firebaseRtcCleanup.forEach((unsubscribe) => {
+    try {
+      unsubscribe();
+    } catch {
+      // Ignore cleanup failures.
+    }
+  });
+  state.firebaseRtcCleanup = [];
+
+  try {
+    state.firebaseRtcPeer?.close();
+  } catch {
+    // Ignore closed peer connections.
+  }
+  state.firebaseRtcPeer = null;
+  state.firebaseRtcSessionId = "";
+
+  if (!keepStatus && state.hostAudioStream) {
+    stopHostAudioBroadcast({ closeCall: false, message });
+  } else if (!keepStatus) {
+    setHostAudioStatus(message);
+  }
+}
+
 function handlePeerCall(call) {
   if (call?.metadata?.type === "remote-player-mic-broadcast") {
     closePeerCall(call);
@@ -1287,17 +1463,16 @@ function setHostAudioStatus(message) {
 }
 
 function isPhoneAudioListener() {
-  // Host routing excludes the speaking phone, so every other joined phone can listen.
-  return true;
+  return Boolean(state.remoteMode);
 }
 
 function defaultListenStatus() {
-  if (state.remoteMode) return "等候玩家開咪或主持音訊";
+  if (state.remoteMode) return "等候主持現場聲音";
   return "等候其他手機開咪";
 }
 
 function primedListenStatus() {
-  if (state.remoteMode) return "已啟用自動收聽，等候玩家開咪或主持音訊";
+  if (state.remoteMode) return "已啟用自動收聽，等候主持現場聲音";
   return "已啟用手機收聽，等候其他手機開咪";
 }
 
@@ -1318,7 +1493,7 @@ function renderHostAudioBroadcastUi() {
   const waitingForAudio = !hasPlayableAudio;
   const hasDefaultWaitingStatus =
     !state.hostAudioStatus ||
-    ["等候主持音訊廣播", "等候玩家開咪或主持音訊", "等候玩家開咪", "等候其他手機開咪"].includes(state.hostAudioStatus);
+    ["等候主持音訊廣播", "等候主持現場聲音", "等候玩家開咪或主持音訊", "等候玩家開咪", "等候其他手機開咪"].includes(state.hostAudioStatus);
   els.phoneRemoteListenStatus.textContent =
     waitingForAudio && state.remoteAudioPriming
       ? "正在啟用手機出聲"
@@ -1333,8 +1508,8 @@ function renderHostAudioBroadcastUi() {
 
 function setPlayerMode(mode) {
   if (state.modeLocked || state.joined || state.connecting) return;
-  const nextMode = "onsite";
-  state.remoteMode = false;
+  const nextMode = normalizeEntryMode(mode);
+  state.remoteMode = nextMode === "remote";
   state.speakerMode = false;
   localStorage.setItem(PLAYER_REMOTE_MODE_KEY, nextMode);
   applyPlayerMode();
@@ -1500,7 +1675,7 @@ function hasRemoteMedia(game) {
 }
 
 function shouldShowRemoteSyncPlayer(game) {
-  return Boolean(game?.audioUrl);
+  return false;
 }
 
 function remoteMediaKey(game) {
@@ -1918,6 +2093,18 @@ function sameChoice(left, right) {
 }
 
 function send(message) {
+  if (state.firebaseReady && state.firebase) {
+    state.firebase.push(["events"], {
+      playerId: state.playerId,
+      type: message?.type || "message",
+      message,
+      createdAt: Date.now(),
+    }).catch(() => {
+      setStatus("送出失敗，請檢查網絡");
+    });
+    return;
+  }
+
   if (state.connection?.open) state.connection.send(message);
 }
 

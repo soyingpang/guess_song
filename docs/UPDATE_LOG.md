@@ -21,6 +21,34 @@
 
 ---
 
+## 2026-05-30 22:44 HKT
+
+類型：程式 / 規格 / Firebase / 全球手機模式
+
+摘要：
+- 新增 Firebase Realtime Database 支援，作為全球手機房間、玩家名單、題目狀態、搶答事件和 WebRTC signaling 層。
+- 新增 `firebase-config.js` 設定樣板和 `firebase-sync.js` Firebase 包裝層；未填 Firebase config 時保持 `enabled: false`，不破壞原本 PeerJS / 本機玩法。
+- 主持後台新增「開始現場聲音廣播」按鈕；B1 版本改用主持裝置咪高峰收 YouTube 聲音，再用 WebRTC 傳給選「我不在現場」的玩家手機。
+- 玩家頁重新打開「我在現場 / 我不在現場」流程；不在現場手機只收主持聲音和同步題目 / 搶答 / 分數，不再自己播放 YouTube。
+- 新增 `docs/FIREBASE_SETUP.md`，記錄 Firebase config、測試 rules、使用流程和限制。
+
+影響：
+- 這是「B1 全球手機版」原型：可避免每部玩家手機各自播 YouTube 而出現廣告不同步。
+- 聲音質素取決於主持咪高峰收音；這不是擷取 YouTube 內部音訊。
+- Firebase 只負責狀態和 signaling，不直接傳音訊。
+
+測試：
+- `node --check app.js`
+- `node --check player.js`
+- `node --check firebase-sync.js`
+- `git diff --check`
+
+後續：
+- 需要填入真實 Firebase Web app config 和 Realtime Database URL 後，做兩部手機以上實機測試。
+- 若穩定性不足或玩家超過約 10 人，下一步應評估 LiveKit / Agora 類音訊伺服器。
+
+---
+
 ## 2026-05-21 13:27 HKT
 
 類型：規格 / 修正 / 手機端 / YouTube 安全遮罩

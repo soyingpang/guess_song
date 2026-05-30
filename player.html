@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=prep-cover-art-1" />
+    <link rel="stylesheet" href="./styles.css?v=firebase-b1-1" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -854,11 +854,6 @@
         }
       }
 
-      .player-mode-field,
-      .phone-mic-panel,
-      .phone-remote-panel {
-        display: none !important;
-      }
     </style>
   </head>
   <body class="player-body">
@@ -887,18 +882,18 @@
                 </span>
                 <span>
                   <strong>我不在現場</strong>
-                  <small>用手機收聲，照樣答題同開咪</small>
+                  <small>用手機收主持聲音，照樣答題</small>
                 </span>
               </button>
             </div>
-            <p class="join-note">現場版只用手機答題及搶答。</p>
+            <p class="join-note">不在現場會收聽主持手機 / 咪高峰聲音，不會自己播放 YouTube。</p>
           </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
             <button class="primary-button" type="submit">加入</button>
           </div>
-          <p class="join-note">現場聽前台聲音，用手機答題或搶答。</p>
+          <p class="join-note">輸入名字後選擇你是否在現場。</p>
         </form>
 
         <div class="player-status" id="playerStatus">掃 QR 後輸入名字加入</div>
@@ -986,7 +981,9 @@
       </div>
     </main>
 
+    <script src="./firebase-config.js?v=firebase-b1-1"></script>
+    <script src="./firebase-sync.js?v=firebase-b1-1"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=vpn-onsite-1"></script>
+    <script src="./player.js?v=firebase-b1-1"></script>
   </body>
 </html>

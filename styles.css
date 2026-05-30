@@ -863,6 +863,23 @@ select:focus {
   width: 100%;
 }
 
+.audio-broadcast-card {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+  border: 1px solid rgba(42, 119, 105, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.74);
+  padding: 10px;
+}
+
+.audio-broadcast-card span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
 .player-list {
   display: grid;
   gap: 8px;
