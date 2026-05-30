@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "mobile-flow-1";
+const APP_BUILD_VERSION = "host-qr-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -278,6 +278,9 @@ const els = {
   roomStatus: document.querySelector("#roomStatus"),
   copyPlayerLinkButton: document.querySelector("#copyPlayerLinkButton"),
   copyDisplayLinkButton: document.querySelector("#copyDisplayLinkButton"),
+  hostJoinCard: document.querySelector("#hostJoinCard"),
+  hostPlayerQr: document.querySelector("#hostPlayerQr"),
+  hostPlayerQrStatus: document.querySelector("#hostPlayerQrStatus"),
   audioBroadcastButton: document.querySelector("#audioBroadcastButton"),
   audioBroadcastStatus: document.querySelector("#audioBroadcastStatus"),
   playerList: document.querySelector("#playerList"),
@@ -2491,6 +2494,7 @@ function renderPlayers() {
       : `固定房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.copyDisplayLinkButton.disabled = !state.displayUrl;
+  renderHostJoinQr();
   renderAudioBroadcastUi();
   els.playerList.innerHTML = "";
 
@@ -2557,6 +2561,33 @@ function setPlayerTeam(playerId, team) {
   setResult("已更新玩家組別", `${player.name} → ${teamLabel(nextTeam)}`, "correct");
   renderPlayers();
   syncSurfaces();
+}
+
+function renderHostJoinQr() {
+  if (!els.hostJoinCard || !els.hostPlayerQr || !els.hostPlayerQrStatus) return;
+
+  if (!state.playerUrl) {
+    els.hostJoinCard.hidden = true;
+    els.hostPlayerQr.removeAttribute("src");
+    delete els.hostPlayerQr.dataset.qrValue;
+    els.hostPlayerQrStatus.textContent = "房間建立中";
+    return;
+  }
+
+  els.hostJoinCard.hidden = false;
+  els.hostPlayerQrStatus.textContent = state.roomReady
+    ? `房間：${state.roomId}`
+    : `房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
+
+  if (els.hostPlayerQr.dataset.qrValue === state.playerUrl) return;
+  els.hostPlayerQr.dataset.qrValue = state.playerUrl;
+
+  try {
+    els.hostPlayerQr.src = window.createLocalQrCodeDataUrl(state.playerUrl);
+  } catch {
+    els.hostPlayerQr.removeAttribute("src");
+    els.hostPlayerQrStatus.textContent = "QR 暫時未能產生，請用上方玩家連結";
+  }
 }
 
 function removeOfflinePlayer(playerId) {
@@ -2923,7 +2954,6 @@ function uniquePlayerName(name, playerId) {
 function buildPlayerUrl(roomId) {
   const url = new URL("./player.html", window.location.href);
   url.searchParams.set("room", roomId);
-  url.searchParams.set("v", APP_BUILD_VERSION);
   return url.toString();
 }
 

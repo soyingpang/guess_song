@@ -21,6 +21,33 @@
 
 ---
 
+## 2026-05-31 00:44 HKT
+
+類型：介面 / 手機全球模式 / QR
+
+摘要：
+- 主持頁右側玩家區新增「掃碼加入」QR code，玩家可以直接掃主持手機 / 主持電腦畫面入房。
+- 主持頁載入本地 `local-qr.js` 產生 QR，不再需要先開可選投影畫面才有玩家 QR。
+- 玩家連結移除額外 `v` 參數，避免 GitHub Pages 長網址超出本地 QR 產生器長度限制；HTML script 版本仍保留快取更新。
+- 將三個入口頁 cache version 更新到 `host-qr-1`，避免部署後手機沿用舊 `app.js` / `styles.css`。
+
+影響：
+- 手機全球版主流程更簡單：主持開 `index.html`，玩家掃 QR 或用玩家連結即可；`display.html` 繼續只作可選投影畫面。
+
+測試：
+- `node --check app.js`
+- `node --check player.js`
+- `node --check display.js`
+- `node --check firebase-sync.js`
+- `node --check local-qr.js`
+- `git diff --check`
+- Browser 本機確認主持頁顯示 QR card，QR 是 `data:image/svg+xml`，玩家 URL 沒有 `v` 參數，Firebase 房間仍顯示可連線，入口頁資源已載入 `host-qr-1`。
+
+後續：
+- 用實體手機掃主持頁 QR，選「我不在現場」，測主持咪高峰廣播、玩家遠距收聽和搶答。
+
+---
+
 ## 2026-05-31 00:38 HKT
 
 類型：部署 / Firebase / 全球手機模式

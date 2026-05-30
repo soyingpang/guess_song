@@ -863,6 +863,51 @@ select:focus {
   width: 100%;
 }
 
+.host-join-card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  border: 1px solid rgba(42, 119, 105, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.82);
+  padding: 10px;
+}
+
+.host-join-card[hidden] {
+  display: none;
+}
+
+.host-join-card img {
+  width: 96px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(75, 47, 42, 0.12);
+  border-radius: 6px;
+  background: #fff;
+  padding: 6px;
+}
+
+.host-join-card strong,
+.host-join-card span {
+  display: block;
+}
+
+.host-join-card strong {
+  color: var(--cool-ink);
+  font-size: 0.9rem;
+  font-weight: 1000;
+}
+
+.host-join-card span {
+  margin-top: 4px;
+  color: #6d5b50;
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .audio-broadcast-card {
   display: grid;
   gap: 7px;
@@ -1832,6 +1877,14 @@ select:focus {
   .player-item,
   .player-mic-panel {
     grid-template-columns: 1fr;
+  }
+
+  .host-join-card {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  .host-join-card img {
+    width: 84px;
   }
 
   .player-actions {

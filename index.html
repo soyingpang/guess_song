@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=mobile-flow-1" />
+    <link rel="stylesheet" href="./styles.css?v=host-qr-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -144,6 +144,13 @@
               <button class="ghost-button" id="copyPlayerLinkButton" type="button">複製玩家連結</button>
               <button class="ghost-button" id="copyDisplayLinkButton" type="button">複製投影連結</button>
             </div>
+            <div class="host-join-card" id="hostJoinCard" hidden>
+              <img id="hostPlayerQr" alt="玩家加入 QR code" />
+              <div>
+                <strong>掃碼加入</strong>
+                <span id="hostPlayerQrStatus">房間建立中</span>
+              </div>
+            </div>
             <div class="audio-broadcast-card">
               <button class="primary-button" id="audioBroadcastButton" type="button">開始現場聲音廣播</button>
               <span id="audioBroadcastStatus">全球手機聲音：未廣播</span>
@@ -233,9 +240,10 @@
       </main>
     </div>
 
-    <script src="./firebase-config.js?v=mobile-flow-1"></script>
-    <script src="./firebase-sync.js?v=mobile-flow-1"></script>
+    <script src="./firebase-config.js?v=host-qr-1"></script>
+    <script src="./firebase-sync.js?v=host-qr-1"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./app.js?v=mobile-flow-1"></script>
+    <script src="./local-qr.js?v=host-qr-1"></script>
+    <script src="./app.js?v=host-qr-1"></script>
   </body>
 </html>
