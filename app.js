@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "firebase-b1-1";
+const APP_BUILD_VERSION = "mobile-flow-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -451,7 +451,7 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     state.displayUrl = buildDisplayUrl(id);
     localStorage.setItem(ROOM_ID_KEY, id);
     if (id !== DEFAULT_ROOM_ID) {
-      setResult("已改用備用房間", "舊後台仍佔用固定房間，請用這頁的新玩家 QR / 前台連結", "");
+      setResult("已改用備用房間", "另一個主持頁仍佔用固定房間，請用這頁的新玩家連結 / 投影連結", "");
     }
     render();
   });
@@ -498,7 +498,7 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     try {
       roomPeer.reconnect();
     } catch {
-      setResult("房間同步服務斷線", "請重新整理後台再開前台", "wrong");
+      setResult("房間同步服務斷線", "請重新整理主持頁再試", "wrong");
     }
   });
 
@@ -515,7 +515,7 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
 
       if (retryAttempt < ROOM_UNAVAILABLE_RETRY_LIMIT) {
         state.roomReady = false;
-        state.roomError = "固定房間被舊後台佔用，正在嘗試接管";
+        state.roomError = "固定房間被另一個主持頁佔用，正在嘗試接管";
         render();
         claimHostRoom();
         requestRemoteHostRelease(roomId);
@@ -528,7 +528,7 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
       const nextRoomId = ROOM_ID_CANDIDATES[candidateIndex + 1];
       if (nextRoomId) {
         state.roomReady = false;
-        state.roomError = "固定房間被舊後台佔用，正在改用備用房間";
+        state.roomError = "固定房間被另一個主持頁佔用，正在改用備用房間";
         state.roomId = nextRoomId;
         render();
         state.roomRetryTimer = window.setTimeout(() => {
@@ -538,18 +538,18 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
       }
 
       state.roomReady = false;
-      state.roomError = "固定房間已經有另一個後台開住，請關閉其他後台再重新整理";
+      state.roomError = "固定房間已經有另一個主持頁開住，請關閉其他主持頁再重新整理";
       state.roomId = roomId;
       state.playerUrl = "";
       state.displayUrl = "";
-      setResult("房間已被另一個後台使用", "請關閉其他後台，再重新整理這頁", "wrong");
+      setResult("房間已被另一個主持頁使用", "請關閉其他主持頁，再重新整理這頁", "wrong");
       render();
       return;
     }
 
     state.roomReady = false;
     state.roomError = roomFailureMessage(error);
-    setResult("房間連線失敗", "請檢查網絡、關閉重複後台，或重新整理", "wrong");
+    setResult("房間連線失敗", "請檢查網絡、關閉重複主持頁，或重新整理", "wrong");
     render();
   });
 }
@@ -595,7 +595,7 @@ function claimHostRoom() {
 function handleHostClaim(payload) {
   if (!payload || payload.type !== "host-claim") return;
   if (!payload.instanceId || payload.instanceId === hostInstanceId) return;
-  releaseHostRoom("已由另一個新後台接管，這個後台已停止連線");
+  releaseHostRoom("已由另一個新主持頁接管，這個主持頁已停止連線");
 }
 
 function releaseHostRoom(message) {
@@ -688,7 +688,7 @@ function handlePlayerMessage(connection, message) {
   if (!message || typeof message !== "object") return;
 
   if (message.type === "host-takeover" && message.instanceId !== hostInstanceId) {
-    releaseHostRoom("已由另一個新後台接管，這個後台已停止連線");
+    releaseHostRoom("已由另一個新主持頁接管，這個主持頁已停止連線");
     try {
       connection.close();
     } catch {
@@ -799,7 +799,7 @@ function setupPlayerMicCall(call) {
   call.on("stream", (stream) => {
     player.micStream = stream;
     player.micActive = true;
-    setResult("玩家開咪", `${player.name} 正在說話，聲音送到前台`, "");
+    setResult("玩家開咪", `${player.name} 正在說話，聲音送到投影畫面`, "");
     syncPlayerMicTargets(player);
     renderPlayers();
     publishDisplayState();
@@ -865,7 +865,7 @@ function displayMicTargets() {
     .filter((connection) => connection?.isDisplay && connection.open && connection.peer)
     .map((connection) => ({
       peerId: connection.peer,
-      name: "前台",
+      name: "投影畫面",
       type: "display",
     }));
 }
@@ -1623,8 +1623,8 @@ function startRound(preferredSongId, options = {}) {
   state.showWinner = false;
   els.guessInput.value = "";
   setResult(
-    autoplay ? playbackStatus(song) : prepared ? "前台已預備" : "題目已載入",
-    autoplay ? "" : prepared ? "可按重播片段，或直接下一題播放" : "按下一題播放把影片送到 MON2",
+    autoplay ? playbackStatus(song) : prepared ? "題目已預備" : "題目已載入",
+    autoplay ? "" : prepared ? "可按重播片段，或直接下一題播放" : "按下一題播放開始",
     ""
   );
   render();
@@ -1930,7 +1930,7 @@ function clipStart() {
 }
 
 function playbackStatus(song) {
-  return `前台播放中：${clipDuration(song)} 秒 · ${playStartLabel()}`;
+  return `播放中：${clipDuration(song)} 秒 · ${playStartLabel()}`;
 }
 
 function playStartLabel() {
@@ -2334,10 +2334,10 @@ function renderQuiz() {
             : emptyPoolMessage()
           : "先加入歌曲";
 
-  els.maskLabel.textContent = hasSong ? "後台影片已靜音，只作預備和跳廣告" : "前台先會出聲";
+  els.maskLabel.textContent = hasSong ? "主持預覽已靜音，只作預備和跳廣告" : "主持手機控制播放";
   els.playerMask.classList.toggle("is-hidden", hasSong);
   els.playerHost.classList.remove("is-masked");
-  els.toggleVideoButton.textContent = state.revealed ? "前台隱藏" : "前台開估";
+  els.toggleVideoButton.textContent = state.revealed ? "隱藏影片" : "顯示影片";
 
   els.duration60Button.classList.toggle("is-active", state.playDuration === 60);
   els.duration30Button.classList.toggle("is-active", state.playDuration === 30);
@@ -2487,7 +2487,7 @@ function renderPlayers() {
     : state.firebaseReady
       ? `Firebase 全球房間：${state.roomId} · 可連線`
       : state.roomReady
-      ? `固定房間：${state.roomId} · 前台 ${state.displayConnections.size} 個 · 可連線`
+      ? `固定房間：${state.roomId} · 投影 ${state.displayConnections.size} 個 · 可連線`
       : `固定房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.copyDisplayLinkButton.disabled = !state.displayUrl;
@@ -2608,7 +2608,7 @@ async function copyPlayerLink() {
     els.copyPlayerLinkButton.textContent = "已複製";
     setResult("已複製玩家連結", "掃不到 QR 時可直接傳給團友", "correct");
   } catch {
-    showManualCopyLink(state.playerUrl);
+    showManualCopyLink(state.playerUrl, "玩家連結");
     setResult("請手動複製玩家連結", "瀏覽器未允許自動複製", "wrong");
   } finally {
     window.setTimeout(() => {
@@ -2619,7 +2619,7 @@ async function copyPlayerLink() {
 
 async function copyDisplayLink() {
   if (!state.displayUrl) {
-    setResult("前台連結未準備好", "請等房間建立完成", "wrong");
+    setResult("投影連結未準備好", "請等房間建立完成", "wrong");
     return;
   }
 
@@ -2627,10 +2627,10 @@ async function copyDisplayLink() {
   try {
     await writeClipboardText(state.displayUrl);
     els.copyDisplayLinkButton.textContent = "已複製";
-    setResult("已複製前台連結", "可傳給外地朋友開大螢幕前台", "correct");
+    setResult("已複製投影連結", "有需要時可開大螢幕投影畫面", "correct");
   } catch {
-    showManualCopyLink(state.displayUrl);
-    setResult("請手動複製前台連結", "瀏覽器未允許自動複製", "wrong");
+    showManualCopyLink(state.displayUrl, "投影連結");
+    setResult("請手動複製投影連結", "瀏覽器未允許自動複製", "wrong");
   } finally {
     window.setTimeout(() => {
       els.copyDisplayLinkButton.textContent = originalLabel;
@@ -2656,8 +2656,8 @@ async function writeClipboardText(text) {
   if (!copied) throw new Error("Copy failed");
 }
 
-function showManualCopyLink(link) {
-  window.prompt("複製以下玩家連結", link);
+function showManualCopyLink(link, label = "連結") {
+  window.prompt(`複製以下${label}`, link);
 }
 
 function publishDisplayState() {

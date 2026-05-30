@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>估歌仔 · 前台</title>
+    <title>估歌仔 · 投影畫面</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=front-audio-unlock-1" />
+    <link rel="stylesheet" href="./styles.css?v=mobile-flow-1" />
     <style>
       .youtube-login-prompt {
         position: fixed;
@@ -137,7 +137,7 @@
             <span id="stageSubPrompt">請望住大畫面，聽片段估歌名</span>
           </div>
           <button class="stage-sound-button" id="stageSoundButton" type="button" hidden>
-            啟用前台聲音
+            啟用投影聲音
           </button>
         </div>
 
@@ -166,18 +166,18 @@
     <section class="youtube-login-prompt" id="youtubeLoginPrompt" role="dialog" aria-modal="true" aria-labelledby="youtubeLoginTitle" hidden>
       <div class="youtube-login-panel">
         <h2 id="youtubeLoginTitle">先登入 YouTube Premium</h2>
-        <p>為了減少 YouTube 廣告，請先用這個 Chrome 視窗登入有 Premium 的 YouTube 帳號。登入完成後回到這個前台頁面，按「我已登入」重新載入前台。</p>
+        <p>為了減少 YouTube 廣告，請先用這個 Chrome 視窗登入有 Premium 的 YouTube 帳號。登入完成後回到這個投影畫面，按「我已登入」重新載入。</p>
         <p class="youtube-login-note">登入頁會用 YouTube 官方新視窗開啟。這個 App 不能直接讀取或儲存你的 Google 帳號資料。</p>
         <div class="youtube-login-actions">
           <a class="primary" id="youtubeLoginButton" href="https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com%2F" target="_blank" rel="noopener">開啟 YouTube 登入</a>
-          <button id="youtubeLoginReadyButton" type="button">我已登入，重新載入前台</button>
+          <button id="youtubeLoginReadyButton" type="button">我已登入，重新載入投影</button>
           <button id="youtubeLoginSkipButton" type="button">略過今次</button>
         </div>
       </div>
     </section>
 
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./local-qr.js?v=host-audio-broadcast-3"></script>
-    <script src="./display.js?v=vpn-onsite-1"></script>
+    <script src="./local-qr.js?v=mobile-flow-1"></script>
+    <script src="./display.js?v=mobile-flow-1"></script>
   </body>
 </html>

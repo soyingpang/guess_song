@@ -483,7 +483,7 @@ function bindRoomConnection(connection, token) {
     state.connecting = false;
     updateMicUi();
     if (state.joined) scheduleReconnect("連線中斷");
-    else handleConnectionFailure("連線失敗，請確認主持人後台仍然開住");
+    else handleConnectionFailure("連線失敗，請確認主持頁仍然開住");
   });
 
   connection.on("error", (error) => {
@@ -575,7 +575,7 @@ function clearJoinHandshakeTimer() {
 
 function connectionFailureMessage(error) {
   const type = String(error?.type || "").trim();
-  if (type === "peer-unavailable") return "找不到主持房間，請確認後台保持開住";
+  if (type === "peer-unavailable") return "找不到主持房間，請確認主持頁保持開住";
   if (type === "network") return "手機網絡暫時連不到同步服務，正在嘗試其他線路";
   if (type === "browser-incompatible") return "連線失敗：這個手機瀏覽器不支援同步連線";
   return "連線失敗，正在嘗試其他線路";
@@ -691,7 +691,7 @@ function renderJoinedWaiting() {
   els.phoneHints.replaceChildren();
   els.phoneChoices.replaceChildren();
   els.buzzButton.hidden = true;
-  els.phoneResult.textContent = "手機已連到後台，等候題目同步。";
+  els.phoneResult.textContent = "手機已連到主持頁，等候題目同步。";
 }
 
 async function startMic(options = {}) {
@@ -1597,7 +1597,7 @@ function phoneStatusText(game) {
   const songlistLabel = game.songlistLabel || "歌單";
   if (game.isPlaying) return `${songlistLabel} · 播放中 · ${remainingSeconds(game)} 秒`;
   if (game.revealed) return "已開估";
-  if (game.frontReady) return "前台預備中";
+  if (game.frontReady) return "主持已預備";
   return game.status || "等候主持";
 }
 
@@ -2004,7 +2004,7 @@ function renderChoices(game) {
     if (!game.choices?.length) {
       const empty = document.createElement("div");
       empty.className = "phone-empty";
-      empty.textContent = game.frontReady ? "等主持播放 / 重播片段" : "選項同步中，請等主持重新整理後台或按下一題";
+      empty.textContent = game.frontReady ? "等主持播放 / 重播片段" : "選項同步中，請等主持重新整理主持頁或按下一題";
       els.phoneChoices.append(empty);
       return;
     }

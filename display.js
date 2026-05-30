@@ -315,7 +315,7 @@ function bindDisplayConnection(connection, token) {
   displaySync.connectionTimeout = window.setTimeout(() => {
     if (displaySync.token !== token || connection.open) return;
     latestRemoteState = null;
-    scheduleDisplayReconnect("前台連線逾時");
+    scheduleDisplayReconnect("投影連線逾時");
   }, DISPLAY_CONNECTION_TIMEOUT_MS);
 
   connection.on("open", () => {
@@ -339,13 +339,13 @@ function bindDisplayConnection(connection, token) {
   connection.on("close", () => {
     if (displaySync.token !== token) return;
     latestRemoteState = null;
-    scheduleDisplayReconnect("前台同步中斷");
+    scheduleDisplayReconnect("投影同步中斷");
   });
 
   connection.on("error", () => {
     if (displaySync.token !== token) return;
     latestRemoteState = null;
-    scheduleDisplayReconnect("前台同步失敗");
+    scheduleDisplayReconnect("投影同步失敗");
   });
 }
 
@@ -415,7 +415,7 @@ function renderStageMic(playerId, playerName, stream) {
   label.textContent = `手機咪：${playerName}`;
 
   const status = document.createElement("span");
-  status.textContent = "前台播放中";
+  status.textContent = "投影播放中";
 
   const audio = document.createElement("audio");
   audio.controls = true;
@@ -428,7 +428,7 @@ function renderStageMic(playerId, playerName, stream) {
   audio.volume = 1;
   audio.srcObject = stream;
   audio.addEventListener("play", () => {
-    status.textContent = "前台播放中";
+    status.textContent = "投影播放中";
   });
   audio.play().catch(() => {
     item.classList.add("needs-tap");
@@ -480,7 +480,7 @@ function readDisplayState() {
   }
 }
 
-function renderWaiting(prompt = "等待同步", subPrompt = "前台會自動跟住後台更新") {
+function renderWaiting(prompt = "等待同步", subPrompt = "投影畫面會跟住主持頁更新") {
   if (els.eyebrow) els.eyebrow.textContent = "估歌仔";
   if (els.gameTitle) els.gameTitle.textContent = "估歌仔";
   els.round.textContent = "未連接";
