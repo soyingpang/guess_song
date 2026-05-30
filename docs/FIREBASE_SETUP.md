@@ -4,6 +4,14 @@
 
 ## 建立 Firebase 專案
 
+目前已建立並啟用：
+
+- Project ID：`guess-song-260531`
+- Web app：`Guess Song Web`
+- Realtime Database：`https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`
+- 本 repo 已加入 `.firebaserc`、`firebase.json` 和 `database.rules.json`
+- `firebase-config.js` 已改為 `enabled: true`
+
 1. 在 Firebase Console 建立 project。
 2. 新增 Web app。
 3. 建立 Realtime Database。
@@ -23,7 +31,7 @@ window.GUESS_SONG_FIREBASE_CONFIG = {
 
 ## 測試用 Database Rules
 
-以下 rules 只適合私人測試。公開活動前應加入更嚴格的房間碼或登入驗證。
+以下 rules 已部署到目前 Firebase project，只適合私人測試。公開活動前應加入更嚴格的房間碼或登入驗證。
 
 ```json
 {
@@ -36,6 +44,12 @@ window.GUESS_SONG_FIREBASE_CONFIG = {
     }
   }
 }
+```
+
+如要重新部署 rules：
+
+```powershell
+firebase deploy --only database --project guess-song-260531
 ```
 
 ## 使用流程

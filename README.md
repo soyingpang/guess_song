@@ -59,9 +59,9 @@ https://soyingpang.github.io/guess_song/display.html
 
 主持人先開主持頁，複製玩家連結給大家。玩家用手機打開連結後，輸入名字，再選「在現場 / 不在現場」加入遊戲；A/B 組會由系統按人數自動平均分配，主持仍可在主持頁手動調整。
 
-全球手機模式使用 Firebase Realtime Database 同步房間、玩家、搶答和分數；聲音用 WebRTC 由主持咪高峰廣播到選了「不在現場」的玩家手機。這是 B1 原型：主持用 YouTube Premium 播歌，但 App 不擷取 YouTube 內部音訊，只把主持咪收到的聲音送出去。Firebase 設定見 `docs/FIREBASE_SETUP.md`。
+全球手機模式已接上 Firebase Realtime Database，同步房間、玩家、搶答和分數；聲音用 WebRTC 由主持咪高峰廣播到選了「不在現場」的玩家手機。這是 B1 原型：主持用 YouTube Premium 播歌，但 App 不擷取 YouTube 內部音訊，只把主持咪收到的聲音送出去。Firebase 設定見 `docs/FIREBASE_SETUP.md`。
 
-未配置 Firebase 時，多人連線仍使用原本瀏覽器 WebRTC / PeerJS 後備；主持頁要保持開住，因為分數同房間狀態由主持頁管理。
+如日後將 `firebase-config.js` 改回 `enabled: false`，多人連線仍會使用原本瀏覽器 WebRTC / PeerJS 後備；主持頁要保持開住，因為分數同房間狀態由主持頁管理。
 
 ## 本機開始
 

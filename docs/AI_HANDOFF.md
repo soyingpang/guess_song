@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 00:35 HKT
+更新時間：2026-05-31 00:38 HKT
 
 ## 必讀順序
 
@@ -70,7 +70,7 @@
 - 搶答可加分。
 - 排行榜可顯示。
 - 題庫已擴充和重整；目前 `hymns.json` 約 500 首，`songlists/all-songlists.json` 約 2513 首。
-- 已加入 Firebase 全球手機模式雛形：Firebase Realtime Database 負責房間、玩家、題目狀態、搶答事件和 WebRTC signaling；聲音仍由 WebRTC 傳送。
+- 已加入並啟用 Firebase 全球手機模式：Project ID 是 `guess-song-260531`，Realtime Database 是 `https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`。Firebase Realtime Database 負責房間、玩家、題目狀態、搶答事件和 WebRTC signaling；聲音仍由 WebRTC 傳送。
 
 ## 重要狀態提醒
 
@@ -101,7 +101,7 @@
 - 手機咪已會轉發到投影畫面：`app.js` 收到 `player.micStream` 後用 `state.peer.call(displayPeer, stream, { metadata: { type: "display-player-mic" } })` 轉發給所有 `displayConnections`；`display.js` 用 `peer.on("call")` 接收並在 `.stage-mic-layer` 播放。投影如被瀏覽器擋自動播放，會顯示音訊控制列供主持點一下。
 - 投影畫面已加入玩家狀態名單：`buildDisplayState()` 會傳 `players`，每個 player 包含 `connected` / `micActive`；`display.js` 用 `#stageRoster` 顯示已加入玩家、A/B 組、分數、離線和開咪狀態。手機開咪 / 收咪時要 `publishDisplayState()`，否則投影名單不會即時更新。
 - 手機端入房流程是輸入名字後選「在現場 / 不在現場」：`player.html` 有 `#onsiteModeButton` / `#remoteModeButton` 和 `#phoneRemotePanel`；入房後 `player.js` 會鎖住模式，避免玩家中途切換。最新 B1 方向是不在現場手機不再自己播 YouTube，只收聽主持咪高峰透過 WebRTC 廣播的現場聲音。
-- Firebase 設定檔是 `firebase-config.js`；預設 `enabled: false`，所以未填 Firebase config 時不影響現有 PeerJS 玩法。設定方法見 `docs/FIREBASE_SETUP.md`。
+- Firebase 設定檔是 `firebase-config.js`，目前已填入 `guess-song-260531` config 並 `enabled: true`。如日後要關掉 Firebase，可改回 `enabled: false`，現有 PeerJS / 本機玩法仍會照常運作。設定方法見 `docs/FIREBASE_SETUP.md`。
 - `app.js` 的 player state 仍保留 `mediaPlaying`、`videoId`、`audioUrl`、`start`、`end` 等欄位作相容；最新不在現場手機不使用這些欄位播放 YouTube，只用題目狀態、搶答和分數同步。四選一歌名選項仍只在正式播放和未開估時送給手機。
 - 遠端投影已支援：主持頁有 `displayConnections`，`display.html?room=...` 會送 `display-join`，主持頁用 `display-state` 推送 `buildDisplayState()`。這是 optional，不是手機全球版主流程。
 - 投影畫面不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設投影就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。

@@ -21,6 +21,32 @@
 
 ---
 
+## 2026-05-31 00:38 HKT
+
+類型：部署 / Firebase / 全球手機模式
+
+摘要：
+- 使用 Firebase CLI 建立專用 project：`guess-song-260531`。
+- 建立 Web app：`Guess Song Web`，並將 config 寫入 `firebase-config.js`，開啟 `enabled: true`。
+- 建立 Realtime Database default instance：`guess-song-260531-default-rtdb`，區域為 `asia-southeast1`。
+- 新增 `.firebaserc`、`firebase.json` 和 `database.rules.json`，並部署測試 rules，只開放 `rooms/$roomId` 給 B1 全球房間同步使用。
+
+影響：
+- 本機和 GitHub Pages 版本會直接使用 Firebase 全球房間，不再只停留在 PeerJS fallback。
+- Firebase rules 目前是私人測試用公開讀寫，公開大型活動前應再加房間 token / auth / App Check。
+
+測試：
+- `firebase deploy --only database --project guess-song-260531`
+- Realtime Database REST smoke test：寫入、讀回、清除 `rooms/codex-smoke-test`。
+- Browser 本機確認主持頁顯示「Firebase 全球房間：soyingpang-guess-song-fellowship-room · 可連線」。
+- Browser 本機確認玩家頁可選「我不在現場」並加入 Firebase 全球房間；主持頁可讀到測試玩家記錄。
+
+後續：
+- 用兩部實體手機測主持咪高峰廣播聲音、玩家遠距收聽、搶答和斷線重入。
+- 若聲音一對多上傳不穩，再評估 LiveKit / Agora。
+
+---
+
 ## 2026-05-31 00:25 HKT
 
 類型：規格 / 程式 / 介面 / 手機全球模式
