@@ -732,10 +732,10 @@ function renderChoices(state) {
     const item = document.createElement("div");
     item.className = "stage-choice buzz-live";
     item.textContent = state.buzzWinner
-      ? `第一個搶答：${state.buzzWinner.name}`
+      ? `${state.buzzWinner.name} 已估中`
       : state.buzzOpen
-        ? "搶答開放：鬥快按手機"
-        : "等待主持開放搶答";
+        ? "快選估歌開放：鬥快撳歌名"
+        : "等待主持開放快選";
     els.choices.append(item);
     return;
   }
@@ -767,7 +767,7 @@ function renderLeaderboard(state) {
   if (!state.showLeaderboard && !state.buzzWinner) return;
 
   const title = document.createElement("h2");
-  title.textContent = state.showLeaderboard ? "分數結算" : "搶答結果";
+  title.textContent = state.showLeaderboard ? "分數結算" : state.mode === "buzz" ? "快選結果" : "搶答結果";
   els.leaderboard.append(title);
 
   if (state.showLeaderboard) {

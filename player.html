@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=mobile-only-1" />
+    <link rel="stylesheet" href="./styles.css?v=quick-pick-1" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -1089,6 +1089,47 @@
         color: #2d6f50;
       }
 
+      .player-body.is-joined .phone-choices.is-quick-pick {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-content: start;
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice {
+        min-height: 52px;
+        align-items: center;
+        gap: 6px;
+        padding: 6px;
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice:nth-child(4n + 1) {
+        border-left: 4px solid #4f8b73;
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice:nth-child(4n + 2) {
+        border-left: 4px solid #d8974d;
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice:nth-child(4n + 3) {
+        border-left: 4px solid #d36f62;
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice:nth-child(4n) {
+        border-left: 4px solid #7c8fbd;
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice .phone-choice-index {
+        width: 24px;
+        height: 24px;
+        flex-basis: 24px;
+        font-size: 0.72rem;
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice .phone-choice-title {
+        font-size: 0.8rem;
+        line-height: 1.08;
+        -webkit-line-clamp: 3;
+      }
+
       .player-body.is-joined .phone-remote-head strong,
       .player-body.is-joined .phone-remote-listen strong,
       .player-body.is-joined .phone-remote-media-head strong {
@@ -1234,9 +1275,9 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=mobile-only-1"></script>
-    <script src="./firebase-sync.js?v=mobile-only-1"></script>
+    <script src="./firebase-config.js?v=quick-pick-1"></script>
+    <script src="./firebase-sync.js?v=quick-pick-1"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=mobile-only-1"></script>
+    <script src="./player.js?v=quick-pick-1"></script>
   </body>
 </html>

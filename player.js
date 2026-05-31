@@ -98,6 +98,7 @@ const state = {
   game: null,
   lastResult: "",
   selectedAnswer: "",
+  quickPickCooldownTimer: null,
   micStream: null,
   micCall: null,
   micActive: false,
@@ -668,6 +669,9 @@ function handleMessage(message) {
   }
 
   if (message.type === "result" && message.questionId === state.game?.questionId) {
+    if (message.cooldownUntil && state.game) {
+      state.game.quickPickCooldownUntil = Number(message.cooldownUntil || 0);
+    }
     state.lastResult = message.excludedPlayerId === state.playerId
       ? "你今題已答錯，不能再補答"
       : message.message || "";
@@ -1973,7 +1977,13 @@ function renderGame() {
   els.phoneStatus.textContent = phoneStatusText(game);
   els.phoneTitle.textContent = game.revealed ? game.title : game.hasQuestion ? game.title || game.songlistLabel || "估呢首歌" : "準備中";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
-  els.phoneResult.textContent = state.lastResult || (game.buzzWinner ? `第一個${game.mode === "word" ? "搶唱" : "搶答"}：${game.buzzWinner.name}` : "");
+  els.phoneResult.textContent =
+    state.lastResult ||
+    (game.buzzWinner
+      ? game.mode === "word"
+        ? `第一個搶唱：${game.buzzWinner.name}`
+        : `${game.buzzWinner.name} 已估中`
+      : "");
 
   renderHints(game.hints || []);
   renderChoices(game);
@@ -2004,22 +2014,32 @@ function renderHints(hints) {
 function renderChoices(game) {
   els.phoneChoices.replaceChildren();
   els.buzzButton.hidden = true;
+  els.phoneChoices.classList.toggle("is-quick-pick", game.mode === "buzz");
+  clearQuickPickCooldownTimer();
 
   if (!game.hasQuestion || game.revealed) return;
 
-  if (game.mode === "choice") {
+  if (game.mode === "choice" || game.mode === "buzz") {
+    const isQuickPick = game.mode === "buzz";
     if (!game.choices?.length) {
       const empty = document.createElement("div");
       empty.className = "phone-empty";
-      empty.textContent = game.frontReady ? "等主持播放 / 重播片段" : "選項同步中，請等主持重新整理主持頁或按下一題";
+      empty.textContent = isQuickPick
+        ? "等主持開放快選"
+        : game.frontReady
+          ? "等主持播放 / 重播片段"
+          : "選項同步中，請等主持重新整理主持頁或按下一題";
       els.phoneChoices.append(empty);
       return;
     }
 
+    const cooldownRemaining = isQuickPick ? quickPickCooldownRemaining(game) : 0;
+    if (cooldownRemaining > 0) scheduleQuickPickCooldownRender(cooldownRemaining);
+
     (game.choices || []).forEach((choice, index) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "choice-button phone-choice";
+      button.className = `choice-button phone-choice${isQuickPick ? " is-quick-pick-choice" : ""}`;
       const number = document.createElement("span");
       number.className = "phone-choice-index";
       number.textContent = String(index + 1);
@@ -2030,7 +2050,9 @@ function renderChoices(game) {
       const selected = sameChoice(state.selectedAnswer, choice);
       button.classList.toggle("is-selected", selected);
       button.setAttribute("aria-pressed", String(selected));
-      button.disabled = Boolean(game.answered);
+      button.disabled = isQuickPick
+        ? Boolean(game.answered || game.buzzWinner || !game.buzzOpen || cooldownRemaining > 0)
+        : Boolean(game.answered);
       button.addEventListener("click", () => {
         state.selectedAnswer = choice;
         send({ type: "answer", questionId: game.questionId, answer: choice });
@@ -2039,14 +2061,30 @@ function renderChoices(game) {
           item.classList.toggle("is-selected", item === button);
           item.setAttribute("aria-pressed", String(item === button));
         });
-        els.phoneResult.textContent = `已提交答案：${choice}`;
+        els.phoneResult.textContent = isQuickPick ? `已選：${choice}` : `已提交答案：${choice}`;
       });
       els.phoneChoices.append(button);
     });
+
+    if (!isQuickPick) return;
+
+    if (game.buzzWinner) {
+      els.phoneResult.textContent = `${game.buzzWinner.name} 已估中`;
+    } else if (cooldownRemaining > 0) {
+      els.phoneResult.textContent = `未中，${Math.ceil(cooldownRemaining / 1000)} 秒後可以再答`;
+    } else if (game.buzzOpen) {
+      els.phoneResult.textContent = state.lastResult?.includes("未中")
+        ? state.lastResult
+        : `快選估歌開放：答中 +${game.quickPickCorrectPoints || 5}，答錯 ${game.quickPickWrongPoints || -1}`;
+    } else if (!game.answered) {
+      els.phoneResult.textContent = "等主持開放快選";
+    }
+
+    return;
   }
 
-  if (game.mode === "buzz" || game.mode === "word") {
-    const actionLabel = game.mode === "word" ? "搶唱" : "搶答";
+  if (game.mode === "word") {
+    const actionLabel = "搶唱";
     const alreadyTried = Boolean(game.answered);
     els.buzzButton.hidden = false;
     els.buzzButton.disabled = Boolean(alreadyTried || game.buzzWinner || !game.buzzOpen);
@@ -2061,9 +2099,27 @@ function renderChoices(game) {
         ? state.lastResult
         : `${actionLabel}開放，鬥快按`;
     } else if (!game.answered) {
-      els.phoneResult.textContent = game.mode === "word" ? "等主持開放搶唱" : "等主持開放搶答";
+      els.phoneResult.textContent = "等主持開放搶唱";
     }
   }
+}
+
+function clearQuickPickCooldownTimer() {
+  clearTimeout(state.quickPickCooldownTimer);
+  state.quickPickCooldownTimer = null;
+}
+
+function quickPickCooldownRemaining(game) {
+  const cooldownUntil = Number(game?.quickPickCooldownUntil || 0);
+  return Math.max(0, cooldownUntil - Date.now());
+}
+
+function scheduleQuickPickCooldownRender(remainingMs) {
+  clearQuickPickCooldownTimer();
+  state.quickPickCooldownTimer = window.setTimeout(() => {
+    state.quickPickCooldownTimer = null;
+    renderGame();
+  }, Math.max(250, remainingMs + 50));
 }
 
 function renderLeaderboard(players, teamScores = {}) {

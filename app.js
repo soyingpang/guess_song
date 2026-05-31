@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "mobile-only-1";
+const APP_BUILD_VERSION = "quick-pick-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -86,6 +86,11 @@ const CLIP_DURATION_SECONDS = 60;
 const DEFAULT_PLAY_DURATION_SECONDS = 30;
 const PLAY_DURATIONS = [60, 30, 15];
 const PLAY_START_MODES = ["beginning", "random"];
+const CHOICE_OPTION_COUNT = 4;
+const QUICK_PICK_OPTION_COUNT = 8;
+const QUICK_PICK_CORRECT_POINTS = 5;
+const QUICK_PICK_WRONG_POINTS = -1;
+const QUICK_PICK_COOLDOWN_MS = 5000;
 const RANDOM_START_MIN_SECONDS = 45;
 const RANDOM_START_MAX_END_SECONDS = 180;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
@@ -725,6 +730,7 @@ function handlePlayerMessage(connection, message) {
     player.remoteMode = true;
     player.speakerMode = false;
     player.micActive = false;
+    player.quickPickCooldownUntil = Number(player.quickPickCooldownUntil || 0);
     state.players[player.id] = player;
     connection.playerId = player.id;
 
@@ -764,7 +770,11 @@ function handlePlayerMessage(connection, message) {
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
   if (message.type === "answer") {
-    handleChoiceAnswer(player, message.answer);
+    if (state.mode === "buzz") {
+      handleQuickPickAnswer(player, message.answer);
+    } else {
+      handleChoiceAnswer(player, message.answer);
+    }
   }
 
   if (message.type === "buzz") {
@@ -1311,6 +1321,7 @@ function handleFirebasePlayersSnapshot(playersById) {
     player.firebase = true;
     player.remoteMode = true;
     player.speakerMode = false;
+    player.quickPickCooldownUntil = Number(player.quickPickCooldownUntil || 0);
     state.players[player.id] = player;
   });
 
@@ -1343,7 +1354,13 @@ function handleFirebasePlayerEvent(event, key) {
 
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
-  if (message.type === "answer") handleChoiceAnswer(player, message.answer);
+  if (message.type === "answer") {
+    if (state.mode === "buzz") {
+      handleQuickPickAnswer(player, message.answer);
+    } else {
+      handleChoiceAnswer(player, message.answer);
+    }
+  }
   if (message.type === "buzz") handleBuzz(player);
 }
 
@@ -1510,7 +1527,77 @@ function handleChoiceAnswer(player, answer) {
   broadcastToPlayers();
 }
 
+function handleQuickPickAnswer(player, answer) {
+  if (state.mode !== "buzz" || !state.currentSong || state.answered || !state.buzzOpen) return;
+
+  const now = Date.now();
+  const cooldownUntil = Number(player.quickPickCooldownUntil || 0);
+  if (cooldownUntil > now) {
+    sendToPlayer(player, {
+      type: "result",
+      questionId: state.currentQuestionId,
+      correct: false,
+      points: 0,
+      cooldownUntil,
+      message: `冷卻中，${Math.ceil((cooldownUntil - now) / 1000)} 秒後再答`,
+    });
+    sendPlayerState(player);
+    return;
+  }
+
+  const options = ensureChoiceOptions(state.currentSong);
+  const selected = options.find((choice) => normalize(choice) === normalize(answer));
+  if (!selected) return;
+
+  const correct = normalize(selected) === normalize(state.currentSong.title);
+  if (correct) {
+    const points = QUICK_PICK_CORRECT_POINTS;
+    player.score += points;
+    player.quickPickCooldownUntil = 0;
+    player.answers[state.currentQuestionId] = { answer: selected, correct: true, points };
+    state.buzzWinnerId = player.id;
+    state.buzzOpen = false;
+    state.answered = true;
+    state.revealed = true;
+    state.isPlaying = true;
+    state.fullPlayback = true;
+    state.frontReady = false;
+    state.playEndsAt = 0;
+    state.playbackRevision += 1;
+    clearClipTimer();
+    setResult(`${player.name} 已估中`, `${answerLabel(state.currentSong)} · +${points} 分`, "correct");
+    sendToPlayer(player, {
+      type: "result",
+      questionId: state.currentQuestionId,
+      correct: true,
+      points,
+      message: `答中 +${points}`,
+    });
+    render();
+    renderYouTubeFrame({ autoplay: true });
+    return;
+  }
+
+  const points = QUICK_PICK_WRONG_POINTS;
+  const nextCooldownUntil = now + QUICK_PICK_COOLDOWN_MS;
+  player.score += points;
+  player.quickPickCooldownUntil = nextCooldownUntil;
+  setResult(`${player.name} 未中 ${points} 分`, "5 秒後可以再答", "wrong");
+  sendToPlayer(player, {
+    type: "result",
+    questionId: state.currentQuestionId,
+    correct: false,
+    points,
+    cooldownUntil: nextCooldownUntil,
+    message: `未中 ${points} 分，5 秒後再答`,
+  });
+  renderPlayers();
+  publishDisplayState();
+  broadcastToPlayers();
+}
+
 function handleBuzz(player) {
+  if (state.mode === "buzz") return;
   if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
 
   const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
@@ -1529,7 +1616,7 @@ function handleBuzz(player) {
 function judgeBuzzWinner(isCorrect) {
   const player = state.players[state.buzzWinnerId];
   if (!player || !hasActiveQuestion()) {
-    setResult("未有人搶答", "", "");
+    setResult(state.mode === "word" ? "未有人搶唱" : "未有人快選", "", "");
     return;
   }
 
@@ -1604,7 +1691,7 @@ function closeBuzzWinnerMic(player) {
 
 function reopenBuzz() {
   if (!hasActiveQuestion()) {
-    setResult("未有題目可以搶答", "", "");
+    setResult(state.mode === "word" ? "未有題目可以搶唱" : "未有題目可以快選", "", "");
     return;
   }
 
@@ -1618,7 +1705,11 @@ function reopenBuzz() {
   state.buzzOpen = true;
   state.showLeaderboard = false;
   state.showWinner = false;
-  setResult(state.mode === "word" ? "已開放搶唱" : "已開放搶答", state.mode === "word" ? `今題主題：${state.currentWord}` : "", "");
+  setResult(
+    state.mode === "word" ? "已開放搶唱" : "已開放快選估歌",
+    state.mode === "word" ? `今題主題：${state.currentWord}` : `答中 +${QUICK_PICK_CORRECT_POINTS}，答錯 ${QUICK_PICK_WRONG_POINTS}，冷卻 5 秒`,
+    ""
+  );
   render();
 }
 
@@ -1732,7 +1823,7 @@ function startRound(preferredSongId, options = {}) {
   clearClipTimer();
   state.currentSong = song;
   state.currentWord = "";
-  state.currentChoices = makeChoices(song, pool);
+  state.currentChoices = makeChoices(song, pool, state.mode === "buzz" ? QUICK_PICK_OPTION_COUNT : CHOICE_OPTION_COUNT);
   state.round += 1;
   state.revealed = false;
   state.answered = false;
@@ -2103,8 +2194,10 @@ function setMode(mode) {
     setResult("主題搶唱模式", "抽主題或輸入大路關鍵詞開始", "");
   } else {
     state.currentWord = "";
-    state.currentChoices = state.currentSong ? makeChoices(state.currentSong, playableSongs()) : [];
-    setResult(mode === "choice" ? "四選一模式" : "搶答估歌模式", "按下一題播放", "");
+    state.currentChoices = state.currentSong
+      ? makeChoices(state.currentSong, playableSongs(), mode === "buzz" ? QUICK_PICK_OPTION_COUNT : CHOICE_OPTION_COUNT)
+      : [];
+    setResult(mode === "choice" ? "四選一模式" : "快選估歌模式", "按下一題播放", "");
   }
   state.buzzWinnerId = "";
   state.buzzOpen = false;
@@ -2385,8 +2478,9 @@ function clearLibrary() {
   startRound();
 }
 
-function makeChoices(correctSong, pool) {
-  const otherSongs = shuffle(pool.filter((song) => song.id !== correctSong.id)).slice(0, 3);
+function makeChoices(correctSong, pool, total = CHOICE_OPTION_COUNT) {
+  const optionCount = Math.max(CHOICE_OPTION_COUNT, Number(total || CHOICE_OPTION_COUNT));
+  const otherSongs = shuffle(pool.filter((song) => song.id !== correctSong.id)).slice(0, optionCount - 1);
   return shuffle([correctSong, ...otherSongs]).map((song) => song.title);
 }
 
@@ -2395,7 +2489,11 @@ function ensureChoiceOptions(song) {
   if (state.currentChoices.length) return state.currentChoices;
 
   const pool = playableSongs();
-  state.currentChoices = makeChoices(song, pool.length ? pool : [song]);
+  state.currentChoices = makeChoices(
+    song,
+    pool.length ? pool : [song],
+    state.mode === "buzz" ? QUICK_PICK_OPTION_COUNT : CHOICE_OPTION_COUNT
+  );
   return state.currentChoices;
 }
 
@@ -2503,6 +2601,8 @@ function renderQuiz() {
   els.wordModeButton.disabled = roomBlocked;
   els.judgeControls.hidden = !["buzz", "word"].includes(state.mode);
   els.wordControls.hidden = state.mode !== "word";
+  els.markCorrectButton.hidden = state.mode === "buzz";
+  els.markWrongButton.hidden = state.mode === "buzz";
   els.reopenBuzzButton.textContent = state.mode === "word"
     ? state.buzzOpen
       ? "搶唱已開放"
@@ -2510,12 +2610,12 @@ function renderQuiz() {
         ? "重新開放搶唱"
         : "開放搶唱"
     : state.buzzOpen
-      ? "搶答已開放"
+      ? "快選已開放"
       : state.buzzWinnerId
-        ? "重新開放搶答"
-        : "開放搶答";
-  els.markCorrectButton.disabled = roomBlocked || !state.buzzWinnerId || state.answered;
-  els.markWrongButton.disabled = roomBlocked || !state.buzzWinnerId || state.answered;
+        ? "已有人估中"
+        : "開放快選";
+  els.markCorrectButton.disabled = roomBlocked || state.mode !== "word" || !state.buzzWinnerId || state.answered;
+  els.markWrongButton.disabled = roomBlocked || state.mode !== "word" || !state.buzzWinnerId || state.answered;
   els.reopenBuzzButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered || state.buzzOpen;
   els.wordInput.disabled = roomBlocked;
   els.randomWordButton.disabled = roomBlocked;
@@ -2890,7 +2990,10 @@ function buildPlayerState(player) {
   const song = state.currentSong;
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const revealed = Boolean((song || hasWord) && state.answered);
-  const choiceOptions = state.mode === "choice" && song && !revealed && state.isPlaying ? ensureChoiceOptions(song) : [];
+  const choiceOptions =
+    song && !revealed && (state.mode === "choice" || state.mode === "buzz") && (state.isPlaying || state.buzzOpen)
+      ? ensureChoiceOptions(song)
+      : [];
   const songlistLabel = activeSonglistLabel();
 
   return {
@@ -2916,6 +3019,9 @@ function buildPlayerState(player) {
     team: normalizeTeam(player.team),
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
+    quickPickCooldownUntil: state.mode === "buzz" ? Number(player.quickPickCooldownUntil || 0) : 0,
+    quickPickCorrectPoints: QUICK_PICK_CORRECT_POINTS,
+    quickPickWrongPoints: QUICK_PICK_WRONG_POINTS,
     title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : songlistLabel,
     status: els.resultText.textContent || "",
     score: player.score,
@@ -3046,6 +3152,7 @@ function resolveJoiningPlayer(playerId, name) {
     micStream: null,
     remoteMode: true,
     speakerMode: false,
+    quickPickCooldownUntil: 0,
   };
 }
 
