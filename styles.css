@@ -918,6 +918,16 @@ select:focus {
   padding: 10px;
 }
 
+.audio-broadcast-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.76fr);
+  gap: 8px;
+}
+
+.audio-broadcast-actions button {
+  min-width: 0;
+}
+
 .audio-broadcast-card span {
   color: var(--muted);
   font-size: 0.78rem;
@@ -1885,6 +1895,10 @@ select:focus {
 
   .host-join-card img {
     width: 84px;
+  }
+
+  .audio-broadcast-actions {
+    grid-template-columns: 1fr;
   }
 
   .player-actions {

@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "host-qr-1";
+const APP_BUILD_VERSION = "tab-audio-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -196,6 +196,7 @@ const state = {
   audioBroadcastStream: null,
   audioBroadcastCalls: new Map(),
   audioBroadcastRetryTimers: new Map(),
+  audioBroadcastMode: "",
   firebase: null,
   firebaseReady: false,
   firebaseError: "",
@@ -282,6 +283,7 @@ const els = {
   hostPlayerQr: document.querySelector("#hostPlayerQr"),
   hostPlayerQrStatus: document.querySelector("#hostPlayerQrStatus"),
   audioBroadcastButton: document.querySelector("#audioBroadcastButton"),
+  audioBroadcastMicButton: document.querySelector("#audioBroadcastMicButton"),
   audioBroadcastStatus: document.querySelector("#audioBroadcastStatus"),
   playerList: document.querySelector("#playerList"),
 };
@@ -349,7 +351,8 @@ function bindEvents() {
   els.resetGameButton.addEventListener("click", resetGameSession);
   els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
   els.copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
-  els.audioBroadcastButton?.addEventListener("click", toggleAudioBroadcast);
+  els.audioBroadcastButton?.addEventListener("click", () => toggleAudioBroadcast("tab"));
+  els.audioBroadcastMicButton?.addEventListener("click", () => toggleAudioBroadcast("mic"));
   els.cloudLibrarySelect?.addEventListener("change", () => {
     state.cloudLibraryId = els.cloudLibrarySelect.value || DEFAULT_CLOUD_LIBRARY_ID;
     render();
@@ -957,7 +960,7 @@ function closePeerMediaCall(call) {
   }
 }
 
-async function toggleAudioBroadcast() {
+async function toggleAudioBroadcast(mode = "tab") {
   if (state.audioBroadcastActive || state.audioBroadcastStarting) {
     stopAudioBroadcast("全球手機聲音廣播已停止");
     return;
@@ -968,31 +971,32 @@ async function toggleAudioBroadcast() {
     return;
   }
 
-  if (!navigator.mediaDevices?.getUserMedia) {
-    setResult("瀏覽器不支援音訊廣播", "請改用 Chrome / Safari，並允許咪高峰", "wrong");
+  const broadcastMode = mode === "mic" ? "mic" : "tab";
+  if (broadcastMode === "tab" && !navigator.mediaDevices?.getDisplayMedia) {
+    setResult("瀏覽器不支援分頁聲音", "請用桌面 Chrome / Edge；或改用咪高峰收聲", "wrong");
+    return;
+  }
+
+  if (broadcastMode === "mic" && !navigator.mediaDevices?.getUserMedia) {
+    setResult("瀏覽器不支援咪高峰廣播", "請改用 Chrome / Safari，並允許咪高峰", "wrong");
     return;
   }
 
   try {
     state.audioBroadcastStarting = true;
+    state.audioBroadcastMode = broadcastMode;
     renderAudioBroadcastUi();
-    setResult("準備現場聲音", "請允許使用主持裝置的咪高峰", "");
+    setResult(...audioBroadcastStartPrompt(broadcastMode));
 
-    const sourceStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: false,
-        autoGainControl: true,
-      },
-      video: false,
-    });
+    const sourceStream = await captureAudioBroadcastStream(broadcastMode);
     const audioTracks = sourceStream.getAudioTracks();
 
     if (!audioTracks.length) {
       sourceStream.getTracks().forEach((track) => track.stop());
       state.audioBroadcastStarting = false;
+      state.audioBroadcastMode = "";
       renderAudioBroadcastUi();
-      setResult("沒有取得音訊", "請重新開始，並允許使用咪高峰", "wrong");
+      setResult(...audioBroadcastNoTrackPrompt(broadcastMode));
       return;
     }
 
@@ -1000,8 +1004,11 @@ async function toggleAudioBroadcast() {
     state.audioBroadcastSourceStream = sourceStream;
     state.audioBroadcastStream = new MediaStream(audioTracks);
     state.firebaseAudioSessionId = createSessionId();
+    state.audioBroadcastMode = broadcastMode;
     state.audioBroadcastActive = true;
     state.audioBroadcastStarting = false;
+
+    if (broadcastMode === "tab") unmuteHostPreviewForCapture();
 
     sourceStream.getTracks().forEach((track) => {
       track.addEventListener("ended", () => {
@@ -1014,22 +1021,113 @@ async function toggleAudioBroadcast() {
     broadcastAudioToRemotePlayers();
     renderPlayers();
     renderAudioBroadcastUi();
-    setResult("現場聲音廣播中", "請用這部裝置的咪收主持播放的 YouTube 聲音", "correct");
+    setResult(...audioBroadcastLivePrompt(broadcastMode));
   } catch (error) {
     state.audioBroadcastStarting = false;
+    state.audioBroadcastMode = "";
     renderAudioBroadcastUi();
+    const denied = error?.name === "NotAllowedError";
+    const modeLabel = broadcastMode === "tab" ? "分頁聲音" : "咪高峰";
     setResult(
-      error?.name === "NotAllowedError" ? "已取消音訊廣播" : "音訊廣播失敗",
-      "請允許使用咪高峰，再按一次開始廣播",
+      denied ? "已取消音訊廣播" : "音訊廣播失敗",
+      denied
+        ? `未有取得${modeLabel}授權`
+        : broadcastMode === "tab"
+          ? "請選播放 YouTube 的分頁，並勾選分享分頁音訊"
+          : "請允許使用咪高峰，再按一次開始廣播",
       "wrong"
     );
   }
 }
 
+function captureAudioBroadcastStream(mode) {
+  if (mode === "mic") {
+    return navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: false,
+        autoGainControl: true,
+      },
+      video: false,
+    });
+  }
+
+  const richConstraints = {
+    video: true,
+    audio: {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+    },
+    preferCurrentTab: true,
+    selfBrowserSurface: "include",
+    surfaceSwitching: "include",
+    systemAudio: "include",
+  };
+
+  return navigator.mediaDevices.getDisplayMedia(richConstraints).catch((error) => {
+    if (error?.name !== "TypeError") throw error;
+    return navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+  });
+}
+
+function audioBroadcastStartPrompt(mode) {
+  return mode === "tab"
+    ? ["準備分頁聲音", "請選播放 YouTube 的分頁，並勾選分享分頁音訊", ""]
+    : ["準備咪高峰收聲", "請允許使用主持裝置的咪高峰", ""];
+}
+
+function audioBroadcastNoTrackPrompt(mode) {
+  return mode === "tab"
+    ? ["沒有取得分頁聲音", "請重新開始，選 Chrome 分頁並勾選分享分頁音訊", "wrong"]
+    : ["沒有取得咪高峰聲音", "請重新開始，並允許使用咪高峰", "wrong"];
+}
+
+function audioBroadcastLivePrompt(mode) {
+  return mode === "tab"
+    ? ["電腦/分頁聲音廣播中", "手機會收聽此分頁播放的音樂；若仍無聲，請確認分享時有勾選音訊", "correct"]
+    : ["咪高峰聲音廣播中", "手機會收聽主持裝置咪高峰收到的聲音", "correct"];
+}
+
+function unmuteHostPreviewForCapture() {
+  const media = els.playerHost.querySelector("audio, video");
+  if (media) {
+    media.muted = false;
+    media.volume = 1;
+    media.play?.().catch(() => {});
+  }
+
+  const iframe = els.playerHost.querySelector("iframe");
+  if (!iframe?.contentWindow) return;
+
+  ["unMute", "playVideo"].forEach((func) => {
+    iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func, args: [] }), "*");
+  });
+  iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: "setVolume", args: [100] }), "*");
+}
+
+function muteHostPreviewAfterCapture() {
+  const media = els.playerHost.querySelector("audio, video");
+  if (media) {
+    media.muted = true;
+    media.volume = 0;
+  }
+
+  const iframe = els.playerHost.querySelector("iframe");
+  if (!iframe?.contentWindow) return;
+
+  ["mute"].forEach((func) => {
+    iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func, args: [] }), "*");
+  });
+  iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: "setVolume", args: [0] }), "*");
+}
+
 function stopAudioBroadcast(message = "全球手機聲音廣播已停止", options = {}) {
   const { silent = false } = options;
+  const previousMode = state.audioBroadcastMode;
   state.audioBroadcastStarting = false;
   state.audioBroadcastActive = false;
+  state.audioBroadcastMode = "";
   state.firebaseAudioSessionId = "";
   clearAllAudioBroadcastRetries();
 
@@ -1048,9 +1146,11 @@ function stopAudioBroadcast(message = "全球手機聲音廣播已停止", optio
   state.audioBroadcastSourceStream = null;
   state.audioBroadcastStream = null;
 
+  if (previousMode === "tab") muteHostPreviewAfterCapture();
+
   renderAudioBroadcastUi();
   renderPlayers();
-  if (!silent && message) setResult(message, "不在現場玩家將聽不到主持咪高峰聲音", "");
+  if (!silent && message) setResult(message, "不在現場玩家將聽不到主持音訊", "");
 }
 
 function broadcastAudioToRemotePlayers() {
@@ -1162,15 +1262,39 @@ function renderAudioBroadcastUi() {
 
   const remoteConnected = Object.values(state.players).filter((player) => player.connected && player.remoteMode).length;
   const connectedCalls = state.audioBroadcastCalls.size + state.firebaseAudioPeers.size;
-  els.audioBroadcastButton.disabled = state.audioBroadcastStarting || !state.roomReady || isRoomBlocked();
-  els.audioBroadcastButton.textContent = state.audioBroadcastActive ? "停止現場聲音廣播" : state.audioBroadcastStarting ? "準備廣播..." : "開始現場聲音廣播";
+  const roomUnavailable = !state.roomReady || isRoomBlocked();
+  const mode = state.audioBroadcastMode;
+  const activeModeLabel = mode === "tab" ? "電腦/分頁聲音" : "咪高峰聲音";
+
+  els.audioBroadcastButton.disabled =
+    state.audioBroadcastStarting || roomUnavailable || (state.audioBroadcastActive && mode !== "tab");
+  els.audioBroadcastButton.textContent =
+    state.audioBroadcastActive && mode === "tab"
+      ? "停止分頁聲音廣播"
+      : state.audioBroadcastStarting && mode === "tab"
+        ? "選擇分享分頁..."
+        : "廣播電腦/分頁聲音";
+
+  if (els.audioBroadcastMicButton) {
+    els.audioBroadcastMicButton.disabled =
+      state.audioBroadcastStarting || roomUnavailable || (state.audioBroadcastActive && mode !== "mic");
+    els.audioBroadcastMicButton.textContent =
+      state.audioBroadcastActive && mode === "mic"
+        ? "停止咪高峰廣播"
+        : state.audioBroadcastStarting && mode === "mic"
+          ? "等待咪高峰授權..."
+          : "用咪高峰收聲";
+  }
+
   els.audioBroadcastStatus.textContent = state.audioBroadcastActive
     ? remoteConnected
-      ? `全球手機聲音：廣播中 · 已送出 ${connectedCalls}/${remoteConnected} 部手機`
-      : "全球手機聲音：廣播中 · 等候不在現場玩家"
+      ? `全球手機聲音：${activeModeLabel}廣播中 · 已送出 ${connectedCalls}/${remoteConnected} 部手機`
+      : `全球手機聲音：${activeModeLabel}廣播中 · 等候不在現場玩家`
     : state.audioBroadcastStarting
-      ? "全球手機聲音：等待咪高峰授權"
-      : "全球手機聲音：未廣播";
+      ? mode === "tab"
+        ? "全球手機聲音：請選分頁並勾選分享音訊"
+        : "全球手機聲音：等待咪高峰授權"
+      : "全球手機聲音：未廣播 · 建議用電腦/分頁聲音";
 }
 
 function handleFirebasePlayersSnapshot(playersById) {
@@ -1886,10 +2010,11 @@ function renderYouTubeFrame({ autoplay }) {
 
 function renderHostLocalMedia({ autoplay }) {
   const media = document.createElement(isVideoMediaUrl(state.currentSong.audioUrl) ? "video" : "audio");
+  const shouldMute = state.audioBroadcastMode !== "tab" || !state.audioBroadcastActive;
   media.src = state.currentSong.audioUrl;
   media.controls = true;
-  media.muted = true;
-  media.volume = 0;
+  media.muted = shouldMute;
+  media.volume = shouldMute ? 0 : 1;
   media.preload = "metadata";
   if (media.tagName === "VIDEO") media.playsInline = true;
   media.addEventListener(
@@ -1910,6 +2035,7 @@ function isVideoMediaUrl(url) {
 function buildEmbedUrl(song, autoplay) {
   const url = new URL(`https://www.youtube.com/embed/${song.videoId}`);
   const start = state.fullPlayback ? CLIP_START_SECONDS : clipStart(song);
+  const shouldMute = state.audioBroadcastMode !== "tab" || !state.audioBroadcastActive;
   url.searchParams.set("start", String(start));
   if (!state.fullPlayback) url.searchParams.set("end", String(start + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
@@ -1919,8 +2045,8 @@ function buildEmbedUrl(song, autoplay) {
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
-  url.searchParams.set("mute", "1");
-  url.searchParams.set("volume", "0");
+  url.searchParams.set("mute", shouldMute ? "1" : "0");
+  url.searchParams.set("volume", shouldMute ? "0" : "100");
   return url.toString();
 }
 

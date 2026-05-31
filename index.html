@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=host-qr-1" />
+    <link rel="stylesheet" href="./styles.css?v=tab-audio-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -152,7 +152,10 @@
               </div>
             </div>
             <div class="audio-broadcast-card">
-              <button class="primary-button" id="audioBroadcastButton" type="button">開始現場聲音廣播</button>
+              <div class="audio-broadcast-actions">
+                <button class="primary-button" id="audioBroadcastButton" type="button">廣播電腦/分頁聲音</button>
+                <button class="ghost-button" id="audioBroadcastMicButton" type="button">用咪高峰收聲</button>
+              </div>
               <span id="audioBroadcastStatus">全球手機聲音：未廣播</span>
             </div>
             <div class="player-list" id="playerList"></div>
@@ -240,10 +243,10 @@
       </main>
     </div>
 
-    <script src="./firebase-config.js?v=host-qr-1"></script>
-    <script src="./firebase-sync.js?v=host-qr-1"></script>
+    <script src="./firebase-config.js?v=tab-audio-1"></script>
+    <script src="./firebase-sync.js?v=tab-audio-1"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./local-qr.js?v=host-qr-1"></script>
-    <script src="./app.js?v=host-qr-1"></script>
+    <script src="./local-qr.js?v=tab-audio-1"></script>
+    <script src="./app.js?v=tab-audio-1"></script>
   </body>
 </html>

@@ -21,6 +21,34 @@
 
 ---
 
+## 2026-05-31 09:32 HKT
+
+類型：程式 / 音訊廣播 / 手機全球模式
+
+摘要：
+- 主持頁聲音廣播改成兩種模式：主按鈕「廣播電腦/分頁聲音」，後備按鈕「用咪高峰收聲」。
+- 桌面 Chrome / Edge 可用 `getDisplayMedia` 分享播放 YouTube 的分頁音訊，再用 WebRTC / Firebase signaling 送到不在現場玩家手機。
+- 開始分頁聲音廣播後，主持頁會嘗試把當前 YouTube iframe / 本地媒體取消靜音，停止廣播時再恢復靜音。
+- 將三個入口頁 cache version 更新到 `tab-audio-1`。
+
+影響：
+- 解決「手機只聽到主持電腦前咪聲、聽不到電腦播歌」的問題；主持用桌面瀏覽器時應選播放 YouTube 的分頁並勾選分享分頁音訊。
+- 咪高峰收聲仍保留，適合手機瀏覽器或不支援分頁音訊分享的環境。
+
+測試：
+- `node --check app.js`
+- `node --check player.js`
+- `node --check display.js`
+- `node --check firebase-sync.js`
+- `node --check local-qr.js`
+- `git diff --check`
+- Browser 本機確認主持頁顯示「廣播電腦/分頁聲音」和「用咪高峰收聲」，QR 和 Firebase 房間仍正常，入口頁資源已載入 `tab-audio-1`。
+
+後續：
+- 實機用桌面 Chrome / Edge 按「廣播電腦/分頁聲音」，選此 YouTube 分頁並勾選分享音訊，再用手機確認聽到音樂。
+
+---
+
 ## 2026-05-31 00:44 HKT
 
 類型：介面 / 手機全球模式 / QR
