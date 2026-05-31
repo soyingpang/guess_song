@@ -39,9 +39,10 @@
 - `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
 - `git diff --check` 通過，只有既有 CRLF 提示。
 - 本機 Chrome mobile viewport 390x844 驗證：7 秒等待 window 內答案卡和倒數 ring 隱藏，補償後答案卡 `Song B` 顯示、倒數 ring 5→4、stroke offset 推進，390px 無橫向溢出。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-11-live` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-11` / `pwa.js?v=premium-mobile-11`，7 秒等待 window 內答案卡和倒數 ring 隱藏，補償後答案卡 `Song B` 顯示、倒數 ring 5→4、stroke offset 推進，390px 無橫向溢出。
 
 下一步：
-- 正式頁部署後驗證：答案卡先隱藏，約 7 秒後出現，倒數 ring 5→4，然後自動下一題。
+- 如實機聽感仍有偏差，可用現有主持端 5 / 7 / 10 秒延遲設定或「聽到音樂」校準回報再微調。
 
 ---
 
