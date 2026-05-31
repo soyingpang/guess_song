@@ -129,6 +129,8 @@ const state = {
   lastLatencyCalibrationKey: "",
   latencyCalibrationStatus: "",
   answerStartTimer: null,
+  answerGateMotionTimer: null,
+  answerGateMotionKey: "",
   quickPickCooldownTimer: null,
   cooldownMotionTimer: null,
   cooldownMotionKey: "",
@@ -202,6 +204,11 @@ const els = {
   phoneAnswerCountdownText: document.querySelector("#phoneAnswerCountdownText"),
   phoneHints: document.querySelector("#phoneHints"),
   phoneChoices: document.querySelector("#phoneChoices"),
+  phoneAnswerGate: document.querySelector("#phoneAnswerGate"),
+  phoneAnswerGateTitle: document.querySelector("#phoneAnswerGateTitle"),
+  phoneAnswerGateText: document.querySelector("#phoneAnswerGateText"),
+  phoneAnswerGateCount: document.querySelector("#phoneAnswerGateCount"),
+  phoneAnswerGateBar: document.querySelector("#phoneAnswerGateBar"),
   buzzButton: document.querySelector("#buzzButton"),
   phoneCooldown: document.querySelector("#phoneCooldown"),
   phoneCooldownTitle: document.querySelector("#phoneCooldownTitle"),
@@ -845,6 +852,7 @@ function renderJoinedWaiting() {
   clearAnswerRevealEffect();
   renderRevealBridge(null);
   renderAnswerCountdown(null);
+  renderAnswerGate(null);
   els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
   els.phoneStatus.textContent = "已加入遊戲";
   els.phoneTitle.textContent = "等候主持開始";
@@ -2215,6 +2223,7 @@ function renderGame() {
 
   renderHints(game.hints || []);
   renderChoices(game);
+  renderAnswerGate(game);
   renderCooldown(game);
   renderLeaderboard(game.leaderboard || [], game.teamScores || {});
   if (!ONSITE_ONLY) renderRemotePanel(game);
@@ -2719,6 +2728,63 @@ function remoteAnswerStartRemainingMs(game) {
   if (!game || game.revealed || game.fullPlayback || game.hasWord) return 0;
   const info = compensatedCountdownInfo(game);
   return info && !info.started ? info.waitingMs : 0;
+}
+
+function renderAnswerGate(game) {
+  if (!els.phoneAnswerGate) return;
+
+  const info = compensatedCountdownInfo(game);
+  const visible = Boolean(
+    game &&
+      (game.mode === "choice" || game.mode === "buzz") &&
+      !game.revealed &&
+      !game.fullPlayback &&
+      game.choices?.length &&
+      info &&
+      !info.started &&
+      info.waitingMs > 0
+  );
+  els.phoneAnswerGate.hidden = !visible;
+  els.phoneResult?.classList.toggle("is-answer-gate-muted", visible);
+
+  if (!visible) {
+    els.phoneAnswerGate.style.setProperty("--answer-gate-progress", "0");
+    clearAnswerGateMotionEffect();
+    return;
+  }
+
+  const seconds = Math.max(1, Math.ceil(info.waitingMs / 1000));
+  const total = Math.max(info.waitingMs, remoteAudioDelayMs(game), 1000);
+  const progress = Math.max(0, Math.min(1, 1 - info.waitingMs / total));
+  const modeLabel = game.mode === "buzz" ? "快選準備中" : "答題準備中";
+  const detail = game.mode === "buzz" ? "音樂同步後自動開放快選" : "音樂同步後自動開放答題";
+
+  els.phoneAnswerGateTitle.textContent = modeLabel;
+  els.phoneAnswerGateText.textContent = detail;
+  els.phoneAnswerGateCount.textContent = String(seconds);
+  els.phoneAnswerGate.style.setProperty("--answer-gate-progress", progress.toFixed(3));
+  triggerAnswerGateMotionEffect(game);
+}
+
+function triggerAnswerGateMotionEffect(game) {
+  if (!els.phoneAnswerGate) return;
+  const key = `${game?.questionId || ""}:${Number(state.remoteCountdownWindow?.startAt || 0)}`;
+  if (!key || state.answerGateMotionKey === key) return;
+  state.answerGateMotionKey = key;
+  clearTimeout(state.answerGateMotionTimer);
+  els.phoneAnswerGate.classList.remove("is-answer-gate-entering");
+  void els.phoneAnswerGate.offsetWidth;
+  els.phoneAnswerGate.classList.add("is-answer-gate-entering");
+  state.answerGateMotionTimer = window.setTimeout(() => {
+    els.phoneAnswerGate?.classList.remove("is-answer-gate-entering");
+  }, 900);
+}
+
+function clearAnswerGateMotionEffect() {
+  clearTimeout(state.answerGateMotionTimer);
+  state.answerGateMotionTimer = null;
+  state.answerGateMotionKey = "";
+  els.phoneAnswerGate?.classList.remove("is-answer-gate-entering");
 }
 
 function renderChoices(game) {

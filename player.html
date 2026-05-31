@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-14" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-15" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-14" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-15" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -2101,6 +2101,167 @@
         color: #36796d;
       }
 
+      .phone-answer-gate[hidden] {
+        display: none !important;
+      }
+
+      .player-body.is-joined .phone-answer-gate {
+        --answer-gate-progress: 0;
+        position: relative;
+        display: grid;
+        gap: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(47, 138, 120, 0.2);
+        border-radius: 20px;
+        background:
+          radial-gradient(circle at 14% 18%, rgba(104, 190, 165, 0.2), transparent 34%),
+          linear-gradient(140deg, rgba(240, 252, 247, 0.96), rgba(255, 243, 224, 0.9) 58%, rgba(255, 232, 221, 0.86)),
+          #fff8ec;
+        padding: 12px;
+        box-shadow:
+          0 14px 28px rgba(63, 116, 104, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      }
+
+      .player-body.is-joined .phone-answer-gate::before {
+        content: "";
+        position: absolute;
+        inset: -60% auto -60% -36%;
+        width: 54%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.58), transparent);
+        transform: translateX(-24%) rotate(12deg);
+        animation: phoneAnswerGateSweep 2.7s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      .player-body.is-joined .phone-answer-gate.is-answer-gate-entering {
+        animation: phoneAnswerGateEnter 620ms cubic-bezier(0.2, 0.9, 0.22, 1.06);
+      }
+
+      .player-body.is-joined .phone-answer-gate-main {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .player-body.is-joined .phone-answer-gate-icon {
+        display: inline-grid;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        border-radius: 14px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(223, 247, 238, 0.82)),
+          rgba(47, 138, 120, 0.12);
+        color: #25705f;
+        font-size: 1.25rem;
+        font-weight: 1000;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+        animation: phoneAnswerGatePulse 1.5s ease-in-out infinite;
+      }
+
+      .player-body.is-joined .phone-answer-gate-main span:not(.phone-answer-gate-icon) {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .player-body.is-joined .phone-answer-gate-main strong {
+        min-width: 0;
+        overflow: hidden;
+        color: #2d685d;
+        font-size: 0.9rem;
+        font-weight: 1000;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .player-body.is-joined .phone-answer-gate-main small {
+        min-width: 0;
+        overflow: hidden;
+        color: #875f37;
+        font-size: 0.75rem;
+        font-weight: 850;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .player-body.is-joined .phone-answer-gate-count {
+        display: inline-grid;
+        min-width: 38px;
+        height: 34px;
+        place-items: center;
+        border-radius: 14px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 234, 208, 0.82)),
+          rgba(245, 158, 61, 0.14);
+        color: #9f5529;
+        font-size: 1.05rem;
+        font-weight: 1000;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.84),
+          0 8px 18px rgba(158, 88, 45, 0.1);
+      }
+
+      .player-body.is-joined .phone-answer-gate-wave {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: end;
+        gap: 4px;
+        height: 22px;
+        padding: 0 2px;
+      }
+
+      .player-body.is-joined .phone-answer-gate-wave span {
+        flex: 1;
+        min-width: 0;
+        height: 46%;
+        border-radius: 999px;
+        background:
+          linear-gradient(180deg, rgba(47, 138, 120, 0.72), rgba(244, 158, 67, 0.62));
+        transform-origin: 50% 100%;
+        animation: phoneAnswerGateBars 920ms ease-in-out infinite;
+      }
+
+      .player-body.is-joined .phone-answer-gate-wave span:nth-child(2n) {
+        animation-delay: 110ms;
+      }
+
+      .player-body.is-joined .phone-answer-gate-wave span:nth-child(3n) {
+        animation-delay: 220ms;
+      }
+
+      .player-body.is-joined .phone-answer-gate-wave span:nth-child(4n) {
+        animation-delay: 330ms;
+      }
+
+      .player-body.is-joined .phone-answer-gate-progress {
+        position: relative;
+        z-index: 1;
+        display: block;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(93, 66, 57, 0.1);
+      }
+
+      .player-body.is-joined .phone-answer-gate-progress span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background:
+          linear-gradient(90deg, #2f8a78, #f4a348 58%, #d66c61);
+        box-shadow: 0 0 18px rgba(47, 138, 120, 0.28);
+        transform: scaleX(var(--answer-gate-progress));
+        transform-origin: left center;
+        transition: transform 240ms ease;
+      }
+
       .player-body.is-joined .phone-choices.has-cooldown .phone-choice.is-cooldown-locked {
         border-color: rgba(214, 108, 97, 0.2);
         background:
@@ -2140,6 +2301,15 @@
         background: rgba(255, 246, 219, 0.84);
         color: #875222;
         padding: 9px 10px;
+      }
+
+      .player-body.is-joined .phone-result.is-answer-gate-muted {
+        min-height: 0;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0;
+        border: 0;
+        opacity: 0;
       }
 
       .player-body.is-joined.is-game-revealed .phone-question {
@@ -2916,6 +3086,38 @@
         }
       }
 
+      @keyframes phoneAnswerGateEnter {
+        0% {
+          opacity: 0;
+          transform: translateY(10px) scale(0.97);
+        }
+        64% {
+          opacity: 1;
+          transform: translateY(-2px) scale(1.012);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes phoneAnswerGateSweep {
+        0% { transform: translateX(-30%) rotate(12deg); opacity: 0; }
+        28% { opacity: 0.55; }
+        62% { opacity: 0.22; }
+        100% { transform: translateX(260%) rotate(12deg); opacity: 0; }
+      }
+
+      @keyframes phoneAnswerGateBars {
+        0%, 100% { transform: scaleY(0.44); opacity: 0.62; }
+        46% { transform: scaleY(1); opacity: 1; }
+      }
+
+      @keyframes phoneAnswerGatePulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.055); }
+      }
+
       @keyframes phoneRevealBridgeSweep {
         0% { transform: translateX(-64%); }
         58% { transform: translateX(54%); }
@@ -3173,6 +3375,26 @@
           </div>
           <div class="phone-hints" id="phoneHints"></div>
           <div class="phone-choices" id="phoneChoices"></div>
+          <div class="phone-answer-gate" id="phoneAnswerGate" hidden aria-live="polite">
+            <div class="phone-answer-gate-main">
+              <span class="phone-answer-gate-icon" aria-hidden="true">≋</span>
+              <span>
+                <strong id="phoneAnswerGateTitle">準備聽歌</strong>
+                <small id="phoneAnswerGateText">音樂同步後自動開放</small>
+              </span>
+              <b class="phone-answer-gate-count" id="phoneAnswerGateCount">7</b>
+            </div>
+            <div class="phone-answer-gate-wave" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <i class="phone-answer-gate-progress" aria-hidden="true"><span id="phoneAnswerGateBar"></span></i>
+          </div>
           <button class="buzz-button" id="buzzButton" type="button" hidden>搶答</button>
           <div class="phone-cooldown" id="phoneCooldown" hidden>
             <span>
@@ -3252,10 +3474,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-14"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-14"></script>
+    <script src="./firebase-config.js?v=premium-mobile-15"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-15"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-14"></script>
-    <script src="./pwa.js?v=premium-mobile-14"></script>
+    <script src="./player.js?v=premium-mobile-15"></script>
+    <script src="./pwa.js?v=premium-mobile-15"></script>
   </body>
 </html>

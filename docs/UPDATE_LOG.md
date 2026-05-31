@@ -21,6 +21,32 @@
 
 ---
 
+## 2026-06-01 03:21 HKT
+
+類型：手機版 / 視覺 / 聲音同步等待
+
+變更：
+- 手機 7 秒音訊補償期間新增 `phoneAnswerGate` 狀態卡，顯示答題準備、倒數 badge、聲波動畫和同步進度條。
+- 補償等待時 `phoneResult` 會暫時收起，避免同一個提示在畫面重複出現，視覺焦點落在同步卡和選項上。
+- `player.js` 新增 `renderAnswerGate()`、`answerGateMotionKey` 和進場 motion，等待卡每題只觸發一次進場。
+- 手機和主持入口 cache version 更新到 `premium-mobile-15`，PWA / service worker cache 同步更新。
+
+影響：
+- 玩家在延遲補償期間會感覺 app 正在主動同步，而不是按鈕突然不能按。
+- 7 秒等待狀態更像正式 app 的 loading / gate interaction，對手機實機體驗更友善。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Chrome mobile viewport 390x844 驗證快選等待卡：8 個快選一開始 disabled / `is-sync-locked`，`phoneAnswerGate` 顯示 `快選準備中`、倒數 badge `7`、進場 class、聲波和進度條；`phoneResult.is-answer-gate-muted` 生效；8.3 秒後等待卡隱藏、選項解鎖、倒數開始扣，390px 無橫向溢出。
+- 本機 Chrome mobile viewport 390x844 驗證四選一等待卡：4 個選項一開始 disabled，等待卡顯示 `答題準備中` / `音樂同步後自動開放答題`；3.6 秒後等待卡隱藏、選項解鎖、結果文案回到 `請選擇答案`。
+- 本機截圖檢查：等待卡位於選項下方，倒數 badge、聲波、進度條和同步收聽卡沒有互相遮擋。
+
+下一步：
+- 部署到 GitHub Pages 後正式驗證等待卡、解鎖流程和 390px 版面。
+
+---
+
 ## 2026-06-01 05:22 HKT
 
 類型：手機版 / 互動手感 / 答題回饋
