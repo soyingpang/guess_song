@@ -136,6 +136,8 @@ const state = {
   speakerMode: false,
   modeLocked: true,
   settings: loadPhoneSettings(),
+  stageCueTimer: null,
+  lastStageCueKey: "",
   remoteMediaKey: "",
   remotePlaybackKey: "",
   remotePlaybackBlocked: false,
@@ -175,6 +177,11 @@ const els = {
   playerRound: document.querySelector("#playerRound"),
   phoneStatus: document.querySelector("#phoneStatus"),
   phoneTitle: document.querySelector("#phoneTitle"),
+  phoneQuestion: document.querySelector("#phoneQuestion"),
+  phoneStageCue: document.querySelector("#phoneStageCue"),
+  phoneStageCueIcon: document.querySelector("#phoneStageCueIcon"),
+  phoneStageCueTitle: document.querySelector("#phoneStageCueTitle"),
+  phoneStageCueDetail: document.querySelector("#phoneStageCueDetail"),
   phoneAnswerCard: document.querySelector("#phoneAnswerCard"),
   phoneAnswerTitle: document.querySelector("#phoneAnswerTitle"),
   phoneAnswerMeta: document.querySelector("#phoneAnswerMeta"),
@@ -729,7 +736,9 @@ function handleMessage(message) {
 
   if (message.type === "state") {
     clearJoinHandshakeTimer();
-    const previousQuestionId = state.game?.questionId;
+    const previousGame = state.game;
+    const previousQuestionId = previousGame?.questionId;
+    const previousStagePhase = phoneStagePhase(previousGame);
     updateRemoteCountdownWindow(message, previousQuestionId);
     state.game = message;
     state.displayName = message.playerName || state.name;
@@ -749,6 +758,7 @@ function handleMessage(message) {
     }
     if (message.selectedAnswer) state.selectedAnswer = message.selectedAnswer;
     renderGame();
+    maybeShowStageTransition(message, previousGame, previousStagePhase);
     updateMicUi();
   }
 
@@ -814,6 +824,7 @@ function renderJoinedWaiting() {
   resetLeaderboardMotion();
   setPlayerScoreText(0);
   hideScoreBurst();
+  hideStageCue();
   els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
   els.phoneStatus.textContent = "已加入遊戲";
   els.phoneTitle.textContent = "等候主持開始";
@@ -2201,6 +2212,106 @@ function updatePhoneAppState(game) {
           : state.joined
             ? "已入房"
             : "待命";
+}
+
+function maybeShowStageTransition(game, previousGame = null, previousStagePhase = "") {
+  if (!game?.hasQuestion) return;
+
+  const previousQuestionId = previousGame?.questionId || "";
+  const questionChanged = Boolean(previousQuestionId && previousQuestionId !== game.questionId);
+  const currentPhase = phoneStagePhase(game);
+  let cue = null;
+
+  if (game.revealed && !previousGame?.revealed) {
+    cue = {
+      type: "reveal",
+      icon: "✓",
+      title: "開估",
+      detail: game.title || game.answer || "答案揭曉",
+      key: `${game.questionId}:reveal:${game.title || game.answer || ""}`,
+      duration: 1450,
+    };
+  } else if (questionChanged) {
+    cue = {
+      type: "next",
+      icon: "→",
+      title: `第 ${game.round || ""} 題`,
+      detail: "下一題開始",
+      key: `${game.questionId}:next:${game.round || ""}`,
+      duration: 1350,
+    };
+  } else if (!previousGame?.hasQuestion) {
+    cue = {
+      type: "round",
+      icon: "♪",
+      title: `第 ${game.round || ""} 題`,
+      detail: stageModeLabel(game),
+      key: `${game.questionId}:round:${game.round || ""}`,
+      duration: 1300,
+    };
+  } else if (currentPhase === "play" && previousStagePhase !== "play") {
+    cue = {
+      type: "play",
+      icon: "♪",
+      title: "播放開始",
+      detail: `${remainingSeconds(game)} 秒`,
+      key: `${game.questionId}:play:${Number(game.playbackRevision || 0)}`,
+      duration: 1250,
+    };
+  }
+
+  if (cue) showStageCue(cue);
+}
+
+function phoneStagePhase(game) {
+  if (!game?.hasQuestion) return "waiting";
+  if (game.revealed) return "reveal";
+  if (isCompensatedPlaybackActive(game) || game.isPlaying || game.mediaPlaying) return "play";
+  if (game.buzzOpen) return "open";
+  return "ready";
+}
+
+function stageModeLabel(game) {
+  if (game?.hasWord) return "主題搶唱";
+  if (game?.mode === "choice") return "四選一";
+  if (game?.mode === "buzz") return "快選估歌";
+  return "準備開始";
+}
+
+function showStageCue({ type, icon, title, detail, key, duration = 1300 }) {
+  if (!els.phoneStageCue) return;
+  if (key && state.lastStageCueKey === key) return;
+  state.lastStageCueKey = key || `${type}:${Date.now()}`;
+
+  clearTimeout(state.stageCueTimer);
+  els.phoneStageCue.hidden = false;
+  els.phoneStageCue.dataset.type = type || "round";
+  if (els.phoneStageCueIcon) els.phoneStageCueIcon.textContent = icon || "♪";
+  if (els.phoneStageCueTitle) els.phoneStageCueTitle.textContent = title || "";
+  if (els.phoneStageCueDetail) els.phoneStageCueDetail.textContent = detail || "";
+
+  els.phoneStageCue.classList.remove("is-entering");
+  els.phoneQuestion?.classList.remove("is-stage-transition");
+  void els.phoneStageCue.offsetWidth;
+  els.phoneStageCue.classList.add("is-entering");
+  els.phoneQuestion?.classList.add("has-stage-cue");
+  els.phoneQuestion?.classList.add("is-stage-transition");
+
+  state.stageCueTimer = window.setTimeout(() => {
+    hideStageCue();
+  }, duration);
+}
+
+function hideStageCue() {
+  clearTimeout(state.stageCueTimer);
+  state.stageCueTimer = null;
+  if (els.phoneStageCue) {
+    els.phoneStageCue.hidden = true;
+    els.phoneStageCue.classList.remove("is-entering");
+    delete els.phoneStageCue.dataset.type;
+  }
+  els.phoneQuestion?.classList.remove("has-stage-cue");
+  els.phoneQuestion?.classList.remove("is-stage-transition");
 }
 
 function openLeaderboard() {

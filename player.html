@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-8" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-9" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-8" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-9" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -1571,6 +1571,121 @@
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
       }
 
+      .phone-stage-cue[hidden] {
+        display: none !important;
+      }
+
+      .player-body.is-joined .phone-stage-cue {
+        position: absolute;
+        z-index: 6;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        column-gap: 11px;
+        align-items: center;
+        min-height: 76px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.62);
+        border-radius: 20px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 244, 231, 0.9)),
+          rgba(255, 250, 242, 0.88);
+        box-shadow:
+          0 18px 42px rgba(88, 54, 39, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.86);
+        padding: 12px;
+        pointer-events: none;
+        backdrop-filter: blur(16px);
+      }
+
+      .player-body.is-joined .phone-stage-cue::after {
+        content: "";
+        position: absolute;
+        inset: -44% auto -44% -32%;
+        width: 38%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent);
+        opacity: 0;
+        transform: rotate(12deg);
+      }
+
+      .phone-stage-cue-icon {
+        grid-row: 1 / span 2;
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        border-radius: 17px;
+        background: rgba(47, 138, 120, 0.14);
+        color: #24765f;
+        font-size: 1.55rem;
+        font-weight: 1000;
+        box-shadow: inset 0 -3px 0 rgba(47, 138, 120, 0.1);
+      }
+
+      .phone-stage-cue strong,
+      .phone-stage-cue small {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .phone-stage-cue strong {
+        color: var(--phone-ink);
+        font-size: 1.22rem;
+        font-weight: 1000;
+        line-height: 1.04;
+      }
+
+      .phone-stage-cue small {
+        color: var(--phone-muted);
+        font-size: 0.78rem;
+        font-weight: 900;
+      }
+
+      .phone-stage-cue[data-type="play"] .phone-stage-cue-icon {
+        background: linear-gradient(180deg, rgba(47, 138, 120, 0.24), rgba(37, 99, 235, 0.12));
+        color: #1d6b61;
+      }
+
+      .phone-stage-cue[data-type="reveal"] .phone-stage-cue-icon {
+        background: linear-gradient(180deg, rgba(251, 191, 36, 0.34), rgba(216, 151, 77, 0.16));
+        color: #8a551b;
+      }
+
+      .phone-stage-cue[data-type="next"] .phone-stage-cue-icon {
+        background: linear-gradient(180deg, rgba(214, 108, 97, 0.22), rgba(47, 138, 120, 0.12));
+        color: #a64b3f;
+      }
+
+      .phone-stage-cue.is-entering {
+        animation: phoneStageCuePop 560ms cubic-bezier(0.2, 0.9, 0.2, 1.08);
+      }
+
+      .phone-stage-cue.is-entering::after {
+        animation: phoneStageCueSweep 720ms ease-out;
+      }
+
+      .player-body.is-joined .phone-question.is-stage-transition {
+        animation: phoneQuestionShift 640ms cubic-bezier(0.2, 0.9, 0.2, 1.05);
+      }
+
+      .player-body.is-joined .phone-question.has-stage-cue > :not(.phone-stage-cue) {
+        opacity: 0.28;
+        transition:
+          opacity 180ms ease,
+          transform 180ms ease;
+      }
+
+      .player-body.is-joined .phone-question.has-stage-cue .phone-choices,
+      .player-body.is-joined .phone-question.has-stage-cue .phone-result {
+        transform: translateY(4px);
+      }
+
       .phone-answer-card[hidden],
       .phone-cooldown[hidden] {
         display: none !important;
@@ -2361,6 +2476,30 @@
         100% { opacity: 0; transform: translate3d(var(--x), var(--y), 0) scale(1); }
       }
 
+      @keyframes phoneStageCuePop {
+        0% { opacity: 0; transform: translateY(12px) scale(0.96); }
+        64% { opacity: 1; transform: translateY(-3px) scale(1.012); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes phoneStageCueSweep {
+        0% { opacity: 0; transform: translateX(0) rotate(12deg); }
+        18% { opacity: 0.82; }
+        100% { opacity: 0; transform: translateX(360%) rotate(12deg); }
+      }
+
+      @keyframes phoneQuestionShift {
+        0% { transform: translateY(0); }
+        42% {
+          transform: translateY(-2px);
+          box-shadow:
+            0 18px 42px rgba(88, 54, 39, 0.16),
+            0 0 0 4px rgba(47, 138, 120, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.88);
+        }
+        100% { transform: translateY(0); }
+      }
+
       @keyframes phoneRankRise {
         0% { transform: translateY(10px) scale(0.98); }
         62% { transform: translateY(-3px) scale(1.012); }
@@ -2562,9 +2701,14 @@
           <div class="phone-remote-roster" id="phoneRemoteRoster"></div>
         </section>
 
-        <section class="phone-question">
+        <section class="phone-question" id="phoneQuestion">
           <p id="phoneStatus">等候主持開始</p>
           <h2 id="phoneTitle">準備中</h2>
+          <div class="phone-stage-cue" id="phoneStageCue" hidden aria-live="polite">
+            <span class="phone-stage-cue-icon" id="phoneStageCueIcon">♪</span>
+            <strong id="phoneStageCueTitle">第 1 題</strong>
+            <small id="phoneStageCueDetail">準備開始</small>
+          </div>
           <div class="phone-answer-card" id="phoneAnswerCard" hidden>
             <span>正確答案</span>
             <strong id="phoneAnswerTitle"></strong>
@@ -2651,10 +2795,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-8"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-8"></script>
+    <script src="./firebase-config.js?v=premium-mobile-9"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-9"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-8"></script>
-    <script src="./pwa.js?v=premium-mobile-8"></script>
+    <script src="./player.js?v=premium-mobile-9"></script>
+    <script src="./pwa.js?v=premium-mobile-9"></script>
   </body>
 </html>

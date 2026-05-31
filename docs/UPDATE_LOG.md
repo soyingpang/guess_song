@@ -21,6 +21,29 @@
 
 ---
 
+## 2026-06-01 03:12 HKT
+
+類型：設計 / 程式 / 手機題目轉場
+
+摘要：
+- 手機題目卡新增 `phoneStageCue` 玻璃質感轉場 cue，支援回合開始、播放開始、開估和下一題四種狀態。
+- `player.js` 新增 stage phase 偵測：根據上一個題目狀態和新 player state 判斷何時顯示 `round`、`play`、`reveal`、`next` cue。
+- cue 顯示期間題目卡內其他內容會短暫淡出，避免轉場卡和歌單 / 選項互相搶視覺焦點。
+- 手機和主持入口 cache version 更新到 `premium-mobile-9`，PWA / service worker cache 同步更新。
+
+影響：
+- 手機流程由「狀態文字切換」變成更接近正式 app 的回合轉場，玩家更容易感覺到新一題、播放、開估和下一題的節奏。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 本機 Chrome mobile viewport 390x844 驗證：`round` 顯示「第 1 題」、`play` 顯示「播放開始 / 30 秒」、`reveal` 顯示「開估 / Song A」、`next` 顯示「第 2 題 / 下一題開始」；cue 和題目卡 transition class 正確，內容淡出狀態生效，無橫向溢出。
+
+後續：
+- 可再做答案揭曉後 5 秒自動下一題的微型倒數 ring，令開估等待時間更可感知。
+
+---
+
 ## 2026-06-01 02:48 HKT
 
 類型：設計 / 程式 / 手機排行榜動效
