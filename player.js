@@ -53,6 +53,7 @@ const CONNECTION_PROFILES = [
 ];
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const REMOTE_AUDIO_COUNTDOWN_DELAY_MS = 7000;
+const QUICK_PICK_COOLDOWN_MS = 5000;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 const ENTRY_MODES = new Set(["remote"]);
@@ -164,9 +165,16 @@ const els = {
   playerRound: document.querySelector("#playerRound"),
   phoneStatus: document.querySelector("#phoneStatus"),
   phoneTitle: document.querySelector("#phoneTitle"),
+  phoneAnswerCard: document.querySelector("#phoneAnswerCard"),
+  phoneAnswerTitle: document.querySelector("#phoneAnswerTitle"),
+  phoneAnswerMeta: document.querySelector("#phoneAnswerMeta"),
   phoneHints: document.querySelector("#phoneHints"),
   phoneChoices: document.querySelector("#phoneChoices"),
   buzzButton: document.querySelector("#buzzButton"),
+  phoneCooldown: document.querySelector("#phoneCooldown"),
+  phoneCooldownTitle: document.querySelector("#phoneCooldownTitle"),
+  phoneCooldownText: document.querySelector("#phoneCooldownText"),
+  phoneCooldownBar: document.querySelector("#phoneCooldownBar"),
   phoneResult: document.querySelector("#phoneResult"),
   phoneMoment: document.querySelector("#phoneMoment"),
   phoneMomentIcon: document.querySelector("#phoneMomentIcon"),
@@ -2070,6 +2078,7 @@ function renderGame() {
   els.phoneStatus.textContent = phoneStatusText(game);
   els.phoneTitle.textContent = game.revealed ? game.title : game.hasQuestion ? game.title || game.songlistLabel || "估呢首歌" : "準備中";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
+  renderAnswerCard(game);
   maybeShowRevealMoment(game);
   els.phoneResult.textContent =
     state.lastResult ||
@@ -2081,6 +2090,7 @@ function renderGame() {
 
   renderHints(game.hints || []);
   renderChoices(game);
+  renderCooldown(game);
   renderLeaderboard(game.leaderboard || [], game.teamScores || {});
   if (!ONSITE_ONLY) renderRemotePanel(game);
 }
@@ -2222,6 +2232,42 @@ function renderHints(hints) {
   });
 }
 
+function renderAnswerCard(game) {
+  if (!els.phoneAnswerCard) return;
+  const shouldShow = Boolean(game?.revealed && !game.hasWord && (game.answer || game.title));
+  els.phoneAnswerCard.hidden = !shouldShow;
+  if (!shouldShow) {
+    if (els.phoneAnswerTitle) els.phoneAnswerTitle.textContent = "";
+    if (els.phoneAnswerMeta) els.phoneAnswerMeta.textContent = "";
+    return;
+  }
+
+  const meta = Array.isArray(game.meta) ? game.meta.filter(Boolean).join(" · ") : "";
+  els.phoneAnswerTitle.textContent = game.answer || game.title || "已開估";
+  els.phoneAnswerMeta.textContent = meta || "5 秒後自動下一題";
+}
+
+function renderCooldown(game) {
+  if (!els.phoneCooldown) return;
+
+  const remainingMs =
+    game?.mode === "buzz" && !game.revealed && !game.buzzWinner ? quickPickCooldownRemaining(game) : 0;
+  const isVisible = remainingMs > 0;
+  els.phoneCooldown.hidden = !isVisible;
+  if (!isVisible) {
+    els.phoneCooldown.style.setProperty("--cooldown-progress", "0");
+    return;
+  }
+
+  const seconds = Math.max(1, Math.ceil(remainingMs / 1000));
+  const total = Math.max(remainingMs, Number(game.quickPickCooldownMs || QUICK_PICK_COOLDOWN_MS));
+  const progress = Math.max(0, Math.min(1, remainingMs / total));
+  els.phoneCooldownTitle.textContent = "答錯冷卻中";
+  els.phoneCooldownText.textContent = `${seconds} 秒後可以再答`;
+  els.phoneCooldown.style.setProperty("--cooldown-progress", progress.toFixed(3));
+  scheduleQuickPickCooldownRender(remainingMs);
+}
+
 function renderChoices(game) {
   els.phoneChoices.replaceChildren();
   els.buzzButton.hidden = true;
@@ -2328,10 +2374,11 @@ function quickPickCooldownRemaining(game) {
 
 function scheduleQuickPickCooldownRender(remainingMs) {
   clearQuickPickCooldownTimer();
+  const nextTick = remainingMs > 1000 ? 1000 : remainingMs + 50;
   state.quickPickCooldownTimer = window.setTimeout(() => {
     state.quickPickCooldownTimer = null;
     renderGame();
-  }, Math.max(250, remainingMs + 50));
+  }, Math.max(150, nextTick));
 }
 
 function renderLeaderboard(players, teamScores = {}) {
@@ -2345,6 +2392,8 @@ function renderLeaderboard(players, teamScores = {}) {
     els.phoneLeaderboard.append(empty);
     return;
   }
+
+  els.phoneLeaderboard.append(renderPhoneSettlementHero(players, teamScores));
 
   players.slice(0, 10).forEach((player, index) => {
     const item = document.createElement("div");
@@ -2365,6 +2414,31 @@ function renderLeaderboard(players, teamScores = {}) {
     item.append(badge, name, score);
     els.phoneLeaderboard.append(item);
   });
+}
+
+function renderPhoneSettlementHero(players, teamScores = {}) {
+  const top = players[0] || {};
+  const aScore = Number(teamScores.A || 0);
+  const bScore = Number(teamScores.B || 0);
+  const teamStatus = aScore === bScore ? "分組暫時平手" : `${aScore > bScore ? "A" : "B"} 組領先`;
+  const hero = document.createElement("div");
+  hero.className = "phone-settlement-hero";
+
+  const badge = document.createElement("b");
+  badge.textContent = "TOP";
+
+  const copy = document.createElement("span");
+  const name = document.createElement("strong");
+  name.textContent = top.name ? `${top.name} 暫列第一` : "暫未有領先玩家";
+  const meta = document.createElement("small");
+  meta.textContent = teamStatus;
+  copy.append(name, meta);
+
+  const score = document.createElement("em");
+  score.textContent = `${Number(top.score || 0)} 分`;
+
+  hero.append(badge, copy, score);
+  return hero;
 }
 
 function renderPhoneTeamSummary(teamScores) {

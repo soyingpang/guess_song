@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "mobile-delay-1";
+const APP_BUILD_VERSION = "premium-mobile-3";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -3269,9 +3269,14 @@ function buildPlayerState(player) {
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen || (state.mode === "buzz" && remoteAnswerOpen),
     quickPickCooldownUntil: state.mode === "buzz" ? Number(player.quickPickCooldownUntil || 0) : 0,
+    quickPickCooldownMs: QUICK_PICK_COOLDOWN_MS,
     quickPickCorrectPoints: QUICK_PICK_CORRECT_POINTS,
     quickPickWrongPoints: QUICK_PICK_WRONG_POINTS,
     title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : songlistLabel,
+    answer: revealed && song ? answerLabel(song) : hasWord ? `今題主題：${state.currentWord}` : "",
+    meta: revealed && song
+      ? [song.category, song.source, song.number ? `#${song.number}` : ""].filter(Boolean)
+      : [],
     status: els.resultText.textContent || "",
     score: player.score,
     choices: choiceOptions,
