@@ -30,7 +30,7 @@
 - 自動順序是 `soyingpang-guess-song-fellowship-room`、`soyingpang-guess-song-fellowship-room-2`、`...-3`，最多檢查 `AUTO_ROOM_MAX_CANDIDATES` 間。
 - Firebase 新增主持佔房 transaction 和 `hostHeartbeatAt` 心跳，避免仍在線的主持被後來開頁誤搶。
 - 指定房間模式仍保留：如果主持頁 URL 帶 `?room=custom-room`，就只用該指定房間。
-- 將三個入口頁 cache version 更新到 `auto-room-1`。
+- 將三個入口頁 cache version 更新到 `auto-room-2`。
 
 影響：
 - 多個主持人可以全部直接開同一個 GitHub Pages 首頁，系統自動分配不同場。
