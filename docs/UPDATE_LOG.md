@@ -41,9 +41,10 @@
 - `git diff --check` 通過，只有既有 CRLF 提示。
 - 本機 Chrome mobile viewport 390x844 驗證：答案卡第一次顯示時 `is-answer-revealing` / `is-answer-bloom` 會出現，約 1.4 秒後自動移除；同一題重新 render 不會重複觸發；倒數 ring 5→4→3，390px 無橫向溢出。
 - 本機截圖檢查答案揭曉畫面：stage cue、答案卡、倒數圈和同步收聽卡沒有互相遮擋，答案卡是視覺主體。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-13-live` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-13` / `pwa.js?v=premium-mobile-13`，答案卡第一次顯示時 `is-answer-revealing` / `is-answer-bloom` 會出現，約 1.4 秒後自動移除；同一題重新 render 不會重複觸發；倒數 ring 5→4→3，390px 無橫向溢出。
 
 下一步：
-- 正式頁部署後驗證：答案卡第一次顯示時有 reveal class，稍後自動移除；倒數仍 5→4，390px 手機寬度無橫向溢出。
+- 下一輪可打磨玩家操作手感，例如快選按下的 pressed 狀態、答錯冷卻進場和排行榜入口的細微 motion。
 
 ---
 
