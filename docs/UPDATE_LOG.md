@@ -47,9 +47,10 @@
 - 本機 Chrome mobile viewport 390x844 驗證：8 個快選選項正常顯示；點第一個選項後 `is-choice-confirming` 出現、`aria-pressed=true`、8 個選項 disabled；約 0.9 秒後確認 class 移除但選中狀態保留。
 - 本機 Chrome mobile viewport 390x844 驗證冷卻狀態：`phoneChoices.has-cooldown`、8 個 `is-cooldown-locked`、`phoneCooldown.is-cooldown-entering` 會出現；約 0.95 秒後進場 class 移除，冷卻進度仍更新，390px 無橫向溢出。
 - 本機截圖檢查冷卻畫面：8 個鎖定快選、冷卻卡和同步收聽卡沒有互相遮擋，冷卻狀態清楚可掃讀。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-14-live-delay` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-14` / `pwa.js?v=premium-mobile-14`；7 秒補償期間 8 個快選 disabled / `is-sync-locked`，倒數停在 30 秒；8.3 秒後自動解鎖，倒數變 29 秒；點答案有確認動效；冷卻狀態有 `has-cooldown`、8 個 `is-cooldown-locked`、`is-cooldown-entering`，390px 無橫向溢出。
 
 下一步：
-- 正式頁部署後驗證：7 秒補償期間選項鎖定並顯示開放提示，過後自動解鎖；點選答案時確認 class 出現並移除；冷卻狀態有 locked class 和進場 class；390px 手機寬度無橫向溢出。
+- 下一輪可繼續打磨手機實機體驗，例如加入主持端一鍵「延遲校準流程」提示，或美化玩家等待開放答題時的細微聲波動效。
 
 ---
 
