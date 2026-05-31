@@ -38,6 +38,7 @@
 - `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
 - `git diff --check` 通過（只見既有 CRLF 提示）。
 - 本機 Chrome mobile viewport 390x844 驗證：Bob 由第 2 升第 1 顯示 `up` / `↑1`，Alice 由第 1 跌第 2 顯示 `down` / `↓1`，Charlie 新上榜顯示 `new` / `NEW`；排行榜 modal 可打開，無橫向溢出。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-8-live` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-8` / `pwa.js?v=premium-mobile-8`，Bob 升位、Alice 跌位、Charlie 新上榜三種排行榜動效狀態通過；390px 手機寬度無橫向溢出。
 
 後續：
 - 可再做「回合開始 / 開估 / 下一題」之間的頁面轉場，令整個手機流程更像完整 app。
