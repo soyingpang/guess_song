@@ -1,6 +1,7 @@
 const PLAYER_ID_KEY = "cantonese-hymn-quiz-player-id-v1";
 const PLAYER_NAME_KEY = "cantonese-hymn-quiz-player-name-v1";
 const PLAYER_REMOTE_MODE_KEY = "cantonese-hymn-quiz-player-entry-mode-v1";
+const PHONE_SETTINGS_KEY = "guess-song-phone-ui-settings-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const ONSITE_ONLY = false;
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
@@ -55,6 +56,11 @@ const REMOTE_AUDIO_COUNTDOWN_DELAY_MS = 7000;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 const ENTRY_MODES = new Set(["remote"]);
+const DEFAULT_PHONE_SETTINGS = {
+  motionEffects: true,
+  haptics: true,
+  compactMode: false,
+};
 
 const params = new URLSearchParams(window.location.search);
 const urlRoomId = normalizeRoomId(params.get("room"));
@@ -118,6 +124,7 @@ const state = {
   remoteMode: true,
   speakerMode: false,
   modeLocked: true,
+  settings: loadPhoneSettings(),
   remoteMediaKey: "",
   remotePlaybackKey: "",
   remotePlaybackBlocked: false,
@@ -165,6 +172,13 @@ const els = {
   openLeaderboardButton: document.querySelector("#openLeaderboardButton"),
   closeLeaderboardButton: document.querySelector("#closeLeaderboardButton"),
   leaderboardModal: document.querySelector("#leaderboardModal"),
+  phoneLivePill: document.querySelector("#phoneLivePill"),
+  phoneSettingsButton: document.querySelector("#phoneSettingsButton"),
+  settingsModal: document.querySelector("#settingsModal"),
+  closeSettingsButton: document.querySelector("#closeSettingsButton"),
+  motionEffectsToggle: document.querySelector("#motionEffectsToggle"),
+  hapticsToggle: document.querySelector("#hapticsToggle"),
+  compactModeToggle: document.querySelector("#compactModeToggle"),
   onsiteModeButton: document.querySelector("#onsiteModeButton"),
   remoteModeButton: document.querySelector("#remoteModeButton"),
   speakerModeButton: document.querySelector("#speakerModeButton"),
@@ -201,10 +215,13 @@ const ICONS = {
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7-11-7Z"/></svg>',
   sync:
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M18.5 9A7 7 0 0 0 6.4 6.8L4 9"/><path d="M5.5 15A7 7 0 0 0 17.6 17.2L20 15"/></svg>',
+  settings:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.05.05a2 2 0 0 1-2.83 2.83l-.05-.05A1.8 1.8 0 0 0 15 19.4a1.8 1.8 0 0 0-1 .6l-.08.08a2 2 0 0 1-3.84 0L10 20a1.8 1.8 0 0 0-1-.6 1.8 1.8 0 0 0-1.93.41l-.05.05a2 2 0 0 1-2.83-2.83l.05-.05A1.8 1.8 0 0 0 4.6 15a1.8 1.8 0 0 0-.6-1l-.08-.08a2 2 0 0 1 0-3.84L4 10a1.8 1.8 0 0 0 .6-1 1.8 1.8 0 0 0-.41-1.93l-.05-.05a2 2 0 0 1 2.83-2.83l.05.05A1.8 1.8 0 0 0 9 4.6a1.8 1.8 0 0 0 1-.6l.08-.08a2 2 0 0 1 3.84 0L14 4a1.8 1.8 0 0 0 1 .6 1.8 1.8 0 0 0 1.93-.41l.05-.05a2 2 0 0 1 2.83 2.83l-.05.05A1.8 1.8 0 0 0 19.4 9c.08.38.29.73.6 1l.08.08a2 2 0 0 1 0 3.84L20 14c-.31.27-.52.62-.6 1Z"/></svg>',
 };
 
 localStorage.setItem(PLAYER_ID_KEY, state.playerId);
 els.playerName.value = state.name;
+applyPhoneSettings();
 showNameStep();
 applyPlayerMode();
 
@@ -214,6 +231,7 @@ els.joinForm.addEventListener("submit", (event) => {
 });
 
 els.buzzButton.addEventListener("click", () => {
+  hapticPulse([18, 30, 18]);
   send({ type: "buzz", questionId: state.game?.questionId });
   els.buzzButton.disabled = true;
   els.phoneResult.textContent = state.game?.mode === "word" ? "已送出搶唱" : "已送出搶答";
@@ -230,6 +248,11 @@ els.micToggleButton?.addEventListener("click", () => {
 
 els.openLeaderboardButton.addEventListener("click", openLeaderboard);
 els.closeLeaderboardButton.addEventListener("click", closeLeaderboard);
+els.phoneSettingsButton?.addEventListener("click", openSettings);
+els.closeSettingsButton?.addEventListener("click", closeSettings);
+els.motionEffectsToggle?.addEventListener("change", () => updatePhoneSetting("motionEffects", els.motionEffectsToggle.checked));
+els.hapticsToggle?.addEventListener("change", () => updatePhoneSetting("haptics", els.hapticsToggle.checked));
+els.compactModeToggle?.addEventListener("change", () => updatePhoneSetting("compactMode", els.compactModeToggle.checked));
 els.onsiteModeButton?.addEventListener("click", () => {
   setPlayerMode("onsite");
 });
@@ -249,14 +272,20 @@ els.phoneRemoteListenButton?.addEventListener("click", () => {
 });
 setIconButton(els.openLeaderboardButton, "leaderboard", "排行榜");
 setIconButton(els.closeLeaderboardButton, "close", "關閉排行榜");
+setIconButton(els.phoneSettingsButton, "settings", "設定");
+setIconButton(els.closeSettingsButton, "close", "關閉設定");
 setListenButtonState(false);
 updateMicUi();
 els.leaderboardModal.addEventListener("click", (event) => {
   if (event.target === els.leaderboardModal) closeLeaderboard();
 });
+els.settingsModal?.addEventListener("click", (event) => {
+  if (event.target === els.settingsModal) closeSettings();
+});
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !els.leaderboardModal.hidden) closeLeaderboard();
+  if (event.key === "Escape" && !els.settingsModal?.hidden) closeSettings();
 });
 
 window.addEventListener("online", () => {
@@ -303,6 +332,7 @@ function joinGame() {
   state.modeLocked = true;
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
   localStorage.setItem(PLAYER_REMOTE_MODE_KEY, "remote");
+  hapticPulse(10);
   applyPlayerMode();
   startJoinWithSelectedMode();
 }
@@ -2024,6 +2054,7 @@ function renderGame() {
 
   syncBodyState();
   applyPlayerMode();
+  updatePhoneAppState(game);
   els.playerScore.textContent = `${game.score || 0} 分`;
   els.playerRound.textContent = game.hasQuestion
     ? `第 ${game.round} 題 · ${teamLabel(game.team)}`
@@ -2045,7 +2076,31 @@ function renderGame() {
   if (!ONSITE_ONLY) renderRemotePanel(game);
 }
 
+function updatePhoneAppState(game) {
+  const isPlaying = isCompensatedPlaybackActive(game);
+  document.body.classList.toggle("has-question", Boolean(game?.hasQuestion));
+  document.body.classList.toggle("is-game-playing", isPlaying);
+  document.body.classList.toggle("is-game-revealed", Boolean(game?.revealed));
+  document.body.classList.toggle("is-quick-mode", game?.mode === "buzz");
+  document.body.classList.toggle("is-choice-mode", game?.mode === "choice");
+  document.body.classList.toggle("is-word-mode", game?.mode === "word");
+
+  if (!els.phoneLivePill) return;
+  els.phoneLivePill.textContent = game?.revealed
+    ? "開估"
+    : isPlaying
+      ? "播放中"
+      : game?.buzzOpen
+        ? "開放"
+        : state.hostAudioStream
+          ? "收聽中"
+          : state.joined
+            ? "已入房"
+            : "待命";
+}
+
 function openLeaderboard() {
+  hapticPulse(8);
   els.leaderboardModal.hidden = false;
   els.closeLeaderboardButton.focus();
 }
@@ -2053,6 +2108,18 @@ function openLeaderboard() {
 function closeLeaderboard() {
   els.leaderboardModal.hidden = true;
   els.openLeaderboardButton.focus();
+}
+
+function openSettings() {
+  hapticPulse(8);
+  syncPhoneSettingsControls();
+  els.settingsModal.hidden = false;
+  els.closeSettingsButton.focus();
+}
+
+function closeSettings() {
+  els.settingsModal.hidden = true;
+  els.phoneSettingsButton.focus();
 }
 
 function renderHints(hints) {
@@ -2108,6 +2175,7 @@ function renderChoices(game) {
         ? Boolean(game.answered || game.buzzWinner || !game.buzzOpen || cooldownRemaining > 0)
         : Boolean(game.answered);
       button.addEventListener("click", () => {
+        hapticPulse(isQuickPick ? [12, 24, 12] : 12);
         state.selectedAnswer = choice;
         send({ type: "answer", questionId: game.questionId, answer: choice });
         [...els.phoneChoices.querySelectorAll("button")].forEach((item) => {
@@ -2227,12 +2295,17 @@ function send(message) {
 
 function setStatus(message) {
   els.playerStatus.textContent = message;
+  if (els.phoneLivePill && !state.game) {
+    els.phoneLivePill.textContent = state.connecting ? "連線中" : state.joined ? "已入房" : "待命";
+  }
   syncBodyState();
 }
 
 function syncBodyState() {
   document.body.classList.toggle("is-joined", Boolean(state.joined));
   document.body.classList.toggle("is-connecting", Boolean(state.connecting && !state.joined));
+  document.body.classList.toggle("effects-off", !state.settings.motionEffects);
+  document.body.classList.toggle("is-compact-ui", Boolean(state.settings.compactMode));
 }
 
 function joinedStatus() {
@@ -2286,6 +2359,57 @@ function compensatedCountdownInfo(game) {
 function remoteAudioDelayMs(game) {
   const configured = Number(game?.remoteAudioDelayMs);
   return Number.isFinite(configured) && configured >= 0 ? configured : REMOTE_AUDIO_COUNTDOWN_DELAY_MS;
+}
+
+function loadPhoneSettings() {
+  let saved = {};
+  try {
+    saved = JSON.parse(localStorage.getItem(PHONE_SETTINGS_KEY) || "{}") || {};
+  } catch {
+    saved = {};
+  }
+
+  const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  return {
+    ...DEFAULT_PHONE_SETTINGS,
+    motionEffects: prefersReducedMotion ? false : saved.motionEffects ?? DEFAULT_PHONE_SETTINGS.motionEffects,
+    haptics: saved.haptics ?? DEFAULT_PHONE_SETTINGS.haptics,
+    compactMode: saved.compactMode ?? DEFAULT_PHONE_SETTINGS.compactMode,
+  };
+}
+
+function savePhoneSettings() {
+  localStorage.setItem(PHONE_SETTINGS_KEY, JSON.stringify(state.settings));
+}
+
+function syncPhoneSettingsControls() {
+  if (els.motionEffectsToggle) els.motionEffectsToggle.checked = Boolean(state.settings.motionEffects);
+  if (els.hapticsToggle) els.hapticsToggle.checked = Boolean(state.settings.haptics);
+  if (els.compactModeToggle) els.compactModeToggle.checked = Boolean(state.settings.compactMode);
+}
+
+function applyPhoneSettings() {
+  syncPhoneSettingsControls();
+  syncBodyState();
+}
+
+function updatePhoneSetting(key, value) {
+  state.settings = {
+    ...state.settings,
+    [key]: Boolean(value),
+  };
+  savePhoneSettings();
+  applyPhoneSettings();
+  hapticPulse(6);
+}
+
+function hapticPulse(pattern = 10) {
+  if (!state.settings.haptics || !navigator.vibrate) return;
+  try {
+    navigator.vibrate(pattern);
+  } catch {
+    // Some browsers expose vibrate but ignore it in background tabs.
+  }
 }
 
 function isVideoMediaUrl(url) {

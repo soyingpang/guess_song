@@ -21,6 +21,32 @@
 
 ---
 
+## 2026-06-01 00:10 HKT
+
+類型：設計 / 程式 / 手機介面
+
+摘要：
+- 手機玩家頁完成第一輪 premium app UI 改造：加入頂部 app bar、狀態 pill、設定按鈕、玻璃感主面板、動態背景光層、播放倒數脈衝和收聽音量波效果。
+- 重新設計已加入遊戲後的分數列、題目卡、四選一 / 快選選項、收聽狀態卡和排行榜入口，讓手機主流程更像原生 app。
+- 新增手機設定面板：動態特效、觸感回饋、精簡畫面，以及 7 秒聲音延遲補償狀態。
+- 手機端新增 localStorage 設定保存、body 狀態 class、答題 / 搶答 haptic feedback、動效關閉和精簡模式。
+- 手機入口 cache version 更新到 `premium-mobile-1`。
+
+影響：
+- 手機玩家畫面視覺層次、觸控反饋和狀態感明顯提升。
+- 舊手機或弱網絡可用「精簡畫面」減少背景效果；怕暈動者可關閉動態特效。
+
+測試：
+- `node --check player.js` 和 `node --check app.js` 通過。
+- 本機 Chrome mobile viewport 390x844 截圖檢查主答題畫面：scoreline 三欄固定，排行榜按鈕沒有掉行，題目與四選一選項沒有橫向溢出。
+- 本機 Chrome mobile viewport 390x844 驗證設定 modal：4 個設定列正常顯示，toggle 初始狀態正確。
+- 本機 Chrome mobile viewport 360x740 驗證快選 8 個選項：沒有橫向溢出，choice count 正確為 8。
+
+後續：
+- 第二輪可再加「開估 / 答中」動畫、排行榜結算動效、更多 app-like microcopy 和實機手機檢查。
+
+---
+
 ## 2026-05-31 23:45 HKT
 
 類型：規格 / 程式 / 手機延遲補償
