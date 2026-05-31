@@ -120,6 +120,8 @@ const state = {
   selectedAnswer: "",
   momentTimer: null,
   lastMomentKey: "",
+  lastLatencyCalibrationKey: "",
+  latencyCalibrationStatus: "",
   quickPickCooldownTimer: null,
   micStream: null,
   micCall: null,
@@ -205,6 +207,9 @@ const els = {
   phoneRemoteListen: document.querySelector("#phoneRemoteListen"),
   phoneRemoteListenStatus: document.querySelector("#phoneRemoteListenStatus"),
   phoneRemoteListenButton: document.querySelector("#phoneRemoteListenButton"),
+  phoneLatencyCalibration: document.querySelector("#phoneLatencyCalibration"),
+  phoneLatencyCalibrationButton: document.querySelector("#phoneLatencyCalibrationButton"),
+  phoneLatencyCalibrationStatus: document.querySelector("#phoneLatencyCalibrationStatus"),
   phoneRemoteRoster: document.querySelector("#phoneRemoteRoster"),
   phoneRemoteMedia: document.querySelector("#phoneRemoteMedia"),
   phoneRemotePlayerHost: document.querySelector("#phoneRemotePlayerHost"),
@@ -286,6 +291,7 @@ els.phoneRemoteListenButton?.addEventListener("click", () => {
   primeRemoteListening();
   playHostAudioBroadcast();
 });
+els.phoneLatencyCalibrationButton?.addEventListener("click", sendLatencyCalibration);
 setIconButton(els.openLeaderboardButton, "leaderboard", "排行榜");
 setIconButton(els.closeLeaderboardButton, "close", "關閉排行榜");
 setIconButton(els.phoneSettingsButton, "settings", "設定");
@@ -729,6 +735,8 @@ function handleMessage(message) {
     if (previousQuestionId !== message.questionId) {
       state.lastResult = "";
       state.selectedAnswer = "";
+      state.lastLatencyCalibrationKey = "";
+      state.latencyCalibrationStatus = "";
       hidePhoneMoment();
     }
     if (message.selectedAnswer) state.selectedAnswer = message.selectedAnswer;
@@ -1724,6 +1732,7 @@ function renderRemotePanel(game) {
   els.phoneRemoteStatus.textContent = phoneStatusText(game);
   els.phoneRemoteCountdown.textContent = remoteCountdownText(game);
   renderHostAudioBroadcastUi();
+  renderLatencyCalibration(game);
 
   const teamScores = game?.teamScores || {};
   els.phoneRemoteTeams.textContent = `A ${Number(teamScores.A || 0)} · B ${Number(teamScores.B || 0)}`;
@@ -1748,6 +1757,68 @@ function remoteCountdownText(game) {
   if (game.revealed) return "開估";
   if (game.hasQuestion) return "待開始";
   return "--";
+}
+
+function renderLatencyCalibration(game) {
+  if (!els.phoneLatencyCalibration) return;
+
+  const available = canSendLatencyCalibration(game);
+  els.phoneLatencyCalibration.hidden = !available;
+  if (!available) return;
+
+  const seconds = Math.round(remoteAudioDelayMs(game) / 1000);
+  const key = latencyCalibrationKey(game);
+  const alreadySent = state.lastLatencyCalibrationKey === key;
+  els.phoneLatencyCalibrationButton.disabled = alreadySent;
+  els.phoneLatencyCalibrationButton.textContent = alreadySent ? "已回報" : "聽到音樂";
+  els.phoneLatencyCalibrationStatus.textContent =
+    state.latencyCalibrationStatus || `目前補償 ${seconds}s`;
+}
+
+function canSendLatencyCalibration(game) {
+  return Boolean(
+    game?.hasSong &&
+      !game.hasWord &&
+      !game.revealed &&
+      !game.fullPlayback &&
+      game.playEndsAt &&
+      game.questionId &&
+      isCompensatedPlaybackActive(game)
+  );
+}
+
+function latencyCalibrationKey(game) {
+  return `${game?.questionId || ""}:${Number(game?.playbackRevision || 0)}`;
+}
+
+function sendLatencyCalibration() {
+  const game = state.game;
+  if (!canSendLatencyCalibration(game)) return;
+
+  const duration = Number(game.clipDuration || game.playDuration || 0);
+  const playEndsAt = Number(game.playEndsAt || 0);
+  const heardAt = Date.now();
+  const estimatedDelayMs = Math.max(0, heardAt - (playEndsAt - duration * 1000));
+  const key = latencyCalibrationKey(game);
+  state.lastLatencyCalibrationKey = key;
+  state.latencyCalibrationStatus = `已回報 ${formatLatencySampleSeconds(estimatedDelayMs)}`;
+  hapticPulse([10, 24, 10]);
+  send({
+    type: "latency-calibration",
+    questionId: game.questionId,
+    heardAt,
+    playEndsAt,
+    clipDuration: duration,
+    estimatedDelayMs,
+    configuredDelayMs: remoteAudioDelayMs(game),
+  });
+  renderLatencyCalibration(game);
+}
+
+function formatLatencySampleSeconds(ms) {
+  const seconds = Number(ms || 0) / 1000;
+  const text = seconds >= 10 ? seconds.toFixed(0) : seconds.toFixed(1);
+  return `${text.replace(/\.0$/, "")}s`;
 }
 
 function renderRemoteMedia(game) {

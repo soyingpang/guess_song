@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-4";
+const APP_BUILD_VERSION = "premium-mobile-5";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -192,6 +192,7 @@ const state = {
   answerGraceTimer: null,
   answerGraceQuestionId: "",
   answerGraceEndsAt: 0,
+  latencyCalibrationSamples: [],
   choiceAutoNextTimer: null,
   editingId: null,
   questionBag: [],
@@ -248,6 +249,10 @@ const els = {
   latency7Button: document.querySelector("#latency7Button"),
   latency10Button: document.querySelector("#latency10Button"),
   latencyStatus: document.querySelector("#latencyStatus"),
+  latencyCalibrationCard: document.querySelector("#latencyCalibrationCard"),
+  latencyCalibrationTitle: document.querySelector("#latencyCalibrationTitle"),
+  latencyCalibrationMeta: document.querySelector("#latencyCalibrationMeta"),
+  applyLatencyCalibrationButton: document.querySelector("#applyLatencyCalibrationButton"),
   choiceModeButton: document.querySelector("#choiceModeButton"),
   buzzModeButton: document.querySelector("#buzzModeButton"),
   wordModeButton: document.querySelector("#wordModeButton"),
@@ -338,6 +343,7 @@ function bindEvents() {
   els.latency5Button?.addEventListener("click", () => setRemoteAudioLatency(5000));
   els.latency7Button?.addEventListener("click", () => setRemoteAudioLatency(7000));
   els.latency10Button?.addEventListener("click", () => setRemoteAudioLatency(10000));
+  els.applyLatencyCalibrationButton?.addEventListener("click", applyLatencyCalibrationSuggestion);
 
   els.choiceModeButton.addEventListener("click", () => setMode("choice"));
   els.buzzModeButton.addEventListener("click", () => setMode("buzz"));
@@ -918,6 +924,11 @@ function handlePlayerMessage(connection, message) {
   }
 
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
+
+  if (message.type === "latency-calibration") {
+    handleLatencyCalibration(player, message);
+    return;
+  }
 
   if (message.type === "answer") {
     if (state.mode === "buzz") {
@@ -1504,6 +1515,11 @@ function handleFirebasePlayerEvent(event, key) {
 
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
+  if (message.type === "latency-calibration") {
+    handleLatencyCalibration(player, message);
+    return;
+  }
+
   if (message.type === "answer") {
     if (state.mode === "buzz") {
       handleQuickPickAnswer(player, message.answer);
@@ -2040,6 +2056,7 @@ function startRound(preferredSongId, options = {}) {
 
   clearChoiceAutoNextTimer();
   clearRemoteAnswerWindow();
+  state.latencyCalibrationSamples = [];
 
   if (!pool.length) {
     clearClipTimer();
@@ -2073,6 +2090,7 @@ function startRound(preferredSongId, options = {}) {
 
   clearClipTimer();
   state.currentSong = song;
+  state.latencyCalibrationSamples = [];
   state.currentWord = "";
   state.currentChoices = makeChoices(song, pool, state.mode === "buzz" ? QUICK_PICK_OPTION_COUNT : CHOICE_OPTION_COUNT);
   state.round += 1;
@@ -2106,6 +2124,7 @@ function startWordRound(preferredWord = "") {
   clearChoiceAutoNextTimer();
   clearClipTimer();
   clearRemoteAnswerWindow();
+  state.latencyCalibrationSamples = [];
   const word = cleanWord(preferredWord) || randomWord();
   state.currentSong = null;
   state.currentChoices = [];
@@ -2487,6 +2506,91 @@ function setRemoteAudioLatency(ms) {
   render();
 }
 
+function handleLatencyCalibration(player, message) {
+  if (!state.currentSong || state.answered || state.fullPlayback) return;
+
+  const estimatedDelayMs = normalizeLatencySampleMs(
+    message.estimatedDelayMs ?? estimateLatencyFromPlayerMessage(message)
+  );
+  if (!estimatedDelayMs) return;
+
+  const sample = {
+    playerId: player.id,
+    playerName: player.name,
+    questionId: state.currentQuestionId,
+    estimatedDelayMs,
+    configuredDelayMs: normalizeRemoteAudioLatency(message.configuredDelayMs || state.remoteAudioLatencyMs),
+    createdAt: Date.now(),
+  };
+  state.latencyCalibrationSamples = state.latencyCalibrationSamples
+    .filter((item) => item.questionId === state.currentQuestionId && item.playerId !== player.id)
+    .concat(sample);
+
+  const summary = latencyCalibrationSummary();
+  setResult(
+    "收到手機延遲校準",
+    `${player.name}：${formatLatencySampleSeconds(estimatedDelayMs)} · 建議 ${formatLatencySeconds(summary?.suggestedMs || state.remoteAudioLatencyMs)}`,
+    ""
+  );
+  render();
+}
+
+function estimateLatencyFromPlayerMessage(message) {
+  const heardAt = Number(message.heardAt || 0);
+  const playEndsAt = Number(message.playEndsAt || 0);
+  const durationMs = Number(message.clipDuration || message.playDuration || state.playDuration || 0) * 1000;
+  if (!heardAt || !playEndsAt || !durationMs) return 0;
+  return heardAt - (playEndsAt - durationMs);
+}
+
+function normalizeLatencySampleMs(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  const clamped = Math.max(0, Math.min(15000, numeric));
+  return clamped >= 1000 ? clamped : 0;
+}
+
+function latencyCalibrationSummary() {
+  const samples = state.latencyCalibrationSamples
+    .filter((item) => item.questionId === state.currentQuestionId)
+    .sort((left, right) => left.createdAt - right.createdAt);
+  if (!samples.length) return null;
+
+  const sorted = samples.map((item) => item.estimatedDelayMs).sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  const medianMs = sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+  return {
+    count: samples.length,
+    latest: samples[samples.length - 1],
+    medianMs,
+    suggestedMs: nearestLatencyOption(medianMs),
+  };
+}
+
+function nearestLatencyOption(ms) {
+  return REMOTE_AUDIO_LATENCY_OPTIONS.reduce((best, option) =>
+    Math.abs(option - ms) < Math.abs(best - ms) ? option : best
+  , DEFAULT_REMOTE_AUDIO_LATENCY_MS);
+}
+
+function formatLatencySampleSeconds(ms) {
+  const seconds = ms / 1000;
+  const text = seconds >= 10 ? seconds.toFixed(0) : seconds.toFixed(1);
+  return `${text.replace(/\.0$/, "")} 秒`;
+}
+
+function applyLatencyCalibrationSuggestion() {
+  const summary = latencyCalibrationSummary();
+  if (!summary) return;
+
+  setRemoteAudioLatency(summary.suggestedMs);
+  setResult(
+    "已套用實測補償",
+    `${summary.count} 部手機回報，中位數 ${formatLatencySampleSeconds(summary.medianMs)}，已設為 ${formatLatencySeconds(summary.suggestedMs)}`,
+    "correct"
+  );
+}
+
 function scheduleClipStop() {
   clearClipTimer();
   state.clipTimer = window.setTimeout(() => {
@@ -2577,6 +2681,7 @@ function resetGameSession() {
   state.buzzOpen = false;
   state.showLeaderboard = false;
   state.showWinner = false;
+  state.latencyCalibrationSamples = [];
   state.questionBag = [];
   els.guessInput.value = "";
   els.playerHost.replaceChildren();
@@ -2878,6 +2983,7 @@ function renderQuiz() {
   if (els.latencyStatus) {
     els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可按實測延遲即場調整`;
   }
+  renderLatencyCalibrationUi();
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
   els.wordModeButton.classList.toggle("is-active", state.mode === "word");
@@ -2934,6 +3040,35 @@ function renderQuiz() {
   els.guessForm.hidden = true;
   els.choices.hidden = true;
   els.choices.innerHTML = "";
+}
+
+function renderLatencyCalibrationUi() {
+  if (!els.latencyCalibrationCard) return;
+
+  const activeQuestion =
+    Boolean(state.currentSong && state.currentQuestionId && !state.answered) &&
+    Boolean(state.isPlaying || isRemoteAnswerWindowOpen());
+  const summary = latencyCalibrationSummary();
+  els.latencyCalibrationCard.hidden = !activeQuestion && !summary;
+  if (els.latencyCalibrationCard.hidden) return;
+
+  if (!summary) {
+    els.latencyCalibrationTitle.textContent = "校準手機延遲";
+    els.latencyCalibrationMeta.textContent = activeQuestion
+      ? "播放中等候手機回報"
+      : "播放後可收集手機實測延遲";
+    els.applyLatencyCalibrationButton.disabled = true;
+    els.applyLatencyCalibrationButton.textContent = "套用建議";
+    return;
+  }
+
+  const alreadyApplied = summary.suggestedMs === state.remoteAudioLatencyMs;
+  els.latencyCalibrationTitle.textContent =
+    `實測 ${formatLatencySampleSeconds(summary.medianMs)} · 建議 ${formatLatencySeconds(summary.suggestedMs)}`;
+  els.latencyCalibrationMeta.textContent =
+    `${summary.count} 部手機回報 · 最新：${summary.latest.playerName}`;
+  els.applyLatencyCalibrationButton.disabled = alreadyApplied;
+  els.applyLatencyCalibrationButton.textContent = alreadyApplied ? "已套用" : "套用建議";
 }
 
 function renderHints() {

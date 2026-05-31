@@ -471,6 +471,54 @@ h2 {
   font-weight: 900;
 }
 
+.latency-calibration-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  border: 1px solid rgba(216, 151, 77, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 248, 236, 0.8), rgba(231, 247, 240, 0.7)),
+    #fff3e4;
+  padding: 10px;
+}
+
+.latency-calibration-card[hidden] {
+  display: none;
+}
+
+.latency-calibration-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.latency-calibration-card strong,
+.latency-calibration-card span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.latency-calibration-card strong {
+  color: var(--cool-ink);
+  font-size: 0.9rem;
+}
+
+.latency-calibration-card span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.latency-calibration-card .ghost-button {
+  min-height: 38px;
+  white-space: nowrap;
+}
+
 .host-actions,
 .word-controls,
 .team-score-strip {
@@ -3761,7 +3809,8 @@ body {
 .team-score-strip,
 .host-actions,
 .word-controls,
-.mode-helper {
+.mode-helper,
+.latency-calibration-card {
   position: relative;
   border: 1px solid rgba(255, 244, 210, 0.12);
   border-radius: 8px;
@@ -4346,6 +4395,7 @@ body::before {
 .word-controls,
 .filter-row,
 .mode-helper,
+.latency-calibration-card,
 .join-form,
 .phone-mic-panel,
 .player-status,
