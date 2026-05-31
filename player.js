@@ -2963,37 +2963,68 @@ function renderLeaderboard(players, teamScores = {}) {
     return;
   }
 
+  const rankedPlayers = players.filter(Boolean).slice(0, 10);
   els.phoneLeaderboard.append(renderPhoneSettlementHero(players, teamScores));
   const movements = resolveLeaderboardMovements(players);
+  els.phoneLeaderboard.append(renderPhoneLeaderboardPodium(rankedPlayers, movements));
 
-  players.slice(0, 10).forEach((player, index) => {
+  const list = document.createElement("div");
+  list.className = "phone-rank-list";
+  const topScore = Math.max(1, ...rankedPlayers.map((player) => Number(player?.score || 0)));
+
+  rankedPlayers.forEach((player, index) => {
     const movement = movements.get(leaderboardPlayerKey(player, index));
+    const scoreValue = Number(player.score || 0);
     const item = document.createElement("div");
     item.className = "phone-rank";
     item.classList.toggle("is-leader", index === 0);
+    item.classList.toggle("is-self", isCurrentLeaderboardPlayer(player));
+    item.dataset.team = normalizeTeam(player.team);
+    item.style.setProperty("--rank-progress", scoreValue > 0 ? Math.min(1, scoreValue / topScore).toFixed(3) : "0");
     applyLeaderboardMovement(item, movement);
 
     const badge = document.createElement("b");
     badge.className = "phone-rank-badge";
     badge.textContent = index === 0 ? "冠" : String(index + 1);
 
-    const name = document.createElement("span");
+    const main = document.createElement("span");
+    main.className = "phone-rank-main";
+    const titleLine = document.createElement("span");
+    titleLine.className = "phone-rank-titleline";
+    const name = document.createElement("strong");
     name.className = "phone-rank-name";
-    name.textContent = `${player.name || "玩家"} · ${teamLabel(player.team)}`;
+    name.textContent = player.name || "玩家";
+    const teamChip = document.createElement("small");
+    teamChip.className = "phone-team-chip";
+    teamChip.dataset.team = normalizeTeam(player.team);
+    teamChip.textContent = teamLabel(player.team);
+    titleLine.append(name, teamChip);
+    if (isCurrentLeaderboardPlayer(player)) {
+      const selfChip = document.createElement("small");
+      selfChip.className = "phone-self-chip";
+      selfChip.textContent = "你";
+      titleLine.append(selfChip);
+    }
+    const meter = document.createElement("i");
+    meter.className = "phone-rank-meter";
+    meter.append(document.createElement("span"));
+    main.append(titleLine, meter);
 
     const scoreWrap = document.createElement("span");
     scoreWrap.className = "phone-rank-score";
     const score = document.createElement("strong");
-    score.textContent = `${Number(player.score || 0)} 分`;
+    score.textContent = `${scoreValue} 分`;
     const delta = document.createElement("small");
     delta.className = "phone-rank-delta";
     delta.hidden = !movement?.label;
     delta.textContent = movement?.label || "";
     scoreWrap.append(score, delta);
 
-    item.append(badge, name, scoreWrap);
-    els.phoneLeaderboard.append(item);
+    item.append(badge, main, scoreWrap);
+    list.append(item);
   });
+
+  els.phoneLeaderboard.append(list);
 }
 
 function resolveLeaderboardMovements(players) {
@@ -3059,7 +3090,7 @@ function applyLeaderboardMovement(item, movement) {
 
 function replayLeaderboardMotion() {
   if (!els.phoneLeaderboard) return;
-  els.phoneLeaderboard.querySelectorAll(".phone-rank[data-move]").forEach((item) => {
+  els.phoneLeaderboard.querySelectorAll(".phone-rank[data-move], .phone-podium-card[data-move]").forEach((item) => {
     item.classList.remove("is-rank-animating");
     void item.offsetWidth;
     item.classList.add("is-rank-animating");
@@ -3073,6 +3104,51 @@ function resetLeaderboardMotion() {
   state.leaderboardMovementCache = new Map();
 }
 
+function renderPhoneLeaderboardPodium(players, movements) {
+  const podium = document.createElement("div");
+  podium.className = "phone-podium";
+  const topPlayers = players.slice(0, 3);
+  podium.dataset.count = String(topPlayers.length);
+  const order = topPlayers.length >= 3 ? [1, 0, 2] : topPlayers.map((_, index) => index);
+
+  order.forEach((playerIndex) => {
+    const player = topPlayers[playerIndex];
+    const rank = playerIndex + 1;
+    const card = document.createElement("div");
+    card.className = "phone-podium-card";
+    card.dataset.rank = String(rank);
+    card.classList.toggle("is-winner", rank === 1);
+    card.classList.toggle("is-self", isCurrentLeaderboardPlayer(player));
+    applyLeaderboardMovement(card, movements.get(leaderboardPlayerKey(player, playerIndex)));
+
+    const medal = document.createElement("b");
+    medal.className = "phone-podium-medal";
+    medal.textContent = rank === 1 ? "冠" : String(rank);
+
+    const name = document.createElement("strong");
+    name.textContent = player?.name || "玩家";
+
+    const teamChip = document.createElement("small");
+    teamChip.className = "phone-team-chip";
+    teamChip.dataset.team = normalizeTeam(player?.team);
+    teamChip.textContent = teamLabel(player?.team);
+
+    const score = document.createElement("em");
+    score.textContent = `${Number(player?.score || 0)} 分`;
+
+    const movement = movements.get(leaderboardPlayerKey(player, playerIndex));
+    const delta = document.createElement("small");
+    delta.className = "phone-rank-delta phone-podium-delta";
+    delta.hidden = !movement?.label;
+    delta.textContent = movement?.label || "";
+
+    card.append(medal, name, teamChip, score, delta);
+    podium.append(card);
+  });
+
+  return podium;
+}
+
 function renderPhoneSettlementHero(players, teamScores = {}) {
   const top = players[0] || {};
   const aScore = Number(teamScores.A || 0);
@@ -3080,9 +3156,11 @@ function renderPhoneSettlementHero(players, teamScores = {}) {
   const teamStatus = aScore === bScore ? "分組暫時平手" : `${aScore > bScore ? "A" : "B"} 組領先`;
   const hero = document.createElement("div");
   hero.className = "phone-settlement-hero";
+  hero.dataset.team = normalizeTeam(top.team);
+  hero.classList.toggle("is-self", isCurrentLeaderboardPlayer(top));
 
   const badge = document.createElement("b");
-  badge.textContent = "TOP";
+  badge.textContent = "冠";
 
   const copy = document.createElement("span");
   const name = document.createElement("strong");
@@ -3101,6 +3179,7 @@ function renderPhoneSettlementHero(players, teamScores = {}) {
 function renderPhoneTeamSummary(teamScores) {
   const aScore = Number(teamScores.A || 0);
   const bScore = Number(teamScores.B || 0);
+  const topScore = Math.max(1, aScore, bScore);
   const summary = document.createElement("div");
   summary.className = "phone-team-summary";
   const teams = [
@@ -3110,10 +3189,24 @@ function renderPhoneTeamSummary(teamScores) {
   teams.forEach(([team, score]) => {
     const item = document.createElement("span");
     item.classList.toggle("is-leading", score > (team === "A" ? bScore : aScore));
-    item.innerHTML = `${team} 組 <strong>${score}</strong>`;
+    item.style.setProperty("--team-progress", score > 0 ? Math.min(1, score / topScore).toFixed(3) : "0");
+    const label = document.createElement("b");
+    label.textContent = `${team} 組`;
+    const value = document.createElement("strong");
+    value.textContent = String(score);
+    const meter = document.createElement("i");
+    item.append(label, value, meter);
     summary.append(item);
   });
   return summary;
+}
+
+function isCurrentLeaderboardPlayer(player) {
+  if (!player) return false;
+  if (player.id && player.id === state.playerId) return true;
+  const playerName = normalizePlayerName(player.name || "");
+  const displayName = normalizePlayerName(state.displayName || state.name || "");
+  return Boolean(playerName && displayName && playerName === displayName && normalizeTeam(player.team) === normalizeTeam(state.team));
 }
 
 function sameChoice(left, right) {

@@ -21,6 +21,32 @@
 
 ---
 
+## 2026-06-01 03:33 HKT
+
+類型：手機版 / 視覺 / 排行榜
+
+變更：
+- 手機排行榜 modal 升級為完整 leaderboard view：保留 A/B 組分數摘要，新增 top 3 podium、冠軍 hero、細緻排名列表。
+- 排名列新增分數進度條、組別 chip、自己玩家高亮、分數 meter 動效，保留升跌 / 新上榜 / 分數變動徽章。
+- `renderLeaderboard()` 改為先算 movement，再渲染 podium 和列表；`replayLeaderboardMotion()` 會同時重播 podium 和排名列動效。
+- `renderPhoneTeamSummary()` 改成 DOM 結構和分組進度條，不再用 `innerHTML`。
+- 手機和主持入口 cache version 更新到 `premium-mobile-16`，PWA / service worker cache 同步更新。
+
+影響：
+- 排行榜不再只是清單，玩家一打開就能看到前三名、自己位置、分組差距和分數相對距離。
+- modal 進場和排名視覺層次更接近正式 mobile app 的 leaderboard。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Chrome mobile viewport 390x844 驗證排行榜 modal：`phone-podium-card` 3 張、冠軍為目前玩家、自己玩家排名列 `is-self`、升位徽章 `↑1`、新上榜 `NEW`、A/B 組分數 meter 和 5 條排名 meter 都出現。
+- 本機截圖檢查：排行榜 modal 430px 寬內無橫向溢出，top 3 podium、冠軍 hero、分組分數和排名列層次清楚，底部可自然滾動。
+
+下一步：
+- 部署到 GitHub Pages 後正式驗證 leaderboard modal 和 390px 版面。
+
+---
+
 ## 2026-06-01 03:21 HKT
 
 類型：手機版 / 視覺 / 聲音同步等待
