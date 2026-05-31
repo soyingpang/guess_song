@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-12" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-13" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-12" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-13" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -1875,6 +1875,17 @@
           inset 0 1px 0 rgba(255, 255, 255, 0.82);
       }
 
+      .player-body.is-joined .phone-answer-card::before {
+        position: absolute;
+        inset: -34% auto -34% -46%;
+        width: 42%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.84), transparent);
+        content: "";
+        opacity: 0;
+        transform: rotate(12deg);
+        pointer-events: none;
+      }
+
       .player-body.is-joined .phone-answer-card::after {
         position: absolute;
         right: 12px;
@@ -1887,6 +1898,26 @@
         clip-path: polygon(0 100%, 0 54%, 18% 54%, 18% 100%, 28% 100%, 28% 22%, 48% 22%, 48% 100%, 58% 100%, 58% 0, 76% 0, 76% 100%, 84% 100%, 84% 38%, 100% 38%, 100% 100%);
         content: "";
         opacity: 0.4;
+      }
+
+      .player-body.is-joined .phone-answer-card.is-answer-revealing {
+        animation: phoneAnswerRevealCard 760ms cubic-bezier(0.2, 0.9, 0.2, 1.08);
+      }
+
+      .player-body.is-joined .phone-answer-card.is-answer-revealing::before {
+        animation: phoneAnswerRevealSweep 820ms ease-out;
+      }
+
+      .player-body.is-joined .phone-answer-card.is-answer-revealing::after {
+        animation: phoneAnswerRevealBadge 820ms cubic-bezier(0.2, 0.9, 0.2, 1.08);
+      }
+
+      .player-body.is-joined .phone-answer-card.is-answer-revealing .phone-answer-countdown {
+        animation: phoneAnswerCountdownPop 660ms cubic-bezier(0.2, 0.9, 0.2, 1.12);
+      }
+
+      .player-body.is-joined .phone-question.is-answer-bloom {
+        animation: phoneAnswerQuestionBloom 900ms ease-out;
       }
 
       .phone-answer-countdown[hidden] {
@@ -2724,6 +2755,65 @@
         100% { transform: translateY(0); }
       }
 
+      @keyframes phoneAnswerRevealCard {
+        0% {
+          opacity: 0;
+          transform: translateY(12px) scale(0.96);
+          box-shadow:
+            0 10px 20px rgba(126, 77, 54, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
+        }
+        56% {
+          opacity: 1;
+          transform: translateY(-3px) scale(1.018);
+          box-shadow:
+            0 18px 40px rgba(216, 151, 77, 0.22),
+            0 0 0 5px rgba(47, 138, 120, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes phoneAnswerRevealSweep {
+        0% { opacity: 0; transform: translateX(0) rotate(12deg); }
+        16% { opacity: 0.78; }
+        100% { opacity: 0; transform: translateX(430%) rotate(12deg); }
+      }
+
+      @keyframes phoneAnswerRevealBadge {
+        0% { opacity: 0; transform: translateY(8px) scale(0.78); }
+        48% { opacity: 0.62; transform: translateY(-2px) scale(1.12); }
+        100% { opacity: 0.4; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes phoneAnswerCountdownPop {
+        0% { opacity: 0; transform: scale(0.72) rotate(-5deg); }
+        58% { opacity: 1; transform: scale(1.12) rotate(2deg); }
+        100% { opacity: 1; transform: scale(1) rotate(0deg); }
+      }
+
+      @keyframes phoneAnswerQuestionBloom {
+        0% {
+          box-shadow:
+            0 14px 34px rgba(88, 54, 39, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
+        }
+        42% {
+          box-shadow:
+            0 18px 44px rgba(216, 151, 77, 0.18),
+            0 0 0 5px rgba(47, 138, 120, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+        100% {
+          box-shadow:
+            0 14px 34px rgba(88, 54, 39, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
+        }
+      }
+
       @keyframes phoneRevealBridgeSweep {
         0% { transform: translateX(-64%); }
         58% { transform: translateX(54%); }
@@ -3060,10 +3150,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-12"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-12"></script>
+    <script src="./firebase-config.js?v=premium-mobile-13"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-13"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-12"></script>
-    <script src="./pwa.js?v=premium-mobile-12"></script>
+    <script src="./player.js?v=premium-mobile-13"></script>
+    <script src="./pwa.js?v=premium-mobile-13"></script>
   </body>
 </html>

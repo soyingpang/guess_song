@@ -130,6 +130,8 @@ const state = {
   latencyCalibrationStatus: "",
   quickPickCooldownTimer: null,
   answerCountdownTimer: null,
+  answerRevealTimer: null,
+  lastAnswerRevealKey: "",
   micStream: null,
   micCall: null,
   micActive: false,
@@ -764,6 +766,8 @@ function handleMessage(message) {
       state.selectedAnswer = "";
       state.lastLatencyCalibrationKey = "";
       state.latencyCalibrationStatus = "";
+      state.lastAnswerRevealKey = "";
+      clearAnswerRevealEffect();
       hidePhoneMoment();
     }
     if (message.selectedAnswer) state.selectedAnswer = message.selectedAnswer;
@@ -835,6 +839,7 @@ function renderJoinedWaiting() {
   setPlayerScoreText(0);
   hideScoreBurst();
   hideStageCue();
+  clearAnswerRevealEffect();
   renderRevealBridge(null);
   renderAnswerCountdown(null);
   els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
@@ -2552,6 +2557,7 @@ function renderAnswerCard(game) {
   if (!shouldShow) {
     if (els.phoneAnswerTitle) els.phoneAnswerTitle.textContent = "";
     if (els.phoneAnswerMeta) els.phoneAnswerMeta.textContent = "";
+    clearAnswerRevealEffect();
     renderAnswerCountdown(hasAnswer ? game : null);
     return;
   }
@@ -2559,7 +2565,35 @@ function renderAnswerCard(game) {
   const meta = Array.isArray(game.meta) ? game.meta.filter(Boolean).join(" · ") : "";
   els.phoneAnswerTitle.textContent = game.answer || game.title || "已開估";
   els.phoneAnswerMeta.textContent = meta || "5 秒後自動下一題";
+  triggerAnswerRevealEffect(answerRevealKey(game));
   renderAnswerCountdown(game);
+}
+
+function answerRevealKey(game) {
+  return `${game?.questionId || ""}:${game?.answer || game?.title || ""}:${Number(game?.revealAutoNextStartsAt || 0)}`;
+}
+
+function triggerAnswerRevealEffect(key) {
+  if (!els.phoneAnswerCard || !key || state.lastAnswerRevealKey === key) return;
+  state.lastAnswerRevealKey = key;
+  clearTimeout(state.answerRevealTimer);
+  els.phoneAnswerCard.classList.remove("is-answer-revealing");
+  els.phoneQuestion?.classList.remove("is-answer-bloom");
+  void els.phoneAnswerCard.offsetWidth;
+  els.phoneAnswerCard.classList.add("is-answer-revealing");
+  els.phoneQuestion?.classList.add("is-answer-bloom");
+  hapticPulse([12, 28, 12]);
+
+  state.answerRevealTimer = window.setTimeout(() => {
+    clearAnswerRevealEffect();
+  }, 1400);
+}
+
+function clearAnswerRevealEffect() {
+  clearTimeout(state.answerRevealTimer);
+  state.answerRevealTimer = null;
+  els.phoneAnswerCard?.classList.remove("is-answer-revealing");
+  els.phoneQuestion?.classList.remove("is-answer-bloom");
 }
 
 function renderAnswerCountdown(game) {

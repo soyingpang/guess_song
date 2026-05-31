@@ -21,6 +21,32 @@
 
 ---
 
+## 2026-06-01 04:58 HKT
+
+類型：手機版 / 視覺 / 答案揭曉動效
+
+變更：
+- 手機答案卡新增 `is-answer-revealing` 進場 micro-interaction：答案卡彈入、光帶掃過、右上彩色 badge 微彈、倒數圈彈入。
+- 題目卡新增 `is-answer-bloom` 短暫亮起，令「同步聲音中」過渡到答案揭曉更有完成感。
+- `player.js` 新增 `lastAnswerRevealKey` / `answerRevealTimer`，確保同一題重新 render 不會重複觸發 reveal 動效。
+- 答案揭曉時加入一次短 haptic pulse；使用者關閉觸感或瀏覽器不支援時會自然跳過。
+- 手機和主持入口 cache version 更新到 `premium-mobile-13`，PWA / service worker cache 同步更新。
+
+影響：
+- 開估等待完結的一刻更像正式 app 的狀態轉換，不只是突然出文字。
+- 動效只在每題答案第一次真正顯示時觸發，倒數重繪不會令卡片不停跳動。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Chrome mobile viewport 390x844 驗證：答案卡第一次顯示時 `is-answer-revealing` / `is-answer-bloom` 會出現，約 1.4 秒後自動移除；同一題重新 render 不會重複觸發；倒數 ring 5→4→3，390px 無橫向溢出。
+- 本機截圖檢查答案揭曉畫面：stage cue、答案卡、倒數圈和同步收聽卡沒有互相遮擋，答案卡是視覺主體。
+
+下一步：
+- 正式頁部署後驗證：答案卡第一次顯示時有 reveal class，稍後自動移除；倒數仍 5→4，390px 手機寬度無橫向溢出。
+
+---
+
 ## 2026-06-01 04:34 HKT
 
 類型：手機版 / 視覺 / 延遲過渡
