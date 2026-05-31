@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-9";
+const APP_BUILD_VERSION = "premium-mobile-10";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -194,6 +194,7 @@ const state = {
   answerGraceEndsAt: 0,
   latencyCalibrationSamples: [],
   choiceAutoNextTimer: null,
+  revealAutoNextEndsAt: 0,
   editingId: null,
   questionBag: [],
   teamScores: { A: 0, B: 0 },
@@ -1739,6 +1740,7 @@ function revealCurrentSongThenAutoNext(message, detail = "") {
   state.playEndsAt = 0;
   state.buzzOpen = false;
   state.playbackRevision += 1;
+  state.revealAutoNextEndsAt = Date.now() + REVEAL_AUTO_NEXT_DELAY_MS;
   clearClipTimer();
   clearRemoteAnswerWindow();
   setResult(message, detail || `${answerLabel(state.currentSong)} · 5 秒後下一題`, "correct");
@@ -1748,18 +1750,22 @@ function revealCurrentSongThenAutoNext(message, detail = "") {
 }
 
 function scheduleRevealAutoNext() {
-  clearChoiceAutoNextTimer();
+  if (state.choiceAutoNextTimer) window.clearTimeout(state.choiceAutoNextTimer);
+  state.choiceAutoNextTimer = null;
   const questionId = state.currentQuestionId;
+  const delay = Math.max(0, Number(state.revealAutoNextEndsAt || 0) - Date.now()) || REVEAL_AUTO_NEXT_DELAY_MS;
   state.choiceAutoNextTimer = window.setTimeout(() => {
     state.choiceAutoNextTimer = null;
+    state.revealAutoNextEndsAt = 0;
     if (state.mode === "word" || state.currentQuestionId !== questionId || !state.answered) return;
     startRound(null, { autoplay: true });
-  }, REVEAL_AUTO_NEXT_DELAY_MS);
+  }, delay);
 }
 
 function clearChoiceAutoNextTimer() {
   if (state.choiceAutoNextTimer) window.clearTimeout(state.choiceAutoNextTimer);
   state.choiceAutoNextTimer = null;
+  state.revealAutoNextEndsAt = 0;
 }
 
 function handleQuickPickAnswer(player, answer) {
@@ -3401,6 +3407,8 @@ function buildDisplayState() {
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
     playbackRevision: state.playbackRevision,
+    revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
+    revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
     songlistLabel,
@@ -3467,6 +3475,8 @@ function buildPlayerState(player) {
     remoteAudioDelayMs: state.remoteAudioLatencyMs,
     answerOpenUntil: remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,
     playbackRevision: state.playbackRevision,
+    revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
+    revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
     songlistLabel,

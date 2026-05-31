@@ -21,6 +21,29 @@
 
 ---
 
+## 2026-06-01 03:38 HKT
+
+類型：設計 / 程式 / 開估倒數
+
+摘要：
+- 主持端開估時新增 `revealAutoNextEndsAt` 和 `revealAutoNextDelayMs`，同步真正的 5 秒自動下一題截止時間給手機。
+- 手機答案卡新增右上角 `phoneAnswerCountdown` ring，顯示剩餘秒數並隨時間縮短。
+- 手機端新增答案倒數 timer，會跟 player state 的截止時間重繪，不靠手機自己猜固定 5 秒。
+- 手機和主持入口 cache version 更新到 `premium-mobile-10`，PWA / service worker cache 同步更新。
+
+影響：
+- 開估後玩家能清楚感覺答案展示還剩幾秒，下一題切換更可預期，整體流程更接近正式手機 app。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 本機 Chrome mobile viewport 390x844 驗證：答案卡顯示 `Song A`，倒數 ring 顯示 5 秒後跳到 4 秒，ring stroke offset 有推進，無橫向溢出。
+
+後續：
+- 可再加入答案卡收起 / 下一題進場的連續轉場，令倒數完結的一刻更自然。
+
+---
+
 ## 2026-06-01 03:12 HKT
 
 類型：設計 / 程式 / 手機題目轉場

@@ -129,6 +129,7 @@ const state = {
   lastLatencyCalibrationKey: "",
   latencyCalibrationStatus: "",
   quickPickCooldownTimer: null,
+  answerCountdownTimer: null,
   micStream: null,
   micCall: null,
   micActive: false,
@@ -185,6 +186,9 @@ const els = {
   phoneAnswerCard: document.querySelector("#phoneAnswerCard"),
   phoneAnswerTitle: document.querySelector("#phoneAnswerTitle"),
   phoneAnswerMeta: document.querySelector("#phoneAnswerMeta"),
+  phoneAnswerCountdown: document.querySelector("#phoneAnswerCountdown"),
+  phoneAnswerCountdownRing: document.querySelector("#phoneAnswerCountdownRing"),
+  phoneAnswerCountdownText: document.querySelector("#phoneAnswerCountdownText"),
   phoneHints: document.querySelector("#phoneHints"),
   phoneChoices: document.querySelector("#phoneChoices"),
   buzzButton: document.querySelector("#buzzButton"),
@@ -825,6 +829,7 @@ function renderJoinedWaiting() {
   setPlayerScoreText(0);
   hideScoreBurst();
   hideStageCue();
+  renderAnswerCountdown(null);
   els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
   els.phoneStatus.textContent = "已加入遊戲";
   els.phoneTitle.textContent = "等候主持開始";
@@ -2486,12 +2491,56 @@ function renderAnswerCard(game) {
   if (!shouldShow) {
     if (els.phoneAnswerTitle) els.phoneAnswerTitle.textContent = "";
     if (els.phoneAnswerMeta) els.phoneAnswerMeta.textContent = "";
+    renderAnswerCountdown(null);
     return;
   }
 
   const meta = Array.isArray(game.meta) ? game.meta.filter(Boolean).join(" · ") : "";
   els.phoneAnswerTitle.textContent = game.answer || game.title || "已開估";
   els.phoneAnswerMeta.textContent = meta || "5 秒後自動下一題";
+  renderAnswerCountdown(game);
+}
+
+function renderAnswerCountdown(game) {
+  clearAnswerCountdownTimer();
+  const info = revealCountdownInfo(game);
+  const visible = Boolean(info && info.remainingMs > 0);
+
+  if (els.phoneAnswerCountdown) els.phoneAnswerCountdown.hidden = !visible;
+  if (!visible) {
+    if (els.phoneAnswerCountdownText) els.phoneAnswerCountdownText.textContent = "";
+    if (els.phoneAnswerCountdownRing) els.phoneAnswerCountdownRing.style.strokeDashoffset = "100";
+    return;
+  }
+
+  if (els.phoneAnswerCountdownText) els.phoneAnswerCountdownText.textContent = String(info.seconds);
+  if (els.phoneAnswerCountdownRing) {
+    els.phoneAnswerCountdownRing.style.strokeDashoffset = String(Math.round((1 - info.progress) * 100));
+  }
+
+  state.answerCountdownTimer = window.setTimeout(() => {
+    state.answerCountdownTimer = null;
+    if (state.game) renderGame();
+  }, info.remainingMs > 1000 ? 250 : 120);
+}
+
+function revealCountdownInfo(game) {
+  if (!game?.revealed) return null;
+  const endAt = Number(game.revealAutoNextEndsAt || 0);
+  if (!endAt) return null;
+  const total = Math.max(1000, Number(game.revealAutoNextDelayMs || 5000));
+  const remainingMs = Math.max(0, endAt - Date.now());
+  const progress = Math.max(0, Math.min(1, remainingMs / total));
+  return {
+    remainingMs,
+    progress,
+    seconds: Math.max(1, Math.ceil(remainingMs / 1000)),
+  };
+}
+
+function clearAnswerCountdownTimer() {
+  clearTimeout(state.answerCountdownTimer);
+  state.answerCountdownTimer = null;
 }
 
 function renderCooldown(game) {
