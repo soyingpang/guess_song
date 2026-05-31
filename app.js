@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "quick-pick-1";
+const APP_BUILD_VERSION = "choice-auto-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -87,6 +87,7 @@ const DEFAULT_PLAY_DURATION_SECONDS = 30;
 const PLAY_DURATIONS = [60, 30, 15];
 const PLAY_START_MODES = ["beginning", "random"];
 const CHOICE_OPTION_COUNT = 4;
+const CHOICE_AUTO_NEXT_DELAY_MS = 5000;
 const QUICK_PICK_OPTION_COUNT = 8;
 const QUICK_PICK_CORRECT_POINTS = 5;
 const QUICK_PICK_WRONG_POINTS = -1;
@@ -183,6 +184,7 @@ const state = {
   showLeaderboard: false,
   showWinner: false,
   clipTimer: null,
+  choiceAutoNextTimer: null,
   editingId: null,
   questionBag: [],
   teamScores: { A: 0, B: 0 },
@@ -1522,9 +1524,59 @@ function handleChoiceAnswer(player, answer) {
     points,
     message: correct ? "答中 +1" : "未中",
   });
+
+  if (allChoicePlayersAnswered(player)) {
+    autoRevealChoiceRound();
+    return;
+  }
+
   renderPlayers();
   publishDisplayState();
   broadcastToPlayers();
+}
+
+function allChoicePlayersAnswered(fallbackPlayer = null) {
+  if (state.mode !== "choice" || !state.currentQuestionId || state.answered) return false;
+  const players = connectedChoicePlayers(fallbackPlayer);
+  return Boolean(players.length) && players.every((player) => Boolean(player.answers?.[state.currentQuestionId]));
+}
+
+function connectedChoicePlayers(fallbackPlayer = null) {
+  const players = participantPlayers().filter((player) => player.connected);
+  if (players.length || !fallbackPlayer) return players;
+  return [fallbackPlayer];
+}
+
+function autoRevealChoiceRound() {
+  if (state.mode !== "choice" || !state.currentSong || state.answered) return;
+
+  state.answered = true;
+  state.revealed = true;
+  state.isPlaying = true;
+  state.fullPlayback = true;
+  state.frontReady = false;
+  state.playEndsAt = 0;
+  state.playbackRevision += 1;
+  clearClipTimer();
+  setResult("全部已選，自動開估", `${answerLabel(state.currentSong)} · 5 秒後下一題`, "correct");
+  render();
+  renderYouTubeFrame({ autoplay: true });
+  scheduleChoiceAutoNext();
+}
+
+function scheduleChoiceAutoNext() {
+  clearChoiceAutoNextTimer();
+  const questionId = state.currentQuestionId;
+  state.choiceAutoNextTimer = window.setTimeout(() => {
+    state.choiceAutoNextTimer = null;
+    if (state.mode !== "choice" || state.currentQuestionId !== questionId || !state.answered) return;
+    startRound(null, { autoplay: true });
+  }, CHOICE_AUTO_NEXT_DELAY_MS);
+}
+
+function clearChoiceAutoNextTimer() {
+  if (state.choiceAutoNextTimer) window.clearTimeout(state.choiceAutoNextTimer);
+  state.choiceAutoNextTimer = null;
 }
 
 function handleQuickPickAnswer(player, answer) {
@@ -1790,6 +1842,8 @@ function startRound(preferredSongId, options = {}) {
   const { autoplay = false, frontReady = false } = options;
   const pool = playableSongs();
 
+  clearChoiceAutoNextTimer();
+
   if (!pool.length) {
     clearClipTimer();
     state.currentSong = null;
@@ -1851,6 +1905,7 @@ function startRound(preferredSongId, options = {}) {
 }
 
 function startWordRound(preferredWord = "") {
+  clearChoiceAutoNextTimer();
   clearClipTimer();
   const word = cleanWord(preferredWord) || randomWord();
   state.currentSong = null;
@@ -1949,6 +2004,7 @@ function playCurrentClip() {
 }
 
 function playBirthdaySong() {
+  clearChoiceAutoNextTimer();
   clearClipTimer();
   state.currentSong = { ...BIRTHDAY_SONG };
   state.currentChoices = [];
@@ -1975,6 +2031,7 @@ function playBirthdaySong() {
 }
 
 function stopPlayback(message = "已停止播放") {
+  clearChoiceAutoNextTimer();
   clearClipTimer();
   state.isPlaying = false;
   state.fullPlayback = false;
@@ -2180,6 +2237,7 @@ function setDifficulty(difficulty) {
 }
 
 function setMode(mode) {
+  clearChoiceAutoNextTimer();
   state.mode = mode;
   if (mode === "word") {
     clearClipTimer();
@@ -2256,6 +2314,7 @@ function showWinner() {
 function resetGameSession() {
   if (!confirm("重置分數同題目？房間、QR、玩家同題庫會保留。")) return;
 
+  clearChoiceAutoNextTimer();
   clearClipTimer();
   state.score = { correct: 0, total: 0, streak: 0 };
   state.teamScores = { A: 0, B: 0 };

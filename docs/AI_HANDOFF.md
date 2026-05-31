@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 10:35 HKT
+更新時間：2026-05-31 10:43 HKT
 
 ## 必讀順序
 
@@ -29,7 +29,7 @@
 
 今次團契有三個環節：
 
-1. 四選一選擇題。
+1. 四選一選擇題：全部在線玩家提交答案後，自動開估，5 秒後自動播放下一題。
 2. 快選估歌：手機顯示 8 個歌名，玩家鬥快撳中答案。
 3. 出一個大路主題 / 關鍵詞，分 A/B 兩組鬥快唱出切合主題的詩歌。
 
@@ -66,7 +66,7 @@
 - 主持頁可抽題。
 - 可選投影畫面可顯示題目狀態和 QR code。
 - 手機可加入房間。
-- 四選一可答題並加分。
+- 四選一可答題並加分；所有在線玩家都答完後，主持頁會自動開估，5 秒後自動下一題播放。
 - 快選估歌可自動判分：答中 +5，答錯 -1，答錯後該玩家冷卻 5 秒。
 - 排行榜可顯示。
 - 題庫已擴充和重整；目前 `hymns.json` 約 500 首，`songlists/all-songlists.json` 約 2513 首。
@@ -94,6 +94,7 @@
 - 主持頁玩家列表已有 A/B 組下拉選單，可即時改組並同步手機 / 投影；離線玩家可用「移」按鈕清走。
 - 主持頁按「開估」後，狀態會以全首播放方式同步給玩家 / 投影：display state 會有 `fullPlayback: true`、`isPlaying: true`、`end: 0`。
 - 主持頁按「下一題播放」會執行 `startRound(null, { autoplay: true })`，一按抽題、自動播放和開始倒數。
+- 四選一新增全員答完自動流程：`handleChoiceAnswer()` 會在每次提交後檢查所有在線玩家是否都有答案；全員已選時呼叫 `autoRevealChoiceRound()`，顯示答案並用 `choiceAutoNextTimer` 在 5 秒後 `startRound(null, { autoplay: true })`。新題、停止、切模式和重置會清走這個計時器。
 - 估歌期間不可直接露出 YouTube 縮圖 / 歌名。`display.js` 會在未開估但有歌曲時加 `stage-mask.is-prep-cover`，`styles.css` 只留右下角小窗給主持處理廣告，其餘畫面用實色遮住。
 - 主持頁已有播放起點設定：`playStartMode` 可為 `beginning` 或 `random`。每題在 `startRound()` 設定 `currentClipStart`；重播同一題沿用同一段。`fullPlayback` 時投影 start 固定回到 0。
 - 已支援本地 / 已授權媒體檔：`audioUrl` 欄位保留舊名，但可填 `./audio/*.mp3`、`./audio/*.m4a` 或 `./video/*.mp4` 等。`app.js` 和 `display.js` 會按副檔名自動用 `<audio>` 或 `<video>` 播放；主持頁本地媒體預設靜音，投影畫面負責出聲。
@@ -107,7 +108,7 @@
 - 遠端投影已支援：主持頁有 `displayConnections`，`display.html?room=...` 會送 `display-join`，主持頁用 `display-state` 推送 `buildDisplayState()`。這是 optional，不是手機全球版主流程。
 - 投影畫面不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設投影就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
 - 固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制。不要再用 `makeRoomId()` 或 random room 作為預設；若 PeerJS 回報 `unavailable-id`，應提示關閉其他主持頁，不應靜默開新房。
-- 介面已做多輪美化。最新 cache version 是 `quick-pick-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
+- 介面已做多輪美化。最新 cache version 是 `choice-auto-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。投影遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
