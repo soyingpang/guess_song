@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-7" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-8" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-7" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-8" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -2095,14 +2095,31 @@
       }
 
       .phone-rank {
+        position: relative;
         display: grid;
         grid-template-columns: auto minmax(0, 1fr) auto;
         align-items: center;
         gap: 10px;
         min-height: 56px;
+        overflow: hidden;
         border-radius: 18px;
         border-color: rgba(93, 66, 57, 0.12);
         background: rgba(255, 255, 255, 0.58);
+        transition:
+          border-color 180ms ease,
+          box-shadow 180ms ease,
+          transform 180ms ease,
+          background 180ms ease;
+      }
+
+      .phone-rank::after {
+        content: "";
+        position: absolute;
+        inset: -40% auto -40% -30%;
+        width: 42%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.62), transparent);
+        opacity: 0;
+        pointer-events: none;
       }
 
       .phone-rank-badge {
@@ -2123,11 +2140,99 @@
         white-space: nowrap;
       }
 
+      .phone-rank-score {
+        display: grid;
+        min-width: 58px;
+        justify-items: end;
+        gap: 2px;
+      }
+
+      .phone-rank-score strong {
+        color: #8d4f33;
+        font-size: 0.98rem;
+        line-height: 1;
+      }
+
+      .phone-rank-delta {
+        display: inline-flex;
+        min-height: 18px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(47, 138, 120, 0.12);
+        color: #24765f;
+        padding: 2px 7px;
+        font-size: 0.66rem;
+        font-weight: 1000;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .phone-rank-delta[hidden] {
+        display: none !important;
+      }
+
       .phone-rank.is-leader {
         border-color: rgba(214, 154, 66, 0.34);
         background:
           linear-gradient(180deg, rgba(255, 238, 194, 0.82), rgba(255, 248, 236, 0.62)),
           rgba(255, 255, 255, 0.7);
+      }
+
+      .phone-rank[data-move="up"],
+      .phone-rank[data-move="score-up"] {
+        border-color: rgba(47, 138, 120, 0.34);
+        background:
+          linear-gradient(135deg, rgba(220, 252, 231, 0.72), rgba(255, 248, 236, 0.72)),
+          rgba(255, 255, 255, 0.72);
+        box-shadow: 0 12px 28px rgba(47, 138, 120, 0.12);
+      }
+
+      .phone-rank[data-move="down"],
+      .phone-rank[data-move="score-down"] {
+        border-color: rgba(214, 108, 97, 0.28);
+        background:
+          linear-gradient(135deg, rgba(254, 226, 226, 0.74), rgba(255, 248, 236, 0.7)),
+          rgba(255, 255, 255, 0.7);
+      }
+
+      .phone-rank[data-move="new"] {
+        border-color: rgba(251, 191, 36, 0.42);
+        background:
+          linear-gradient(135deg, rgba(254, 243, 199, 0.82), rgba(231, 247, 240, 0.72)),
+          rgba(255, 255, 255, 0.72);
+      }
+
+      .phone-rank[data-move="down"] .phone-rank-delta,
+      .phone-rank[data-move="score-down"] .phone-rank-delta {
+        background: rgba(214, 108, 97, 0.14);
+        color: #a33d34;
+      }
+
+      .phone-rank[data-move="new"] .phone-rank-delta {
+        background: rgba(251, 191, 36, 0.24);
+        color: #8a551b;
+      }
+
+      .phone-rank.is-rank-animating[data-move="up"] {
+        animation: phoneRankRise 560ms cubic-bezier(0.2, 0.9, 0.2, 1.06);
+      }
+
+      .phone-rank.is-rank-animating[data-move="down"] {
+        animation: phoneRankDrop 520ms ease;
+      }
+
+      .phone-rank.is-rank-animating[data-move="new"] {
+        animation: phoneRankNew 620ms cubic-bezier(0.2, 0.9, 0.2, 1.08);
+      }
+
+      .phone-rank.is-rank-animating[data-move="score-up"],
+      .phone-rank.is-rank-animating[data-move="score-down"] {
+        animation: phoneRankScorePulse 520ms ease;
+      }
+
+      .phone-rank.is-rank-animating[data-move]::after {
+        animation: phoneRankSweep 620ms ease-out;
       }
 
       .phone-rank.is-leader .phone-rank-badge,
@@ -2254,6 +2359,36 @@
         0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.45); }
         18% { opacity: 1; }
         100% { opacity: 0; transform: translate3d(var(--x), var(--y), 0) scale(1); }
+      }
+
+      @keyframes phoneRankRise {
+        0% { transform: translateY(10px) scale(0.98); }
+        62% { transform: translateY(-3px) scale(1.012); }
+        100% { transform: translateY(0) scale(1); }
+      }
+
+      @keyframes phoneRankDrop {
+        0% { transform: translateY(-8px); }
+        58% { transform: translateY(3px); }
+        100% { transform: translateY(0); }
+      }
+
+      @keyframes phoneRankNew {
+        0% { opacity: 0; transform: translateY(12px) scale(0.96); }
+        68% { opacity: 1; transform: translateY(-3px) scale(1.018); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes phoneRankScorePulse {
+        0% { transform: scale(1); }
+        46% { transform: scale(1.018); }
+        100% { transform: scale(1); }
+      }
+
+      @keyframes phoneRankSweep {
+        0% { opacity: 0; transform: translateX(0) rotate(12deg); }
+        18% { opacity: 0.74; }
+        100% { opacity: 0; transform: translateX(340%) rotate(12deg); }
       }
 
       @keyframes phoneScorePulse {
@@ -2516,10 +2651,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-7"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-7"></script>
+    <script src="./firebase-config.js?v=premium-mobile-8"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-8"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-7"></script>
-    <script src="./pwa.js?v=premium-mobile-7"></script>
+    <script src="./player.js?v=premium-mobile-8"></script>
+    <script src="./pwa.js?v=premium-mobile-8"></script>
   </body>
 </html>

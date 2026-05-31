@@ -21,6 +21,29 @@
 
 ---
 
+## 2026-06-01 02:48 HKT
+
+類型：設計 / 程式 / 手機排行榜動效
+
+摘要：
+- 手機排行榜新增上一輪名次快照，玩家排名變化時會標記升位、跌位、新上榜或同名次分數變化。
+- 排行榜列新增 `phone-rank-delta` 小徽章：升位顯示 `↑1`，跌位顯示 `↓1`，新上榜顯示 `NEW`，同名次分數變動顯示分數差。
+- 排行榜列加入 rise / drop / new / score pulse 和掃光動畫，打開排行榜 modal 時會重播仍在有效時間內的變動。
+- 手機和主持入口 cache version 更新到 `premium-mobile-8`，PWA / service worker cache 同步更新。
+
+影響：
+- 玩家答中後除了分數本身有回饋，排行榜名次也有更即時和更像正式 app 的動態反應。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 本機 Chrome mobile viewport 390x844 驗證：Bob 由第 2 升第 1 顯示 `up` / `↑1`，Alice 由第 1 跌第 2 顯示 `down` / `↓1`，Charlie 新上榜顯示 `new` / `NEW`；排行榜 modal 可打開，無橫向溢出。
+
+後續：
+- 可再做「回合開始 / 開估 / 下一題」之間的頁面轉場，令整個手機流程更像完整 app。
+
+---
+
 ## 2026-06-01 02:25 HKT
 
 類型：設計 / 程式 / 手機分數動畫

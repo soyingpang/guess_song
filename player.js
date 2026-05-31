@@ -121,6 +121,10 @@ const state = {
   momentTimer: null,
   scoreBurstTimer: null,
   lastRenderedScore: null,
+  leaderboardSnapshotReady: false,
+  leaderboardRankSnapshot: new Map(),
+  leaderboardScoreSnapshot: new Map(),
+  leaderboardMovementCache: new Map(),
   lastMomentKey: "",
   lastLatencyCalibrationKey: "",
   latencyCalibrationStatus: "",
@@ -807,6 +811,7 @@ function updateRemoteCountdownWindow(game, previousQuestionId = "") {
 function renderJoinedWaiting() {
   syncBodyState();
   state.lastRenderedScore = null;
+  resetLeaderboardMotion();
   setPlayerScoreText(0);
   hideScoreBurst();
   els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
@@ -2201,6 +2206,7 @@ function updatePhoneAppState(game) {
 function openLeaderboard() {
   hapticPulse(8);
   els.leaderboardModal.hidden = false;
+  requestAnimationFrame(() => replayLeaderboardMotion());
   els.closeLeaderboardButton.focus();
 }
 
@@ -2516,6 +2522,7 @@ function renderLeaderboard(players, teamScores = {}) {
   els.phoneLeaderboard.append(renderPhoneTeamSummary(teamScores));
 
   if (!players.length) {
+    resetLeaderboardMotion();
     const empty = document.createElement("div");
     empty.className = "phone-empty";
     empty.textContent = "等候排行榜";
@@ -2524,11 +2531,14 @@ function renderLeaderboard(players, teamScores = {}) {
   }
 
   els.phoneLeaderboard.append(renderPhoneSettlementHero(players, teamScores));
+  const movements = resolveLeaderboardMovements(players);
 
   players.slice(0, 10).forEach((player, index) => {
+    const movement = movements.get(leaderboardPlayerKey(player, index));
     const item = document.createElement("div");
     item.className = "phone-rank";
     item.classList.toggle("is-leader", index === 0);
+    applyLeaderboardMovement(item, movement);
 
     const badge = document.createElement("b");
     badge.className = "phone-rank-badge";
@@ -2538,12 +2548,96 @@ function renderLeaderboard(players, teamScores = {}) {
     name.className = "phone-rank-name";
     name.textContent = `${player.name || "玩家"} · ${teamLabel(player.team)}`;
 
+    const scoreWrap = document.createElement("span");
+    scoreWrap.className = "phone-rank-score";
     const score = document.createElement("strong");
     score.textContent = `${Number(player.score || 0)} 分`;
+    const delta = document.createElement("small");
+    delta.className = "phone-rank-delta";
+    delta.hidden = !movement?.label;
+    delta.textContent = movement?.label || "";
+    scoreWrap.append(score, delta);
 
-    item.append(badge, name, score);
+    item.append(badge, name, scoreWrap);
     els.phoneLeaderboard.append(item);
   });
+}
+
+function resolveLeaderboardMovements(players) {
+  const now = Date.now();
+  const movements = new Map();
+  const nextRanks = new Map();
+  const nextScores = new Map();
+
+  state.leaderboardMovementCache.forEach((movement, key) => {
+    if (!movement?.expiresAt || movement.expiresAt <= now) state.leaderboardMovementCache.delete(key);
+  });
+
+  players.forEach((player, index) => {
+    const key = leaderboardPlayerKey(player, index);
+    const rank = index + 1;
+    const score = Number(player?.score || 0);
+    const previousRank = state.leaderboardRankSnapshot.get(key);
+    const previousScore = state.leaderboardScoreSnapshot.get(key);
+    let type = "";
+    let label = "";
+
+    if (state.leaderboardSnapshotReady) {
+      if (!previousRank) {
+        type = "new";
+        label = "NEW";
+      } else if (rank < previousRank) {
+        type = "up";
+        label = `↑${previousRank - rank}`;
+      } else if (rank > previousRank) {
+        type = "down";
+        label = `↓${rank - previousRank}`;
+      } else if (Number.isFinite(previousScore) && score !== previousScore) {
+        const diff = score - previousScore;
+        type = diff > 0 ? "score-up" : "score-down";
+        label = diff > 0 ? `+${diff}` : String(diff);
+      }
+    }
+
+    if (type) {
+      state.leaderboardMovementCache.set(key, { type, label, expiresAt: now + 3600 });
+    }
+
+    movements.set(key, state.leaderboardMovementCache.get(key) || { type: "", label: "" });
+    nextRanks.set(key, rank);
+    nextScores.set(key, score);
+  });
+
+  state.leaderboardRankSnapshot = nextRanks;
+  state.leaderboardScoreSnapshot = nextScores;
+  state.leaderboardSnapshotReady = true;
+  return movements;
+}
+
+function leaderboardPlayerKey(player, index = 0) {
+  return String(player?.id || `${normalizePlayerName(player?.name || "player")}:${normalizeTeam(player?.team)}:${index}`);
+}
+
+function applyLeaderboardMovement(item, movement) {
+  if (!item || !movement?.type) return;
+  item.dataset.move = movement.type;
+  item.classList.add("is-rank-animating");
+}
+
+function replayLeaderboardMotion() {
+  if (!els.phoneLeaderboard) return;
+  els.phoneLeaderboard.querySelectorAll(".phone-rank[data-move]").forEach((item) => {
+    item.classList.remove("is-rank-animating");
+    void item.offsetWidth;
+    item.classList.add("is-rank-animating");
+  });
+}
+
+function resetLeaderboardMotion() {
+  state.leaderboardSnapshotReady = false;
+  state.leaderboardRankSnapshot = new Map();
+  state.leaderboardScoreSnapshot = new Map();
+  state.leaderboardMovementCache = new Map();
 }
 
 function renderPhoneSettlementHero(players, teamScores = {}) {
