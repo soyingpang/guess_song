@@ -37,7 +37,12 @@
 - 快選估歌答中後也會 5 秒顯示答案，然後自動下一題。
 
 測試：
-- 待完成：推上 GitHub Pages 後用正式網址驗證手動開估、四選一自動開估和快選答中都不播放完整歌曲，且 5 秒後自動下一題。
+- `node --check app.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check local-qr.js` 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- GitHub Pages 正式網址已驗證主持手動「開估」：開估後顯示文字答案，YouTube iframe 保持 `autoplay=0`，`stop` / `skip` 停用，約 5 秒後自動進入下一題並重新播放片段。
+- GitHub Pages 正式網址已驗證四選一全員已選：Firebase player state 變成 `revealed: true`、`isPlaying: false`、`mediaPlaying: false`、`fullPlayback: false`，約 5 秒後自動下一題。
+- GitHub Pages 正式網址已驗證快選估歌答中：玩家 +5 分，Firebase player state 同樣是 `revealed: true`、`isPlaying: false`、`mediaPlaying: false`、`fullPlayback: false`，約 5 秒後自動下一題。
+- 測試用 Firebase 房間和舊測試房已清理。
 
 後續：
 - 如想日後有「聽完整首」作敬拜 / 回顧，可另加獨立按鈕，不再綁在開估流程。
