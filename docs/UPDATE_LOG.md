@@ -21,6 +21,31 @@
 
 ---
 
+## 2026-06-01 00:32 HKT
+
+類型：設計 / 程式 / 手機高峰動畫
+
+摘要：
+- 手機頁新增 `phoneMoment` 高峰彈層：答中、答錯 / 冷卻、開估顯示答案時會有 app-like 彈層和粒子點綴。
+- `player.js` 新增 moment state 管理：根據 result message 和 revealed state 觸發 correct / miss / reveal 動畫，並自動收起。
+- 排行榜 modal 重新整理：冠軍 badge、分組領先 highlight、排名列改成三欄 app list，減少普通表格式感覺。
+- 手機入口 cache version 更新到 `premium-mobile-2`。
+
+影響：
+- 玩家答中、開估和看排行榜時有更完整的高峰回饋，不再只是普通文字狀態。
+- 動態特效開關會同時關閉 moment 粒子和其他動效。
+
+測試：
+- `node --check player.js` 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 本機 Chrome mobile viewport 390x844 模擬快選答中：moment 彈層顯示、8 個選項無橫向溢出。
+- 本機 Chrome mobile viewport 390x844 模擬排行榜：冠軍 badge 顯示、A/B 組領先狀態顯示，modal 排版正常。
+
+後續：
+- 下一輪可做開估後答案詳情頁、答錯冷卻倒數視覺化、結算勝方全屏動畫和實機手機微調。
+
+---
+
 ## 2026-06-01 00:10 HKT
 
 類型：設計 / 程式 / 手機介面

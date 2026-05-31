@@ -117,6 +117,8 @@ const state = {
   game: null,
   lastResult: "",
   selectedAnswer: "",
+  momentTimer: null,
+  lastMomentKey: "",
   quickPickCooldownTimer: null,
   micStream: null,
   micCall: null,
@@ -166,6 +168,10 @@ const els = {
   phoneChoices: document.querySelector("#phoneChoices"),
   buzzButton: document.querySelector("#buzzButton"),
   phoneResult: document.querySelector("#phoneResult"),
+  phoneMoment: document.querySelector("#phoneMoment"),
+  phoneMomentIcon: document.querySelector("#phoneMomentIcon"),
+  phoneMomentTitle: document.querySelector("#phoneMomentTitle"),
+  phoneMomentDetail: document.querySelector("#phoneMomentDetail"),
   micToggleButton: document.querySelector("#micToggleButton"),
   phoneMicStatus: document.querySelector("#phoneMicStatus"),
   phoneLeaderboard: document.querySelector("#phoneLeaderboard"),
@@ -713,6 +719,7 @@ function handleMessage(message) {
     if (previousQuestionId !== message.questionId) {
       state.lastResult = "";
       state.selectedAnswer = "";
+      hidePhoneMoment();
     }
     if (message.selectedAnswer) state.selectedAnswer = message.selectedAnswer;
     renderGame();
@@ -726,6 +733,7 @@ function handleMessage(message) {
     state.lastResult = message.excludedPlayerId === state.playerId
       ? "你今題已答錯，不能再補答"
       : message.message || "";
+    showResultMoment(message);
     renderGame();
   }
 
@@ -2062,6 +2070,7 @@ function renderGame() {
   els.phoneStatus.textContent = phoneStatusText(game);
   els.phoneTitle.textContent = game.revealed ? game.title : game.hasQuestion ? game.title || game.songlistLabel || "估呢首歌" : "準備中";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
+  maybeShowRevealMoment(game);
   els.phoneResult.textContent =
     state.lastResult ||
     (game.buzzWinner
@@ -2120,6 +2129,87 @@ function openSettings() {
 function closeSettings() {
   els.settingsModal.hidden = true;
   els.phoneSettingsButton.focus();
+}
+
+function showResultMoment(message) {
+  if (!message || message.excludedPlayerId === state.playerId) {
+    showPhoneMoment({
+      type: "miss",
+      icon: "!",
+      title: "不能補答",
+      detail: "今題已記錄，等下一題再來",
+      key: `excluded:${message?.questionId || Date.now()}`,
+      duration: 2800,
+    });
+    return;
+  }
+
+  const points = Number(message.points || 0);
+  if (message.correct) {
+    showPhoneMoment({
+      type: "correct",
+      icon: "+",
+      title: message.message || "答中",
+      detail: points ? `今題 +${points} 分` : "提交成功",
+      key: `correct:${message.questionId}:${message.message || ""}`,
+      duration: 3600,
+    });
+    hapticPulse([18, 35, 18]);
+    return;
+  }
+
+  showPhoneMoment({
+    type: points < 0 ? "miss" : "notice",
+    icon: points < 0 ? "−" : "·",
+    title: message.message || "已提交",
+    detail: message.cooldownUntil ? "稍等一下再答" : "等候下一個狀態",
+    key: `result:${message.questionId}:${message.message || ""}`,
+    duration: 3000,
+  });
+  hapticPulse(10);
+}
+
+function maybeShowRevealMoment(game) {
+  if (!game?.revealed || !game.title || game.hasWord) return;
+  const key = `reveal:${game.questionId}:${game.title}`;
+  if (state.lastMomentKey === key) return;
+  showPhoneMoment({
+    type: "reveal",
+    icon: "♪",
+    title: game.title,
+    detail: "正確答案",
+    key,
+    duration: 4200,
+  });
+}
+
+function showPhoneMoment({ type, icon, title, detail, key, duration = 3200 }) {
+  if (!els.phoneMoment) return;
+  if (key && state.lastMomentKey === key) return;
+  state.lastMomentKey = key || `${type}:${Date.now()}`;
+
+  clearTimeout(state.momentTimer);
+  els.phoneMoment.hidden = false;
+  els.phoneMoment.dataset.type = type || "notice";
+  els.phoneMomentIcon.textContent = icon || "✓";
+  els.phoneMomentTitle.textContent = title || "";
+  els.phoneMomentDetail.textContent = detail || "";
+  els.phoneMoment.classList.remove("is-entering");
+  void els.phoneMoment.offsetWidth;
+  els.phoneMoment.classList.add("is-entering");
+
+  state.momentTimer = window.setTimeout(() => {
+    hidePhoneMoment();
+  }, duration);
+}
+
+function hidePhoneMoment() {
+  clearTimeout(state.momentTimer);
+  state.momentTimer = null;
+  if (els.phoneMoment) {
+    els.phoneMoment.hidden = true;
+    els.phoneMoment.classList.remove("is-entering");
+  }
 }
 
 function renderHints(hints) {
@@ -2259,7 +2349,20 @@ function renderLeaderboard(players, teamScores = {}) {
   players.slice(0, 10).forEach((player, index) => {
     const item = document.createElement("div");
     item.className = "phone-rank";
-    item.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)} · ${escapeHtml(player.team || "A")} 組</span><strong>${player.score} 分</strong>`;
+    item.classList.toggle("is-leader", index === 0);
+
+    const badge = document.createElement("b");
+    badge.className = "phone-rank-badge";
+    badge.textContent = index === 0 ? "冠" : String(index + 1);
+
+    const name = document.createElement("span");
+    name.className = "phone-rank-name";
+    name.textContent = `${player.name || "玩家"} · ${teamLabel(player.team)}`;
+
+    const score = document.createElement("strong");
+    score.textContent = `${Number(player.score || 0)} 分`;
+
+    item.append(badge, name, score);
     els.phoneLeaderboard.append(item);
   });
 }
@@ -2269,7 +2372,16 @@ function renderPhoneTeamSummary(teamScores) {
   const bScore = Number(teamScores.B || 0);
   const summary = document.createElement("div");
   summary.className = "phone-team-summary";
-  summary.innerHTML = `<span>A 組 <strong>${aScore}</strong></span><span>B 組 <strong>${bScore}</strong></span>`;
+  const teams = [
+    ["A", aScore],
+    ["B", bScore],
+  ];
+  teams.forEach(([team, score]) => {
+    const item = document.createElement("span");
+    item.classList.toggle("is-leading", score > (team === "A" ? bScore : aScore));
+    item.innerHTML = `${team} 組 <strong>${score}</strong>`;
+    summary.append(item);
+  });
   return summary;
 }
 

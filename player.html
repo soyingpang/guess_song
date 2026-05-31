@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-1" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-2" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -1593,6 +1593,113 @@
         padding: 9px 10px;
       }
 
+      .phone-moment {
+        position: fixed;
+        left: 18px;
+        right: 18px;
+        top: 18%;
+        z-index: 45;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        column-gap: 12px;
+        align-items: center;
+        max-width: 430px;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.62);
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 244, 231, 0.86)),
+          rgba(255, 250, 242, 0.88);
+        box-shadow:
+          0 26px 70px rgba(73, 47, 37, 0.24),
+          inset 0 1px 0 rgba(255, 255, 255, 0.86);
+        padding: 16px;
+        pointer-events: none;
+        backdrop-filter: blur(18px);
+      }
+
+      .phone-moment[hidden] {
+        display: none;
+      }
+
+      .phone-moment-icon {
+        grid-row: 1 / span 2;
+        display: grid;
+        width: 58px;
+        height: 58px;
+        place-items: center;
+        border-radius: 20px;
+        background: rgba(47, 138, 120, 0.14);
+        color: var(--phone-teal);
+        font-size: 1.9rem;
+        font-weight: 1000;
+        box-shadow: inset 0 -3px 0 rgba(47, 138, 120, 0.12);
+      }
+
+      .phone-moment strong {
+        min-width: 0;
+        overflow: hidden;
+        color: var(--phone-ink);
+        font-size: 1.34rem;
+        line-height: 1.06;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .phone-moment small {
+        color: var(--phone-muted);
+        font-size: 0.86rem;
+        font-weight: 900;
+      }
+
+      .phone-moment[data-type="correct"] .phone-moment-icon {
+        background: linear-gradient(180deg, rgba(63, 184, 135, 0.24), rgba(47, 138, 120, 0.14));
+        color: #24765f;
+      }
+
+      .phone-moment[data-type="reveal"] .phone-moment-icon {
+        background: linear-gradient(180deg, rgba(251, 191, 36, 0.3), rgba(214, 154, 66, 0.16));
+        color: #9a5d1d;
+      }
+
+      .phone-moment[data-type="miss"] .phone-moment-icon {
+        background: linear-gradient(180deg, rgba(214, 108, 97, 0.24), rgba(214, 108, 97, 0.12));
+        color: #a33d34;
+      }
+
+      .phone-moment.is-entering {
+        animation: phoneMomentPop 420ms cubic-bezier(0.2, 0.9, 0.2, 1.1);
+      }
+
+      .phone-moment-sparks {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .phone-moment-sparks span {
+        position: absolute;
+        display: block;
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--phone-gold);
+        opacity: 0;
+      }
+
+      .phone-moment.is-entering .phone-moment-sparks span {
+        animation: phoneSpark 820ms ease-out forwards;
+      }
+
+      .phone-moment-sparks span:nth-child(1) { left: 18%; top: 22%; background: var(--phone-teal); --x: -38px; --y: -34px; }
+      .phone-moment-sparks span:nth-child(2) { left: 32%; top: 18%; background: var(--phone-gold); --x: -14px; --y: -44px; }
+      .phone-moment-sparks span:nth-child(3) { right: 30%; top: 24%; background: var(--phone-coral); --x: 20px; --y: -40px; }
+      .phone-moment-sparks span:nth-child(4) { right: 18%; top: 42%; background: var(--phone-blue); --x: 44px; --y: -16px; }
+      .phone-moment-sparks span:nth-child(5) { left: 28%; bottom: 20%; background: var(--phone-coral); --x: -22px; --y: 32px; }
+      .phone-moment-sparks span:nth-child(6) { right: 24%; bottom: 18%; background: var(--phone-teal); --x: 30px; --y: 28px; }
+
       .player-body.is-joined .phone-remote-panel {
         border-radius: 22px;
         gap: 8px;
@@ -1747,8 +1854,55 @@
         text-align: center;
       }
 
+      .phone-rank {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        min-height: 56px;
+        border-radius: 18px;
+        border-color: rgba(93, 66, 57, 0.12);
+        background: rgba(255, 255, 255, 0.58);
+      }
+
+      .phone-rank-badge {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 13px;
+        background: rgba(47, 138, 120, 0.12);
+        color: #24765f;
+        font-size: 0.9rem;
+      }
+
+      .phone-rank-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .phone-rank.is-leader {
+        border-color: rgba(214, 154, 66, 0.34);
+        background:
+          linear-gradient(180deg, rgba(255, 238, 194, 0.82), rgba(255, 248, 236, 0.62)),
+          rgba(255, 255, 255, 0.7);
+      }
+
+      .phone-rank.is-leader .phone-rank-badge,
+      .phone-team-summary span.is-leading {
+        background: linear-gradient(180deg, rgba(251, 191, 36, 0.3), rgba(47, 138, 120, 0.12));
+        color: #8a551b;
+      }
+
+      .phone-team-summary span {
+        border-radius: 18px;
+      }
+
       .player-body.effects-off .phone-fx-layer,
-      .player-body.effects-off .phone-remote-listen::after {
+      .player-body.effects-off .phone-remote-listen::after,
+      .player-body.effects-off .phone-moment-sparks {
         display: none;
       }
 
@@ -1792,6 +1946,18 @@
 
       @keyframes phoneBars {
         50% { transform: scaleY(0.72); opacity: 0.92; }
+      }
+
+      @keyframes phoneMomentPop {
+        0% { opacity: 0; transform: translateY(18px) scale(0.94); }
+        72% { opacity: 1; transform: translateY(-3px) scale(1.015); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes phoneSpark {
+        0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.45); }
+        18% { opacity: 1; }
+        100% { opacity: 0; transform: translate3d(var(--x), var(--y), 0) scale(1); }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -1937,6 +2103,20 @@
           <div class="phone-result" id="phoneResult"></div>
         </section>
 
+        <div class="phone-moment" id="phoneMoment" hidden aria-live="polite">
+          <div class="phone-moment-sparks" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span class="phone-moment-icon" id="phoneMomentIcon">✓</span>
+          <strong id="phoneMomentTitle">答中</strong>
+          <small id="phoneMomentDetail">加分成功</small>
+        </div>
+
       </section>
 
       <div class="phone-modal" id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle" hidden>
@@ -1991,9 +2171,9 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-1"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-1"></script>
+    <script src="./firebase-config.js?v=premium-mobile-2"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-2"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-1"></script>
+    <script src="./player.js?v=premium-mobile-2"></script>
   </body>
 </html>
