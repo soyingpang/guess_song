@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "auto-room-2";
+const APP_BUILD_VERSION = "auto-room-3";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -86,7 +86,7 @@ const DEFAULT_PLAY_DURATION_SECONDS = 30;
 const PLAY_DURATIONS = [60, 30, 15];
 const PLAY_START_MODES = ["beginning", "random"];
 const CHOICE_OPTION_COUNT = 4;
-const CHOICE_AUTO_NEXT_DELAY_MS = 5000;
+const REVEAL_AUTO_NEXT_DELAY_MS = 5000;
 const QUICK_PICK_OPTION_COUNT = 8;
 const QUICK_PICK_CORRECT_POINTS = 5;
 const QUICK_PICK_WRONG_POINTS = -1;
@@ -1682,28 +1682,35 @@ function connectedChoicePlayers(fallbackPlayer = null) {
 function autoRevealChoiceRound() {
   if (state.mode !== "choice" || !state.currentSong || state.answered) return;
 
-  state.answered = true;
-  state.revealed = true;
-  state.isPlaying = true;
-  state.fullPlayback = true;
-  state.frontReady = false;
-  state.playEndsAt = 0;
-  state.playbackRevision += 1;
-  clearClipTimer();
-  setResult("全部已選，自動開估", `${answerLabel(state.currentSong)} · 5 秒後下一題`, "correct");
-  render();
-  renderYouTubeFrame({ autoplay: true });
-  scheduleChoiceAutoNext();
+  revealCurrentSongThenAutoNext("全部已選，自動開估");
 }
 
-function scheduleChoiceAutoNext() {
+function revealCurrentSongThenAutoNext(message, detail = "") {
+  if (!state.currentSong || state.answered) return;
+
+  state.answered = true;
+  state.revealed = true;
+  state.isPlaying = false;
+  state.fullPlayback = false;
+  state.frontReady = false;
+  state.playEndsAt = 0;
+  state.buzzOpen = false;
+  state.playbackRevision += 1;
+  clearClipTimer();
+  setResult(message, detail || `${answerLabel(state.currentSong)} · 5 秒後下一題`, "correct");
+  render();
+  renderYouTubeFrame({ autoplay: false });
+  scheduleRevealAutoNext();
+}
+
+function scheduleRevealAutoNext() {
   clearChoiceAutoNextTimer();
   const questionId = state.currentQuestionId;
   state.choiceAutoNextTimer = window.setTimeout(() => {
     state.choiceAutoNextTimer = null;
-    if (state.mode !== "choice" || state.currentQuestionId !== questionId || !state.answered) return;
+    if (state.mode === "word" || state.currentQuestionId !== questionId || !state.answered) return;
     startRound(null, { autoplay: true });
-  }, CHOICE_AUTO_NEXT_DELAY_MS);
+  }, REVEAL_AUTO_NEXT_DELAY_MS);
 }
 
 function clearChoiceAutoNextTimer() {
@@ -1740,16 +1747,6 @@ function handleQuickPickAnswer(player, answer) {
     player.quickPickCooldownUntil = 0;
     player.answers[state.currentQuestionId] = { answer: selected, correct: true, points };
     state.buzzWinnerId = player.id;
-    state.buzzOpen = false;
-    state.answered = true;
-    state.revealed = true;
-    state.isPlaying = true;
-    state.fullPlayback = true;
-    state.frontReady = false;
-    state.playEndsAt = 0;
-    state.playbackRevision += 1;
-    clearClipTimer();
-    setResult(`${player.name} 已估中`, `${answerLabel(state.currentSong)} · +${points} 分`, "correct");
     sendToPlayer(player, {
       type: "result",
       questionId: state.currentQuestionId,
@@ -1757,8 +1754,10 @@ function handleQuickPickAnswer(player, answer) {
       points,
       message: `答中 +${points}`,
     });
-    render();
-    renderYouTubeFrame({ autoplay: true });
+    revealCurrentSongThenAutoNext(
+      `${player.name} 已估中`,
+      `${answerLabel(state.currentSong)} · +${points} 分 · 5 秒後下一題`
+    );
     return;
   }
 
@@ -2195,13 +2194,6 @@ function chooseAnswer(title) {
 function finishRound(isCorrect, label = null) {
   if (!state.currentSong || state.answered) return;
 
-  const shouldAutoplayReveal = label === "開估";
-  state.answered = true;
-  state.revealed = true;
-  state.isPlaying = shouldAutoplayReveal;
-  state.fullPlayback = shouldAutoplayReveal;
-  state.frontReady = false;
-  state.playEndsAt = 0;
   if (label !== "開估") {
     state.score.total += 1;
     if (isCorrect) {
@@ -2212,14 +2204,11 @@ function finishRound(isCorrect, label = null) {
     }
   }
 
-  clearClipTimer();
   saveScore();
-  setResult(
-    shouldAutoplayReveal ? "開估，全首播放中" : label || (isCorrect ? "答中" : "未中"),
-    answerLabel(state.currentSong),
-    isCorrect ? "correct" : "wrong"
+  revealCurrentSongThenAutoNext(
+    label || (isCorrect ? "答中" : "未中"),
+    `${answerLabel(state.currentSong)} · 5 秒後下一題`
   );
-  render();
 }
 
 function isCorrectGuess(normalizedGuess) {

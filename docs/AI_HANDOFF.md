@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 16:21 HKT
+更新時間：2026-05-31 16:39 HKT
 
 ## 必讀順序
 
@@ -29,7 +29,7 @@
 
 今次團契有三個環節：
 
-1. 四選一選擇題：全部在線玩家提交答案後，自動開估，5 秒後自動播放下一題。
+1. 四選一選擇題：全部在線玩家提交答案後，自動開估；開估只顯示文字答案 5 秒，不播放完整歌曲，然後自動播放下一題。
 2. 快選估歌：手機顯示 8 個歌名，玩家鬥快撳中答案。
 3. 出一個大路主題 / 關鍵詞，分 A/B 兩組鬥快唱出切合主題的詩歌。
 
@@ -66,8 +66,8 @@
 - 主持頁可抽題。
 - 可選投影畫面可顯示題目狀態和 QR code。
 - 手機可加入房間。
-- 四選一可答題並加分；所有在線玩家都答完後，主持頁會自動開估，5 秒後自動下一題播放。
-- 快選估歌可自動判分：答中 +5，答錯 -1，答錯後該玩家冷卻 5 秒。
+- 四選一可答題並加分；所有在線玩家都答完後，主持頁會自動開估，文字顯示答案 5 秒後自動下一題播放。
+- 快選估歌可自動判分：答中 +5，答錯 -1，答錯後該玩家冷卻 5 秒；有人答中時只顯示文字答案 5 秒，不播放完整歌曲，然後自動下一題。
 - 排行榜可顯示。
 - 題庫已擴充和重整；目前 `hymns.json` 約 500 首，`songlists/all-songlists.json` 約 2513 首。
 - 已加入並啟用 Firebase 全球手機模式：Project ID 是 `guess-song-260531`，Realtime Database 是 `https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`。Firebase Realtime Database 負責房間、玩家、題目狀態、搶答事件和 WebRTC signaling；聲音仍由 WebRTC 傳送。
@@ -88,7 +88,7 @@
 - 手機加入時不再自選 A/B 組；主持頁會按現有人數自動平均分配，主持仍可在主持頁手動調組。
 - 主持頁已有主題搶唱模式和 A/B 組分數。
 - 主持頁已有「停止」按鈕。
-- 快選估歌 / 主題搶唱需要主持按「開放快選 / 搶唱」才可讓手機按鈕生效。快選估歌不再開咪或由主持人工判定；一有人撳中，系統顯示「XXX 已估中」並自動開估 / 全首播放。
+- 快選估歌 / 主題搶唱需要主持按「開放快選 / 搶唱」才可讓手機按鈕生效。快選估歌不再開咪或由主持人工判定；一有人撳中，系統顯示「XXX 已估中」和文字答案 5 秒，然後自動下一題。
 - 主持頁右欄已改成玩家狀態優先，題庫管理預設收起。
 - 主持頁已有「分數重置」按鈕，可清分數、組分、題目、答案和搶答狀態，但保留題庫、固定房間、QR 和玩家。
 - 可選投影畫面排行榜已改成「分數結算」畫面，先顯示 A/B 組戰況，再顯示個人榜；手機排行榜已移入彈窗，彈窗內保留 A/B 組分數摘要。
@@ -98,9 +98,9 @@
 - 手機端已有自動重連；主持頁會用玩家 ID 保留分數，並在同名玩家離線時接回舊資料。同名仍在線時，新加入者會顯示為「名字（2）」。
 - 主持頁玩家欄有「複製玩家連結」按鈕，房間建立後可用。
 - 主持頁玩家列表已有 A/B 組下拉選單，可即時改組並同步手機 / 投影；離線玩家可用「移」按鈕清走。
-- 主持頁按「開估」後，狀態會以全首播放方式同步給玩家 / 投影：display state 會有 `fullPlayback: true`、`isPlaying: true`、`end: 0`。
+- 主持頁按「開估」後不播放完整歌曲，只同步文字答案 5 秒：display / player state 會是 `revealed: true`、`isPlaying: false`、`fullPlayback: false`，之後自動下一題播放。
 - 主持頁按「下一題播放」會執行 `startRound(null, { autoplay: true })`，一按抽題、自動播放和開始倒數。
-- 四選一新增全員答完自動流程：`handleChoiceAnswer()` 會在每次提交後檢查所有在線玩家是否都有答案；全員已選時呼叫 `autoRevealChoiceRound()`，顯示答案並用 `choiceAutoNextTimer` 在 5 秒後 `startRound(null, { autoplay: true })`。新題、停止、切模式和重置會清走這個計時器。
+- 開估流程統一用 `revealCurrentSongThenAutoNext()`：停止當前片段，不播完整歌曲，只顯示文字答案 5 秒，然後用 `choiceAutoNextTimer` 執行 `startRound(null, { autoplay: true })`。四選一全員答完、快選答中、主持手動開估都走這個流程。
 - 估歌期間不可直接露出 YouTube 縮圖 / 歌名。`display.js` 會在未開估但有歌曲時加 `stage-mask.is-prep-cover`，`styles.css` 只留右下角小窗給主持處理廣告，其餘畫面用實色遮住。
 - 主持頁已有播放起點設定：`playStartMode` 可為 `beginning` 或 `random`。每題在 `startRound()` 設定 `currentClipStart`；重播同一題沿用同一段。`fullPlayback` 時投影 start 固定回到 0。
 - 已支援本地 / 已授權媒體檔：`audioUrl` 欄位保留舊名，但可填 `./audio/*.mp3`、`./audio/*.m4a` 或 `./video/*.mp4` 等。`app.js` 和 `display.js` 會按副檔名自動用 `<audio>` 或 `<video>` 播放；主持頁本地媒體預設靜音，投影畫面負責出聲。
@@ -114,7 +114,7 @@
 - 遠端投影已支援：主持頁有 `displayConnections`，`display.html?room=...` 會送 `display-join`，主持頁用 `display-state` 推送 `buildDisplayState()`。這是 optional，不是手機全球版主流程。
 - 投影畫面不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設投影就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
 - 預設房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制；自動分房會加 `-2`、`-3` 等後綴，最多檢查 `AUTO_ROOM_MAX_CANDIDATES`。主持頁可用 `?room=custom-room` 開指定場。不要再用 `makeRoomId()` 或 random room 作為預設。
-- 介面已做多輪美化。最新 cache version 是 `auto-room-2`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
+- 介面已做多輪美化。最新 cache version 是 `auto-room-3`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。投影遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
