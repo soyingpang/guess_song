@@ -178,6 +178,9 @@ const els = {
   playerNameLabel: document.querySelector('label[for="playerName"]'),
   playerNameLine: document.querySelector("#playerName")?.closest(".guess-line"),
   playerNameNote: document.querySelector(".join-form > .join-note"),
+  phoneJoinRoomPill: document.querySelector("#phoneJoinRoomPill"),
+  phoneJoinAvatar: document.querySelector("#phoneJoinAvatar"),
+  phoneJoinPreviewName: document.querySelector("#phoneJoinPreviewName"),
   playerStatus: document.querySelector("#playerStatus"),
   playerScore: document.querySelector("#playerScore"),
   playerScoreValue: document.querySelector("#playerScoreValue"),
@@ -282,11 +285,14 @@ els.playerName.value = state.name;
 applyPhoneSettings();
 showNameStep();
 applyPlayerMode();
+updateJoinPreview();
 
 els.joinForm.addEventListener("submit", (event) => {
   event.preventDefault();
   joinGame();
 });
+
+els.playerName.addEventListener("input", updateJoinPreview);
 
 els.buzzButton.addEventListener("click", () => {
   hapticPulse([18, 30, 18]);
@@ -376,10 +382,38 @@ if (!roomId) {
   setStatus("請輸入名字加入");
 }
 
+function updateJoinPreview() {
+  const rawName = String(els.playerName?.value || state.name || "").trim();
+  const displayName = rawName || "準備加入";
+  const initial = Array.from(rawName || "你")[0] || "你";
+  if (els.phoneJoinPreviewName) els.phoneJoinPreviewName.textContent = displayName;
+  if (els.phoneJoinAvatar) els.phoneJoinAvatar.textContent = initial;
+  if (els.phoneJoinRoomPill) {
+    els.phoneJoinRoomPill.textContent = !roomId
+      ? "連結錯誤"
+      : state.connecting
+        ? "連線中"
+        : state.joined
+          ? "已入房"
+          : rawName
+            ? "準備好"
+            : "連線就緒";
+  }
+}
+
+function playJoinSubmitMotion() {
+  if (!els.joinForm) return;
+  els.joinForm.classList.remove("is-joining");
+  void els.joinForm.offsetWidth;
+  els.joinForm.classList.add("is-joining");
+  window.setTimeout(() => els.joinForm?.classList.remove("is-joining"), 760);
+}
+
 function joinGame() {
   const name = els.playerName.value.trim();
   if (!name) {
     setStatus("請先輸入名字");
+    updateJoinPreview();
     return;
   }
 
@@ -392,6 +426,8 @@ function joinGame() {
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
   localStorage.setItem(PLAYER_REMOTE_MODE_KEY, "remote");
   hapticPulse(10);
+  playJoinSubmitMotion();
+  updateJoinPreview();
   applyPlayerMode();
   startJoinWithSelectedMode();
 }
@@ -423,6 +459,7 @@ function startJoinWithSelectedMode() {
 
 function showJoinFormAfterFailure() {
   els.joinForm.hidden = false;
+  els.joinForm.classList.remove("is-joining");
   showNameStep();
 }
 
@@ -3234,6 +3271,7 @@ function setStatus(message) {
   if (els.phoneLivePill && !state.game) {
     els.phoneLivePill.textContent = state.connecting ? "連線中" : state.joined ? "已入房" : "待命";
   }
+  updateJoinPreview();
   syncBodyState();
 }
 

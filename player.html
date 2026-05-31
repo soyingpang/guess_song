@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-16" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-17" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-16" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-17" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -1445,15 +1445,156 @@
       .join-form {
         margin-top: 10px;
         border: 1px solid var(--phone-line);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at 16% 12%, rgba(47, 138, 120, 0.16), transparent 36%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 241, 222, 0.88)),
+          var(--phone-panel);
+        box-shadow:
+          0 18px 44px rgba(88, 54, 39, 0.14),
+          inset 0 1px 0 rgba(255, 255, 255, 0.86);
+        padding: 12px;
+        backdrop-filter: blur(18px);
+      }
+
+      .join-form.is-joining {
+        animation: phoneJoinSubmit 520ms cubic-bezier(0.2, 0.9, 0.2, 1.06);
+      }
+
+      .phone-join-kicker {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .phone-join-kicker strong {
+        color: var(--phone-ink);
+        font-size: 1rem;
+        font-weight: 1000;
+      }
+
+      .phone-join-kicker span {
+        border-radius: 999px;
+        background: rgba(47, 138, 120, 0.12);
+        color: #24765f;
+        padding: 6px 9px;
+        font-size: 0.7rem;
+        font-weight: 1000;
+        white-space: nowrap;
+      }
+
+      .phone-join-preview {
+        position: relative;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: 11px;
+        overflow: hidden;
+        border: 1px solid rgba(93, 66, 57, 0.1);
         border-radius: 20px;
-        background: var(--phone-panel);
-        box-shadow: 0 14px 34px rgba(88, 54, 39, 0.11);
-        padding: 14px;
-        backdrop-filter: blur(14px);
+        background:
+          linear-gradient(135deg, rgba(231, 247, 240, 0.78), rgba(255, 245, 230, 0.8)),
+          rgba(255, 250, 242, 0.74);
+        padding: 11px;
+      }
+
+      .phone-join-preview::after {
+        content: "";
+        position: absolute;
+        inset: -42% auto -42% -36%;
+        width: 42%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.58), transparent);
+        transform: rotate(12deg);
+        animation: phoneJoinSweep 3.2s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      .phone-join-avatar {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        border-radius: 18px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(223, 247, 238, 0.78)),
+          rgba(47, 138, 120, 0.14);
+        color: #24765f;
+        font-size: 1.35rem;
+        font-weight: 1000;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+      }
+
+      .phone-join-copy {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 3px;
+        min-width: 0;
+      }
+
+      .phone-join-copy strong {
+        min-width: 0;
+        overflow: hidden;
+        color: var(--phone-ink);
+        font-size: 1.04rem;
+        font-weight: 1000;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .phone-join-copy small {
+        min-width: 0;
+        overflow: hidden;
+        color: var(--phone-muted);
+        font-size: 0.74rem;
+        font-weight: 850;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .phone-join-flow {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        margin: 10px 0;
+      }
+
+      .phone-join-flow span {
+        display: grid;
+        min-height: 54px;
+        align-content: center;
+        gap: 3px;
+        overflow: hidden;
+        border: 1px solid rgba(93, 66, 57, 0.1);
+        border-radius: 17px;
+        background: rgba(255, 255, 255, 0.52);
+        color: var(--phone-muted);
+        padding: 8px;
+        font-size: 0.69rem;
+        font-weight: 850;
+        text-align: center;
+      }
+
+      .phone-join-flow b {
+        color: #24765f;
+        font-size: 0.78rem;
+        font-weight: 1000;
       }
 
       .join-form .guess-line {
         gap: 8px;
+      }
+
+      .join-form label {
+        display: block;
+        margin: 0 0 7px;
+        color: #5d4037;
+        font-size: 0.78rem;
+        font-weight: 1000;
       }
 
       .join-form input {
@@ -1463,11 +1604,90 @@
         background: rgba(255, 255, 255, 0.72);
         color: var(--phone-ink);
         font-size: 1rem;
+        font-weight: 900;
       }
 
       .join-form .primary-button {
+        position: relative;
         min-height: 50px;
+        overflow: hidden;
         border-radius: 15px;
+        box-shadow:
+          0 14px 28px rgba(214, 108, 97, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.68);
+      }
+
+      .join-form .primary-button::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, transparent 0 28%, rgba(255, 255, 255, 0.42) 44%, transparent 60%);
+        opacity: 0;
+        transform: translateX(-80%);
+        pointer-events: none;
+      }
+
+      .join-form .primary-button:active {
+        transform: translateY(1px) scale(0.99);
+      }
+
+      .join-form.is-joining .primary-button::after {
+        animation: phoneJoinButtonSweep 620ms ease-out;
+      }
+
+      .join-note {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: 10px 0 0;
+        color: var(--phone-muted);
+        font-size: 0.75rem;
+        font-weight: 850;
+      }
+
+      .join-note::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--phone-teal);
+        box-shadow: 0 0 0 5px rgba(47, 138, 120, 0.1);
+      }
+
+      .player-body.is-connecting:not(.is-joined) .join-form {
+        display: grid;
+        gap: 10px;
+      }
+
+      .player-body.is-connecting:not(.is-joined) .join-form .primary-button {
+        opacity: 0.86;
+      }
+
+      .player-body.is-connecting:not(.is-joined) .player-status {
+        border-color: rgba(47, 138, 120, 0.2);
+        background:
+          linear-gradient(180deg, rgba(231, 247, 240, 0.92), rgba(255, 245, 230, 0.84)),
+          rgba(255, 250, 242, 0.8);
+        color: #24765f;
+      }
+
+      @keyframes phoneJoinSweep {
+        0% { transform: translateX(-20%) rotate(12deg); opacity: 0; }
+        28% { opacity: 0.58; }
+        100% { transform: translateX(320%) rotate(12deg); opacity: 0; }
+      }
+
+      @keyframes phoneJoinSubmit {
+        0% { transform: scale(1); }
+        44% { transform: scale(0.985); }
+        100% { transform: scale(1); }
+      }
+
+      @keyframes phoneJoinButtonSweep {
+        0% { opacity: 0; transform: translateX(-80%); }
+        18% { opacity: 0.68; }
+        100% { opacity: 0; transform: translateX(140%); }
       }
 
       .player-body.is-joined .player-shell {
@@ -3573,6 +3793,22 @@
         </div>
 
         <form class="join-form" id="joinForm">
+          <div class="phone-join-kicker">
+            <strong>手機房間</strong>
+            <span id="phoneJoinRoomPill">連線就緒</span>
+          </div>
+          <div class="phone-join-preview" aria-hidden="true">
+            <b class="phone-join-avatar" id="phoneJoinAvatar">你</b>
+            <span class="phone-join-copy">
+              <strong id="phoneJoinPreviewName">準備加入</strong>
+              <small>今晚用手機答題和看分數</small>
+            </span>
+          </div>
+          <div class="phone-join-flow" aria-hidden="true">
+            <span><b>收聽</b>同步</span>
+            <span><b>答題</b>即時</span>
+            <span><b>排名</b>更新</span>
+          </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
@@ -3796,10 +4032,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-16"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-16"></script>
+    <script src="./firebase-config.js?v=premium-mobile-17"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-17"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-16"></script>
-    <script src="./pwa.js?v=premium-mobile-16"></script>
+    <script src="./player.js?v=premium-mobile-17"></script>
+    <script src="./pwa.js?v=premium-mobile-17"></script>
   </body>
 </html>

@@ -21,6 +21,34 @@
 
 ---
 
+## 2026-06-01 03:44 HKT
+
+類型：手機版 / 視覺 / 加入頁
+
+變更：
+- 手機加入頁改成 onboarding sheet：新增房間狀態 pill、玩家預覽卡、名字 avatar、三格手機流程狀態。
+- 玩家輸入名字時，預覽卡會即時更新名字和首字 avatar；提交時加入卡會有輕微按下和按鈕光帶動效。
+- 加入卡樣式升級為暖色玻璃卡、內部 sweep、柔和陰影和更高級的輸入框 / 加入按鈕。
+- `player.js` 新增 `updateJoinPreview()` / `playJoinSubmitMotion()`，並在狀態更新時同步房間 pill。
+- 手機和主持入口 cache version 更新到 `premium-mobile-17`，PWA / service worker cache 同步更新。
+
+影響：
+- 玩家第一眼不再是普通表單，而是完整 app 的入房體驗。
+- 入名、準備加入、連線狀態更有回饋，也更符合手機操作節奏。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Chrome mobile viewport 驗證加入頁：未加入狀態顯示 onboarding sheet、房間 pill 為 `連線就緒`、預覽名為 `準備加入`、avatar 為 `你`、三格流程狀態出現，390px 無橫向溢出。
+- 本機 Chrome mobile viewport 驗證輸入互動：輸入 `So Ying` 後，房間 pill 變 `準備好`、預覽名變 `So Ying`、avatar 變 `S`，提交 motion class 正常出現。
+- 本機 Chrome 360x740 窄 viewport 驗證長名字：預覽名和 avatar 更新，三格流程仍在，無橫向溢出。
+- 本機截圖檢查：加入卡、主視覺、輸入框和加入按鈕沒有互相遮擋，第一屏視覺重心清楚。
+
+下一步：
+- 部署到 GitHub Pages 後正式驗證加入頁 onboarding 和 390px 版面。
+
+---
+
 ## 2026-06-01 03:33 HKT
 
 類型：手機版 / 視覺 / 排行榜
