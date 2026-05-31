@@ -38,6 +38,7 @@
 - `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
 - `git diff --check` 通過（只見既有 CRLF 提示）。
 - 本機 Chrome mobile viewport 390x844 驗證：`round` 顯示「第 1 題」、`play` 顯示「播放開始 / 30 秒」、`reveal` 顯示「開估 / Song A」、`next` 顯示「第 2 題 / 下一題開始」；cue 和題目卡 transition class 正確，內容淡出狀態生效，無橫向溢出。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-9-live` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-9` / `pwa.js?v=premium-mobile-9`，四種 stage cue、內容淡出和 390px 無橫向溢出全部通過。
 
 後續：
 - 可再做答案揭曉後 5 秒自動下一題的微型倒數 ring，令開估等待時間更可感知。
