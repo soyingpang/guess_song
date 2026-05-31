@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 15:43 HKT
+更新時間：2026-05-31 15:48 HKT
 
 ## 必讀順序
 
@@ -74,7 +74,7 @@
 
 ## 重要狀態提醒
 
-2026-05-31 已加入多房間 URL 模式：主持頁無 `room` 參數時仍用 `soyingpang-guess-song-fellowship-room`；有 `?room=...` 時主持頁、玩家 QR / 連結、投影連結和 Firebase room key 都跟該房間分開。同一瀏覽器開不同房間不會互相接管。
+2026-05-31 已加入並 live 驗證多房間 URL 模式：主持頁無 `room` 參數時仍用 `soyingpang-guess-song-fellowship-room`；有 `?room=...` 時主持頁、玩家 QR / 連結、投影連結和 Firebase room key 都跟該房間分開。同一瀏覽器開不同房間不會互相接管。GitHub Pages 已驗證 `codex-room-a` / `codex-room-b` 分別產生不同玩家連結和 Firebase meta，測試房已清理。
 
 2026-05-31 已在 GitHub Pages 正式網址 `index.html?test=choice-auto-1` 驗證四選一自動流程：在線玩家全數選擇後會自動開估，5 秒後自動播放下一題。測試用 Firebase 玩家與事件已清理。
 

@@ -37,7 +37,15 @@
 - 原本日常用法不變，直接開首頁仍是原本固定房。
 
 測試：
-- 待完成：推上 GitHub Pages 後用正式網址驗證 `index.html?room=room-a&test=multi-room-1` 和 `index.html?room=room-b&test=multi-room-1` 會產生不同玩家 QR / Firebase room。
+- `node --check app.js`
+- `node --check player.js`
+- `node --check display.js`
+- `node --check firebase-sync.js`
+- `node --check local-qr.js`
+- `git diff --check` 通過；只剩 Git 在 Windows 提示 LF 之後會轉 CRLF。
+- GitHub Pages 正式網址驗證通過：`index.html?room=codex-room-a&test=multi-room-1` 產生 `player.html?room=codex-room-a`，`index.html?room=codex-room-b&test=multi-room-1` 產生 `player.html?room=codex-room-b`。
+- Firebase REST 驗證兩個測試房間 meta 分開，buildVersion 都是 `multi-room-1`；測試用 `codex-room-a` / `codex-room-b` 已清理。
+- 無 `room` 參數的正式網址仍回到 `soyingpang-guess-song-fellowship-room`，玩家 QR / 連結維持原本固定房。
 
 後續：
 - 可再加一個主持頁 UI 輸入房名，但目前 URL 參數已可支援多場同時玩。
