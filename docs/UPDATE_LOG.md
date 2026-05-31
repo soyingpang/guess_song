@@ -43,7 +43,9 @@
 - `node --check firebase-sync.js`
 - `node --check local-qr.js`
 - `git diff --check` 通過；只剩 Git 在 Windows 提示 LF 之後會轉 CRLF。
-- 待完成：推上 GitHub Pages 後用正式網址驗證快選流程。
+- GitHub Pages 正式網址確認 `index.html?test=quick-pick-1` 和 `player.html?...&test=quick-pick-1` 已載入新版資源。
+- Browser 正式網址確認主持頁第二模式顯示「二：快選估歌」，切換後只保留「開放快選」，答中 / 未中人工判定按鈕會收起。
+- Browser + Firebase 測試玩家 state 驗證手機頁：8 個快選按鈕正常顯示；冷卻時按鈕停用並顯示倒數；答中狀態會顯示「QuickUi 已估中」並露出歌名。測試玩家和測試 state 已清走。
 
 後續：
 - 第三模式「主題搶唱」仍是舊搶唱玩法，之後可再改成無咪玩法。
