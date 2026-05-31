@@ -42,7 +42,8 @@
 - `node --check firebase-sync.js`
 - `node --check local-qr.js`
 - `git diff --check` 通過；只剩 Git 在 Windows 提示 LF 之後會轉 CRLF。
-- 待完成：推上 GitHub Pages 後用正式網址檢查手機頁加入流程 / 視覺。
+- GitHub Pages 正式網址確認 `player.html?room=soyingpang-guess-song-fellowship-room&test=mobile-only-1` 載入新版資源；玩家頁只顯示名字加入，無「在現場 / 不在現場」選擇。
+- Browser 正式網址填名加入一次，確認加入後為遠距手機玩家、收聽區顯示、暖色團契視覺正常。
 
 後續：
 - 用真手機掃 QR，確認輸入名字後直接加入、能收到主持音訊，並檢查小螢幕排版。
