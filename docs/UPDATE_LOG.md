@@ -42,7 +42,8 @@
 - `node --check firebase-sync.js`
 - `node --check local-qr.js`
 - `git diff --check` 通過；只剩 Git 在 Windows 提示 LF 之後會轉 CRLF。
-- 待完成：推上 GitHub Pages 後用正式網址驗證四選一自動開估 / 自動下一題。
+- GitHub Pages 正式網址 `index.html?test=choice-auto-1` 驗證通過：測試玩家提交四選一答案後約 0.3 秒顯示「全部已選，自動開估」，約 5.6 秒後自動播放下一題。
+- Firebase 測試玩家和測試事件已清理；正式房間只保留原本的 `So Ying Pang` 離線玩家記錄。
 
 後續：
 - 用多部真手機試一次，確認有人臨時斷線時不會卡住全員完成。

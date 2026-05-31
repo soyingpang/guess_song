@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 10:43 HKT
+更新時間：2026-05-31 10:47 HKT
 
 ## 必讀順序
 
@@ -73,6 +73,8 @@
 - 已加入並啟用 Firebase 全球手機模式：Project ID 是 `guess-song-260531`，Realtime Database 是 `https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`。Firebase Realtime Database 負責房間、玩家、題目狀態、搶答事件和 WebRTC signaling；聲音仍由 WebRTC 傳送。
 
 ## 重要狀態提醒
+
+2026-05-31 已在 GitHub Pages 正式網址 `index.html?test=choice-auto-1` 驗證四選一自動流程：在線玩家全數選擇後會自動開估，5 秒後自動播放下一題。測試用 Firebase 玩家與事件已清理。
 
 2026-05-20 已開始把程式改向三環節團契版：
 
