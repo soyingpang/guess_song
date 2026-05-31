@@ -40,6 +40,7 @@
 - `git diff --check` 通過（只見既有 CRLF 提示）。
 - 本機 Chrome 驗證主持收到 9.2 秒樣本後顯示「實測 9.2 秒 · 建議 10 秒」，「套用建議」後補償切到 10 秒。
 - 本機 Chrome mobile viewport 390x844 驗證手機播放中顯示「聽到音樂」按鈕，按下後變「已回報」，無橫向溢出。
+- GitHub Pages 正式網址已驗證 `app.js?v=premium-mobile-5` 和 `player.js?v=premium-mobile-5` 載入成功；正式頁同樣通過主持端 9.2 秒樣本建議 10 秒、套用後 active 10 秒，以及手機端「聽到音樂」回報流程。
 
 後續：
 - 可再做更細的高級互動，例如把多部手機的校準分布做成小型 sparkline。
