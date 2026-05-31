@@ -52,7 +52,7 @@ const CONNECTION_PROFILES = [
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
-const ENTRY_MODES = new Set(["onsite", "remote"]);
+const ENTRY_MODES = new Set(["remote"]);
 
 const params = new URLSearchParams(window.location.search);
 const urlRoomId = (params.get("room") || "").trim();
@@ -63,7 +63,7 @@ let activeRoomId = roomId;
 let roomCandidateIndex = 0;
 let connectionProfileIndex = 0;
 const urlName = params.get("name") || "";
-const initialEntryMode = "onsite";
+const initialEntryMode = "remote";
 localStorage.setItem(PLAYER_REMOTE_MODE_KEY, initialEntryMode);
 
 function buildRoomCandidates(preferredRoomId) {
@@ -77,7 +77,7 @@ function buildRoomCandidates(preferredRoomId) {
 }
 
 function normalizeEntryMode(mode) {
-  return ENTRY_MODES.has(mode) ? mode : "onsite";
+  return ENTRY_MODES.has(mode) ? mode : "remote";
 }
 
 const state = {
@@ -101,9 +101,9 @@ const state = {
   micStream: null,
   micCall: null,
   micActive: false,
-  remoteMode: false,
+  remoteMode: true,
   speakerMode: false,
-  modeLocked: false,
+  modeLocked: true,
   remoteMediaKey: "",
   remotePlaybackKey: "",
   remotePlaybackBlocked: false,
@@ -111,7 +111,7 @@ const state = {
   hostAudioStream: null,
   hostAudioElement: null,
   hostAudioBlocked: false,
-  hostAudioStatus: "等候主持現場聲音",
+  hostAudioStatus: "等候主持音訊",
   firebase: null,
   firebaseReady: false,
   firebaseConnectedAt: 0,
@@ -283,8 +283,13 @@ function joinGame() {
   state.name = name.slice(0, 18);
   state.displayName = "";
   state.entryNameReady = true;
+  state.remoteMode = true;
+  state.speakerMode = false;
+  state.modeLocked = true;
   localStorage.setItem(PLAYER_NAME_KEY, state.name);
-  showModeStep();
+  localStorage.setItem(PLAYER_REMOTE_MODE_KEY, "remote");
+  applyPlayerMode();
+  startJoinWithSelectedMode();
 }
 
 function showNameStep() {
@@ -300,7 +305,7 @@ function showModeStep() {
   if (els.playerNameLabel) els.playerNameLabel.hidden = true;
   if (els.playerNameLine) els.playerNameLine.hidden = true;
   if (els.playerNameNote) els.playerNameNote.hidden = true;
-  setStatus("請選擇你是否在現場");
+  setStatus("準備加入手機房間");
   applyPlayerMode();
 }
 
@@ -696,7 +701,7 @@ function renderJoinedWaiting() {
 
 async function startMic(options = {}) {
   if (ONSITE_ONLY) {
-    setMicStatus("現場版不使用手機咪");
+    setMicStatus("手機版不使用手機咪");
     updateMicUi();
     return;
   }
@@ -1203,7 +1208,7 @@ function attachHostAudioBroadcastStream(stream) {
   audio.onplaying = () => {
     if (state.hostAudioElement !== audio) return;
     state.hostAudioBlocked = false;
-    setHostAudioStatus("正在收聽現場聲音");
+    setHostAudioStatus("正在收聽主持音訊");
   };
   audio.onpause = () => {
     if (state.hostAudioElement !== audio || !state.hostAudioStream) return;
@@ -1338,19 +1343,19 @@ function playHostAudioBroadcast() {
 
   audio.muted = false;
   audio.volume = 1;
-  setHostAudioStatus("正在啟用現場聲音");
+  setHostAudioStatus("正在啟用主持音訊");
 
   const playPromise = audio.play();
   if (!playPromise?.then) {
     state.hostAudioBlocked = false;
-    setHostAudioStatus("正在收聽現場聲音");
+    setHostAudioStatus("正在收聽主持音訊");
     return;
   }
 
   playPromise
     .then(() => {
       state.hostAudioBlocked = false;
-      setHostAudioStatus("正在收聽現場聲音");
+      setHostAudioStatus("正在收聽主持音訊");
     })
     .catch(() => {
       state.hostAudioBlocked = true;
@@ -1467,12 +1472,12 @@ function isPhoneAudioListener() {
 }
 
 function defaultListenStatus() {
-  if (state.remoteMode) return "等候主持現場聲音";
+  if (state.remoteMode) return "等候主持音訊";
   return "等候其他手機開咪";
 }
 
 function primedListenStatus() {
-  if (state.remoteMode) return "已啟用自動收聽，等候主持現場聲音";
+  if (state.remoteMode) return "已啟用自動收聽，等候主持音訊";
   return "已啟用手機收聽，等候其他手機開咪";
 }
 
@@ -1493,7 +1498,7 @@ function renderHostAudioBroadcastUi() {
   const waitingForAudio = !hasPlayableAudio;
   const hasDefaultWaitingStatus =
     !state.hostAudioStatus ||
-    ["等候主持音訊廣播", "等候主持現場聲音", "等候玩家開咪或主持音訊", "等候玩家開咪", "等候其他手機開咪"].includes(state.hostAudioStatus);
+    ["等候主持音訊廣播", "等候主持音訊", "等候玩家開咪或主持音訊", "等候玩家開咪", "等候其他手機開咪"].includes(state.hostAudioStatus);
   els.phoneRemoteListenStatus.textContent =
     waitingForAudio && state.remoteAudioPriming
       ? "正在啟用手機出聲"
@@ -1551,17 +1556,19 @@ function applyPlayerMode() {
   }
 
   const hasChosenMode = state.modeLocked || state.joined || state.connecting;
+  state.remoteMode = true;
   const audioListener = isPhoneAudioListener();
   state.speakerMode = false;
   document.body.classList.toggle("is-remote-player", state.remoteMode);
   document.body.classList.remove("is-speaker-phone");
   document.body.classList.toggle("is-mode-locked", state.modeLocked);
+  if (els.playerModeField) els.playerModeField.hidden = true;
   if (els.speakerModeButton) els.speakerModeButton.hidden = true;
-  els.onsiteModeButton.classList.toggle("is-active", hasChosenMode && !state.remoteMode);
-  els.remoteModeButton.classList.toggle("is-active", hasChosenMode && state.remoteMode);
+  if (els.onsiteModeButton) els.onsiteModeButton.classList.toggle("is-active", false);
+  if (els.remoteModeButton) els.remoteModeButton.classList.toggle("is-active", hasChosenMode && state.remoteMode);
   if (els.speakerModeButton) els.speakerModeButton.classList.remove("is-active");
-  els.onsiteModeButton.setAttribute("aria-pressed", String(hasChosenMode && !state.remoteMode));
-  els.remoteModeButton.setAttribute("aria-pressed", String(hasChosenMode && state.remoteMode));
+  if (els.onsiteModeButton) els.onsiteModeButton.setAttribute("aria-pressed", "false");
+  if (els.remoteModeButton) els.remoteModeButton.setAttribute("aria-pressed", String(hasChosenMode && state.remoteMode));
   if (els.speakerModeButton) els.speakerModeButton.setAttribute("aria-pressed", "false");
   updatePhoneAudioPanelLabels();
 

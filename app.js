@@ -43,7 +43,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "tab-audio-1";
+const APP_BUILD_VERSION = "mobile-only-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
@@ -486,7 +486,7 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     try {
       call.close();
     } catch {
-      // 現場版不接收手機媒體通話。
+      // Host page does not receive player media calls.
     }
   });
 
@@ -722,8 +722,8 @@ function handlePlayerMessage(connection, message) {
     player.team = normalizeTeam(player.team);
     player.connected = true;
     player.connection = connection;
-    player.remoteMode = Boolean(message.remoteMode);
-    player.speakerMode = Boolean(message.speakerMode);
+    player.remoteMode = true;
+    player.speakerMode = false;
     player.micActive = false;
     state.players[player.id] = player;
     connection.playerId = player.id;
@@ -1150,7 +1150,7 @@ function stopAudioBroadcast(message = "全球手機聲音廣播已停止", optio
 
   renderAudioBroadcastUi();
   renderPlayers();
-  if (!silent && message) setResult(message, "不在現場玩家將聽不到主持音訊", "");
+  if (!silent && message) setResult(message, "手機玩家將聽不到主持音訊", "");
 }
 
 function broadcastAudioToRemotePlayers() {
@@ -1204,7 +1204,7 @@ function shouldAudioBroadcastToPlayer(player) {
     state.audioBroadcastActive &&
       state.audioBroadcastStream &&
       hasTransport &&
-      player?.remoteMode &&
+      player?.remoteMode !== false &&
       player.connected
   );
 }
@@ -1289,7 +1289,7 @@ function renderAudioBroadcastUi() {
   els.audioBroadcastStatus.textContent = state.audioBroadcastActive
     ? remoteConnected
       ? `全球手機聲音：${activeModeLabel}廣播中 · 已送出 ${connectedCalls}/${remoteConnected} 部手機`
-      : `全球手機聲音：${activeModeLabel}廣播中 · 等候不在現場玩家`
+      : `全球手機聲音：${activeModeLabel}廣播中 · 等候手機玩家`
     : state.audioBroadcastStarting
       ? mode === "tab"
         ? "全球手機聲音：請選分頁並勾選分享音訊"
@@ -1309,7 +1309,7 @@ function handleFirebasePlayersSnapshot(playersById) {
     player.team = normalizeTeam(player.team || record.team);
     player.connected = Boolean(record.connected);
     player.firebase = true;
-    player.remoteMode = Boolean(record.remoteMode);
+    player.remoteMode = true;
     player.speakerMode = false;
     state.players[player.id] = player;
   });
@@ -1362,7 +1362,7 @@ function publishFirebasePlayerRecord(player) {
     team: normalizeTeam(player.team),
     score: Number(player.score || 0),
     connected: Boolean(player.connected),
-    remoteMode: Boolean(player.remoteMode),
+    remoteMode: true,
     updatedAt: Date.now(),
   }).catch(() => {
     state.firebaseError = "Firebase 玩家同步失敗";
@@ -2640,7 +2640,7 @@ function renderPlayers() {
     const name = document.createElement("strong");
     const meta = document.createElement("span");
     name.textContent = `${index + 1}. ${player.name}`;
-    meta.textContent = `${teamLabel(player.team)} · ${player.remoteMode ? "不在現場" : "現場"} · ${player.connected ? "已連線" : "離線"}`;
+    meta.textContent = `${teamLabel(player.team)} · 手機版 · ${player.connected ? "已連線" : "離線"}`;
     info.append(name, meta);
 
     const score = document.createElement("strong");
@@ -3044,7 +3044,7 @@ function resolveJoiningPlayer(playerId, name) {
     micActive: false,
     micCall: null,
     micStream: null,
-    remoteMode: false,
+    remoteMode: true,
     speakerMode: false,
   };
 }

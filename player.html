@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>估歌仔 · 玩家</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=tab-audio-1" />
+    <link rel="stylesheet" href="./styles.css?v=mobile-only-1" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -854,46 +854,299 @@
         }
       }
 
+      .player-body {
+        min-height: 100svh;
+        background:
+          linear-gradient(180deg, rgba(255, 250, 242, 0.76), rgba(248, 229, 205, 0.9)),
+          url("./assets/home-fellowship-scene.svg") center / cover fixed,
+          #f6e3ce;
+        color: #4a2828;
+      }
+
+      .player-shell {
+        width: min(100% - 20px, 430px);
+        min-height: 100svh;
+        padding: 10px 0 14px;
+      }
+
+      .player-card {
+        gap: 10px;
+        border-color: rgba(139, 85, 66, 0.16);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 242, 225, 0.94)),
+          url("./assets/paper-grain.svg"),
+          rgba(255, 247, 237, 0.92);
+        background-size: auto, 220px 220px, auto;
+        box-shadow:
+          0 22px 60px rgba(126, 77, 54, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      }
+
+      .player-card h1 {
+        color: #4a2828;
+        text-shadow: 0 3px 0 rgba(255, 249, 239, 0.66);
+      }
+
+      .phone-hero-card {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 176px;
+        overflow: hidden;
+        border: 1px solid rgba(139, 85, 66, 0.16);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(255, 250, 242, 0.48), rgba(255, 236, 210, 0.82)),
+          url("./assets/home-fellowship-scene.svg") center / cover,
+          #f6e3ce;
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+          0 12px 34px rgba(126, 77, 54, 0.14);
+      }
+
+      .phone-hero-card::after {
+        position: absolute;
+        inset: auto 0 0;
+        height: 7px;
+        content: "";
+        background: linear-gradient(90deg, #d36f62, #d99a3d 48%, #4f9a88);
+      }
+
+      .phone-hero-note {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 8px;
+        width: min(62%, 250px);
+        min-height: 116px;
+        border: 1px solid rgba(126, 77, 54, 0.16);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 241, 221, 0.96)),
+          #fff6e9;
+        padding: 42px 34px 24px;
+        box-shadow: 0 18px 42px rgba(126, 77, 54, 0.14);
+      }
+
+      .phone-hero-note::before {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 48px;
+        height: 54px;
+        border-radius: 0 0 8px 8px;
+        background: #a84f45;
+        content: "";
+        transform: translateX(-50%);
+      }
+
+      .phone-hero-note span {
+        height: 3px;
+        border-radius: 999px;
+        background: #6b4a3f;
+      }
+
+      .phone-hero-card > strong {
+        position: absolute;
+        bottom: 22px;
+        z-index: 1;
+        color: #5b4038;
+        font-size: 1.02rem;
+        font-weight: 950;
+        text-shadow: 0 2px 0 rgba(255, 249, 239, 0.66);
+      }
+
+      .player-body.is-joined {
+        background:
+          linear-gradient(180deg, rgba(255, 250, 242, 0.78), rgba(248, 229, 205, 0.92)),
+          url("./assets/home-fellowship-scene.svg") center / cover fixed,
+          #f6e3ce;
+        color: #4a2828;
+      }
+
+      .player-body.is-joined .player-card {
+        border-color: rgba(139, 85, 66, 0.16);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 242, 225, 0.96)),
+          url("./assets/paper-grain.svg"),
+          rgba(255, 247, 237, 0.94);
+        background-size: auto, 220px 220px, auto;
+        box-shadow: 0 18px 48px rgba(126, 77, 54, 0.18);
+      }
+
+      .player-body.is-joined .phone-hero-card {
+        min-height: 88px;
+      }
+
+      .player-body.is-joined .phone-hero-note {
+        width: 44%;
+        min-height: 58px;
+        gap: 4px;
+        padding: 22px 18px 12px;
+      }
+
+      .player-body.is-joined .phone-hero-note::before {
+        width: 26px;
+        height: 28px;
+      }
+
+      .player-body.is-joined .phone-hero-note span {
+        height: 2px;
+      }
+
+      .player-body.is-joined .phone-hero-card > strong {
+        bottom: 12px;
+        font-size: 0.82rem;
+      }
+
+      .player-body.is-joined .player-scoreline span,
+      .player-body.is-joined .leaderboard-button,
+      .player-body.is-joined .mic-button,
+      .player-body.is-joined .phone-listen-button {
+        border-color: rgba(139, 85, 66, 0.14);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 240, 222, 0.95)),
+          #fff3e4;
+        color: #5b352c;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      }
+
+      .player-body.is-joined #playerScore::before,
+      .player-body.is-joined #playerRound::before {
+        color: #4f8b73;
+      }
+
+      .player-body.is-joined .leaderboard-button {
+        border-color: rgba(216, 151, 77, 0.34);
+        background: linear-gradient(180deg, #fff7ea, #f4d7b5);
+        color: #7b4a2e;
+      }
+
+      .player-body.is-joined .phone-question,
+      .player-body.is-joined .phone-remote-panel,
+      .player-body.is-joined.is-remote-player .phone-remote-panel {
+        border-color: rgba(139, 85, 66, 0.14);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 239, 221, 0.88)),
+          url("./assets/paper-grain.svg"),
+          rgba(255, 244, 230, 0.84);
+        background-size: auto, 220px 220px, auto;
+        box-shadow: 0 10px 26px rgba(126, 77, 54, 0.1);
+      }
+
+      .player-body.is-joined .phone-question p,
+      .player-body.is-joined .mic-status,
+      .player-body.is-joined .phone-result {
+        border-color: rgba(79, 143, 114, 0.22);
+        background:
+          linear-gradient(180deg, rgba(242, 251, 239, 0.82), rgba(224, 241, 223, 0.96)),
+          #edf7e9;
+        color: #416f59;
+        text-shadow: none;
+      }
+
+      .player-body.is-joined .phone-question h2 {
+        border-color: rgba(139, 85, 66, 0.16);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 240, 222, 0.94)),
+          #fff3e4;
+        color: #4a2828;
+        text-shadow: 0 2px 0 rgba(255, 249, 239, 0.66);
+      }
+
+      .player-body.is-joined .phone-choice {
+        border-color: rgba(139, 85, 66, 0.16);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 240, 222, 0.95)),
+          #fff3e4;
+        color: #4a2828;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.72),
+          0 5px 12px rgba(126, 77, 54, 0.08);
+      }
+
+      .player-body.is-joined .phone-choice-title {
+        color: #4a2828;
+      }
+
+      .player-body.is-joined .phone-choice-index {
+        border-color: rgba(79, 143, 114, 0.2);
+        background: #e2f3df;
+        color: #2d6f50;
+      }
+
+      .player-body.is-joined .phone-choice.is-selected,
+      .player-body.is-joined .phone-choice.is-selected:disabled {
+        border-color: rgba(216, 151, 77, 0.58);
+        background:
+          linear-gradient(180deg, rgba(254, 226, 169, 0.78), rgba(232, 185, 92, 0.58)),
+          #fff1d2;
+        color: #4a2828;
+      }
+
+      .player-body.is-joined .phone-choice.is-selected::after {
+        background: rgba(79, 143, 114, 0.16);
+        color: #2d6f50;
+      }
+
+      .player-body.is-joined .phone-remote-head strong,
+      .player-body.is-joined .phone-remote-listen strong,
+      .player-body.is-joined .phone-remote-media-head strong {
+        color: #2d6f50;
+      }
+
+      .player-body.is-joined .phone-remote-head span,
+      .player-body.is-joined .phone-remote-listen span,
+      .player-body.is-joined .phone-remote-media-head span {
+        color: #6b4a3f;
+      }
+
+      .player-body.is-joined .phone-remote-grid span,
+      .player-body.is-joined .phone-remote-listen,
+      .player-body.is-joined.is-remote-player .phone-remote-listen,
+      .player-body.is-joined .phone-remote-media {
+        border-color: rgba(139, 85, 66, 0.13);
+        background: rgba(255, 255, 255, 0.58);
+      }
+
+      .player-body.is-joined .phone-remote-grid strong {
+        color: #8d4f33;
+      }
+
+      .player-body.is-joined .phone-remote-grid small {
+        color: #7b625b;
+      }
+
+      .player-body.is-joined .phone-mic-panel {
+        display: none;
+      }
+
     </style>
   </head>
   <body class="player-body">
     <main class="player-shell">
       <section class="player-card">
         <img class="brand-mark" src="./assets/worship-crest.svg" alt="" aria-hidden="true" />
-        <p class="eyebrow">加入估歌遊戲</p>
+        <p class="eyebrow">手機玩家</p>
         <h1>估歌仔</h1>
+        <div class="phone-hero-card" aria-hidden="true">
+          <div class="phone-hero-note">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <strong>手機同步收聽</strong>
+        </div>
 
         <form class="join-form" id="joinForm">
-          <div class="player-mode-field" id="playerModeField" hidden aria-hidden="true">
-            <span>你現在在哪裡玩？</span>
-            <div class="player-mode-switch" aria-label="遊玩方式">
-              <button class="player-mode-button" id="onsiteModeButton" type="button" aria-label="我在現場，現場聽聲音">
-                <span class="mode-card-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M12 21s6-5.1 6-11a6 6 0 0 0-12 0c0 5.9 6 11 6 11Z"/><path d="M12 12.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z"/></svg>
-                </span>
-                <span>
-                  <strong>我在現場</strong>
-                  <small>聽現場聲音，用手機答題</small>
-                </span>
-              </button>
-              <button class="player-mode-button" id="remoteModeButton" type="button" aria-label="我不在現場，手機同步播放">
-                <span class="mode-card-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M9 17h6"/><path d="M9 8h6"/><path d="M8 11.5h8"/></svg>
-                </span>
-                <span>
-                  <strong>我不在現場</strong>
-                  <small>用手機收主持聲音，照樣答題</small>
-                </span>
-              </button>
-            </div>
-            <p class="join-note">不在現場會收聽主持手機 / 咪高峰聲音，不會自己播放 YouTube。</p>
-          </div>
           <label for="playerName">你的名字</label>
           <div class="guess-line">
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
             <button class="primary-button" type="submit">加入</button>
           </div>
-          <p class="join-note">輸入名字後選擇你是否在現場。</p>
+          <p class="join-note">輸入名字後直接加入手機版房間。</p>
         </form>
 
         <div class="player-status" id="playerStatus">掃 QR 後輸入名字加入</div>
@@ -932,7 +1185,7 @@
           <div class="phone-remote-listen" id="phoneRemoteListen">
             <div>
               <strong>收聽狀態</strong>
-              <span id="phoneRemoteListenStatus">等候玩家開咪或主持音訊</span>
+              <span id="phoneRemoteListenStatus">等候主持音訊</span>
             </div>
             <button class="ghost-button phone-listen-button" id="phoneRemoteListenButton" type="button" hidden>
               啟用收聽
@@ -981,9 +1234,9 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=tab-audio-1"></script>
-    <script src="./firebase-sync.js?v=tab-audio-1"></script>
+    <script src="./firebase-config.js?v=mobile-only-1"></script>
+    <script src="./firebase-sync.js?v=mobile-only-1"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=tab-audio-1"></script>
+    <script src="./player.js?v=mobile-only-1"></script>
   </body>
 </html>
