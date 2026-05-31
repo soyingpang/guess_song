@@ -41,6 +41,7 @@
 - `git diff --check` 通過（只見既有 CRLF 提示）。
 - 本機 Chrome 驗證主持切到 10 秒後：10 秒按鈕 active、設定寫入 localStorage、player state 的 `remoteAudioDelayMs` / `remotePlayEndsAt - playEndsAt` / `answerOpenUntil - playEndsAt` 都是 10000ms。
 - 本機 Chrome mobile viewport 390x844 驗證手機收到 10 秒補償：同步倒數仍以玩家聽到音訊為準，設定頁顯示 `10s`，8 個快選選項無橫向溢出。
+- GitHub Pages 正式網址已驗證 `app.js?v=premium-mobile-4` 和 `player.js?v=premium-mobile-4` 載入成功；正式頁同樣通過 10 秒補償設定、player state 10000ms 差值、手機設定顯示 `10s` 和無橫向溢出。
 
 後續：
 - 可再做「自動校準」流程：玩家按聽到音樂的一刻，估算更準確的 delay。
