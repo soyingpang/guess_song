@@ -41,9 +41,10 @@
 - `git diff --check` 通過，只有既有 CRLF 提示。
 - 本機 Chrome mobile viewport 390x844 驗證排行榜 modal：`phone-podium-card` 3 張、冠軍為目前玩家、自己玩家排名列 `is-self`、升位徽章 `↑1`、新上榜 `NEW`、A/B 組分數 meter 和 5 條排名 meter 都出現。
 - 本機截圖檢查：排行榜 modal 430px 寬內無橫向溢出，top 3 podium、冠軍 hero、分組分數和排名列層次清楚，底部可自然滾動。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-16-live-leaderboard` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-16` / `pwa.js?v=premium-mobile-16`；podium 3 張、冠軍為目前玩家、自己排名列 `is-self`、升位徽章 `↑1`、新上榜 `NEW`、A/B 組 meter 和 5 條排名 meter 都出現，390px 無橫向溢出。
 
 下一步：
-- 部署到 GitHub Pages 後正式驗證 leaderboard modal 和 390px 版面。
+- 下一輪可打磨手機設定 modal / 加入頁，或針對實機手指操作距離再收細 spacing。
 
 ---
 
