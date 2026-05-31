@@ -21,6 +21,32 @@
 
 ---
 
+## 2026-06-01 02:08 HKT
+
+類型：設計 / 程式 / PWA app 外殼
+
+摘要：
+- 新增 `manifest.webmanifest`，提供手機安裝名稱、啟動 URL、主題色、分類、圖示和加入 / 主持 shortcuts。
+- 新增 `assets/app-icon.svg`、`assets/app-icon-192.png`、`assets/app-icon-512.png`、`assets/apple-touch-icon.png`、`assets/maskable-icon-512.png`，讓加入主畫面和 Android maskable icon 更像正式 app。
+- 新增 `pwa.js` 和 `sw.js`：用保守 network-first service worker 支援 app shell 快取，避免優先使用舊檔。
+- 主持頁和手機頁加入 `theme-color`、Apple mobile web app metadata、`viewport-fit=cover`、manifest link 和 PWA 註冊。
+- 手機和主持入口 cache version 更新到 `premium-mobile-6`；本機 server 加入 `.webmanifest` MIME type。
+
+影響：
+- 手機玩家可以更自然地把頁面加入主畫面，開啟時有 app 名稱、圖示、主題色和 standalone 外觀，整體更接近可上架 / 可安裝 app 的感覺。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `manifest.webmanifest` JSON parse 通過。
+- 產生並驗證 PNG icon 尺寸：192x192、512x512、180x180、512x512。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 本機 Chrome mobile viewport 390x844 驗證手機頁：manifest name/display/start_url/icons 正確、service worker 註冊成功、載入 `player.js?v=premium-mobile-6` 和 `pwa.js?v=premium-mobile-6`、8 個快選選項無橫向溢出。
+
+後續：
+- 可再做 install prompt / iOS 加入主畫面提示，但要保持不打擾遊戲主流程。
+
+---
+
 ## 2026-06-01 01:48 HKT
 
 類型：設計 / 程式 / 手機延遲校準
