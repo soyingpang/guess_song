@@ -9,6 +9,7 @@ const ROOM_ID_CANDIDATES = [
   `${DEFAULT_ROOM_ID}-2`,
   `${DEFAULT_ROOM_ID}-3`,
 ];
+const ROOM_ID_MAX_LENGTH = 80;
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 const CONNECTION_TIMEOUT_MS = 12000;
@@ -55,8 +56,8 @@ const SILENT_UNLOCK_AUDIO_URI =
 const ENTRY_MODES = new Set(["remote"]);
 
 const params = new URLSearchParams(window.location.search);
-const urlRoomId = (params.get("room") || "").trim();
-const storedRoomId = localStorage.getItem(ROOM_ID_KEY) || "";
+const urlRoomId = normalizeRoomId(params.get("room"));
+const storedRoomId = normalizeRoomId(localStorage.getItem(ROOM_ID_KEY));
 const roomCandidates = buildRoomCandidates(urlRoomId || storedRoomId);
 const roomId = roomCandidates[0] || DEFAULT_ROOM_ID;
 let activeRoomId = roomId;
@@ -68,12 +69,23 @@ localStorage.setItem(PLAYER_REMOTE_MODE_KEY, initialEntryMode);
 
 function buildRoomCandidates(preferredRoomId) {
   const candidates = [];
-  const preferred = String(preferredRoomId || "").trim();
+  const preferred = normalizeRoomId(preferredRoomId);
   if (preferred) candidates.push(preferred);
+  if (preferred && preferred !== DEFAULT_ROOM_ID) return candidates;
   ROOM_ID_CANDIDATES.forEach((candidate) => {
     if (!candidates.includes(candidate)) candidates.push(candidate);
   });
   return candidates;
+}
+
+function normalizeRoomId(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^[-_]+|[-_]+$/g, "")
+    .slice(0, ROOM_ID_MAX_LENGTH);
 }
 
 function normalizeEntryMode(mode) {
@@ -360,6 +372,7 @@ async function connectToFirebaseRoom({ resetAttempts = false } = {}) {
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
+    localStorage.setItem(ROOM_ID_KEY, activeRoomId);
     lockPlayerMode();
     els.joinForm.hidden = true;
 
@@ -471,6 +484,7 @@ function bindRoomConnection(connection, token) {
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
+    localStorage.setItem(ROOM_ID_KEY, activeRoomId);
     lockPlayerMode();
     sendJoinMessage();
     scheduleJoinHandshakeRetry();
@@ -630,6 +644,10 @@ function activeConnectionProfile() {
   return CONNECTION_PROFILES[connectionProfileIndex] || CONNECTION_PROFILES[0];
 }
 
+function currentRoomId() {
+  return activeRoomId || roomId || DEFAULT_ROOM_ID;
+}
+
 function handleMessage(message) {
   if (!message || typeof message !== "object") return;
 
@@ -739,9 +757,10 @@ async function startMic(options = {}) {
       },
       video: false,
     });
-    const call = state.peer.call(roomId, stream, {
+    const call = state.peer.call(currentRoomId(), stream, {
       metadata: {
         type: "player-mic",
+        roomId: currentRoomId(),
         playerId: state.playerId,
         name: state.displayName || state.name,
       },
@@ -840,7 +859,7 @@ function ensureDisplayMicBroadcast(target) {
     const call = state.peer.call(peerId, state.micStream, {
       metadata: {
         type: "display-player-mic",
-        roomId,
+        roomId: currentRoomId(),
         playerId: state.playerId,
         playerName: state.displayName || state.name || "Open mic",
         targetType: "display",
@@ -1151,7 +1170,7 @@ function handlePeerCall(call) {
     return;
   }
 
-  if (!state.remoteMode || !state.joined || call.metadata?.roomId !== roomId) {
+  if (!state.remoteMode || !state.joined || call.metadata?.roomId !== currentRoomId()) {
     closePeerCall(call);
     return;
   }
@@ -1242,7 +1261,7 @@ function handleVoiceBroadcastCall(call) {
   closePeerCall(call);
   return;
 
-  if (!state.joined || call.metadata?.roomId !== roomId) {
+  if (!state.joined || call.metadata?.roomId !== currentRoomId()) {
     closePeerCall(call);
     return;
   }

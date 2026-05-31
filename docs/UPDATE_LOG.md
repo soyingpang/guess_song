@@ -21,6 +21,29 @@
 
 ---
 
+## 2026-05-31 15:43 HKT
+
+類型：規格 / 程式 / 多房間
+
+摘要：
+- 新增 URL 多房間模式；主持頁無 `room` 參數時仍用預設固定房 `soyingpang-guess-song-fellowship-room`。
+- 主持頁可用 `?room=fellowship-a` / `?room=fellowship-b` 開獨立場，玩家 QR、玩家連結、投影連結、Firebase room key 和 PeerJS 房間都跟房名分開。
+- 同一部電腦 / 同一瀏覽器開不同房間時，主持頁接管訊息只會影響同房間，不會互相踢走。
+- 玩家頁和投影頁會正規化並記住目前房間；自訂房間不會在連線失敗時誤跳回預設房。
+- 將三個入口頁 cache version 更新到 `multi-room-1`。
+
+影響：
+- 可以用同一個 GitHub Pages 網站同時開兩個或以上聚會房間，各自有獨立玩家、題目、分數和聲音連線。
+- 原本日常用法不變，直接開首頁仍是原本固定房。
+
+測試：
+- 待完成：推上 GitHub Pages 後用正式網址驗證 `index.html?room=room-a&test=multi-room-1` 和 `index.html?room=room-b&test=multi-room-1` 會產生不同玩家 QR / Firebase room。
+
+後續：
+- 可再加一個主持頁 UI 輸入房名，但目前 URL 參數已可支援多場同時玩。
+
+---
+
 ## 2026-05-31 10:37 HKT
 
 類型：規格 / 程式 / 四選一流程

@@ -43,13 +43,14 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "choice-auto-1";
+const APP_BUILD_VERSION = "multi-room-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_CANDIDATES = [
   DEFAULT_ROOM_ID,
   `${DEFAULT_ROOM_ID}-2`,
   `${DEFAULT_ROOM_ID}-3`,
 ];
+const ROOM_ID_MAX_LENGTH = 80;
 const HOST_TAKEOVER_DELAY_MS = 350;
 const ROOM_UNAVAILABLE_RETRY_MS = 700;
 const ROOM_UNAVAILABLE_RETRY_LIMIT = 4;
@@ -384,7 +385,7 @@ function initMultiplayer() {
   }
 
   const roomId = resolveRoomId();
-  claimHostRoom();
+  claimHostRoom(roomId);
   clearTimeout(state.hostClaimTimer);
   state.hostClaimTimer = window.setTimeout(() => {
     createRoomPeer(roomId, 0, 0);
@@ -437,15 +438,43 @@ async function initFirebaseHost() {
 }
 
 function resolveRoomId() {
-  localStorage.setItem(ROOM_ID_KEY, DEFAULT_ROOM_ID);
-  return DEFAULT_ROOM_ID;
+  const roomId = requestedHostRoomId();
+  localStorage.setItem(ROOM_ID_KEY, roomId);
+  return roomId;
+}
+
+function requestedHostRoomId() {
+  return normalizeRoomId(new URLSearchParams(window.location.search).get("room")) || DEFAULT_ROOM_ID;
+}
+
+function normalizeRoomId(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^[-_]+|[-_]+$/g, "")
+    .slice(0, ROOM_ID_MAX_LENGTH);
+}
+
+function hostRoomCandidates(roomId) {
+  const normalizedRoomId = normalizeRoomId(roomId) || DEFAULT_ROOM_ID;
+  if (normalizedRoomId !== DEFAULT_ROOM_ID) return [normalizedRoomId];
+  return ROOM_ID_CANDIDATES;
+}
+
+function currentHostRoomId() {
+  return (
+    normalizeRoomId(state.roomId) ||
+    requestedHostRoomId()
+  );
 }
 
 function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
   clearTimeout(state.roomRetryTimer);
   state.roomReady = false;
   state.roomError = retryAttempt
-    ? "固定房間正在交接，重新連線中"
+    ? "房間正在交接，重新連線中"
     : "";
   state.roomId = roomId;
   state.playerUrl = "";
@@ -463,8 +492,8 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     state.playerUrl = buildPlayerUrl(id);
     state.displayUrl = buildDisplayUrl(id);
     localStorage.setItem(ROOM_ID_KEY, id);
-    if (id !== DEFAULT_ROOM_ID) {
-      setResult("已改用備用房間", "另一個主持頁仍佔用固定房間，請用這頁的新玩家連結 / 投影連結", "");
+    if (id !== requestedHostRoomId()) {
+      setResult("已改用備用房間", "另一個主持頁仍佔用原房間，請用這頁的新玩家連結 / 投影連結", "");
     }
     render();
   });
@@ -528,9 +557,9 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
 
       if (retryAttempt < ROOM_UNAVAILABLE_RETRY_LIMIT) {
         state.roomReady = false;
-        state.roomError = "固定房間被另一個主持頁佔用，正在嘗試接管";
+        state.roomError = "房間被另一個主持頁佔用，正在嘗試接管";
         render();
-        claimHostRoom();
+        claimHostRoom(roomId);
         requestRemoteHostRelease(roomId);
         state.roomRetryTimer = window.setTimeout(() => {
           createRoomPeer(roomId, candidateIndex, retryAttempt + 1);
@@ -538,10 +567,10 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
         return;
       }
 
-      const nextRoomId = ROOM_ID_CANDIDATES[candidateIndex + 1];
+      const nextRoomId = hostRoomCandidates(roomId)[candidateIndex + 1];
       if (nextRoomId) {
         state.roomReady = false;
-        state.roomError = "固定房間被另一個主持頁佔用，正在改用備用房間";
+        state.roomError = "房間被另一個主持頁佔用，正在改用備用房間";
         state.roomId = nextRoomId;
         render();
         state.roomRetryTimer = window.setTimeout(() => {
@@ -551,11 +580,11 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
       }
 
       state.roomReady = false;
-      state.roomError = "固定房間已經有另一個主持頁開住，請關閉其他主持頁再重新整理";
+      state.roomError = "房間已經有另一個主持頁開住，請關閉同房主持頁再重新整理";
       state.roomId = roomId;
       state.playerUrl = "";
       state.displayUrl = "";
-      setResult("房間已被另一個主持頁使用", "請關閉其他主持頁，再重新整理這頁", "wrong");
+      setResult("房間已被另一個主持頁使用", "請關閉同房主持頁，再重新整理這頁", "wrong");
       render();
       return;
     }
@@ -585,10 +614,11 @@ function initHostTakeover() {
   });
 }
 
-function claimHostRoom() {
+function claimHostRoom(roomId = currentHostRoomId()) {
   const payload = {
     type: "host-claim",
     instanceId: hostInstanceId,
+    roomId: normalizeRoomId(roomId) || DEFAULT_ROOM_ID,
     createdAt: Date.now(),
   };
 
@@ -608,6 +638,8 @@ function claimHostRoom() {
 function handleHostClaim(payload) {
   if (!payload || payload.type !== "host-claim") return;
   if (!payload.instanceId || payload.instanceId === hostInstanceId) return;
+  const claimedRoomId = normalizeRoomId(payload.roomId) || DEFAULT_ROOM_ID;
+  if (claimedRoomId !== currentHostRoomId()) return;
   releaseHostRoom("已由另一個新主持頁接管，這個主持頁已停止連線");
 }
 
@@ -979,7 +1011,7 @@ async function toggleAudioBroadcast(mode = "tab") {
   }
 
   if (!state.roomReady || isRoomBlocked()) {
-    setResult("房間未準備", "請先確定固定房間已建立", "wrong");
+    setResult("房間未準備", "請先確定房間已建立", "wrong");
     return;
   }
 
@@ -2775,8 +2807,8 @@ function renderPlayers() {
     : state.firebaseReady
       ? `Firebase 全球房間：${state.roomId} · 可連線`
       : state.roomReady
-      ? `固定房間：${state.roomId} · 投影 ${state.displayConnections.size} 個 · 可連線`
-      : `固定房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
+      ? `房間：${state.roomId} · 投影 ${state.displayConnections.size} 個 · 可連線`
+      : `房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.copyDisplayLinkButton.disabled = !state.displayUrl;
   renderHostJoinQr();
@@ -3245,13 +3277,13 @@ function uniquePlayerName(name, playerId) {
 
 function buildPlayerUrl(roomId) {
   const url = new URL("./player.html", window.location.href);
-  url.searchParams.set("room", roomId);
+  url.searchParams.set("room", normalizeRoomId(roomId) || DEFAULT_ROOM_ID);
   return url.toString();
 }
 
 function buildDisplayUrl(roomId) {
   const url = new URL("./display.html", window.location.href);
-  url.searchParams.set("room", roomId);
+  url.searchParams.set("room", normalizeRoomId(roomId) || DEFAULT_ROOM_ID);
   url.searchParams.set("v", APP_BUILD_VERSION);
   return url.toString();
 }

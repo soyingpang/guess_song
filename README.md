@@ -23,6 +23,21 @@
 
 之後用手機、街外電腦都可以用個 GitHub Pages URL 開。
 
+## 多房間同時玩
+
+預設主持頁仍然會開原本固定房：
+
+```text
+https://soyingpang.github.io/guess_song/
+```
+
+如要同時開第二個場，在主持頁網址加 `room` 參數即可。每個房間會有自己獨立的玩家、題目、分數和音訊連線，主持頁右側 QR / 玩家連結會自動帶同一個房名。
+
+```text
+https://soyingpang.github.io/guess_song/index.html?room=fellowship-a
+https://soyingpang.github.io/guess_song/index.html?room=fellowship-b
+```
+
 可選投影畫面網址：
 
 ```text

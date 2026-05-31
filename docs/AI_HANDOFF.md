@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 10:47 HKT
+更新時間：2026-05-31 15:43 HKT
 
 ## 必讀順序
 
@@ -23,7 +23,7 @@
 - `display.html` 只保留做可選投影畫面；有大電視 / 投影時才開，不應成為手機全球版必需流程。
 - 現在沒有現場版分支；所有玩家手機都視為遠距手機玩家，輸入名字後直接加入並收聽主持廣播的電腦/分頁聲音或咪高峰聲音。
 - 約 10 位團友參與。
-- 預設使用同一間固定房，重開一局只重置分數，不重新開房。
+- 預設使用同一間固定房，重開一局只重置分數，不重新開房；如要同時開多個場，可在主持頁 URL 加 `?room=fellowship-a` / `?room=fellowship-b` 分房。
 
 ## 最新玩法方向
 
@@ -74,6 +74,8 @@
 
 ## 重要狀態提醒
 
+2026-05-31 已加入多房間 URL 模式：主持頁無 `room` 參數時仍用 `soyingpang-guess-song-fellowship-room`；有 `?room=...` 時主持頁、玩家 QR / 連結、投影連結和 Firebase room key 都跟該房間分開。同一瀏覽器開不同房間不會互相接管。
+
 2026-05-31 已在 GitHub Pages 正式網址 `index.html?test=choice-auto-1` 驗證四選一自動流程：在線玩家全數選擇後會自動開估，5 秒後自動播放下一題。測試用 Firebase 玩家與事件已清理。
 
 2026-05-20 已開始把程式改向三環節團契版：
@@ -100,7 +102,7 @@
 - 估歌期間不可直接露出 YouTube 縮圖 / 歌名。`display.js` 會在未開估但有歌曲時加 `stage-mask.is-prep-cover`，`styles.css` 只留右下角小窗給主持處理廣告，其餘畫面用實色遮住。
 - 主持頁已有播放起點設定：`playStartMode` 可為 `beginning` 或 `random`。每題在 `startRound()` 設定 `currentClipStart`；重播同一題沿用同一段。`fullPlayback` 時投影 start 固定回到 0。
 - 已支援本地 / 已授權媒體檔：`audioUrl` 欄位保留舊名，但可填 `./audio/*.mp3`、`./audio/*.m4a` 或 `./video/*.mp4` 等。`app.js` 和 `display.js` 會按副檔名自動用 `<audio>` 或 `<video>` 播放；主持頁本地媒體預設靜音，投影畫面負責出聲。
-- 手機端已有「開咪對話」：`player.js` 用 `navigator.mediaDevices.getUserMedia({ audio })` 和 `state.peer.call(roomId, stream)` 傳到主持頁；`app.js` 用 `state.peer.on("call")` 接收。
+- 手機端已有「開咪對話」：`player.js` 用 `navigator.mediaDevices.getUserMedia({ audio })` 和 `state.peer.call(currentRoomId(), stream)` 傳到主持頁；`app.js` 用 `state.peer.on("call")` 接收。
 - 手機咪已會轉發到投影畫面：`app.js` 收到 `player.micStream` 後用 `state.peer.call(displayPeer, stream, { metadata: { type: "display-player-mic" } })` 轉發給所有 `displayConnections`；`display.js` 用 `peer.on("call")` 接收並在 `.stage-mic-layer` 播放。投影如被瀏覽器擋自動播放，會顯示音訊控制列供主持點一下。
 - 投影畫面已加入玩家狀態名單：`buildDisplayState()` 會傳 `players`，每個 player 包含 `connected` / `micActive`；`display.js` 用 `#stageRoster` 顯示已加入玩家、A/B 組、分數、離線和開咪狀態。手機開咪 / 收咪時要 `publishDisplayState()`，否則投影名單不會即時更新。
 - 手機端入房流程已改為「輸入名字即加入手機版房間」，不再顯示「在現場 / 不在現場」選擇。`player.js` 預設 `remoteMode: true` 並把所有玩家當遠距手機玩家；手機不再自己播 YouTube，只收聽主持透過 WebRTC 廣播的音訊。桌面 Chrome / Edge 優先用 `getDisplayMedia` 分享播放 YouTube 的分頁音訊；「用咪高峰收聲」只作後備。
@@ -109,8 +111,8 @@
 - `app.js` 的 player state 仍保留 `mediaPlaying`、`videoId`、`audioUrl`、`start`、`end` 等欄位作相容；最新手機玩家不使用這些欄位播放 YouTube，只用題目狀態、快選估歌和分數同步。四選一 / 快選歌名選項仍只在正式播放或主持開放快選、且未開估時送給手機。
 - 遠端投影已支援：主持頁有 `displayConnections`，`display.html?room=...` 會送 `display-join`，主持頁用 `display-state` 推送 `buildDisplayState()`。這是 optional，不是手機全球版主流程。
 - 投影畫面不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設投影就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
-- 固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制。不要再用 `makeRoomId()` 或 random room 作為預設；若 PeerJS 回報 `unavailable-id`，應提示關閉其他主持頁，不應靜默開新房。
-- 介面已做多輪美化。最新 cache version 是 `choice-auto-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
+- 預設固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制；主持頁可用 `?room=custom-room` 開獨立場。不要再用 `makeRoomId()` 或 random room 作為預設；自訂房間只由 URL 明確指定。
+- 介面已做多輪美化。最新 cache version 是 `multi-room-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。投影遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
@@ -128,13 +130,13 @@
 - 手機四選一選項只應在正式播放中顯示；`buildPlayerState()` 不在非播放狀態送選項，`handleChoiceAnswer()` 亦會拒絕未正式播放時的答案。
 - 手機開咪應可在投影畫面聽到；主持頁仍接收原始 stream，並轉發到 display peer。現場仍要留意喇叭與手機距離，避免回音 / 嘯叫。
 - 外地投影同步靠 PeerJS 房間碼，不靠 localStorage；主持頁必須保持開住。
-- 主持頁固定房間碼；「分數重置」只清場次資料，不踢走玩家或換 QR。
+- 主持頁預設固定房間碼；如 URL 帶 `room`，該場使用該自訂房間碼。「分數重置」只清場次資料，不踢走玩家或換 QR。
 - 前台畫面不再要求玩家/觀眾按「啟用聲音」。但個別遠端瀏覽器仍可能阻擋有聲 autoplay；這是瀏覽器政策，不應重新加可見聲音按鈕，除非用戶再改規格。
 - 前台不顯示四選一歌名選項。`buildDisplayState()` 對 display state 傳 `choices: []`，`display.js` 在 `choice` mode 不 render `stage-choice` 歌名；手機端 `buildPlayerState()` 仍正常提供四選一選項。
 - 主持頁已整理排版：普通桌面保留大影片預覽，超寬畫面才用影片與控制列並排；右側玩家/題庫是 sticky 卡片分組，底部 `result-bar` 改成淺色紙卡以提高可讀性。
-- 前台 QR 必須保留。`display.js` 已加入 `DEFAULT_ROOM_ID` / `qrRoomId` fallback，`renderWaiting()` 會顯示玩家 QR，不再 hidden；即使尚未收到後台 `display-state`，仍會生成 `player.html?room=soyingpang-guess-song-fellowship-room`。
+- 前台 QR 必須保留。`display.js` 已加入 `DEFAULT_ROOM_ID` / `qrRoomId` fallback，`renderWaiting()` 會顯示玩家 QR，不再 hidden；即使尚未收到後台 `display-state`，仍會用目前房間生成 `player.html?room=...`。
 - 主持頁不應作答。`index.html` 將 `guessForm` 和 `choices` 預設 hidden；`app.js` 不再綁定主持頁 guess submit，`renderChoices()` 只會清空並隱藏主持頁選項。手機端仍由 `buildPlayerState()` 取得四選一選項。
-- 手機四選一同步有保險：`ensureChoiceOptions(song)` 會在送 player state 前補回 `currentChoices`；`player.js` 如收到空選項會顯示「選項同步中」。如固定房間 ID 被另一個主持頁佔用，`isRoomBlocked()` 會鎖住出題/播放/開估等主持控制，避免手機連到另一個主持頁但眼前主持頁仍可操作。
+- 手機四選一同步有保險：`ensureChoiceOptions(song)` 會在送 player state 前補回 `currentChoices`；`player.js` 如收到空選項會顯示「選項同步中」。如同一房間 ID 被另一個主持頁佔用，`isRoomBlocked()` 會鎖住出題/播放/開估等主持控制，避免手機連到另一個主持頁但眼前主持頁仍可操作。
 - 第三環節已由「一字搶唱」改為「主題搶唱」：不要再抽太冷門的單字，內置題庫應以平安、恩典、愛、信、盼望、喜樂、讚美、耶穌、十架、救恩等大路關鍵詞為主，讓非專業團友更容易即場唱到。
 - 手機頁已做 compact：加入後品牌區會收起，排行榜不再常駐頁面，只由「排行榜」按鈕開彈窗，主畫面留給題目、選項、快選估歌 / 搶唱和狀態。
 - 玩家名字必須由玩家在手機首次進入 game 時自己輸入；`player.js` 不應再用 localStorage 舊名字自動加入，避免測試名殘留。可以保留同一手機的 player ID 用作重連，但不能跳過名字輸入表單。

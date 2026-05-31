@@ -3,6 +3,7 @@ const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const YOUTUBE_LOGIN_PROMPT_KEY = "guess-song-youtube-premium-login-v2";
 const YOUTUBE_LOGIN_URL = "https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com%2F";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
+const ROOM_ID_MAX_LENGTH = 80;
 const RECONNECT_BASE_DELAY = 1200;
 const RECONNECT_MAX_DELAY = 8000;
 const DISPLAY_CONNECTION_TIMEOUT_MS = 12000;
@@ -35,9 +36,20 @@ const PEER_OPTIONS = {
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 
 const params = new URLSearchParams(window.location.search);
-const storedRoomId = localStorage.getItem(ROOM_ID_KEY) || "";
-const roomId = (params.get("room") || storedRoomId || DEFAULT_ROOM_ID).trim();
+const storedRoomId = normalizeRoomId(localStorage.getItem(ROOM_ID_KEY));
+const roomId = normalizeRoomId(params.get("room") || storedRoomId) || DEFAULT_ROOM_ID;
 const qrRoomId = roomId;
+localStorage.setItem(ROOM_ID_KEY, roomId);
+
+function normalizeRoomId(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^[-_]+|[-_]+$/g, "")
+    .slice(0, ROOM_ID_MAX_LENGTH);
+}
 
 const els = {
   hero: document.querySelector(".stage-hero"),
