@@ -41,9 +41,10 @@
 - 本機 Chrome mobile viewport 390x844 驗證快選等待卡：8 個快選一開始 disabled / `is-sync-locked`，`phoneAnswerGate` 顯示 `快選準備中`、倒數 badge `7`、進場 class、聲波和進度條；`phoneResult.is-answer-gate-muted` 生效；8.3 秒後等待卡隱藏、選項解鎖、倒數開始扣，390px 無橫向溢出。
 - 本機 Chrome mobile viewport 390x844 驗證四選一等待卡：4 個選項一開始 disabled，等待卡顯示 `答題準備中` / `音樂同步後自動開放答題`；3.6 秒後等待卡隱藏、選項解鎖、結果文案回到 `請選擇答案`。
 - 本機截圖檢查：等待卡位於選項下方，倒數 badge、聲波、進度條和同步收聽卡沒有互相遮擋。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-15-live-gate` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-15` / `pwa.js?v=premium-mobile-15`；快選等待卡顯示、選項鎖定、倒數停在 30 秒、8.3 秒後解鎖和隱藏等待卡；四選一等待卡同樣顯示 `答題準備中`，3.6 秒後解鎖並回到 `請選擇答案`；390px 無橫向溢出。
 
 下一步：
-- 部署到 GitHub Pages 後正式驗證等待卡、解鎖流程和 390px 版面。
+- 下一輪可打磨排行榜 / 設定 modal 的細節，或加入主持端延遲校準引導。
 
 ---
 
