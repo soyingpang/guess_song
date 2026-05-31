@@ -40,9 +40,10 @@
 - `git diff --check` 通過，只有既有 CRLF 提示。
 - 本機 Chrome mobile viewport 390x844 驗證：7 秒等待 window 內同步卡顯示、stage cue 隱藏、答案卡隱藏；短等待測試中進度條推進；補償後答案卡 `Song B` 顯示、倒數 ring 5→4，390px 無橫向溢出。
 - 本機截圖檢查同步卡排版：狀態 pill、聲波、倒數數字和進度條未互相遮擋，答案未提前曝光。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-12-live` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-12` / `pwa.js?v=premium-mobile-12`，7 秒等待 window 內同步卡顯示、stage cue 隱藏、答案卡隱藏；短等待測試中進度條推進；補償後答案卡 `Song B` 顯示、倒數 ring 5→4，390px 無橫向溢出。
 
 下一步：
-- 正式頁部署後驗證：延遲期間顯示同步卡和進度，補償後答案卡出現並 5 秒倒數。
+- 下一輪可繼續打磨答案揭曉瞬間的 micro-interaction，例如答案卡進場光帶、按鈕 tactile feedback 或玩家排名摘要。
 
 ---
 
