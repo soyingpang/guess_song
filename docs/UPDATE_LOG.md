@@ -38,7 +38,10 @@
 測試：
 - `node --check app.js`、`node --check player.js`、`node --check display.js` 通過。
 - `git diff --check` 通過（只見既有 CRLF 提示）。
-- 待完成：推上 GitHub Pages 後用正式網址驗證手機端載入 `mobile-delay-1`，並確認 player state 有 7 秒補償欄位。
+- GitHub Pages 正式網址已驗證載入 `app.js?v=mobile-delay-1`。
+- 正式網址用 15 秒題目驗證：播放中 player state 有 `remoteAudioDelayMs: 7000`，`remotePlayEndsAt - playEndsAt = 7000`，`answerOpenUntil - playEndsAt = 7000`。
+- 主持端片段到時後，player state 會變成 `isPlaying: false`、`playEndsAt: 0`，但 7 秒補償期內仍保留 `answerOpenUntil` 和 4 個選項；補償期完結後 `answerOpenUntil` 歸零並清走選項。
+- 測試用 Firebase 房間已清理。
 
 後續：
 - 如實測不同網絡延遲不是 7 秒，可把 `REMOTE_AUDIO_LATENCY_MS` / `REMOTE_AUDIO_COUNTDOWN_DELAY_MS` 改成更貼近現場的數字，或之後做成主持頁可調設定。
