@@ -564,8 +564,8 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     ? "房間正在交接，重新連線中"
     : "";
   state.roomId = roomId;
-  state.playerUrl = "";
-  state.displayUrl = "";
+  state.playerUrl = state.firebaseReady ? buildPlayerUrl(roomId) : "";
+  state.displayUrl = state.firebaseReady ? buildDisplayUrl(roomId) : "";
   renderPlayers();
 
   const roomPeer = new Peer(roomId, PEER_OPTIONS);
@@ -618,6 +618,8 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     if (state.firebaseReady) {
       state.roomReady = true;
       state.roomError = "";
+      state.playerUrl = buildPlayerUrl(state.roomId || roomId);
+      state.displayUrl = buildDisplayUrl(state.roomId || roomId);
       render();
       return;
     }
@@ -636,6 +638,8 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     if (state.firebaseReady) {
       state.roomReady = true;
       state.roomError = "";
+      state.playerUrl = buildPlayerUrl(state.roomId || roomId);
+      state.displayUrl = buildDisplayUrl(state.roomId || roomId);
       render();
       return;
     }
