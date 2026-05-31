@@ -51,6 +51,7 @@ const CONNECTION_PROFILES = [
   { id: "vpn", label: "VPN 兼容線路", options: VPN_PEER_OPTIONS },
 ];
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
+const REMOTE_AUDIO_COUNTDOWN_DELAY_MS = 7000;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 const ENTRY_MODES = new Set(["remote"]);
@@ -134,6 +135,7 @@ const state = {
   firebaseRtcSessionId: "",
   remoteAudioPrimed: false,
   remoteAudioPriming: false,
+  remoteCountdownWindow: null,
   remoteUnlockAudioElement: null,
   remoteAudioContext: null,
   displayMicBroadcastCalls: new Map(),
@@ -668,6 +670,7 @@ function handleMessage(message) {
   if (message.type === "state") {
     clearJoinHandshakeTimer();
     const previousQuestionId = state.game?.questionId;
+    updateRemoteCountdownWindow(message, previousQuestionId);
     state.game = message;
     state.displayName = message.playerName || state.name;
     state.team = normalizeTeam(message.team);
@@ -707,6 +710,38 @@ function handleMessage(message) {
   if (message.type === "buzz-mic-close") {
     return;
   }
+}
+
+function updateRemoteCountdownWindow(game, previousQuestionId = "") {
+  if (!game || game.type !== "state") return;
+  if (previousQuestionId && previousQuestionId !== game.questionId) {
+    state.remoteCountdownWindow = null;
+  }
+
+  if (!game.hasSong || game.hasWord || game.revealed || game.fullPlayback) {
+    state.remoteCountdownWindow = null;
+    return;
+  }
+
+  const duration = Number(game.clipDuration || game.playDuration || 0);
+  const hostPlayEndsAt = Number(game.playEndsAt || 0);
+  const remoteEndAt =
+    Number(game.remotePlayEndsAt || game.answerOpenUntil || 0) ||
+    (hostPlayEndsAt ? hostPlayEndsAt + remoteAudioDelayMs(game) : 0);
+
+  if (!duration || !remoteEndAt || (!game.isPlaying && remoteEndAt <= Date.now())) {
+    if (state.remoteCountdownWindow?.questionId === game.questionId && state.remoteCountdownWindow.endAt <= Date.now()) {
+      state.remoteCountdownWindow = null;
+    }
+    return;
+  }
+
+  state.remoteCountdownWindow = {
+    questionId: game.questionId,
+    duration,
+    startAt: remoteEndAt - duration * 1000,
+    endAt: remoteEndAt,
+  };
 }
 
 function renderJoinedWaiting() {
@@ -1614,7 +1649,7 @@ function updatePhoneAudioPanelLabels() {
 
 function updateLiveClock() {
   if (!state.game) return;
-  if (state.game.isPlaying) els.phoneStatus.textContent = phoneStatusText(state.game);
+  if (state.game.isPlaying || state.remoteCountdownWindow) els.phoneStatus.textContent = phoneStatusText(state.game);
   if (isPhoneAudioListener() && state.joined && !els.phoneRemotePanel.hidden) {
     els.phoneRemoteStatus.textContent = phoneStatusText(state.game);
     els.phoneRemoteCountdown.textContent = remoteCountdownText(state.game);
@@ -1625,7 +1660,7 @@ function updateLiveClock() {
 function phoneStatusText(game) {
   if (!game) return "等候主持";
   const songlistLabel = game.songlistLabel || "歌單";
-  if (game.isPlaying) return `${songlistLabel} · 播放中 · ${remainingSeconds(game)} 秒`;
+  if (isCompensatedPlaybackActive(game)) return `${songlistLabel} · 播放中 · ${remainingSeconds(game)} 秒`;
   if (game.revealed) return "已開估";
   if (game.frontReady) return "主持已預備";
   return game.status || "等候主持";
@@ -1661,7 +1696,7 @@ function liveMicSummary(players) {
 
 function remoteCountdownText(game) {
   if (!game) return "--";
-  if (game.isPlaying) return `${remainingSeconds(game)} 秒`;
+  if (isCompensatedPlaybackActive(game)) return `${remainingSeconds(game)} 秒`;
   if (game.revealed) return "開估";
   if (game.hasQuestion) return "待開始";
   return "--";
@@ -2221,8 +2256,36 @@ function teamLabel(team) {
 }
 
 function remainingSeconds(game) {
+  const compensated = compensatedCountdownInfo(game);
+  if (compensated) return compensated.remaining;
   if (!game.playEndsAt) return game.playDuration || 0;
   return Math.max(0, Math.ceil((game.playEndsAt - Date.now()) / 1000));
+}
+
+function isCompensatedPlaybackActive(game) {
+  return Boolean(compensatedCountdownInfo(game));
+}
+
+function compensatedCountdownInfo(game) {
+  if (!game || game.revealed || game.fullPlayback) return null;
+  const activeWindow = state.remoteCountdownWindow;
+  if (!activeWindow || activeWindow.questionId !== game.questionId) return null;
+
+  const now = Date.now();
+  if (now >= activeWindow.endAt) {
+    state.remoteCountdownWindow = null;
+    return null;
+  }
+
+  const duration = Number(activeWindow.duration || game.clipDuration || game.playDuration || 0);
+  if (!duration) return null;
+  const remaining = Math.min(duration, Math.max(0, Math.ceil((activeWindow.endAt - now) / 1000)));
+  return { remaining, duration };
+}
+
+function remoteAudioDelayMs(game) {
+  const configured = Number(game?.remoteAudioDelayMs);
+  return Number.isFinite(configured) && configured >= 0 ? configured : REMOTE_AUDIO_COUNTDOWN_DELAY_MS;
 }
 
 function isVideoMediaUrl(url) {

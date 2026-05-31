@@ -21,6 +21,30 @@
 
 ---
 
+## 2026-05-31 23:45 HKT
+
+類型：規格 / 程式 / 手機延遲補償
+
+摘要：
+- 新增 7 秒遠距音訊延遲補償：手機倒數會先停在原本秒數，約 7 秒後才開始扣秒，貼近玩家實際聽到的 WebRTC 聲音。
+- 主持端同步保留同一個 7 秒遠距答題窗口；即使主持端片段已到時，手機在延遲聲音最後幾秒仍可提交答案。
+- Firebase player state 新增 `remoteAudioDelayMs`、`remotePlayEndsAt`、`answerOpenUntil`，給手機端計算補償倒數和答題狀態。
+- 將三個入口頁 cache version 更新到 `mobile-delay-1`。
+
+影響：
+- 手機玩家看到的倒數會更接近實際聽到的歌曲，不會再因約 7 秒聲音延遲而提早歸零。
+- 四選一和快選估歌的手機答題時間與手機收聽時間更一致。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check display.js` 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 待完成：推上 GitHub Pages 後用正式網址驗證手機端載入 `mobile-delay-1`，並確認 player state 有 7 秒補償欄位。
+
+後續：
+- 如實測不同網絡延遲不是 7 秒，可把 `REMOTE_AUDIO_LATENCY_MS` / `REMOTE_AUDIO_COUNTDOWN_DELAY_MS` 改成更貼近現場的數字，或之後做成主持頁可調設定。
+
+---
+
 ## 2026-05-31 23:21 HKT
 
 類型：規格 / 程式 / 開估流程
