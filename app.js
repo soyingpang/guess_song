@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-13";
+const APP_BUILD_VERSION = "premium-mobile-14";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -3464,6 +3464,10 @@ function buildPlayerState(player) {
       : state.playEndsAt
         ? Number(state.playEndsAt) + state.remoteAudioLatencyMs
         : 0;
+  const remotePlayStartsAt =
+    remotePlayEndsAt && song
+      ? Math.max(0, remotePlayEndsAt - clipDuration(song) * 1000)
+      : 0;
   const choiceOptions =
     song && !revealed && (state.mode === "choice" || state.mode === "buzz") && (state.isPlaying || state.buzzOpen || remoteAnswerOpen)
       ? ensureChoiceOptions(song)
@@ -3485,6 +3489,7 @@ function buildPlayerState(player) {
     frontReady: state.frontReady,
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
+    remotePlayStartsAt,
     remotePlayEndsAt,
     remoteAudioDelayMs: state.remoteAudioLatencyMs,
     answerOpenUntil: remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,

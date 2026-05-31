@@ -21,6 +21,38 @@
 
 ---
 
+## 2026-06-01 05:22 HKT
+
+類型：手機版 / 互動手感 / 答題回饋
+
+變更：
+- 手機答題開放時間接上 7 秒音訊補償：播放開始後選項可先看，但四選一 / 快選提交會等手機預期聽到音樂時才開放。
+- 主持送出的 player state 新增 `remotePlayStartsAt`，玩家端用它和 `remotePlayEndsAt` 計算「先停在完整秒數、延後才開始扣秒」。
+- 手機選項新增 `is-choice-pressing` / `is-choice-confirming` 狀態，按下後有 tactile 壓下、確認彈起和光帶掃過。
+- 快選答錯冷卻期間，選項會加 `is-cooldown-locked` 和 `phoneChoices.has-cooldown`，視覺上明確顯示暫時鎖定。
+- 冷卻卡新增 `is-cooldown-entering` 進場動效，避免答錯後冷卻提示突然硬切出現。
+- `player.js` 新增 `playChoiceTapMotion()`、冷卻 motion key 和答題開放 timer，確保冷卻進場每次冷卻只觸發一次，也令補償倒數到點後自動解鎖。
+- 手機和主持入口 cache version 更新到 `premium-mobile-14`，PWA / service worker cache 同步更新。
+
+影響：
+- 手機平均慢約 7 秒時，玩家看到的倒數會先停在 30 / 15 / 60 秒，到聲音預期抵達才開始扣，感覺更貼近同步。
+- 玩家不會在未聽到歌前亂撳快選或提交四選一，公平性更好。
+- 玩家最常按的答案按鈕更有 app 觸感，選中狀態更明確。
+- 答錯冷卻狀態更清楚，不會像按鈕突然變灰。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Chrome mobile viewport 390x844 驗證 7 秒延遲補償：8 個快選一開始全部 disabled / `is-sync-locked`，`phoneChoices.is-waiting-sync` 開啟，提示「準備聽歌，7 秒後開放快選」，倒數停在 30 秒；8.3 秒後自動解鎖，倒數變 29 秒，390px 無橫向溢出。
+- 本機 Chrome mobile viewport 390x844 驗證：8 個快選選項正常顯示；點第一個選項後 `is-choice-confirming` 出現、`aria-pressed=true`、8 個選項 disabled；約 0.9 秒後確認 class 移除但選中狀態保留。
+- 本機 Chrome mobile viewport 390x844 驗證冷卻狀態：`phoneChoices.has-cooldown`、8 個 `is-cooldown-locked`、`phoneCooldown.is-cooldown-entering` 會出現；約 0.95 秒後進場 class 移除，冷卻進度仍更新，390px 無橫向溢出。
+- 本機截圖檢查冷卻畫面：8 個鎖定快選、冷卻卡和同步收聽卡沒有互相遮擋，冷卻狀態清楚可掃讀。
+
+下一步：
+- 正式頁部署後驗證：7 秒補償期間選項鎖定並顯示開放提示，過後自動解鎖；點選答案時確認 class 出現並移除；冷卻狀態有 locked class 和進場 class；390px 手機寬度無橫向溢出。
+
+---
+
 ## 2026-06-01 04:58 HKT
 
 類型：手機版 / 視覺 / 答案揭曉動效

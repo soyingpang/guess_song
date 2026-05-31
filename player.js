@@ -128,7 +128,10 @@ const state = {
   lastMomentKey: "",
   lastLatencyCalibrationKey: "",
   latencyCalibrationStatus: "",
+  answerStartTimer: null,
   quickPickCooldownTimer: null,
+  cooldownMotionTimer: null,
+  cooldownMotionKey: "",
   answerCountdownTimer: null,
   answerRevealTimer: null,
   lastAnswerRevealKey: "",
@@ -827,7 +830,7 @@ function updateRemoteCountdownWindow(game, previousQuestionId = "") {
   state.remoteCountdownWindow = {
     questionId: game.questionId,
     duration,
-    startAt: remoteEndAt - duration * 1000,
+    startAt: Number(game.remotePlayStartsAt || 0) || remoteEndAt - duration * 1000,
     endAt: remoteEndAt,
   };
 }
@@ -2677,6 +2680,7 @@ function renderCooldown(game) {
   els.phoneCooldown.hidden = !isVisible;
   if (!isVisible) {
     els.phoneCooldown.style.setProperty("--cooldown-progress", "0");
+    clearCooldownMotionEffect();
     return;
   }
 
@@ -2686,13 +2690,44 @@ function renderCooldown(game) {
   els.phoneCooldownTitle.textContent = "答錯冷卻中";
   els.phoneCooldownText.textContent = `${seconds} 秒後可以再答`;
   els.phoneCooldown.style.setProperty("--cooldown-progress", progress.toFixed(3));
+  triggerCooldownMotionEffect(game);
   scheduleQuickPickCooldownRender(remainingMs);
+}
+
+function triggerCooldownMotionEffect(game) {
+  if (!els.phoneCooldown) return;
+  const key = `${game?.questionId || ""}:${Number(game?.quickPickCooldownUntil || 0)}`;
+  if (!key || state.cooldownMotionKey === key) return;
+  state.cooldownMotionKey = key;
+  clearTimeout(state.cooldownMotionTimer);
+  els.phoneCooldown.classList.remove("is-cooldown-entering");
+  void els.phoneCooldown.offsetWidth;
+  els.phoneCooldown.classList.add("is-cooldown-entering");
+  state.cooldownMotionTimer = window.setTimeout(() => {
+    els.phoneCooldown?.classList.remove("is-cooldown-entering");
+  }, 900);
+}
+
+function clearCooldownMotionEffect() {
+  clearTimeout(state.cooldownMotionTimer);
+  state.cooldownMotionTimer = null;
+  state.cooldownMotionKey = "";
+  els.phoneCooldown?.classList.remove("is-cooldown-entering");
+}
+
+function remoteAnswerStartRemainingMs(game) {
+  if (!game || game.revealed || game.fullPlayback || game.hasWord) return 0;
+  const info = compensatedCountdownInfo(game);
+  return info && !info.started ? info.waitingMs : 0;
 }
 
 function renderChoices(game) {
   els.phoneChoices.replaceChildren();
   els.buzzButton.hidden = true;
   els.phoneChoices.classList.toggle("is-quick-pick", game.mode === "buzz");
+  els.phoneChoices.classList.remove("has-cooldown");
+  els.phoneChoices.classList.remove("is-waiting-sync");
+  clearAnswerStartTimer();
   clearQuickPickCooldownTimer();
 
   if (!game.hasQuestion || game.revealed) return;
@@ -2711,7 +2746,12 @@ function renderChoices(game) {
       return;
     }
 
+    const answerStartRemaining = remoteAnswerStartRemainingMs(game);
+    const answerLocked = answerStartRemaining > 0;
     const cooldownRemaining = isQuickPick ? quickPickCooldownRemaining(game) : 0;
+    els.phoneChoices.classList.toggle("is-waiting-sync", answerLocked);
+    els.phoneChoices.classList.toggle("has-cooldown", isQuickPick && cooldownRemaining > 0);
+    if (answerLocked) scheduleAnswerStartRender(answerStartRemaining);
     if (cooldownRemaining > 0) scheduleQuickPickCooldownRender(cooldownRemaining);
 
     (game.choices || []).forEach((choice, index) => {
@@ -2727,27 +2767,41 @@ function renderChoices(game) {
       button.append(number, title);
       const selected = sameChoice(state.selectedAnswer, choice);
       button.classList.toggle("is-selected", selected);
+      button.classList.toggle("is-sync-locked", answerLocked);
+      button.classList.toggle("is-cooldown-locked", isQuickPick && cooldownRemaining > 0);
       button.setAttribute("aria-pressed", String(selected));
       button.disabled = isQuickPick
-        ? Boolean(game.answered || game.buzzWinner || !game.buzzOpen || cooldownRemaining > 0)
-        : Boolean(game.answered);
+        ? Boolean(game.answered || game.buzzWinner || !game.buzzOpen || answerLocked || cooldownRemaining > 0)
+        : Boolean(game.answered || answerLocked);
       button.addEventListener("click", () => {
         hapticPulse(isQuickPick ? [12, 24, 12] : 12);
+        playChoiceTapMotion(button, isQuickPick);
         state.selectedAnswer = choice;
         send({ type: "answer", questionId: game.questionId, answer: choice });
         [...els.phoneChoices.querySelectorAll("button")].forEach((item) => {
           item.disabled = true;
           item.classList.toggle("is-selected", item === button);
           item.setAttribute("aria-pressed", String(item === button));
+          item.classList.toggle("is-choice-confirming", item === button);
+          item.classList.remove("is-choice-pressing");
         });
         els.phoneResult.textContent = isQuickPick ? `已選：${choice}` : `已提交答案：${choice}`;
       });
       els.phoneChoices.append(button);
     });
 
-    if (!isQuickPick) return;
+    if (!isQuickPick) {
+      if (answerLocked) {
+        els.phoneResult.textContent = `準備聽歌，${Math.ceil(answerStartRemaining / 1000)} 秒後開放答題`;
+      } else if (!state.lastResult && !game.answered) {
+        els.phoneResult.textContent = "請選擇答案";
+      }
+      return;
+    }
 
-    if (game.buzzWinner) {
+    if (answerLocked) {
+      els.phoneResult.textContent = `準備聽歌，${Math.ceil(answerStartRemaining / 1000)} 秒後開放快選`;
+    } else if (game.buzzWinner) {
       els.phoneResult.textContent = `${game.buzzWinner.name} 已估中`;
     } else if (cooldownRemaining > 0) {
       els.phoneResult.textContent = `未中，${Math.ceil(cooldownRemaining / 1000)} 秒後可以再答`;
@@ -2781,6 +2835,34 @@ function renderChoices(game) {
       els.phoneResult.textContent = "等主持開放搶唱";
     }
   }
+}
+
+function playChoiceTapMotion(button, isQuickPick = false) {
+  if (!button) return;
+  button.classList.remove("is-choice-pressing", "is-choice-confirming");
+  void button.offsetWidth;
+  button.classList.add("is-choice-pressing");
+  window.setTimeout(() => {
+    button.classList.remove("is-choice-pressing");
+    button.classList.add("is-choice-confirming");
+  }, isQuickPick ? 120 : 90);
+  window.setTimeout(() => {
+    button.classList.remove("is-choice-confirming");
+  }, 760);
+}
+
+function clearAnswerStartTimer() {
+  clearTimeout(state.answerStartTimer);
+  state.answerStartTimer = null;
+}
+
+function scheduleAnswerStartRender(remainingMs) {
+  clearAnswerStartTimer();
+  const nextTick = remainingMs > 1000 ? 1000 : remainingMs + 50;
+  state.answerStartTimer = window.setTimeout(() => {
+    state.answerStartTimer = null;
+    if (state.game) renderGame();
+  }, Math.max(120, nextTick));
 }
 
 function clearQuickPickCooldownTimer() {
@@ -3047,8 +3129,10 @@ function compensatedCountdownInfo(game) {
 
   const duration = Number(activeWindow.duration || game.clipDuration || game.playDuration || 0);
   if (!duration) return null;
+  const waitingMs = Math.max(0, activeWindow.startAt - now);
+  const started = waitingMs <= 0;
   const remaining = Math.min(duration, Math.max(0, Math.ceil((activeWindow.endAt - now) / 1000)));
-  return { remaining, duration };
+  return { remaining, duration, started, waitingMs };
 }
 
 function remoteAudioDelayMs(game) {
