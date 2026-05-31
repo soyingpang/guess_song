@@ -21,6 +21,30 @@
 
 ---
 
+## 2026-06-01 04:05 HKT
+
+類型：手機版 / 延遲補償 / 開估節奏
+
+變更：
+- 開估後自動下一題時間改為 `remoteAudioLatencyMs + REVEAL_AUTO_NEXT_DELAY_MS`，預設即 7 秒手機音訊補償 + 5 秒答案展示。
+- player state 新增 `revealAutoNextStartsAt`，手機可知道何時才正式開始顯示答案倒數。
+- 手機答案卡、開估狀態、開估 moment 和 stage cue 都會等到最後 5 秒才顯示，避免玩家仍在聽延遲音訊時被畫面提早爆答案。
+- 手機和主持入口 cache version 更新到 `premium-mobile-11`，PWA / service worker cache 同步更新。
+
+影響：
+- 手機聽到大約 7 秒延遲時，畫面會等 7 秒才開始 5 秒答案倒數，看起來會更像沒有 delay。
+- 主持端仍可即時知道已開估，但下一題播放會延後到遠端手機答案展示完成後才開始。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Chrome mobile viewport 390x844 驗證：7 秒等待 window 內答案卡和倒數 ring 隱藏，補償後答案卡 `Song B` 顯示、倒數 ring 5→4、stroke offset 推進，390px 無橫向溢出。
+
+下一步：
+- 正式頁部署後驗證：答案卡先隱藏，約 7 秒後出現，倒數 ring 5→4，然後自動下一題。
+
+---
+
 ## 2026-06-01 03:38 HKT
 
 類型：設計 / 程式 / 開估倒數

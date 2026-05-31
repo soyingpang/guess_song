@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-10";
+const APP_BUILD_VERSION = "premium-mobile-11";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -1731,6 +1731,7 @@ function isQuickPickAnswerWindowOpen() {
 
 function revealCurrentSongThenAutoNext(message, detail = "") {
   if (!state.currentSong || state.answered) return;
+  const autoNextDelayMs = revealAutoNextTotalDelayMs();
 
   state.answered = true;
   state.revealed = true;
@@ -1740,10 +1741,10 @@ function revealCurrentSongThenAutoNext(message, detail = "") {
   state.playEndsAt = 0;
   state.buzzOpen = false;
   state.playbackRevision += 1;
-  state.revealAutoNextEndsAt = Date.now() + REVEAL_AUTO_NEXT_DELAY_MS;
+  state.revealAutoNextEndsAt = Date.now() + autoNextDelayMs;
   clearClipTimer();
   clearRemoteAnswerWindow();
-  setResult(message, detail || `${answerLabel(state.currentSong)} · 5 秒後下一題`, "correct");
+  setResult(message, detail || `${answerLabel(state.currentSong)} · ${Math.ceil(autoNextDelayMs / 1000)} 秒後下一題`, "correct");
   render();
   renderYouTubeFrame({ autoplay: false });
   scheduleRevealAutoNext();
@@ -1753,13 +1754,17 @@ function scheduleRevealAutoNext() {
   if (state.choiceAutoNextTimer) window.clearTimeout(state.choiceAutoNextTimer);
   state.choiceAutoNextTimer = null;
   const questionId = state.currentQuestionId;
-  const delay = Math.max(0, Number(state.revealAutoNextEndsAt || 0) - Date.now()) || REVEAL_AUTO_NEXT_DELAY_MS;
+  const delay = Math.max(0, Number(state.revealAutoNextEndsAt || 0) - Date.now()) || revealAutoNextTotalDelayMs();
   state.choiceAutoNextTimer = window.setTimeout(() => {
     state.choiceAutoNextTimer = null;
     state.revealAutoNextEndsAt = 0;
     if (state.mode === "word" || state.currentQuestionId !== questionId || !state.answered) return;
     startRound(null, { autoplay: true });
   }, delay);
+}
+
+function revealAutoNextTotalDelayMs() {
+  return REVEAL_AUTO_NEXT_DELAY_MS + Math.max(0, Number(state.remoteAudioLatencyMs || 0));
 }
 
 function clearChoiceAutoNextTimer() {
@@ -3408,6 +3413,9 @@ function buildDisplayState() {
     playEndsAt: state.playEndsAt,
     playbackRevision: state.playbackRevision,
     revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
+    revealAutoNextStartsAt: revealed && state.revealAutoNextEndsAt
+      ? Number(state.revealAutoNextEndsAt) - REVEAL_AUTO_NEXT_DELAY_MS
+      : 0,
     revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,
@@ -3476,6 +3484,9 @@ function buildPlayerState(player) {
     answerOpenUntil: remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,
     playbackRevision: state.playbackRevision,
     revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
+    revealAutoNextStartsAt: revealed && state.revealAutoNextEndsAt
+      ? Number(state.revealAutoNextEndsAt) - REVEAL_AUTO_NEXT_DELAY_MS
+      : 0,
     revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
     currentWord: state.currentWord,

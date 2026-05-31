@@ -1744,7 +1744,7 @@ function phoneStatusText(game) {
   if (!game) return "等候主持";
   const songlistLabel = game.songlistLabel || "歌單";
   if (isCompensatedPlaybackActive(game)) return `${songlistLabel} · 播放中 · ${remainingSeconds(game)} 秒`;
-  if (game.revealed) return "已開估";
+  if (game.revealed) return isPhoneRevealVisible(game) ? "已開估" : "準備開估";
   if (game.frontReady) return "主持已預備";
   return game.status || "等候主持";
 }
@@ -1781,7 +1781,7 @@ function liveMicSummary(players) {
 function remoteCountdownText(game) {
   if (!game) return "--";
   if (isCompensatedPlaybackActive(game)) return `${remainingSeconds(game)} 秒`;
-  if (game.revealed) return "開估";
+  if (game.revealed) return isPhoneRevealVisible(game) ? "開估" : "準備開估";
   if (game.hasQuestion) return "待開始";
   return "--";
 }
@@ -2167,6 +2167,7 @@ function renderRemoteRoster(players) {
 function renderGame() {
   const game = state.game;
   if (!game) return;
+  const revealVisible = isPhoneRevealVisible(game);
 
   syncBodyState();
   applyPlayerMode();
@@ -2177,10 +2178,17 @@ function renderGame() {
     ? `第 ${game.round} 題 · ${teamLabel(game.team)}`
     : `未開始 · ${teamLabel(state.team)}`;
   els.phoneStatus.textContent = phoneStatusText(game);
-  els.phoneTitle.textContent = game.revealed ? game.title : game.hasQuestion ? game.title || game.songlistLabel || "估呢首歌" : "準備中";
+  els.phoneTitle.textContent = game.revealed
+    ? revealVisible
+      ? game.title
+      : game.songlistLabel || "準備開估"
+    : game.hasQuestion
+      ? game.title || game.songlistLabel || "估呢首歌"
+      : "準備中";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
   renderAnswerCard(game);
   maybeShowRevealMoment(game);
+  maybeShowDelayedRevealStageCue(game);
   els.phoneResult.textContent =
     state.lastResult ||
     (game.buzzWinner
@@ -2198,16 +2206,19 @@ function renderGame() {
 
 function updatePhoneAppState(game) {
   const isPlaying = isCompensatedPlaybackActive(game);
+  const revealVisible = isPhoneRevealVisible(game);
   document.body.classList.toggle("has-question", Boolean(game?.hasQuestion));
   document.body.classList.toggle("is-game-playing", isPlaying);
-  document.body.classList.toggle("is-game-revealed", Boolean(game?.revealed));
+  document.body.classList.toggle("is-game-revealed", Boolean(game?.revealed && revealVisible));
   document.body.classList.toggle("is-quick-mode", game?.mode === "buzz");
   document.body.classList.toggle("is-choice-mode", game?.mode === "choice");
   document.body.classList.toggle("is-word-mode", game?.mode === "word");
 
   if (!els.phoneLivePill) return;
   els.phoneLivePill.textContent = game?.revealed
-    ? "開估"
+    ? revealVisible
+      ? "開估"
+      : "準備"
     : isPlaying
       ? "播放中"
       : game?.buzzOpen
@@ -2225,9 +2236,11 @@ function maybeShowStageTransition(game, previousGame = null, previousStagePhase 
   const previousQuestionId = previousGame?.questionId || "";
   const questionChanged = Boolean(previousQuestionId && previousQuestionId !== game.questionId);
   const currentPhase = phoneStagePhase(game);
+  const revealVisible = isPhoneRevealVisible(game);
+  const previousRevealVisible = isPhoneRevealVisible(previousGame);
   let cue = null;
 
-  if (game.revealed && !previousGame?.revealed) {
+  if (game.revealed && revealVisible && !previousRevealVisible) {
     cue = {
       type: "reveal",
       icon: "✓",
@@ -2270,10 +2283,22 @@ function maybeShowStageTransition(game, previousGame = null, previousStagePhase 
 
 function phoneStagePhase(game) {
   if (!game?.hasQuestion) return "waiting";
-  if (game.revealed) return "reveal";
+  if (game.revealed && isPhoneRevealVisible(game)) return "reveal";
   if (isCompensatedPlaybackActive(game) || game.isPlaying || game.mediaPlaying) return "play";
   if (game.buzzOpen) return "open";
   return "ready";
+}
+
+function maybeShowDelayedRevealStageCue(game) {
+  if (!game?.revealed || !isPhoneRevealVisible(game) || game.hasWord) return;
+  showStageCue({
+    type: "reveal",
+    icon: "✓",
+    title: "開估",
+    detail: game.title || game.answer || "答案",
+    key: `${game.questionId}:reveal:${game.title || game.answer || ""}`,
+    duration: 1450,
+  });
 }
 
 function stageModeLabel(game) {
@@ -2433,6 +2458,7 @@ function showResultMoment(message) {
 
 function maybeShowRevealMoment(game) {
   if (!game?.revealed || !game.title || game.hasWord) return;
+  if (!isPhoneRevealVisible(game)) return;
   const key = `reveal:${game.questionId}:${game.title}`;
   if (state.lastMomentKey === key) return;
   showPhoneMoment({
@@ -2486,12 +2512,13 @@ function renderHints(hints) {
 
 function renderAnswerCard(game) {
   if (!els.phoneAnswerCard) return;
-  const shouldShow = Boolean(game?.revealed && !game.hasWord && (game.answer || game.title));
+  const hasAnswer = Boolean(game?.revealed && !game.hasWord && (game.answer || game.title));
+  const shouldShow = Boolean(hasAnswer && isPhoneRevealVisible(game));
   els.phoneAnswerCard.hidden = !shouldShow;
   if (!shouldShow) {
     if (els.phoneAnswerTitle) els.phoneAnswerTitle.textContent = "";
     if (els.phoneAnswerMeta) els.phoneAnswerMeta.textContent = "";
-    renderAnswerCountdown(null);
+    renderAnswerCountdown(hasAnswer ? game : null);
     return;
   }
 
@@ -2504,12 +2531,13 @@ function renderAnswerCard(game) {
 function renderAnswerCountdown(game) {
   clearAnswerCountdownTimer();
   const info = revealCountdownInfo(game);
-  const visible = Boolean(info && info.remainingMs > 0);
+  const visible = Boolean(info && info.started && info.remainingMs > 0);
 
   if (els.phoneAnswerCountdown) els.phoneAnswerCountdown.hidden = !visible;
   if (!visible) {
     if (els.phoneAnswerCountdownText) els.phoneAnswerCountdownText.textContent = "";
     if (els.phoneAnswerCountdownRing) els.phoneAnswerCountdownRing.style.strokeDashoffset = "100";
+    if (info?.waitingMs > 0) scheduleAnswerCountdownRender(Math.min(info.waitingMs, 250));
     return;
   }
 
@@ -2518,10 +2546,14 @@ function renderAnswerCountdown(game) {
     els.phoneAnswerCountdownRing.style.strokeDashoffset = String(Math.round((1 - info.progress) * 100));
   }
 
+  scheduleAnswerCountdownRender(info.remainingMs > 1000 ? 250 : 120);
+}
+
+function scheduleAnswerCountdownRender(delayMs) {
   state.answerCountdownTimer = window.setTimeout(() => {
     state.answerCountdownTimer = null;
     if (state.game) renderGame();
-  }, info.remainingMs > 1000 ? 250 : 120);
+  }, Math.max(60, delayMs));
 }
 
 function revealCountdownInfo(game) {
@@ -2529,13 +2561,26 @@ function revealCountdownInfo(game) {
   const endAt = Number(game.revealAutoNextEndsAt || 0);
   if (!endAt) return null;
   const total = Math.max(1000, Number(game.revealAutoNextDelayMs || 5000));
-  const remainingMs = Math.max(0, endAt - Date.now());
-  const progress = Math.max(0, Math.min(1, remainingMs / total));
+  const startAt = Number(game.revealAutoNextStartsAt || 0) || endAt - total;
+  const now = Date.now();
+  const waitingMs = Math.max(0, startAt - now);
+  const remainingMs = Math.max(0, endAt - now);
+  const started = waitingMs <= 0;
+  const activeRemainingMs = started ? remainingMs : total;
+  const progress = Math.max(0, Math.min(1, activeRemainingMs / total));
   return {
+    started,
+    waitingMs,
     remainingMs,
     progress,
-    seconds: Math.max(1, Math.ceil(remainingMs / 1000)),
+    seconds: Math.max(1, Math.ceil(activeRemainingMs / 1000)),
   };
+}
+
+function isPhoneRevealVisible(game) {
+  if (!game?.revealed) return false;
+  const info = revealCountdownInfo(game);
+  return !info || info.started;
 }
 
 function clearAnswerCountdownTimer() {
