@@ -43,9 +43,10 @@
 - 本機 Chrome mobile viewport 驗證輸入互動：輸入 `So Ying` 後，房間 pill 變 `準備好`、預覽名變 `So Ying`、avatar 變 `S`，提交 motion class 正常出現。
 - 本機 Chrome 360x740 窄 viewport 驗證長名字：預覽名和 avatar 更新，三格流程仍在，無橫向溢出。
 - 本機截圖檢查：加入卡、主視覺、輸入框和加入按鈕沒有互相遮擋，第一屏視覺重心清楚。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-17-live-join` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-17` / `pwa.js?v=premium-mobile-17`；加入頁 onboarding、房間 pill、預覽名、avatar、三格流程狀態、輸入即時更新和提交 motion 都正常，390px 無橫向溢出。
 
 下一步：
-- 部署到 GitHub Pages 後正式驗證加入頁 onboarding 和 390px 版面。
+- 下一輪可打磨設定 modal，或集中做一次全手機流程 screenshots audit。
 
 ---
 
