@@ -1,5 +1,6 @@
 const STORAGE_KEY = "guess-song-library-v14";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
+const HOST_SETTINGS_KEY = "guess-song-host-settings-v1";
 const DEFAULT_CLOUD_LIBRARY_ID = "allSonglists";
 const CLOUD_LIBRARY_OPTIONS = [
   {
@@ -43,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-3";
+const APP_BUILD_VERSION = "premium-mobile-4";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -91,7 +92,8 @@ const QUICK_PICK_OPTION_COUNT = 8;
 const QUICK_PICK_CORRECT_POINTS = 5;
 const QUICK_PICK_WRONG_POINTS = -1;
 const QUICK_PICK_COOLDOWN_MS = 5000;
-const REMOTE_AUDIO_LATENCY_MS = 7000;
+const DEFAULT_REMOTE_AUDIO_LATENCY_MS = 7000;
+const REMOTE_AUDIO_LATENCY_OPTIONS = [5000, 7000, 10000];
 const RANDOM_START_MIN_SECONDS = 45;
 const RANDOM_START_MAX_END_SECONDS = 180;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
@@ -156,6 +158,8 @@ const difficultyDurations = {
   hard: CLIP_DURATION_SECONDS,
 };
 
+const savedHostSettings = loadHostSettings();
+
 const state = {
   songs: loadSongs(),
   score: loadScore(),
@@ -174,6 +178,7 @@ const state = {
   frontReady: false,
   playDuration: DEFAULT_PLAY_DURATION_SECONDS,
   playStartMode: "beginning",
+  remoteAudioLatencyMs: savedHostSettings.remoteAudioLatencyMs,
   currentClipStart: CLIP_START_SECONDS,
   playEndsAt: 0,
   playbackRevision: 0,
@@ -239,6 +244,10 @@ const els = {
   duration15Button: document.querySelector("#duration15Button"),
   startBeginningButton: document.querySelector("#startBeginningButton"),
   startRandomButton: document.querySelector("#startRandomButton"),
+  latency5Button: document.querySelector("#latency5Button"),
+  latency7Button: document.querySelector("#latency7Button"),
+  latency10Button: document.querySelector("#latency10Button"),
+  latencyStatus: document.querySelector("#latencyStatus"),
   choiceModeButton: document.querySelector("#choiceModeButton"),
   buzzModeButton: document.querySelector("#buzzModeButton"),
   wordModeButton: document.querySelector("#wordModeButton"),
@@ -326,6 +335,9 @@ function bindEvents() {
   els.duration15Button.addEventListener("click", () => setPlayDuration(15));
   els.startBeginningButton.addEventListener("click", () => setPlayStartMode("beginning"));
   els.startRandomButton.addEventListener("click", () => setPlayStartMode("random"));
+  els.latency5Button?.addEventListener("click", () => setRemoteAudioLatency(5000));
+  els.latency7Button?.addEventListener("click", () => setRemoteAudioLatency(7000));
+  els.latency10Button?.addEventListener("click", () => setRemoteAudioLatency(10000));
 
   els.choiceModeButton.addEventListener("click", () => setMode("choice"));
   els.buzzModeButton.addEventListener("click", () => setMode("buzz"));
@@ -1947,6 +1959,42 @@ function loadScore() {
   }
 }
 
+function loadHostSettings() {
+  const fallback = { remoteAudioLatencyMs: DEFAULT_REMOTE_AUDIO_LATENCY_MS };
+  const raw = localStorage.getItem(HOST_SETTINGS_KEY);
+  if (!raw) return fallback;
+
+  try {
+    const settings = JSON.parse(raw) || {};
+    return {
+      ...fallback,
+      remoteAudioLatencyMs: normalizeRemoteAudioLatency(settings.remoteAudioLatencyMs),
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function saveHostSettings() {
+  localStorage.setItem(
+    HOST_SETTINGS_KEY,
+    JSON.stringify({
+      remoteAudioLatencyMs: normalizeRemoteAudioLatency(state.remoteAudioLatencyMs),
+    })
+  );
+}
+
+function normalizeRemoteAudioLatency(value) {
+  const numeric = Number(value);
+  const ms = numeric > 0 && numeric < 100 ? numeric * 1000 : numeric;
+  return REMOTE_AUDIO_LATENCY_OPTIONS.includes(ms) ? ms : DEFAULT_REMOTE_AUDIO_LATENCY_MS;
+}
+
+function formatLatencySeconds(ms) {
+  const seconds = normalizeRemoteAudioLatency(ms) / 1000;
+  return `${seconds} 秒`;
+}
+
 function cleanSong(song) {
   const videoId = parseYouTubeId(song.videoId || song.url || song.youtube || "");
   const audioUrl = String(song.audioUrl || song.audio || song.mediaUrl || song.videoUrl || "").trim();
@@ -2425,6 +2473,20 @@ function setPlayStartMode(mode) {
   render();
 }
 
+function setRemoteAudioLatency(ms) {
+  state.remoteAudioLatencyMs = normalizeRemoteAudioLatency(ms);
+  saveHostSettings();
+
+  if (state.currentSong && state.currentQuestionId && state.playEndsAt && !state.answered && !state.fullPlayback) {
+    state.answerGraceQuestionId = state.currentQuestionId;
+    state.answerGraceEndsAt = Number(state.playEndsAt) + state.remoteAudioLatencyMs;
+    scheduleRemoteAnswerWindowClose();
+  }
+
+  setResult("手機延遲補償已更新", `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}`, "");
+  render();
+}
+
 function scheduleClipStop() {
   clearClipTimer();
   state.clipTimer = window.setTimeout(() => {
@@ -2444,7 +2506,7 @@ function startRemoteAnswerWindow() {
   if (!state.currentSong || !state.currentQuestionId || !state.playEndsAt || state.fullPlayback) return;
 
   state.answerGraceQuestionId = state.currentQuestionId;
-  state.answerGraceEndsAt = Number(state.playEndsAt) + REMOTE_AUDIO_LATENCY_MS;
+  state.answerGraceEndsAt = Number(state.playEndsAt) + state.remoteAudioLatencyMs;
   scheduleRemoteAnswerWindowClose();
 }
 
@@ -2810,6 +2872,12 @@ function renderQuiz() {
   els.duration15Button.classList.toggle("is-active", state.playDuration === 15);
   els.startBeginningButton.classList.toggle("is-active", state.playStartMode === "beginning");
   els.startRandomButton.classList.toggle("is-active", state.playStartMode === "random");
+  els.latency5Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 5000);
+  els.latency7Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 7000);
+  els.latency10Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 10000);
+  if (els.latencyStatus) {
+    els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可按實測延遲即場調整`;
+  }
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
   els.wordModeButton.classList.toggle("is-active", state.mode === "word");
@@ -2835,6 +2903,9 @@ function renderQuiz() {
   els.duration15Button.disabled = roomBlocked;
   els.startBeginningButton.disabled = roomBlocked;
   els.startRandomButton.disabled = roomBlocked;
+  if (els.latency5Button) els.latency5Button.disabled = roomBlocked;
+  if (els.latency7Button) els.latency7Button.disabled = roomBlocked;
+  if (els.latency10Button) els.latency10Button.disabled = roomBlocked;
   els.choiceModeButton.disabled = roomBlocked;
   els.buzzModeButton.disabled = roomBlocked;
   els.wordModeButton.disabled = roomBlocked;
@@ -3234,7 +3305,7 @@ function buildPlayerState(player) {
     state.answerGraceQuestionId === state.currentQuestionId
       ? Number(state.answerGraceEndsAt || 0)
       : state.playEndsAt
-        ? Number(state.playEndsAt) + REMOTE_AUDIO_LATENCY_MS
+        ? Number(state.playEndsAt) + state.remoteAudioLatencyMs
         : 0;
   const choiceOptions =
     song && !revealed && (state.mode === "choice" || state.mode === "buzz") && (state.isPlaying || state.buzzOpen || remoteAnswerOpen)
@@ -3258,7 +3329,7 @@ function buildPlayerState(player) {
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
     remotePlayEndsAt,
-    remoteAudioDelayMs: REMOTE_AUDIO_LATENCY_MS,
+    remoteAudioDelayMs: state.remoteAudioLatencyMs,
     answerOpenUntil: remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,
     playbackRevision: state.playbackRevision,
     clipDuration: state.playDuration,

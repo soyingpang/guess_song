@@ -21,6 +21,32 @@
 
 ---
 
+## 2026-06-01 01:28 HKT
+
+類型：設計 / 程式 / 手機延遲補償
+
+摘要：
+- 主持頁新增「手機延遲補償」分段控制，可即場切換 5 秒 / 7 秒 / 10 秒，預設仍是 7 秒。
+- 主持設定會寫入 `guess-song-host-settings-v1`，重新整理後保留。
+- player state 改為送出目前主持設定的 `remoteAudioDelayMs`，`remotePlayEndsAt` 和遠端答題 grace window 會跟設定同步調整。
+- 手機設定頁的「聲音延遲補償」由固定 7s 改成顯示主持目前設定值。
+- 手機和主持入口 cache version 更新到 `premium-mobile-4`。
+
+影響：
+- 不同網絡或地區有 5 秒、7 秒、10 秒 delay 時，主持可以現場調校，不需要改程式再部署。
+
+測試：
+- `node --check app.js` 通過。
+- `node --check player.js` 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 本機 Chrome 驗證主持切到 10 秒後：10 秒按鈕 active、設定寫入 localStorage、player state 的 `remoteAudioDelayMs` / `remotePlayEndsAt - playEndsAt` / `answerOpenUntil - playEndsAt` 都是 10000ms。
+- 本機 Chrome mobile viewport 390x844 驗證手機收到 10 秒補償：同步倒數仍以玩家聽到音訊為準，設定頁顯示 `10s`，8 個快選選項無橫向溢出。
+
+後續：
+- 可再做「自動校準」流程：玩家按聽到音樂的一刻，估算更準確的 delay。
+
+---
+
 ## 2026-06-01 01:06 HKT
 
 類型：設計 / 程式 / 手機體驗

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>估歌仔</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-3" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-4" />
   </head>
   <body>
     <div class="app-shell">
@@ -86,6 +86,13 @@
             <button class="segmented is-active" id="startBeginningButton" type="button">由頭播</button>
             <button class="segmented" id="startRandomButton" type="button">隨機中段</button>
           </div>
+
+          <div class="mode-row three latency-row" role="group" aria-label="手機延遲補償">
+            <button class="segmented" id="latency5Button" type="button">5 秒</button>
+            <button class="segmented is-active" id="latency7Button" type="button">7 秒</button>
+            <button class="segmented" id="latency10Button" type="button">10 秒</button>
+          </div>
+          <p class="mode-helper" id="latencyStatus">手機倒數延遲 7 秒</p>
 
           <div class="mode-row three" role="group" aria-label="答題模式">
             <button class="segmented is-active" id="choiceModeButton" type="button">一：四選一</button>
@@ -243,10 +250,10 @@
       </main>
     </div>
 
-    <script src="./firebase-config.js?v=premium-mobile-3"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-3"></script>
+    <script src="./firebase-config.js?v=premium-mobile-4"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-4"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./local-qr.js?v=premium-mobile-3"></script>
-    <script src="./app.js?v=premium-mobile-3"></script>
+    <script src="./local-qr.js?v=premium-mobile-4"></script>
+    <script src="./app.js?v=premium-mobile-4"></script>
   </body>
 </html>

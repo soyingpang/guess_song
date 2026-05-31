@@ -52,7 +52,7 @@ const CONNECTION_PROFILES = [
   { id: "vpn", label: "VPN 兼容線路", options: VPN_PEER_OPTIONS },
 ];
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
-const REMOTE_AUDIO_COUNTDOWN_DELAY_MS = 7000;
+const DEFAULT_REMOTE_AUDIO_COUNTDOWN_DELAY_MS = 7000;
 const QUICK_PICK_COOLDOWN_MS = 5000;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
@@ -212,6 +212,8 @@ const els = {
   phoneRemotePlayButton: document.querySelector("#phoneRemotePlayButton"),
   phoneRemoteShieldTitle: document.querySelector("#phoneRemoteShieldTitle"),
   phoneRemoteShieldNote: document.querySelector("#phoneRemoteShieldNote"),
+  phoneLatencyValue: document.querySelector("#phoneLatencyValue"),
+  phoneLatencyNote: document.querySelector("#phoneLatencyNote"),
 };
 
 const ICONS = {
@@ -2071,6 +2073,7 @@ function renderGame() {
   syncBodyState();
   applyPlayerMode();
   updatePhoneAppState(game);
+  updateLatencySettingUi(game);
   els.playerScore.textContent = `${game.score || 0} 分`;
   els.playerRound.textContent = game.hasQuestion
     ? `第 ${game.round} 題 · ${teamLabel(game.team)}`
@@ -2544,7 +2547,16 @@ function compensatedCountdownInfo(game) {
 
 function remoteAudioDelayMs(game) {
   const configured = Number(game?.remoteAudioDelayMs);
-  return Number.isFinite(configured) && configured >= 0 ? configured : REMOTE_AUDIO_COUNTDOWN_DELAY_MS;
+  return Number.isFinite(configured) && configured >= 0 ? configured : DEFAULT_REMOTE_AUDIO_COUNTDOWN_DELAY_MS;
+}
+
+function updateLatencySettingUi(game = state.game) {
+  if (!els.phoneLatencyValue && !els.phoneLatencyNote) return;
+  const seconds = Math.round(remoteAudioDelayMs(game) / 1000);
+  if (els.phoneLatencyValue) els.phoneLatencyValue.textContent = `${seconds}s`;
+  if (els.phoneLatencyNote) {
+    els.phoneLatencyNote.textContent = `手機倒數已按主持設定延遲 ${seconds} 秒`;
+  }
 }
 
 function loadPhoneSettings() {
