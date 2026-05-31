@@ -39,6 +39,7 @@
 - `manifest.webmanifest` JSON parse 通過。
 - `git diff --check` 通過（只見既有 CRLF 提示）。
 - 本機 Chrome mobile viewport 390x844 驗證：分數 10 → 15 顯示 `+5` / `up` / `is-score-pop`；15 → 14 顯示 `-1` / `down` / `is-score-down`；無橫向溢出。
+- GitHub Pages 正式網址 `player.html?test=premium-mobile-7-live` 已用全新 Chrome mobile profile 驗證：已載入 `player.js?v=premium-mobile-7` / `pwa.js?v=premium-mobile-7`，分數 10 → 15 顯示 `+5` / `up` / `is-score-pop`；15 → 14 顯示 `-1` / `down` / `is-score-down`；390px 手機寬度無橫向溢出。
 
 後續：
 - 可再做排行榜名次變動動畫，讓個人榜升跌更清楚。
