@@ -183,6 +183,12 @@ const els = {
   phoneStageCueIcon: document.querySelector("#phoneStageCueIcon"),
   phoneStageCueTitle: document.querySelector("#phoneStageCueTitle"),
   phoneStageCueDetail: document.querySelector("#phoneStageCueDetail"),
+  phoneRevealBridge: document.querySelector("#phoneRevealBridge"),
+  phoneRevealBridgeKicker: document.querySelector("#phoneRevealBridgeKicker"),
+  phoneRevealBridgeTitle: document.querySelector("#phoneRevealBridgeTitle"),
+  phoneRevealBridgeCount: document.querySelector("#phoneRevealBridgeCount"),
+  phoneRevealBridgeDetail: document.querySelector("#phoneRevealBridgeDetail"),
+  phoneRevealBridgeBar: document.querySelector("#phoneRevealBridgeBar"),
   phoneAnswerCard: document.querySelector("#phoneAnswerCard"),
   phoneAnswerTitle: document.querySelector("#phoneAnswerTitle"),
   phoneAnswerMeta: document.querySelector("#phoneAnswerMeta"),
@@ -829,6 +835,7 @@ function renderJoinedWaiting() {
   setPlayerScoreText(0);
   hideScoreBurst();
   hideStageCue();
+  renderRevealBridge(null);
   renderAnswerCountdown(null);
   els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
   els.phoneStatus.textContent = "已加入遊戲";
@@ -1744,7 +1751,7 @@ function phoneStatusText(game) {
   if (!game) return "等候主持";
   const songlistLabel = game.songlistLabel || "歌單";
   if (isCompensatedPlaybackActive(game)) return `${songlistLabel} · 播放中 · ${remainingSeconds(game)} 秒`;
-  if (game.revealed) return isPhoneRevealVisible(game) ? "已開估" : "準備開估";
+  if (game.revealed) return isPhoneRevealVisible(game) ? "已開估" : "同步聲音中";
   if (game.frontReady) return "主持已預備";
   return game.status || "等候主持";
 }
@@ -1781,7 +1788,7 @@ function liveMicSummary(players) {
 function remoteCountdownText(game) {
   if (!game) return "--";
   if (isCompensatedPlaybackActive(game)) return `${remainingSeconds(game)} 秒`;
-  if (game.revealed) return isPhoneRevealVisible(game) ? "開估" : "準備開估";
+  if (game.revealed) return isPhoneRevealVisible(game) ? "開估" : "同步中";
   if (game.hasQuestion) return "待開始";
   return "--";
 }
@@ -2186,6 +2193,7 @@ function renderGame() {
       ? game.title || game.songlistLabel || "估呢首歌"
       : "準備中";
   if (game.hasWord) els.phoneTitle.textContent = game.title;
+  renderRevealBridge(game);
   renderAnswerCard(game);
   maybeShowRevealMoment(game);
   maybeShowDelayedRevealStageCue(game);
@@ -2210,6 +2218,7 @@ function updatePhoneAppState(game) {
   document.body.classList.toggle("has-question", Boolean(game?.hasQuestion));
   document.body.classList.toggle("is-game-playing", isPlaying);
   document.body.classList.toggle("is-game-revealed", Boolean(game?.revealed && revealVisible));
+  document.body.classList.toggle("is-reveal-waiting", Boolean(game?.revealed && !revealVisible));
   document.body.classList.toggle("is-quick-mode", game?.mode === "buzz");
   document.body.classList.toggle("is-choice-mode", game?.mode === "choice");
   document.body.classList.toggle("is-word-mode", game?.mode === "word");
@@ -2218,7 +2227,7 @@ function updatePhoneAppState(game) {
   els.phoneLivePill.textContent = game?.revealed
     ? revealVisible
       ? "開估"
-      : "準備"
+      : "同步"
     : isPlaying
       ? "播放中"
       : game?.buzzOpen
@@ -2239,6 +2248,8 @@ function maybeShowStageTransition(game, previousGame = null, previousStagePhase 
   const revealVisible = isPhoneRevealVisible(game);
   const previousRevealVisible = isPhoneRevealVisible(previousGame);
   let cue = null;
+
+  if (game.revealed && !revealVisible) return;
 
   if (game.revealed && revealVisible && !previousRevealVisible) {
     cue = {
@@ -2510,6 +2521,29 @@ function renderHints(hints) {
   });
 }
 
+function renderRevealBridge(game) {
+  if (!els.phoneRevealBridge) return;
+  const info = revealCountdownInfo(game);
+  const visible = Boolean(game?.revealed && !game.hasWord && info && !info.started && info.waitingMs > 0);
+  els.phoneRevealBridge.hidden = !visible;
+
+  if (!visible) {
+    els.phoneRevealBridge.style.setProperty("--reveal-sync-progress", "0");
+    if (els.phoneRevealBridgeCount) els.phoneRevealBridgeCount.textContent = "";
+    if (els.phoneRevealBridgeDetail) els.phoneRevealBridgeDetail.textContent = "";
+    return;
+  }
+
+  const seconds = Math.max(1, Math.ceil(info.waitingMs / 1000));
+  if (els.phoneRevealBridgeKicker) els.phoneRevealBridgeKicker.textContent = "聲音同步";
+  if (els.phoneRevealBridgeTitle) els.phoneRevealBridgeTitle.textContent = "同步聲音中";
+  if (els.phoneRevealBridgeCount) els.phoneRevealBridgeCount.textContent = String(seconds);
+  if (els.phoneRevealBridgeDetail) {
+    els.phoneRevealBridgeDetail.textContent = `${seconds} 秒後顯示答案`;
+  }
+  els.phoneRevealBridge.style.setProperty("--reveal-sync-progress", info.waitingProgress.toFixed(3));
+}
+
 function renderAnswerCard(game) {
   if (!els.phoneAnswerCard) return;
   const hasAnswer = Boolean(game?.revealed && !game.hasWord && (game.answer || game.title));
@@ -2563,14 +2597,26 @@ function revealCountdownInfo(game) {
   const total = Math.max(1000, Number(game.revealAutoNextDelayMs || 5000));
   const startAt = Number(game.revealAutoNextStartsAt || 0) || endAt - total;
   const now = Date.now();
+  const openedAt = Number(game.revealAutoNextOpenedAt || 0) || startAt - remoteAudioDelayMs(game);
+  const waitingTotalMs = Math.max(0, startAt - openedAt);
   const waitingMs = Math.max(0, startAt - now);
   const remainingMs = Math.max(0, endAt - now);
   const started = waitingMs <= 0;
   const activeRemainingMs = started ? remainingMs : total;
   const progress = Math.max(0, Math.min(1, activeRemainingMs / total));
+  const waitingProgress = waitingTotalMs
+    ? Math.max(0, Math.min(1, (now - openedAt) / waitingTotalMs))
+    : started
+      ? 1
+      : 0;
   return {
     started,
+    startAt,
+    endAt,
+    openedAt,
     waitingMs,
+    waitingTotalMs,
+    waitingProgress,
     remainingMs,
     progress,
     seconds: Math.max(1, Math.ceil(activeRemainingMs / 1000)),

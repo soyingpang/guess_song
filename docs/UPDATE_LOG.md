@@ -21,6 +21,31 @@
 
 ---
 
+## 2026-06-01 04:34 HKT
+
+類型：手機版 / 視覺 / 延遲過渡
+
+變更：
+- 手機開估延遲期間新增 `phoneRevealBridge` 玻璃卡，顯示「同步聲音中」、秒數、聲波動效和進度條。
+- 主持 state 新增 `revealAutoNextOpenedAt`，手機可用開估時間、答案展示開始時間和截止時間計算等待進度。
+- 手機等待補償時不顯示答案卡、歌名或開估特效；到最後 5 秒才切換成答案卡和 ring 倒數。
+- 手機和主持入口 cache version 更新到 `premium-mobile-12`，PWA / service worker cache 同步更新。
+
+影響：
+- 7 秒音訊延遲不再像卡住或空等，而是變成 app 內自然的同步過渡。
+- 玩家仍不會在聽完遠端音樂前看到答案。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Chrome mobile viewport 390x844 驗證：7 秒等待 window 內同步卡顯示、stage cue 隱藏、答案卡隱藏；短等待測試中進度條推進；補償後答案卡 `Song B` 顯示、倒數 ring 5→4，390px 無橫向溢出。
+- 本機截圖檢查同步卡排版：狀態 pill、聲波、倒數數字和進度條未互相遮擋，答案未提前曝光。
+
+下一步：
+- 正式頁部署後驗證：延遲期間顯示同步卡和進度，補償後答案卡出現並 5 秒倒數。
+
+---
+
 ## 2026-06-01 04:05 HKT
 
 類型：手機版 / 延遲補償 / 開估節奏

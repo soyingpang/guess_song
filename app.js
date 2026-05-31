@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-11";
+const APP_BUILD_VERSION = "premium-mobile-12";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -194,6 +194,7 @@ const state = {
   answerGraceEndsAt: 0,
   latencyCalibrationSamples: [],
   choiceAutoNextTimer: null,
+  revealAutoNextOpenedAt: 0,
   revealAutoNextEndsAt: 0,
   editingId: null,
   questionBag: [],
@@ -1731,6 +1732,7 @@ function isQuickPickAnswerWindowOpen() {
 
 function revealCurrentSongThenAutoNext(message, detail = "") {
   if (!state.currentSong || state.answered) return;
+  const revealedAt = Date.now();
   const autoNextDelayMs = revealAutoNextTotalDelayMs();
 
   state.answered = true;
@@ -1741,7 +1743,8 @@ function revealCurrentSongThenAutoNext(message, detail = "") {
   state.playEndsAt = 0;
   state.buzzOpen = false;
   state.playbackRevision += 1;
-  state.revealAutoNextEndsAt = Date.now() + autoNextDelayMs;
+  state.revealAutoNextOpenedAt = revealedAt;
+  state.revealAutoNextEndsAt = revealedAt + autoNextDelayMs;
   clearClipTimer();
   clearRemoteAnswerWindow();
   setResult(message, detail || `${answerLabel(state.currentSong)} · ${Math.ceil(autoNextDelayMs / 1000)} 秒後下一題`, "correct");
@@ -1757,6 +1760,7 @@ function scheduleRevealAutoNext() {
   const delay = Math.max(0, Number(state.revealAutoNextEndsAt || 0) - Date.now()) || revealAutoNextTotalDelayMs();
   state.choiceAutoNextTimer = window.setTimeout(() => {
     state.choiceAutoNextTimer = null;
+    state.revealAutoNextOpenedAt = 0;
     state.revealAutoNextEndsAt = 0;
     if (state.mode === "word" || state.currentQuestionId !== questionId || !state.answered) return;
     startRound(null, { autoplay: true });
@@ -1770,6 +1774,7 @@ function revealAutoNextTotalDelayMs() {
 function clearChoiceAutoNextTimer() {
   if (state.choiceAutoNextTimer) window.clearTimeout(state.choiceAutoNextTimer);
   state.choiceAutoNextTimer = null;
+  state.revealAutoNextOpenedAt = 0;
   state.revealAutoNextEndsAt = 0;
 }
 
@@ -3412,6 +3417,7 @@ function buildDisplayState() {
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
     playbackRevision: state.playbackRevision,
+    revealAutoNextOpenedAt: revealed ? Number(state.revealAutoNextOpenedAt || 0) : 0,
     revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
     revealAutoNextStartsAt: revealed && state.revealAutoNextEndsAt
       ? Number(state.revealAutoNextEndsAt) - REVEAL_AUTO_NEXT_DELAY_MS
@@ -3483,6 +3489,7 @@ function buildPlayerState(player) {
     remoteAudioDelayMs: state.remoteAudioLatencyMs,
     answerOpenUntil: remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,
     playbackRevision: state.playbackRevision,
+    revealAutoNextOpenedAt: revealed ? Number(state.revealAutoNextOpenedAt || 0) : 0,
     revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
     revealAutoNextStartsAt: revealed && state.revealAutoNextEndsAt
       ? Number(state.revealAutoNextEndsAt) - REVEAL_AUTO_NEXT_DELAY_MS
