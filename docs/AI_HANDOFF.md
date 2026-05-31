@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 15:48 HKT
+更新時間：2026-05-31 16:02 HKT
 
 ## 必讀順序
 
@@ -23,7 +23,7 @@
 - `display.html` 只保留做可選投影畫面；有大電視 / 投影時才開，不應成為手機全球版必需流程。
 - 現在沒有現場版分支；所有玩家手機都視為遠距手機玩家，輸入名字後直接加入並收聽主持廣播的電腦/分頁聲音或咪高峰聲音。
 - 約 10 位團友參與。
-- 預設使用同一間固定房，重開一局只重置分數，不重新開房；如要同時開多個場，可在主持頁 URL 加 `?room=fellowship-a` / `?room=fellowship-b` 分房。
+- 預設使用自動分房，重開一局只重置分數，不重新開房。主持直接開首頁時，系統會用 Firebase 佔房和主持心跳找第一間空房：原房、`-2`、`-3` 如此類推；如要固定活動房名，可在主持頁 URL 加 `?room=fellowship-a`。
 
 ## 最新玩法方向
 
@@ -74,7 +74,9 @@
 
 ## 重要狀態提醒
 
-2026-05-31 已加入並 live 驗證多房間 URL 模式：主持頁無 `room` 參數時仍用 `soyingpang-guess-song-fellowship-room`；有 `?room=...` 時主持頁、玩家 QR / 連結、投影連結和 Firebase room key 都跟該房間分開。同一瀏覽器開不同房間不會互相接管。GitHub Pages 已驗證 `codex-room-a` / `codex-room-b` 分別產生不同玩家連結和 Firebase meta，測試房已清理。
+2026-05-31 已加入自動分房：主持頁無 `room` 參數時會用 Firebase transaction 由 `soyingpang-guess-song-fellowship-room`、`...-2`、`...-3` 起找第一間空房，並用 `hostHeartbeatAt` 心跳避免仍在線的主持被誤搶。有 `?room=...` 時仍使用指定房間。
+
+2026-05-31 已加入並 live 驗證多房間 URL 模式：主持頁、玩家 QR / 連結、投影連結和 Firebase room key 都跟該房間分開。同一瀏覽器開不同房間不會互相接管。GitHub Pages 已驗證 `codex-room-a` / `codex-room-b` 分別產生不同玩家連結和 Firebase meta，測試房已清理。
 
 2026-05-31 已在 GitHub Pages 正式網址 `index.html?test=choice-auto-1` 驗證四選一自動流程：在線玩家全數選擇後會自動開估，5 秒後自動播放下一題。測試用 Firebase 玩家與事件已清理。
 
@@ -111,8 +113,8 @@
 - `app.js` 的 player state 仍保留 `mediaPlaying`、`videoId`、`audioUrl`、`start`、`end` 等欄位作相容；最新手機玩家不使用這些欄位播放 YouTube，只用題目狀態、快選估歌和分數同步。四選一 / 快選歌名選項仍只在正式播放或主持開放快選、且未開估時送給手機。
 - 遠端投影已支援：主持頁有 `displayConnections`，`display.html?room=...` 會送 `display-join`，主持頁用 `display-state` 推送 `buildDisplayState()`。這是 optional，不是手機全球版主流程。
 - 投影畫面不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設投影就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
-- 預設固定房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制；主持頁可用 `?room=custom-room` 開獨立場。不要再用 `makeRoomId()` 或 random room 作為預設；自訂房間只由 URL 明確指定。
-- 介面已做多輪美化。最新 cache version 是 `multi-room-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
+- 預設房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制；自動分房會加 `-2`、`-3` 等後綴，最多檢查 `AUTO_ROOM_MAX_CANDIDATES`。主持頁可用 `?room=custom-room` 開指定場。不要再用 `makeRoomId()` 或 random room 作為預設。
+- 介面已做多輪美化。最新 cache version 是 `auto-room-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm` MIME type。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。投影遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。
@@ -130,7 +132,7 @@
 - 手機四選一選項只應在正式播放中顯示；`buildPlayerState()` 不在非播放狀態送選項，`handleChoiceAnswer()` 亦會拒絕未正式播放時的答案。
 - 手機開咪應可在投影畫面聽到；主持頁仍接收原始 stream，並轉發到 display peer。現場仍要留意喇叭與手機距離，避免回音 / 嘯叫。
 - 外地投影同步靠 PeerJS 房間碼，不靠 localStorage；主持頁必須保持開住。
-- 主持頁預設固定房間碼；如 URL 帶 `room`，該場使用該自訂房間碼。「分數重置」只清場次資料，不踢走玩家或換 QR。
+- 主持頁預設自動分配房間碼；如 URL 帶 `room`，該場使用該自訂房間碼。「分數重置」只清場次資料，不踢走玩家或換 QR。
 - 前台畫面不再要求玩家/觀眾按「啟用聲音」。但個別遠端瀏覽器仍可能阻擋有聲 autoplay；這是瀏覽器政策，不應重新加可見聲音按鈕，除非用戶再改規格。
 - 前台不顯示四選一歌名選項。`buildDisplayState()` 對 display state 傳 `choices: []`，`display.js` 在 `choice` mode 不 render `stage-choice` 歌名；手機端 `buildPlayerState()` 仍正常提供四選一選項。
 - 主持頁已整理排版：普通桌面保留大影片預覽，超寬畫面才用影片與控制列並排；右側玩家/題庫是 sticky 卡片分組，底部 `result-bar` 改成淺色紙卡以提高可讀性。

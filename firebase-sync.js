@@ -134,8 +134,67 @@
     };
   }
 
+  async function claimHostRoom({ roomIds, instanceId, buildVersion, staleMs }) {
+    const firebase = await loadFirebase();
+    if (!firebase) return null;
+
+    const candidates = Array.isArray(roomIds) ? roomIds : [roomIds];
+    const cleanRoomIds = candidates
+      .map((roomId) => String(roomId || "").trim())
+      .filter(Boolean);
+    const ownerId = String(instanceId || "").trim();
+    const staleAfter = Math.max(30000, Number(staleMs || 120000));
+
+    for (const roomId of cleanRoomIds) {
+      const roomKey = firebaseKey(roomId);
+      const metaRef = firebase.ref(firebase.database, `rooms/${roomKey}/meta`);
+      const now = Date.now();
+
+      try {
+        const result = await firebase.runTransaction(
+          metaRef,
+          (current) => {
+            const meta = current && typeof current === "object" ? current : {};
+            const currentOwner = String(meta.hostInstanceId || "");
+            const heartbeatAt = Number(meta.hostHeartbeatAt || meta.updatedAt || 0);
+            const hostOnline = meta.hostOnline === true;
+            const sameOwner = ownerId && currentOwner === ownerId;
+            const stale = !heartbeatAt || now - heartbeatAt > staleAfter;
+
+            if (hostOnline && !sameOwner && !stale) return;
+
+            return {
+              ...meta,
+              roomId,
+              role: "host",
+              buildVersion,
+              hostOnline: true,
+              hostInstanceId: ownerId,
+              hostHeartbeatAt: now,
+              updatedAt: now,
+            };
+          },
+          { applyLocally: false }
+        );
+
+        if (result.committed) {
+          return {
+            roomId,
+            roomKey,
+            meta: result.snapshot.val(),
+          };
+        }
+      } catch {
+        // Try the next candidate; callers can still use PeerJS fallback.
+      }
+    }
+
+    return null;
+  }
+
   window.GuessSongFirebase = {
     isConfigured,
     createRoomClient,
+    claimHostRoom,
   };
 })();

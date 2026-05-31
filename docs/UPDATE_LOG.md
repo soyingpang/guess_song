@@ -21,6 +21,29 @@
 
 ---
 
+## 2026-05-31 16:14 HKT
+
+類型：規格 / 程式 / 自動分房
+
+摘要：
+- 主持人直接開首頁時，不再需要自己改 `room` 參數；系統會自動檢查並佔用第一間空房。
+- 自動順序是 `soyingpang-guess-song-fellowship-room`、`soyingpang-guess-song-fellowship-room-2`、`...-3`，最多檢查 `AUTO_ROOM_MAX_CANDIDATES` 間。
+- Firebase 新增主持佔房 transaction 和 `hostHeartbeatAt` 心跳，避免仍在線的主持被後來開頁誤搶。
+- 指定房間模式仍保留：如果主持頁 URL 帶 `?room=custom-room`，就只用該指定房間。
+- 將三個入口頁 cache version 更新到 `auto-room-1`。
+
+影響：
+- 多個主持人可以全部直接開同一個 GitHub Pages 首頁，系統自動分配不同場。
+- 玩家仍只需要掃當前主持頁 QR；QR / 玩家連結會自動帶正確房間。
+
+測試：
+- 待完成：推上 GitHub Pages 後用兩個正式首頁分頁驗證第一個主持取得原房，第二個主持自動取得 `-2` 房。
+
+後續：
+- 可再在主持頁顯示「目前是第幾個場」的簡短標籤，令多場活動更易分辨。
+
+---
+
 ## 2026-05-31 15:43 HKT
 
 類型：規格 / 程式 / 多房間

@@ -43,14 +43,12 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "multi-room-1";
+const APP_BUILD_VERSION = "auto-room-1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
-const ROOM_ID_CANDIDATES = [
-  DEFAULT_ROOM_ID,
-  `${DEFAULT_ROOM_ID}-2`,
-  `${DEFAULT_ROOM_ID}-3`,
-];
 const ROOM_ID_MAX_LENGTH = 80;
+const AUTO_ROOM_MAX_CANDIDATES = 30;
+const FIREBASE_HOST_HEARTBEAT_MS = 10000;
+const FIREBASE_HOST_STALE_MS = 120000;
 const HOST_TAKEOVER_DELAY_MS = 350;
 const ROOM_UNAVAILABLE_RETRY_MS = 700;
 const ROOM_UNAVAILABLE_RETRY_LIMIT = 4;
@@ -210,6 +208,7 @@ const state = {
   firebaseError: "",
   firebaseStartedAt: 0,
   firebaseSeenEventKeys: new Set(),
+  firebaseHostHeartbeatTimer: null,
   firebaseAudioPeers: new Map(),
   firebaseAudioSessionId: "",
   audioBroadcastActive: false,
@@ -370,8 +369,9 @@ function bindEvents() {
   els.resetButton.addEventListener("click", clearLibrary);
 }
 
-function initMultiplayer() {
-  initFirebaseHost();
+async function initMultiplayer() {
+  const firebaseRoomId = await initFirebaseHost();
+  if (firebaseRoomId === false) return;
 
   if (!window.Peer) {
     if (!state.firebaseReady) {
@@ -384,7 +384,7 @@ function initMultiplayer() {
     return;
   }
 
-  const roomId = resolveRoomId();
+  const roomId = firebaseRoomId || resolveRoomId();
   claimHostRoom(roomId);
   clearTimeout(state.hostClaimTimer);
   state.hostClaimTimer = window.setTimeout(() => {
@@ -395,7 +395,8 @@ function initMultiplayer() {
 async function initFirebaseHost() {
   if (!window.GuessSongFirebase?.isConfigured?.()) return;
 
-  const roomId = resolveRoomId();
+  const roomId = await resolveFirebaseRoomId();
+  if (!roomId) return false;
   state.roomId = roomId;
   state.playerUrl = buildPlayerUrl(roomId);
   state.displayUrl = buildDisplayUrl(roomId);
@@ -419,15 +420,20 @@ async function initFirebaseHost() {
 
     await firebase.update(["meta"], {
       hostOnline: true,
+      hostInstanceId,
+      hostHeartbeatAt: Date.now(),
       buildVersion: APP_BUILD_VERSION,
       updatedAt: Date.now(),
     });
     firebase.onDisconnectSet(["meta", "hostOnline"], false);
+    firebase.onDisconnectSet(["meta", "hostDisconnectedAt"], Date.now());
     firebase.onValue(["players"], handleFirebasePlayersSnapshot);
     firebase.onChildAdded(["events"], handleFirebasePlayerEvent);
+    startFirebaseHostHeartbeat();
 
     render();
     syncSurfaces();
+    return roomId;
   } catch (error) {
     state.firebaseReady = false;
     state.firebaseError = "Firebase 房間未能連線";
@@ -437,6 +443,66 @@ async function initFirebaseHost() {
   }
 }
 
+async function resolveFirebaseRoomId() {
+  const candidates = firebaseHostRoomCandidates();
+  state.roomId = candidates[0] || DEFAULT_ROOM_ID;
+  state.playerUrl = buildPlayerUrl(state.roomId);
+  state.displayUrl = buildDisplayUrl(state.roomId);
+  state.roomError = hasExplicitHostRoomId()
+    ? "檢查指定房間中"
+    : "自動尋找空房中";
+  renderPlayers();
+
+  const claim = await window.GuessSongFirebase.claimHostRoom?.({
+    roomIds: candidates,
+    instanceId: hostInstanceId,
+    buildVersion: APP_BUILD_VERSION,
+    staleMs: FIREBASE_HOST_STALE_MS,
+  });
+
+  if (claim?.roomId) {
+    const roomId = normalizeRoomId(claim.roomId) || DEFAULT_ROOM_ID;
+    localStorage.setItem(ROOM_ID_KEY, roomId);
+    if (!hasExplicitHostRoomId() && roomId !== DEFAULT_ROOM_ID) {
+      setResult("已自動開新房", `${roomId} · 玩家掃這頁 QR 即可加入`, "correct");
+    }
+    return roomId;
+  }
+
+  state.roomReady = false;
+  state.roomError = hasExplicitHostRoomId()
+    ? "指定房間已有主持人使用，請改房名或等對方完場"
+    : "暫時未能自動分配房間，請稍後再試";
+  state.playerUrl = "";
+  state.displayUrl = "";
+  render();
+  return "";
+}
+
+function startFirebaseHostHeartbeat() {
+  clearFirebaseHostHeartbeat();
+  const sendHeartbeat = () => {
+    if (!state.firebaseReady || !state.firebase || !state.roomId) return;
+    state.firebase.update(["meta"], {
+      hostOnline: true,
+      hostInstanceId,
+      hostHeartbeatAt: Date.now(),
+      buildVersion: APP_BUILD_VERSION,
+      updatedAt: Date.now(),
+    }).catch(() => {
+      state.firebaseError = "Firebase 主持心跳失敗";
+    });
+  };
+
+  sendHeartbeat();
+  state.firebaseHostHeartbeatTimer = window.setInterval(sendHeartbeat, FIREBASE_HOST_HEARTBEAT_MS);
+}
+
+function clearFirebaseHostHeartbeat() {
+  if (state.firebaseHostHeartbeatTimer) window.clearInterval(state.firebaseHostHeartbeatTimer);
+  state.firebaseHostHeartbeatTimer = null;
+}
+
 function resolveRoomId() {
   const roomId = requestedHostRoomId();
   localStorage.setItem(ROOM_ID_KEY, roomId);
@@ -444,7 +510,15 @@ function resolveRoomId() {
 }
 
 function requestedHostRoomId() {
-  return normalizeRoomId(new URLSearchParams(window.location.search).get("room")) || DEFAULT_ROOM_ID;
+  return explicitHostRoomId() || DEFAULT_ROOM_ID;
+}
+
+function explicitHostRoomId() {
+  return normalizeRoomId(new URLSearchParams(window.location.search).get("room"));
+}
+
+function hasExplicitHostRoomId() {
+  return Boolean(explicitHostRoomId());
 }
 
 function normalizeRoomId(value) {
@@ -459,8 +533,21 @@ function normalizeRoomId(value) {
 
 function hostRoomCandidates(roomId) {
   const normalizedRoomId = normalizeRoomId(roomId) || DEFAULT_ROOM_ID;
+  if (hasExplicitHostRoomId()) return [normalizedRoomId];
   if (normalizedRoomId !== DEFAULT_ROOM_ID) return [normalizedRoomId];
-  return ROOM_ID_CANDIDATES;
+  return autoRoomCandidates();
+}
+
+function firebaseHostRoomCandidates() {
+  const explicitRoomId = explicitHostRoomId();
+  return explicitRoomId ? [explicitRoomId] : autoRoomCandidates();
+}
+
+function autoRoomCandidates() {
+  return Array.from({ length: AUTO_ROOM_MAX_CANDIDATES }, (_, index) => {
+    if (index === 0) return DEFAULT_ROOM_ID;
+    return `${DEFAULT_ROOM_ID}-${index + 1}`;
+  });
 }
 
 function currentHostRoomId() {
@@ -646,6 +733,15 @@ function handleHostClaim(payload) {
 function releaseHostRoom(message) {
   clearTimeout(state.hostClaimTimer);
   clearTimeout(state.roomRetryTimer);
+  clearFirebaseHostHeartbeat();
+  state.firebase?.update(["meta"], {
+    hostOnline: false,
+    hostReleasedAt: Date.now(),
+    updatedAt: Date.now(),
+  }).catch(() => {});
+  state.firebase?.cleanup?.();
+  state.firebase = null;
+  state.firebaseReady = false;
   destroyRoomPeer();
   state.roomReady = false;
   state.roomError = message;
