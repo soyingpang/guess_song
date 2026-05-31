@@ -41,6 +41,7 @@
 - 產生並驗證 PNG icon 尺寸：192x192、512x512、180x180、512x512。
 - `git diff --check` 通過（只見既有 CRLF 提示）。
 - 本機 Chrome mobile viewport 390x844 驗證手機頁：manifest name/display/start_url/icons 正確、service worker 註冊成功、載入 `player.js?v=premium-mobile-6` 和 `pwa.js?v=premium-mobile-6`、8 個快選選項無橫向溢出。
+- GitHub Pages 正式網址已驗證 `manifest.webmanifest?v=premium-mobile-6`、`pwa.js?v=premium-mobile-6`、`sw.js?v=premium-mobile-6` 和 app icon 可載入；正式手機頁 manifest / meta / service worker 註冊成功，390x844 快選畫面無橫向溢出。
 
 後續：
 - 可再做 install prompt / iOS 加入主畫面提示，但要保持不打擾遊戲主流程。
