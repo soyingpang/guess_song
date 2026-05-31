@@ -37,7 +37,15 @@
 - 玩家仍只需要掃當前主持頁 QR；QR / 玩家連結會自動帶正確房間。
 
 測試：
-- 待完成：推上 GitHub Pages 後用兩個正式首頁分頁驗證第一個主持取得原房，第二個主持自動取得 `-2` 房。
+- `node --check app.js`
+- `node --check player.js`
+- `node --check display.js`
+- `node --check firebase-sync.js`
+- `node --check local-qr.js`
+- `git diff --check` 通過；只剩 Git 在 Windows 提示 LF 之後會轉 CRLF。
+- GitHub Pages 正式網址驗證通過：第一個首頁分頁取得 `soyingpang-guess-song-fellowship-room`，第二個首頁分頁自動取得 `soyingpang-guess-song-fellowship-room-2`，第三個首頁分頁自動取得 `soyingpang-guess-song-fellowship-room-3`。
+- 三個正式頁都載入 `app.js?v=auto-room-2`，且主持頁 QR / 玩家連結跟隨各自房間。
+- 測試完成後已關閉 Chrome 測試分頁，並清理測試建立的 `-2` / `-3` Firebase 房間。
 
 後續：
 - 可再在主持頁顯示「目前是第幾個場」的簡短標籤，令多場活動更易分辨。

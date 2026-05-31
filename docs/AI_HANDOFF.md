@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-05-31 16:02 HKT
+更新時間：2026-05-31 16:21 HKT
 
 ## 必讀順序
 
@@ -74,7 +74,7 @@
 
 ## 重要狀態提醒
 
-2026-05-31 已加入自動分房：主持頁無 `room` 參數時會用 Firebase transaction 由 `soyingpang-guess-song-fellowship-room`、`...-2`、`...-3` 起找第一間空房，並用 `hostHeartbeatAt` 心跳避免仍在線的主持被誤搶。有 `?room=...` 時仍使用指定房間。
+2026-05-31 已加入並 live 驗證自動分房：主持頁無 `room` 參數時會用 Firebase transaction 由 `soyingpang-guess-song-fellowship-room`、`...-2`、`...-3` 起找第一間空房，並用 `hostHeartbeatAt` 心跳避免仍在線的主持被誤搶。有 `?room=...` 時仍使用指定房間。正式網址已驗證三個首頁分頁會分別取得原房、`-2`、`-3`，測試房已清理。
 
 2026-05-31 已加入並 live 驗證多房間 URL 模式：主持頁、玩家 QR / 連結、投影連結和 Firebase room key 都跟該房間分開。同一瀏覽器開不同房間不會互相接管。GitHub Pages 已驗證 `codex-room-a` / `codex-room-b` 分別產生不同玩家連結和 Firebase meta，測試房已清理。
 
