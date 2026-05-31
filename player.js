@@ -119,6 +119,8 @@ const state = {
   lastResult: "",
   selectedAnswer: "",
   momentTimer: null,
+  scoreBurstTimer: null,
+  lastRenderedScore: null,
   lastMomentKey: "",
   lastLatencyCalibrationKey: "",
   latencyCalibrationStatus: "",
@@ -164,6 +166,8 @@ const els = {
   playerNameNote: document.querySelector(".join-form > .join-note"),
   playerStatus: document.querySelector("#playerStatus"),
   playerScore: document.querySelector("#playerScore"),
+  playerScoreValue: document.querySelector("#playerScoreValue"),
+  phoneScoreBurst: document.querySelector("#phoneScoreBurst"),
   playerRound: document.querySelector("#playerRound"),
   phoneStatus: document.querySelector("#phoneStatus"),
   phoneTitle: document.querySelector("#phoneTitle"),
@@ -802,7 +806,9 @@ function updateRemoteCountdownWindow(game, previousQuestionId = "") {
 
 function renderJoinedWaiting() {
   syncBodyState();
-  els.playerScore.textContent = "0 分";
+  state.lastRenderedScore = null;
+  setPlayerScoreText(0);
+  hideScoreBurst();
   els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
   els.phoneStatus.textContent = "已加入遊戲";
   els.phoneTitle.textContent = "等候主持開始";
@@ -2145,7 +2151,7 @@ function renderGame() {
   applyPlayerMode();
   updatePhoneAppState(game);
   updateLatencySettingUi(game);
-  els.playerScore.textContent = `${game.score || 0} 分`;
+  renderPlayerScore(game);
   els.playerRound.textContent = game.hasQuestion
     ? `第 ${game.round} 題 · ${teamLabel(game.team)}`
     : `未開始 · ${teamLabel(state.team)}`;
@@ -2213,6 +2219,56 @@ function openSettings() {
 function closeSettings() {
   els.settingsModal.hidden = true;
   els.phoneSettingsButton.focus();
+}
+
+function renderPlayerScore(game) {
+  const score = Number(game?.score || 0);
+  const previous = state.lastRenderedScore;
+  setPlayerScoreText(score);
+
+  if (previous !== null && score !== previous) {
+    showScoreChange(score - previous);
+  }
+  state.lastRenderedScore = score;
+}
+
+function setPlayerScoreText(score) {
+  const text = `${Number(score || 0)} 分`;
+  if (els.playerScoreValue) {
+    els.playerScoreValue.textContent = text;
+    return;
+  }
+  els.playerScore.textContent = text;
+}
+
+function showScoreChange(delta) {
+  if (!els.phoneScoreBurst || !els.playerScore || !delta) return;
+
+  clearTimeout(state.scoreBurstTimer);
+  const isUp = delta > 0;
+  els.phoneScoreBurst.hidden = false;
+  els.phoneScoreBurst.textContent = isUp ? `+${delta}` : String(delta);
+  els.phoneScoreBurst.dataset.type = isUp ? "up" : "down";
+  els.playerScore.classList.remove("is-score-pop", "is-score-down");
+  els.phoneScoreBurst.classList.remove("is-floating");
+  void els.phoneScoreBurst.offsetWidth;
+  els.playerScore.classList.add(isUp ? "is-score-pop" : "is-score-down");
+  els.phoneScoreBurst.classList.add("is-floating");
+
+  state.scoreBurstTimer = window.setTimeout(() => {
+    hideScoreBurst();
+  }, 1100);
+}
+
+function hideScoreBurst() {
+  clearTimeout(state.scoreBurstTimer);
+  state.scoreBurstTimer = null;
+  if (els.playerScore) els.playerScore.classList.remove("is-score-pop", "is-score-down");
+  if (els.phoneScoreBurst) {
+    els.phoneScoreBurst.hidden = true;
+    els.phoneScoreBurst.classList.remove("is-floating");
+    delete els.phoneScoreBurst.dataset.type;
+  }
 }
 
 function showResultMoment(message) {

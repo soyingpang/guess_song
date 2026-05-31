@@ -21,6 +21,30 @@
 
 ---
 
+## 2026-06-01 02:25 HKT
+
+類型：設計 / 程式 / 手機分數動畫
+
+摘要：
+- 手機分數格改為保留內部 `playerScoreValue`，避免重繪時清走分數動畫元素。
+- 新增 `phoneScoreBurst` 浮層：分數上升顯示 `+5` 綠色浮起，分數下降顯示 `-1` 紅色浮起。
+- 分數格加入加分 pulse 和扣分 shake 動畫，與現有 `phoneMoment` 高峰彈層配合。
+- 手機和主持入口 cache version 更新到 `premium-mobile-7`，PWA / service worker cache 同步更新。
+
+影響：
+- 答中、答錯扣分時手機端有即時且明確的遊戲回饋，手感更接近正式手機遊戲 app。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check pwa.js`、`node --check sw.js` 通過。
+- `manifest.webmanifest` JSON parse 通過。
+- `git diff --check` 通過（只見既有 CRLF 提示）。
+- 本機 Chrome mobile viewport 390x844 驗證：分數 10 → 15 顯示 `+5` / `up` / `is-score-pop`；15 → 14 顯示 `-1` / `down` / `is-score-down`；無橫向溢出。
+
+後續：
+- 可再做排行榜名次變動動畫，讓個人榜升跌更清楚。
+
+---
+
 ## 2026-06-01 02:08 HKT
 
 類型：設計 / 程式 / PWA app 外殼
