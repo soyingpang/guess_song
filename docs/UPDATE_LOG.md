@@ -41,6 +41,7 @@
 - 本機 Chrome mobile viewport 390x844 截圖檢查主答題畫面：scoreline 三欄固定，排行榜按鈕沒有掉行，題目與四選一選項沒有橫向溢出。
 - 本機 Chrome mobile viewport 390x844 驗證設定 modal：4 個設定列正常顯示，toggle 初始狀態正確。
 - 本機 Chrome mobile viewport 360x740 驗證快選 8 個選項：沒有橫向溢出，choice count 正確為 8。
+- GitHub Pages 正式網址已驗證 `player.js?v=premium-mobile-1` 載入成功，app bar 和 4 個設定列存在；模擬遊戲 state 後 scoreline 三欄固定、4 個選項沒有橫向溢出。
 
 後續：
 - 第二輪可再加「開估 / 答中」動畫、排行榜結算動效、更多 app-like microcopy 和實機手機檢查。
