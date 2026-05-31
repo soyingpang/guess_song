@@ -40,6 +40,7 @@
 - `git diff --check` 通過（只見既有 CRLF 提示）。
 - 本機 Chrome mobile viewport 390x844 模擬快選答中：moment 彈層顯示、8 個選項無橫向溢出。
 - 本機 Chrome mobile viewport 390x844 模擬排行榜：冠軍 badge 顯示、A/B 組領先狀態顯示，modal 排版正常。
+- GitHub Pages 正式網址已驗證 `player.js?v=premium-mobile-2` 載入成功；模擬答中後 `phoneMoment` 顯示 `correct` 狀態，8 個快選選項沒有橫向溢出。
 
 後續：
 - 下一輪可做開估後答案詳情頁、答錯冷卻倒數視覺化、結算勝方全屏動畫和實機手機微調。
