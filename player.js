@@ -54,6 +54,7 @@ const CONNECTION_PROFILES = [
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const DEFAULT_REMOTE_AUDIO_COUNTDOWN_DELAY_MS = 7000;
 const QUICK_PICK_COOLDOWN_MS = 5000;
+const AUDIO_UNLOCK_TIMEOUT_MS = 1200;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 const ENTRY_MODES = new Set(["remote"]);
@@ -110,6 +111,8 @@ const state = {
   entryNameReady: false,
   joined: false,
   connecting: false,
+  audioReady: false,
+  joinAudioUnlocking: false,
   reconnectAttempts: 0,
   reconnectTimer: null,
   connectionTimeout: null,
@@ -175,6 +178,7 @@ const els = {
   joinForm: document.querySelector("#joinForm"),
   playerModeField: document.querySelector("#playerModeField"),
   playerName: document.querySelector("#playerName"),
+  joinSubmitButton: document.querySelector("#joinSubmitButton"),
   playerNameLabel: document.querySelector('label[for="playerName"]'),
   playerNameLine: document.querySelector("#playerName")?.closest(".guess-line"),
   playerNameNote: document.querySelector(".join-form > .join-note"),
@@ -391,13 +395,21 @@ function updateJoinPreview() {
   if (els.phoneJoinRoomPill) {
     els.phoneJoinRoomPill.textContent = !roomId
       ? "連結錯誤"
+      : state.joinAudioUnlocking
+        ? "開聲中"
       : state.connecting
         ? "連線中"
-        : state.joined
-          ? "已入房"
-          : rawName
-            ? "準備好"
-            : "連線就緒";
+      : state.joined
+        ? "已入房"
+        : state.audioReady
+          ? "已開聲"
+        : rawName
+          ? "準備好"
+          : "連線就緒";
+  }
+  if (els.joinSubmitButton) {
+    els.joinSubmitButton.disabled = state.joinAudioUnlocking || state.connecting || state.joined;
+    els.joinSubmitButton.textContent = state.joinAudioUnlocking ? "開聲中..." : "開聲並加入";
   }
 }
 
@@ -409,7 +421,9 @@ function playJoinSubmitMotion() {
   window.setTimeout(() => els.joinForm?.classList.remove("is-joining"), 760);
 }
 
-function joinGame() {
+async function joinGame() {
+  if (state.joinAudioUnlocking || state.connecting || state.joined) return;
+
   const name = els.playerName.value.trim();
   if (!name) {
     setStatus("請先輸入名字");
@@ -427,7 +441,16 @@ function joinGame() {
   localStorage.setItem(PLAYER_REMOTE_MODE_KEY, "remote");
   hapticPulse(10);
   playJoinSubmitMotion();
+  state.joinAudioUnlocking = true;
+  if (els.joinSubmitButton) els.joinSubmitButton.disabled = true;
+  setStatus("正在開聲，請保持這個頁面");
   updateJoinPreview();
+
+  const unlocked = await primeRemoteListening();
+  state.joinAudioUnlocking = false;
+  state.audioReady = true;
+  setStatus(unlocked ? "已開聲，正在加入房間" : "已收到開聲點擊，正在加入房間");
+  notifyAudioReady();
   applyPlayerMode();
   startJoinWithSelectedMode();
 }
@@ -460,6 +483,8 @@ function startJoinWithSelectedMode() {
 function showJoinFormAfterFailure() {
   els.joinForm.hidden = false;
   els.joinForm.classList.remove("is-joining");
+  state.joinAudioUnlocking = false;
+  if (els.joinSubmitButton) els.joinSubmitButton.disabled = false;
   showNameStep();
 }
 
@@ -510,6 +535,7 @@ async function connectToFirebaseRoom({ resetAttempts = false } = {}) {
       connected: true,
       remoteMode: state.remoteMode,
       speakerMode: false,
+      audioReady: Boolean(state.audioReady),
       updatedAt: Date.now(),
     });
     firebase.onDisconnectSet(["players", state.playerId, "connected"], false);
@@ -703,6 +729,7 @@ function sendJoinMessage() {
     name: state.name,
     remoteMode: state.remoteMode,
     speakerMode: state.speakerMode,
+    audioReady: Boolean(state.audioReady),
   });
 }
 
@@ -1176,11 +1203,15 @@ function ensureRemoteUnlockAudioElement() {
 function primeRemoteListening() {
   if (state.hostAudioStream) {
     state.remoteAudioPrimed = true;
+    markAudioReady();
     playHostAudioBroadcast();
     return Promise.resolve(true);
   }
 
-  if (state.remoteAudioPrimed || state.remoteAudioPriming) return Promise.resolve(state.remoteAudioPrimed);
+  if (state.remoteAudioPrimed || state.remoteAudioPriming) {
+    if (state.remoteAudioPrimed) markAudioReady();
+    return Promise.resolve(state.remoteAudioPrimed);
+  }
 
   state.remoteAudioPriming = true;
   const tasks = [];
@@ -1219,17 +1250,15 @@ function primeRemoteListening() {
     // If the browser refuses this unlock path, the visible button remains as fallback.
   }
 
-  if (!tasks.length) return finishRemoteAudioPriming(synchronousUnlock);
+  if (!tasks.length || synchronousUnlock) return finishRemoteAudioPriming(synchronousUnlock);
 
-  return Promise.allSettled(tasks).then((results) => {
-    const unlocked = results.some((result) => result.status === "fulfilled");
-    return finishRemoteAudioPriming(unlocked);
-  });
+  return settleAudioUnlockTasks(tasks);
 }
 
 function finishRemoteAudioPriming(unlocked) {
   state.remoteAudioPriming = false;
   state.remoteAudioPrimed = state.remoteAudioPrimed || Boolean(unlocked);
+  if (state.remoteAudioPrimed) markAudioReady();
 
   const audio = state.remoteUnlockAudioElement;
   if (audio && !state.hostAudioStream) {
@@ -1244,6 +1273,62 @@ function finishRemoteAudioPriming(unlocked) {
   }
 
   return Promise.resolve(state.remoteAudioPrimed);
+}
+
+function settleAudioUnlockTasks(tasks) {
+  return new Promise((resolve) => {
+    let settled = 0;
+    let done = false;
+    const finish = (unlocked) => {
+      if (done) return;
+      done = true;
+      window.clearTimeout(timer);
+      resolve(finishRemoteAudioPriming(unlocked));
+    };
+    const timer = window.setTimeout(() => finish(false), AUDIO_UNLOCK_TIMEOUT_MS);
+
+    tasks.forEach((task) => {
+      Promise.resolve(task).then(
+        () => finish(true),
+        () => {
+          settled += 1;
+          if (settled >= tasks.length) finish(false);
+        }
+      );
+    });
+  });
+}
+
+function markAudioReady() {
+  if (state.audioReady) return;
+  state.audioReady = true;
+  notifyAudioReady();
+  updateJoinPreview();
+}
+
+function notifyAudioReady() {
+  if (!state.audioReady) return;
+
+  if (state.firebaseReady && state.firebase) {
+    state.firebase.update(["players", state.playerId], {
+      audioReady: true,
+      updatedAt: Date.now(),
+    }).catch(() => {
+      setStatus("開聲狀態同步失敗，請檢查網絡");
+    });
+    return;
+  }
+
+  if (state.connection?.open) {
+    try {
+      state.connection.send({
+        type: "audio-ready",
+        audioReady: true,
+      });
+    } catch {
+      setStatus("開聲狀態同步失敗，請檢查網絡");
+    }
+  }
 }
 
 async function handleFirebaseAudioOffer(offer) {

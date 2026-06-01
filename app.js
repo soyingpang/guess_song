@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-17";
+const APP_BUILD_VERSION = "premium-mobile-18";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -848,6 +848,7 @@ function setupPlayerConnection(connection) {
       endAudioBroadcastForPlayer(player.id);
       syncAllMicBroadcastTargets();
       renderPlayers();
+      renderQuiz();
       syncSurfaces();
     }
   });
@@ -887,6 +888,7 @@ function handlePlayerMessage(connection, message) {
     player.connection = connection;
     player.remoteMode = true;
     player.speakerMode = false;
+    player.audioReady = Boolean(message.audioReady);
     player.micActive = false;
     player.quickPickCooldownUntil = Number(player.quickPickCooldownUntil || 0);
     state.players[player.id] = player;
@@ -907,6 +909,7 @@ function handlePlayerMessage(connection, message) {
     sendPlayerState(player);
     schedulePlayerStateRetries(player, connection);
     renderPlayers();
+    renderQuiz();
     publishDisplayState();
     broadcastToPlayers();
     syncAudioBroadcastToPlayer(player);
@@ -922,6 +925,15 @@ function handlePlayerMessage(connection, message) {
   }
 
   if (message.type === "mic-stop") {
+    return;
+  }
+
+  if (message.type === "audio-ready") {
+    player.audioReady = Boolean(message.audioReady);
+    player.updatedAt = Date.now();
+    publishFirebasePlayerRecord(player);
+    renderPlayers();
+    renderQuiz();
     return;
   }
 
@@ -1484,6 +1496,7 @@ function handleFirebasePlayersSnapshot(playersById) {
     player.firebase = true;
     player.remoteMode = true;
     player.speakerMode = false;
+    player.audioReady = Boolean(record.audioReady);
     player.quickPickCooldownUntil = Number(player.quickPickCooldownUntil || 0);
     state.players[player.id] = player;
   });
@@ -1498,6 +1511,7 @@ function handleFirebasePlayersSnapshot(playersById) {
   });
 
   renderPlayers();
+  renderQuiz();
   publishDisplayState();
   broadcastToPlayers();
   if (state.audioBroadcastActive) broadcastAudioToRemotePlayers();
@@ -1514,6 +1528,15 @@ function handleFirebasePlayerEvent(event, key) {
   const player = state.players[String(event.playerId || "")];
   const message = event.message || event;
   if (!player || !message || typeof message !== "object") return;
+
+  if (message.type === "audio-ready") {
+    player.audioReady = Boolean(message.audioReady);
+    player.updatedAt = Date.now();
+    publishFirebasePlayerRecord(player);
+    renderPlayers();
+    renderQuiz();
+    return;
+  }
 
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
@@ -1548,6 +1571,7 @@ function publishFirebasePlayerRecord(player) {
     score: Number(player.score || 0),
     connected: Boolean(player.connected),
     remoteMode: true,
+    audioReady: Boolean(player.audioReady),
     updatedAt: Date.now(),
   }).catch(() => {
     state.firebaseError = "Firebase 玩家同步失敗";
@@ -2063,11 +2087,14 @@ function startNextQuestion() {
     return;
   }
 
+  if (!requirePlayersAudioReady("下一題播放")) return;
   startRound(null, { autoplay: true });
 }
 
 function startRound(preferredSongId, options = {}) {
   const { autoplay = false, frontReady = false } = options;
+  if (autoplay && !requirePlayersAudioReady("開始播放")) return;
+
   const pool = playableSongs();
 
   clearChoiceAutoNextTimer();
@@ -2217,6 +2244,8 @@ function playCurrentClip() {
     return;
   }
 
+  if (!requirePlayersAudioReady("重播片段")) return;
+
   if (!state.currentSong) {
     setResult("先加入一首歌", "", "");
     return;
@@ -2239,6 +2268,8 @@ function playCurrentClip() {
 }
 
 function playBirthdaySong() {
+  if (!requirePlayersAudioReady("播放生日歌")) return;
+
   clearChoiceAutoNextTimer();
   clearClipTimer();
   clearRemoteAnswerWindow();
@@ -2963,10 +2994,32 @@ function isRoomBlocked() {
   return Boolean(state.roomError) && !state.roomReady;
 }
 
+function playersMissingAudioReady() {
+  return rosterPlayers().filter((player) => player.connected && player.remoteMode !== false && !player.audioReady);
+}
+
+function audioReadyGateLabel(players = playersMissingAudioReady()) {
+  if (!players.length) return "";
+  const names = players.slice(0, 3).map((player) => player.name).join("、");
+  const suffix = players.length > 3 ? ` 等 ${players.length} 人` : "";
+  return `${names}${suffix} 未開聲`;
+}
+
+function requirePlayersAudioReady(actionLabel = "開始播放") {
+  const pending = playersMissingAudioReady();
+  if (!pending.length) return true;
+
+  setResult("等待玩家開聲", `${audioReadyGateLabel(pending)}，${actionLabel} 已暫停`, "");
+  renderPlayers();
+  return false;
+}
+
 function renderQuiz() {
   const hasSong = Boolean(state.currentSong);
   const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const roomBlocked = isRoomBlocked();
+  const waitingForAudioReady = Boolean(playersMissingAudioReady().length);
+  const audioReadyTitle = waitingForAudioReady ? `等待：${audioReadyGateLabel()}` : "";
   const songlistLabel = activeSonglistLabel();
   els.roundLabel.textContent = hasActiveQuestion() ? `第 ${state.round} 題` : "未有題目";
   els.quizTitle.textContent = hasWord
@@ -3013,13 +3066,19 @@ function renderQuiz() {
   els.playButton.textContent = state.isPlaying ? "播放中" : "重播片段";
   els.replayButton.textContent = "重播片段";
   els.nextButton.textContent = state.mode === "word" ? "下一主題" : "下一題播放";
-  els.playButton.disabled = roomBlocked || state.mode === "word" || !hasSong || state.isPlaying;
-  els.replayButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
+  els.playButton.disabled = roomBlocked || waitingForAudioReady || state.mode === "word" || !hasSong || state.isPlaying;
+  els.replayButton.disabled = roomBlocked || waitingForAudioReady || state.mode === "word" || !hasSong;
   els.stopButton.disabled = roomBlocked || !state.isPlaying;
   els.hintButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
   els.skipButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered;
-  els.nextButton.disabled = roomBlocked;
-  if (els.birthdayButton) els.birthdayButton.disabled = false;
+  els.nextButton.disabled = roomBlocked || waitingForAudioReady;
+  els.playButton.title = audioReadyTitle;
+  els.replayButton.title = audioReadyTitle;
+  els.nextButton.title = audioReadyTitle;
+  if (els.birthdayButton) {
+    els.birthdayButton.disabled = waitingForAudioReady;
+    els.birthdayButton.title = audioReadyTitle;
+  }
   els.duration60Button.disabled = roomBlocked;
   els.duration30Button.disabled = roomBlocked;
   els.duration15Button.disabled = roomBlocked;
@@ -3171,14 +3230,17 @@ function renderLibrary() {
 
 function renderPlayers() {
   const players = rosterPlayers();
+  const pendingAudio = playersMissingAudioReady();
+  const audioReadySuffix = pendingAudio.length ? ` · 等 ${audioReadyGateLabel(pendingAudio)}` : "";
   els.playerCount.textContent = `${players.length} 位`;
-  els.roomStatus.textContent = state.roomError
+  const baseRoomStatus = state.roomError
     ? state.roomError
     : state.firebaseReady
       ? `Firebase 全球房間：${state.roomId} · 可連線`
       : state.roomReady
       ? `房間：${state.roomId} · 投影 ${state.displayConnections.size} 個 · 可連線`
       : `房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
+  els.roomStatus.textContent = `${baseRoomStatus}${audioReadySuffix}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   els.copyDisplayLinkButton.disabled = !state.displayUrl;
   renderHostJoinQr();
@@ -3203,6 +3265,11 @@ function renderPlayers() {
     name.textContent = `${index + 1}. ${player.name}`;
     meta.textContent = `${teamLabel(player.team)} · 手機版 · ${player.connected ? "已連線" : "離線"}`;
     info.append(name, meta);
+
+    const audioStatus = document.createElement("b");
+    audioStatus.className = `player-audio-ready ${player.audioReady ? "is-ready" : "is-pending"}`;
+    audioStatus.textContent = player.audioReady ? "已開聲" : "未開聲";
+    info.append(audioStatus);
 
     const score = document.createElement("strong");
     score.className = "player-score";
@@ -3618,6 +3685,7 @@ function stripPlayer(player) {
     score: player.score,
     connected: Boolean(player.connected),
     micActive: false,
+    audioReady: Boolean(player.audioReady),
   };
 }
 
@@ -3645,6 +3713,7 @@ function resolveJoiningPlayer(playerId, name) {
     micStream: null,
     remoteMode: true,
     speakerMode: false,
+    audioReady: false,
     quickPickCooldownUntil: 0,
   };
 }

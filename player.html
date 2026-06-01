@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-17" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-18" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-17" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-18" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -3812,9 +3812,9 @@
           <label for="playerName">你的名字</label>
           <div class="guess-line">
             <input id="playerName" required autocomplete="name" maxlength="18" placeholder="輸入名字" />
-            <button class="primary-button" type="submit">加入</button>
+            <button class="primary-button" id="joinSubmitButton" type="submit">開聲並加入</button>
           </div>
-          <p class="join-note">輸入名字後直接加入手機版房間。</p>
+          <p class="join-note">按一下會先開聲，主持開始前會確認每部手機已準備。</p>
         </form>
 
         <div class="player-status" id="playerStatus">掃 QR 後輸入名字加入</div>
@@ -4032,10 +4032,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-17"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-17"></script>
+    <script src="./firebase-config.js?v=premium-mobile-18"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-18"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-17"></script>
-    <script src="./pwa.js?v=premium-mobile-17"></script>
+    <script src="./player.js?v=premium-mobile-18"></script>
+    <script src="./pwa.js?v=premium-mobile-18"></script>
   </body>
 </html>
