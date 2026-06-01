@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-18";
+const APP_BUILD_VERSION = "premium-mobile-19";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -88,12 +88,16 @@ const PLAY_DURATIONS = [60, 30, 15];
 const PLAY_START_MODES = ["beginning", "random"];
 const CHOICE_OPTION_COUNT = 4;
 const REVEAL_AUTO_NEXT_DELAY_MS = 5000;
-const QUICK_PICK_OPTION_COUNT = 8;
+const DEFAULT_QUICK_PICK_OPTION_COUNT = 6;
+const QUICK_PICK_OPTION_COUNTS = [4, 6, 8];
 const QUICK_PICK_CORRECT_POINTS = 5;
 const QUICK_PICK_WRONG_POINTS = -1;
 const QUICK_PICK_COOLDOWN_MS = 5000;
 const DEFAULT_REMOTE_AUDIO_LATENCY_MS = 7000;
-const REMOTE_AUDIO_LATENCY_OPTIONS = [5000, 7000, 10000];
+const MIN_REMOTE_AUDIO_LATENCY_MS = 0;
+const MAX_REMOTE_AUDIO_LATENCY_MS = 15000;
+const LATENCY_STEP_MS = 500;
+const REMOTE_AUDIO_LATENCY_PRESETS = [5000, 7000, 10000];
 const RANDOM_START_MIN_SECONDS = 45;
 const RANDOM_START_MAX_END_SECONDS = 180;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
@@ -168,6 +172,7 @@ const state = {
   mode: "choice",
   difficulty: "easy",
   category: "all",
+  selectedCategories: [],
   cloudLibraryId: DEFAULT_CLOUD_LIBRARY_ID,
   round: 0,
   revealed: false,
@@ -179,6 +184,7 @@ const state = {
   playDuration: DEFAULT_PLAY_DURATION_SECONDS,
   playStartMode: "beginning",
   remoteAudioLatencyMs: savedHostSettings.remoteAudioLatencyMs,
+  quickPickOptionCount: savedHostSettings.quickPickOptionCount,
   currentClipStart: CLIP_START_SECONDS,
   playEndsAt: 0,
   playbackRevision: 0,
@@ -250,6 +256,8 @@ const els = {
   latency5Button: document.querySelector("#latency5Button"),
   latency7Button: document.querySelector("#latency7Button"),
   latency10Button: document.querySelector("#latency10Button"),
+  latencyCustomInput: document.querySelector("#latencyCustomInput"),
+  applyLatencyCustomButton: document.querySelector("#applyLatencyCustomButton"),
   latencyStatus: document.querySelector("#latencyStatus"),
   latencyCalibrationCard: document.querySelector("#latencyCalibrationCard"),
   latencyCalibrationTitle: document.querySelector("#latencyCalibrationTitle"),
@@ -258,6 +266,9 @@ const els = {
   choiceModeButton: document.querySelector("#choiceModeButton"),
   buzzModeButton: document.querySelector("#buzzModeButton"),
   wordModeButton: document.querySelector("#wordModeButton"),
+  quickPick4Button: document.querySelector("#quickPick4Button"),
+  quickPick6Button: document.querySelector("#quickPick6Button"),
+  quickPick8Button: document.querySelector("#quickPick8Button"),
   judgeControls: document.querySelector("#judgeControls"),
   markCorrectButton: document.querySelector("#markCorrectButton"),
   markWrongButton: document.querySelector("#markWrongButton"),
@@ -269,6 +280,7 @@ const els = {
   teamAScore: document.querySelector("#teamAScore"),
   teamBScore: document.querySelector("#teamBScore"),
   categoryFilter: document.querySelector("#categoryFilter"),
+  categoryGrid: document.querySelector("#categoryGrid"),
   guessForm: document.querySelector("#guessForm"),
   guessInput: document.querySelector("#guessInput"),
   choices: document.querySelector("#choices"),
@@ -345,11 +357,18 @@ function bindEvents() {
   els.latency5Button?.addEventListener("click", () => setRemoteAudioLatency(5000));
   els.latency7Button?.addEventListener("click", () => setRemoteAudioLatency(7000));
   els.latency10Button?.addEventListener("click", () => setRemoteAudioLatency(10000));
+  els.applyLatencyCustomButton?.addEventListener("click", applyCustomLatency);
+  els.latencyCustomInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") applyCustomLatency();
+  });
   els.applyLatencyCalibrationButton?.addEventListener("click", applyLatencyCalibrationSuggestion);
 
   els.choiceModeButton.addEventListener("click", () => setMode("choice"));
   els.buzzModeButton.addEventListener("click", () => setMode("buzz"));
   els.wordModeButton.addEventListener("click", () => setMode("word"));
+  els.quickPick4Button?.addEventListener("click", () => setQuickPickOptionCount(4));
+  els.quickPick6Button?.addEventListener("click", () => setQuickPickOptionCount(6));
+  els.quickPick8Button?.addEventListener("click", () => setQuickPickOptionCount(8));
   els.markCorrectButton.addEventListener("click", () => judgeBuzzWinner(true));
   els.markWrongButton.addEventListener("click", () => judgeBuzzWinner(false));
   els.reopenBuzzButton.addEventListener("click", () => reopenBuzz());
@@ -359,8 +378,9 @@ function bindEvents() {
   });
   els.startWordButton.addEventListener("click", () => startWordRound(els.wordInput.value));
 
-  els.categoryFilter.addEventListener("change", () => {
+  els.categoryFilter?.addEventListener("change", () => {
     state.category = els.categoryFilter.value;
+    state.selectedCategories = state.category === "all" ? [] : [state.category];
     state.questionBag = [];
     startRound();
   });
@@ -2016,7 +2036,10 @@ function loadScore() {
 }
 
 function loadHostSettings() {
-  const fallback = { remoteAudioLatencyMs: DEFAULT_REMOTE_AUDIO_LATENCY_MS };
+  const fallback = {
+    remoteAudioLatencyMs: DEFAULT_REMOTE_AUDIO_LATENCY_MS,
+    quickPickOptionCount: DEFAULT_QUICK_PICK_OPTION_COUNT,
+  };
   const raw = localStorage.getItem(HOST_SETTINGS_KEY);
   if (!raw) return fallback;
 
@@ -2025,6 +2048,7 @@ function loadHostSettings() {
     return {
       ...fallback,
       remoteAudioLatencyMs: normalizeRemoteAudioLatency(settings.remoteAudioLatencyMs),
+      quickPickOptionCount: normalizeQuickPickOptionCount(settings.quickPickOptionCount),
     };
   } catch {
     return fallback;
@@ -2036,19 +2060,27 @@ function saveHostSettings() {
     HOST_SETTINGS_KEY,
     JSON.stringify({
       remoteAudioLatencyMs: normalizeRemoteAudioLatency(state.remoteAudioLatencyMs),
+      quickPickOptionCount: normalizeQuickPickOptionCount(state.quickPickOptionCount),
     })
   );
 }
 
 function normalizeRemoteAudioLatency(value) {
   const numeric = Number(value);
-  const ms = numeric > 0 && numeric < 100 ? numeric * 1000 : numeric;
-  return REMOTE_AUDIO_LATENCY_OPTIONS.includes(ms) ? ms : DEFAULT_REMOTE_AUDIO_LATENCY_MS;
+  if (!Number.isFinite(numeric)) return DEFAULT_REMOTE_AUDIO_LATENCY_MS;
+  const rawMs = numeric >= 0 && numeric <= 30 ? numeric * 1000 : numeric;
+  const clamped = Math.max(MIN_REMOTE_AUDIO_LATENCY_MS, Math.min(MAX_REMOTE_AUDIO_LATENCY_MS, rawMs));
+  return Math.round(clamped / LATENCY_STEP_MS) * LATENCY_STEP_MS;
 }
 
 function formatLatencySeconds(ms) {
   const seconds = normalizeRemoteAudioLatency(ms) / 1000;
-  return `${seconds} 秒`;
+  return `${String(Number.isInteger(seconds) ? seconds : seconds.toFixed(1)).replace(/\.0$/, "")} 秒`;
+}
+
+function normalizeQuickPickOptionCount(value) {
+  const numeric = Number(value);
+  return QUICK_PICK_OPTION_COUNTS.includes(numeric) ? numeric : DEFAULT_QUICK_PICK_OPTION_COUNT;
 }
 
 function cleanSong(song) {
@@ -2135,7 +2167,11 @@ function startRound(preferredSongId, options = {}) {
   state.currentSong = song;
   state.latencyCalibrationSamples = [];
   state.currentWord = "";
-  state.currentChoices = makeChoices(song, pool, state.mode === "buzz" ? QUICK_PICK_OPTION_COUNT : CHOICE_OPTION_COUNT);
+  state.currentChoices = makeChoices(
+    song,
+    pool,
+    state.mode === "buzz" ? state.quickPickOptionCount : CHOICE_OPTION_COUNT
+  );
   state.round += 1;
   state.revealed = false;
   state.answered = false;
@@ -2194,8 +2230,9 @@ function startWordRound(preferredWord = "") {
 
 function playableSongs() {
   const approved = approvedSongs();
-  if (state.category === "all") return approved;
-  return approved.filter((song) => song.category === state.category);
+  const selected = activeCategorySet();
+  if (!selected.size) return approved;
+  return approved.filter((song) => selected.has(song.category));
 }
 
 function approvedSongs() {
@@ -2512,7 +2549,11 @@ function setMode(mode) {
   } else {
     state.currentWord = "";
     state.currentChoices = state.currentSong
-      ? makeChoices(state.currentSong, playableSongs(), mode === "buzz" ? QUICK_PICK_OPTION_COUNT : CHOICE_OPTION_COUNT)
+      ? makeChoices(
+          state.currentSong,
+          playableSongs(),
+          mode === "buzz" ? state.quickPickOptionCount : CHOICE_OPTION_COUNT
+        )
       : [];
     setResult(mode === "choice" ? "四選一模式" : "快選估歌模式", "按下一題播放", "");
   }
@@ -2550,6 +2591,24 @@ function setRemoteAudioLatency(ms) {
   }
 
   setResult("手機延遲補償已更新", `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}`, "");
+  render();
+}
+
+function applyCustomLatency() {
+  const rawSeconds = els.latencyCustomInput?.value;
+  const nextLatencyMs = normalizeRemoteAudioLatency(rawSeconds);
+  setRemoteAudioLatency(nextLatencyMs);
+}
+
+function setQuickPickOptionCount(count) {
+  state.quickPickOptionCount = normalizeQuickPickOptionCount(count);
+  saveHostSettings();
+
+  if (state.currentSong && state.mode === "buzz" && !state.answered) {
+    state.currentChoices = makeChoices(state.currentSong, playableSongs(), state.quickPickOptionCount);
+  }
+
+  setResult("快選數量已更新", `快選估歌會顯示 ${state.quickPickOptionCount} 個選項`, "");
   render();
 }
 
@@ -2615,9 +2674,7 @@ function latencyCalibrationSummary() {
 }
 
 function nearestLatencyOption(ms) {
-  return REMOTE_AUDIO_LATENCY_OPTIONS.reduce((best, option) =>
-    Math.abs(option - ms) < Math.abs(best - ms) ? option : best
-  , DEFAULT_REMOTE_AUDIO_LATENCY_MS);
+  return normalizeRemoteAudioLatency(ms);
 }
 
 function formatLatencySampleSeconds(ms) {
@@ -2784,6 +2841,7 @@ function saveSongFromForm() {
 
   state.editingId = null;
   state.category = song.category || "all";
+  state.selectedCategories = song.category ? [song.category] : [];
   saveSongs();
   resetForm();
   render();
@@ -2878,7 +2936,8 @@ function selectedCloudLibrary() {
 }
 
 function activeSonglistLabel() {
-  if (state.category && state.category !== "all") return state.category;
+  const selected = Array.from(activeCategorySet());
+  if (selected.length) return selected.map(shortCategoryLabel).join("、");
   return cloudLibraryById(state.cloudLibraryId).label || "估歌仔";
 }
 
@@ -2900,6 +2959,7 @@ async function loadCloudLibrary({ silent, libraryId } = {}) {
 
     state.songs = dedupeSongs(songs);
     state.category = "all";
+    state.selectedCategories = [];
     state.questionBag = [];
     saveSongs();
     setResult(library.loadedMessage, `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
@@ -2945,7 +3005,7 @@ function ensureChoiceOptions(song) {
   state.currentChoices = makeChoices(
     song,
     pool.length ? pool : [song],
-    state.mode === "buzz" ? QUICK_PICK_OPTION_COUNT : CHOICE_OPTION_COUNT
+    state.mode === "buzz" ? state.quickPickOptionCount : CHOICE_OPTION_COUNT
   );
   return state.currentChoices;
 }
@@ -2972,22 +3032,87 @@ function renderScore() {
 function renderCategoryFilter() {
   const categories = Array.from(new Set(approvedSongs().map((song) => song.category).filter(Boolean))).sort();
   const previous = els.categoryFilter.value || state.category;
-  els.categoryFilter.innerHTML = "";
+  if (els.categoryFilter) els.categoryFilter.innerHTML = "";
 
   const all = document.createElement("option");
   all.value = "all";
   all.textContent = "全部歌單";
-  els.categoryFilter.append(all);
+  els.categoryFilter?.append(all);
 
   categories.forEach((category) => {
     const option = document.createElement("option");
     option.value = category;
     option.textContent = category;
-    els.categoryFilter.append(option);
+    els.categoryFilter?.append(option);
   });
 
   state.category = categories.includes(previous) ? previous : "all";
-  els.categoryFilter.value = state.category;
+  state.selectedCategories = state.selectedCategories.filter((category) => categories.includes(category));
+  if (els.categoryFilter) els.categoryFilter.value = state.category;
+  renderCategoryGrid(categories);
+}
+
+function renderCategoryGrid(categories) {
+  if (!els.categoryGrid) return;
+  const selected = activeCategorySet();
+  els.categoryGrid.innerHTML = "";
+
+  const allTile = categoryTileButton("all", "全部", !selected.size);
+  els.categoryGrid.append(allTile);
+
+  categories
+    .slice()
+    .sort(compareCategoryLabels)
+    .forEach((category) => {
+      els.categoryGrid.append(categoryTileButton(category, shortCategoryLabel(category), selected.has(category)));
+    });
+}
+
+function categoryTileButton(category, label, active) {
+  const button = document.createElement("button");
+  button.className = `category-tile${active ? " is-active" : ""}`;
+  button.type = "button";
+  button.textContent = label;
+  button.setAttribute("aria-pressed", String(active));
+  button.addEventListener("click", () => toggleCategoryFilter(category));
+  return button;
+}
+
+function toggleCategoryFilter(category) {
+  if (category === "all") {
+    state.selectedCategories = [];
+    state.category = "all";
+  } else {
+    const selected = activeCategorySet();
+    if (selected.has(category)) selected.delete(category);
+    else selected.add(category);
+    state.selectedCategories = Array.from(selected);
+    state.category = state.selectedCategories.length === 1 ? state.selectedCategories[0] : "all";
+  }
+
+  state.questionBag = [];
+  startRound();
+}
+
+function activeCategorySet() {
+  return new Set(state.selectedCategories || []);
+}
+
+function compareCategoryLabels(left, right) {
+  return categorySortKey(left) - categorySortKey(right) || left.localeCompare(right);
+}
+
+function categorySortKey(category) {
+  if (category.includes("詩歌")) return 10;
+  const match = category.match(/(\d{2,4})/);
+  if (!match) return 900;
+  const value = Number(match[1]);
+  return value < 100 ? value + 1900 : value;
+}
+
+function shortCategoryLabel(category) {
+  if (/^\d+年代/.test(category)) return category.replace("流行曲", "");
+  return category.replace("熱門新歌", "新歌").replace("流行曲", "");
 }
 
 function isRoomBlocked() {
@@ -3049,13 +3174,17 @@ function renderQuiz() {
   els.latency5Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 5000);
   els.latency7Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 7000);
   els.latency10Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 10000);
+  if (els.latencyCustomInput) els.latencyCustomInput.value = String(state.remoteAudioLatencyMs / 1000).replace(/\.0$/, "");
   if (els.latencyStatus) {
-    els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可按實測延遲即場調整`;
+    els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可用快捷鍵或自訂秒數`;
   }
   renderLatencyCalibrationUi();
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
   els.wordModeButton.classList.toggle("is-active", state.mode === "word");
+  els.quickPick4Button?.classList.toggle("is-active", state.quickPickOptionCount === 4);
+  els.quickPick6Button?.classList.toggle("is-active", state.quickPickOptionCount === 6);
+  els.quickPick8Button?.classList.toggle("is-active", state.quickPickOptionCount === 8);
   els.showLeaderboardButton.classList.toggle("is-active", state.showLeaderboard);
   els.showWinnerButton.classList.toggle("is-active", state.showWinner);
   els.openDisplayButton.disabled = roomBlocked || !state.displayUrl;
@@ -3087,9 +3216,14 @@ function renderQuiz() {
   if (els.latency5Button) els.latency5Button.disabled = roomBlocked;
   if (els.latency7Button) els.latency7Button.disabled = roomBlocked;
   if (els.latency10Button) els.latency10Button.disabled = roomBlocked;
+  if (els.latencyCustomInput) els.latencyCustomInput.disabled = roomBlocked;
+  if (els.applyLatencyCustomButton) els.applyLatencyCustomButton.disabled = roomBlocked;
   els.choiceModeButton.disabled = roomBlocked;
   els.buzzModeButton.disabled = roomBlocked;
   els.wordModeButton.disabled = roomBlocked;
+  if (els.quickPick4Button) els.quickPick4Button.disabled = roomBlocked;
+  if (els.quickPick6Button) els.quickPick6Button.disabled = roomBlocked;
+  if (els.quickPick8Button) els.quickPick8Button.disabled = roomBlocked;
   els.judgeControls.hidden = !["buzz", "word"].includes(state.mode);
   els.wordControls.hidden = state.mode !== "word";
   els.markCorrectButton.hidden = state.mode === "buzz";

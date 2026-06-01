@@ -55,6 +55,8 @@ const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
 const DEFAULT_REMOTE_AUDIO_COUNTDOWN_DELAY_MS = 7000;
 const QUICK_PICK_COOLDOWN_MS = 5000;
 const AUDIO_UNLOCK_TIMEOUT_MS = 1200;
+const HOST_AUDIO_HEALTH_CHECK_MS = 2500;
+const HOST_AUDIO_RETRY_GAP_MS = 3200;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 const ENTRY_MODES = new Set(["remote"]);
@@ -157,6 +159,7 @@ const state = {
   hostAudioElement: null,
   hostAudioBlocked: false,
   hostAudioStatus: "等候主持音訊",
+  hostAudioLastRetryAt: 0,
   firebase: null,
   firebaseReady: false,
   firebaseConnectedAt: 0,
@@ -367,6 +370,10 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden && state.joined && !state.connection?.open && !state.connecting) {
     scheduleReconnect("正在恢復連線");
   }
+  if (!document.hidden && state.joined && state.hostAudioStream) {
+    primeRemoteListening();
+    playHostAudioBroadcast({ quiet: true });
+  }
 });
 
 window.addEventListener("beforeunload", () => {
@@ -379,6 +386,7 @@ window.addEventListener("beforeunload", () => {
 });
 
 window.setInterval(updateLiveClock, 700);
+window.setInterval(checkHostAudioHealth, HOST_AUDIO_HEALTH_CHECK_MS);
 
 if (!roomId) {
   setStatus("QR 連結缺少房間碼，請重新掃描");
@@ -1136,16 +1144,17 @@ function setIconButton(button, iconName, label) {
   button.title = label;
 }
 
-function setListenButtonState(needsUnlock) {
+function setListenButtonState(needsUnlock, canRetry = false) {
   const button = els.phoneRemoteListenButton;
   if (!button) return;
 
   const icon = ICONS.volume || "";
-  const visibleLabel = needsUnlock ? "開聲" : "收聽";
-  const label = needsUnlock ? "啟用手機收聽" : "手機收聽已準備";
+  const visibleLabel = needsUnlock ? "開聲" : canRetry ? "重連" : "收聽";
+  const label = needsUnlock ? "啟用手機收聽" : canRetry ? "重新接駁主持音訊" : "手機收聽已準備";
   button.innerHTML = `${icon}<span class="phone-listen-label">${visibleLabel}</span><span class="visually-hidden">${label}</span>`;
   button.classList.add("icon-action-button");
   button.classList.toggle("is-needed", needsUnlock);
+  button.classList.toggle("is-retry", canRetry && !needsUnlock);
   button.setAttribute("aria-label", label);
   button.title = label;
 }
@@ -1619,7 +1628,8 @@ function attachVoiceBroadcastStream(sourcePlayerId, stream, sourceName) {
   playVoiceBroadcasts();
 }
 
-function playHostAudioBroadcast() {
+function playHostAudioBroadcast(options = {}) {
+  const { quiet = false } = options;
   const audio = state.hostAudioElement;
   if (!audio || !state.hostAudioStream) {
     state.hostAudioBlocked = false;
@@ -1629,7 +1639,8 @@ function playHostAudioBroadcast() {
 
   audio.muted = false;
   audio.volume = 1;
-  setHostAudioStatus("正在啟用主持音訊");
+  state.hostAudioLastRetryAt = Date.now();
+  if (!quiet) setHostAudioStatus("正在啟用主持音訊");
 
   const playPromise = audio.play();
   if (!playPromise?.then) {
@@ -1647,6 +1658,24 @@ function playHostAudioBroadcast() {
       state.hostAudioBlocked = true;
       setHostAudioStatus("請按「啟用收聽」");
     });
+}
+
+function checkHostAudioHealth() {
+  if (!state.joined || !state.hostAudioStream || !state.hostAudioElement) return;
+
+  const tracks = state.hostAudioStream.getAudioTracks?.() || [];
+  const hasLiveTrack = tracks.some((track) => track.readyState === "live");
+  if (!hasLiveTrack) {
+    stopHostAudioBroadcast({ closeCall: false, message: "主持音訊已中斷，等候重新接駁" });
+    return;
+  }
+
+  const audio = state.hostAudioElement;
+  const shouldRetry = state.hostAudioBlocked || audio.paused || audio.readyState === 0;
+  if (!shouldRetry) return;
+  if (Date.now() - Number(state.hostAudioLastRetryAt || 0) < HOST_AUDIO_RETRY_GAP_MS) return;
+
+  playHostAudioBroadcast({ quiet: true });
 }
 
 function playVoiceBroadcasts() {
@@ -1781,6 +1810,7 @@ function renderHostAudioBroadcastUi() {
   const hasHostAudio = Boolean(state.hostAudioStream);
   const hasPlayableAudio = hasHostAudio;
   const needsUnlock = Boolean(hasHostAudio && (state.hostAudioBlocked || !state.remoteAudioPrimed));
+  const canRetry = Boolean(hasHostAudio);
   const waitingForAudio = !hasPlayableAudio;
   const hasDefaultWaitingStatus =
     !state.hostAudioStatus ||
@@ -1792,9 +1822,10 @@ function renderHostAudioBroadcastUi() {
       ? primedListenStatus()
       : state.hostAudioStatus || defaultListenStatus();
   els.phoneRemoteListen?.classList.toggle("needs-unlock", needsUnlock);
-  setListenButtonState(needsUnlock);
-  els.phoneRemoteListenButton.hidden = !needsUnlock;
-  els.phoneRemoteListenButton.disabled = !needsUnlock;
+  els.phoneRemoteListen?.classList.toggle("can-retry", canRetry && !needsUnlock);
+  setListenButtonState(needsUnlock, canRetry);
+  els.phoneRemoteListenButton.hidden = !canRetry;
+  els.phoneRemoteListenButton.disabled = !canRetry;
 }
 
 function setPlayerMode(mode) {

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-18" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-19" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-18" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-19" />
   </head>
   <body>
     <div class="app-shell">
@@ -65,11 +65,12 @@
             </button>
           </div>
 
-          <div class="filter-row">
-            <label for="categoryFilter">只玩歌單 / 分類</label>
-            <select id="categoryFilter">
+          <div class="filter-row category-filter-panel">
+            <label for="categoryGrid">只玩年代 / 分類</label>
+            <select id="categoryFilter" hidden>
               <option value="all">全部歌單</option>
             </select>
+            <div class="category-grid" id="categoryGrid" role="group" aria-label="只玩年代或分類"></div>
           </div>
 
           <div class="transport-grid">
@@ -100,6 +101,12 @@
             <button class="segmented is-active" id="latency7Button" type="button">7 秒</button>
             <button class="segmented" id="latency10Button" type="button">10 秒</button>
           </div>
+          <div class="latency-custom-row">
+            <label for="latencyCustomInput">自訂延遲</label>
+            <input id="latencyCustomInput" type="number" inputmode="decimal" min="0" max="15" step="0.5" value="7" />
+            <span>秒</span>
+            <button class="ghost-button" id="applyLatencyCustomButton" type="button">套用</button>
+          </div>
           <p class="mode-helper" id="latencyStatus">手機倒數延遲 7 秒</p>
           <div class="latency-calibration-card" id="latencyCalibrationCard" hidden>
             <div>
@@ -115,6 +122,11 @@
             <button class="segmented is-active" id="choiceModeButton" type="button">一：四選一</button>
             <button class="segmented" id="buzzModeButton" type="button">二：快選估歌</button>
             <button class="segmented" id="wordModeButton" type="button">三：主題搶唱</button>
+          </div>
+          <div class="mode-row three quick-pick-row" role="group" aria-label="快選估歌選項數量">
+            <button class="segmented" id="quickPick4Button" type="button">快選 4</button>
+            <button class="segmented is-active" id="quickPick6Button" type="button">快選 6</button>
+            <button class="segmented" id="quickPick8Button" type="button">快選 8</button>
           </div>
 
           <div class="host-actions" id="judgeControls" hidden>
@@ -267,11 +279,11 @@
       </main>
     </div>
 
-    <script src="./firebase-config.js?v=premium-mobile-18"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-18"></script>
+    <script src="./firebase-config.js?v=premium-mobile-19"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-19"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./local-qr.js?v=premium-mobile-18"></script>
-    <script src="./app.js?v=premium-mobile-18"></script>
-    <script src="./pwa.js?v=premium-mobile-18"></script>
+    <script src="./local-qr.js?v=premium-mobile-19"></script>
+    <script src="./app.js?v=premium-mobile-19"></script>
+    <script src="./pwa.js?v=premium-mobile-19"></script>
   </body>
 </html>
