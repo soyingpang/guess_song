@@ -172,9 +172,6 @@ const state = {
   remoteCountdownWindow: null,
   remoteUnlockAudioElement: null,
   remoteAudioContext: null,
-  displayMicBroadcastCalls: new Map(),
-  displayMicBroadcastTargets: new Map(),
-  displayMicBroadcastRetryTimers: new Map(),
 };
 
 const els = {
@@ -305,7 +302,7 @@ els.buzzButton.addEventListener("click", () => {
   hapticPulse([18, 30, 18]);
   send({ type: "buzz", questionId: state.game?.questionId });
   els.buzzButton.disabled = true;
-  els.phoneResult.textContent = state.game?.mode === "word" ? "已送出搶唱" : "已送出搶答";
+  els.phoneResult.textContent = "已送出搶答";
 });
 
 els.micToggleButton?.addEventListener("click", () => {
@@ -833,17 +830,18 @@ function handleMessage(message) {
     const previousGame = state.game;
     const previousQuestionId = previousGame?.questionId;
     const previousStagePhase = phoneStagePhase(previousGame);
-    updateRemoteCountdownWindow(message, previousQuestionId);
-    state.game = message;
-    state.displayName = message.playerName || state.name;
-    state.team = normalizeTeam(message.team);
+    const gameMessage = sanitizeGameState(message);
+    updateRemoteCountdownWindow(gameMessage, previousQuestionId);
+    state.game = gameMessage;
+    state.displayName = gameMessage.playerName || state.name;
+    state.team = normalizeTeam(gameMessage.team);
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
     lockPlayerMode();
     els.joinForm.hidden = true;
     setStatus(joinedStatus());
-    if (previousQuestionId !== message.questionId) {
+    if (previousQuestionId !== gameMessage.questionId) {
       state.lastResult = "";
       state.selectedAnswer = "";
       state.lastLatencyCalibrationKey = "";
@@ -852,9 +850,9 @@ function handleMessage(message) {
       clearAnswerRevealEffect();
       hidePhoneMoment();
     }
-    if (message.selectedAnswer) state.selectedAnswer = message.selectedAnswer;
+    if (gameMessage.selectedAnswer) state.selectedAnswer = gameMessage.selectedAnswer;
     renderGame();
-    maybeShowStageTransition(message, previousGame, previousStagePhase);
+    maybeShowStageTransition(gameMessage, previousGame, previousStagePhase);
     updateMicUi();
   }
 
@@ -882,13 +880,23 @@ function handleMessage(message) {
   }
 }
 
+function sanitizeGameState(game) {
+  if (!game || typeof game !== "object") return game;
+  const mode = game.mode === "buzz" ? "buzz" : "choice";
+  return {
+    ...game,
+    mode,
+    hasQuestion: Boolean(game.hasSong),
+  };
+}
+
 function updateRemoteCountdownWindow(game, previousQuestionId = "") {
   if (!game || game.type !== "state") return;
   if (previousQuestionId && previousQuestionId !== game.questionId) {
     state.remoteCountdownWindow = null;
   }
 
-  if (!game.hasSong || game.hasWord || game.revealed || game.fullPlayback) {
+  if (!game.hasSong || game.revealed || game.fullPlayback) {
     state.remoteCountdownWindow = null;
     return;
   }
@@ -1030,103 +1038,8 @@ function stopMic(options = {}) {
   updateMicUi();
 }
 
-function syncDisplayMicTargets(targets = []) {
-  const normalizedTargets = Array.isArray(targets) ? targets : [];
-  const ownPeerId = state.peer?.id || "";
-  const targetsByPeerId = new Map();
-
-  normalizedTargets.forEach((target) => {
-    const peerId = String(target?.peerId || "");
-    if (!peerId || peerId === ownPeerId) return;
-    targetsByPeerId.set(peerId, target);
-  });
-  state.displayMicBroadcastTargets = targetsByPeerId;
-
-  Array.from(state.displayMicBroadcastCalls.entries()).forEach(([peerId, call]) => {
-    if (targetsByPeerId.has(peerId)) return;
-    state.displayMicBroadcastCalls.delete(peerId);
-    closePeerCall(call);
-  });
-
-  Array.from(state.displayMicBroadcastRetryTimers.keys()).forEach((peerId) => {
-    if (targetsByPeerId.has(peerId)) return;
-    clearDisplayMicRetry(peerId);
-  });
-
-  if (!state.micActive || !state.micStream || !state.peer) {
-    clearDisplayMicBroadcasts();
-    return;
-  }
-
-  targetsByPeerId.forEach((target) => {
-    ensureDisplayMicBroadcast(target);
-  });
-}
-
-function ensureDisplayMicBroadcast(target) {
-  const peerId = String(target?.peerId || "");
-  if (!peerId || state.displayMicBroadcastCalls.has(peerId)) return;
-  if (!state.micActive || !state.micStream || !state.peer) return;
-
-  try {
-    const call = state.peer.call(peerId, state.micStream, {
-      metadata: {
-        type: "display-player-mic",
-        roomId: currentRoomId(),
-        playerId: state.playerId,
-        playerName: state.displayName || state.name || "Open mic",
-        targetType: "display",
-      },
-    });
-
-    if (!call) {
-      scheduleDisplayMicRetry(peerId);
-      return;
-    }
-
-    clearDisplayMicRetry(peerId);
-    state.displayMicBroadcastCalls.set(peerId, call);
-    call.on("close", () => removeDisplayMicBroadcast(peerId, call, { retry: true }));
-    call.on("error", () => removeDisplayMicBroadcast(peerId, call, { retry: true }));
-  } catch {
-    state.displayMicBroadcastCalls.delete(peerId);
-    scheduleDisplayMicRetry(peerId);
-  }
-}
-
-function removeDisplayMicBroadcast(peerId, call, options = {}) {
-  const { retry = false } = options;
-  if (state.displayMicBroadcastCalls.get(peerId) === call) {
-    state.displayMicBroadcastCalls.delete(peerId);
-    if (retry) scheduleDisplayMicRetry(peerId);
-  }
-}
-
-function scheduleDisplayMicRetry(peerId) {
-  if (!peerId || state.displayMicBroadcastRetryTimers.has(peerId)) return;
-  if (!state.micActive || !state.micStream || !state.peer) return;
-  if (!state.displayMicBroadcastTargets.has(peerId)) return;
-
-  const timer = window.setTimeout(() => {
-    state.displayMicBroadcastRetryTimers.delete(peerId);
-    ensureDisplayMicBroadcast(state.displayMicBroadcastTargets.get(peerId));
-  }, 1200);
-  state.displayMicBroadcastRetryTimers.set(peerId, timer);
-}
-
-function clearDisplayMicRetry(peerId) {
-  const timer = state.displayMicBroadcastRetryTimers.get(peerId);
-  if (!timer) return;
-  window.clearTimeout(timer);
-  state.displayMicBroadcastRetryTimers.delete(peerId);
-}
-
 function clearDisplayMicBroadcasts() {
-  Array.from(state.displayMicBroadcastRetryTimers.values()).forEach((timer) => window.clearTimeout(timer));
-  state.displayMicBroadcastRetryTimers.clear();
-  state.displayMicBroadcastTargets.clear();
-  Array.from(state.displayMicBroadcastCalls.values()).forEach(closePeerCall);
-  state.displayMicBroadcastCalls.clear();
+  return;
 }
 
 function micErrorMessage(error) {
@@ -1981,7 +1894,6 @@ function renderLatencyCalibration(game) {
 function canSendLatencyCalibration(game) {
   return Boolean(
     game?.hasSong &&
-      !game.hasWord &&
       !game.revealed &&
       !game.fullPlayback &&
       game.playEndsAt &&
@@ -2361,7 +2273,6 @@ function renderGame() {
     : game.hasQuestion
       ? game.title || game.songlistLabel || "估呢首歌"
       : "準備中";
-  if (game.hasWord) els.phoneTitle.textContent = game.title;
   renderRevealBridge(game);
   renderAnswerCard(game);
   maybeShowRevealMoment(game);
@@ -2369,9 +2280,7 @@ function renderGame() {
   els.phoneResult.textContent =
     state.lastResult ||
     (game.buzzWinner
-      ? game.mode === "word"
-        ? `第一個搶唱：${game.buzzWinner.name}`
-        : `${game.buzzWinner.name} 已估中`
+      ? `${game.buzzWinner.name} 已估中`
       : "");
 
   renderHints(game.hints || []);
@@ -2391,7 +2300,6 @@ function updatePhoneAppState(game) {
   document.body.classList.toggle("is-reveal-waiting", Boolean(game?.revealed && !revealVisible));
   document.body.classList.toggle("is-quick-mode", game?.mode === "buzz");
   document.body.classList.toggle("is-choice-mode", game?.mode === "choice");
-  document.body.classList.toggle("is-word-mode", game?.mode === "word");
 
   if (!els.phoneLivePill) return;
   els.phoneLivePill.textContent = game?.revealed
@@ -2471,7 +2379,7 @@ function phoneStagePhase(game) {
 }
 
 function maybeShowDelayedRevealStageCue(game) {
-  if (!game?.revealed || !isPhoneRevealVisible(game) || game.hasWord) return;
+  if (!game?.revealed || !isPhoneRevealVisible(game)) return;
   showStageCue({
     type: "reveal",
     icon: "✓",
@@ -2483,7 +2391,6 @@ function maybeShowDelayedRevealStageCue(game) {
 }
 
 function stageModeLabel(game) {
-  if (game?.hasWord) return "主題搶唱";
   if (game?.mode === "choice") return "四選一";
   if (game?.mode === "buzz") return "快選估歌";
   return "準備開始";
@@ -2638,7 +2545,7 @@ function showResultMoment(message) {
 }
 
 function maybeShowRevealMoment(game) {
-  if (!game?.revealed || !game.title || game.hasWord) return;
+  if (!game?.revealed || !game.title) return;
   if (!isPhoneRevealVisible(game)) return;
   const key = `reveal:${game.questionId}:${game.title}`;
   if (state.lastMomentKey === key) return;
@@ -2694,7 +2601,7 @@ function renderHints(hints) {
 function renderRevealBridge(game) {
   if (!els.phoneRevealBridge) return;
   const info = revealCountdownInfo(game);
-  const visible = Boolean(game?.revealed && !game.hasWord && info && !info.started && info.waitingMs > 0);
+  const visible = Boolean(game?.revealed && info && !info.started && info.waitingMs > 0);
   els.phoneRevealBridge.hidden = !visible;
 
   if (!visible) {
@@ -2716,7 +2623,7 @@ function renderRevealBridge(game) {
 
 function renderAnswerCard(game) {
   if (!els.phoneAnswerCard) return;
-  const hasAnswer = Boolean(game?.revealed && !game.hasWord && (game.answer || game.title));
+  const hasAnswer = Boolean(game?.revealed && (game.answer || game.title));
   const shouldShow = Boolean(hasAnswer && isPhoneRevealVisible(game));
   els.phoneAnswerCard.hidden = !shouldShow;
   if (!shouldShow) {
@@ -2878,7 +2785,7 @@ function clearCooldownMotionEffect() {
 }
 
 function remoteAnswerStartRemainingMs(game) {
-  if (!game || game.revealed || game.fullPlayback || game.hasWord) return 0;
+  if (!game || game.revealed || game.fullPlayback) return 0;
   const info = compensatedCountdownInfo(game);
   return info && !info.started ? info.waitingMs : 0;
 }
@@ -3035,25 +2942,7 @@ function renderChoices(game) {
     return;
   }
 
-  if (game.mode === "word") {
-    const actionLabel = "搶唱";
-    const alreadyTried = Boolean(game.answered);
-    els.buzzButton.hidden = false;
-    els.buzzButton.disabled = Boolean(alreadyTried || game.buzzWinner || !game.buzzOpen);
-    els.buzzButton.textContent = actionLabel;
-
-    if (game.buzzWinner) {
-      els.phoneResult.textContent = `第一個${actionLabel}：${game.buzzWinner.name}`;
-    } else if (alreadyTried && !game.revealed) {
-      els.phoneResult.textContent = `你今題已${actionLabel}過，等其他人補答`;
-    } else if (game.buzzOpen) {
-      els.phoneResult.textContent = state.lastResult?.includes("未中")
-        ? state.lastResult
-        : `${actionLabel}開放，鬥快按`;
-    } else if (!game.answered) {
-      els.phoneResult.textContent = "等主持開放搶唱";
-    }
-  }
+  els.buzzButton.hidden = true;
 }
 
 function playChoiceTapMotion(button, isQuickPick = false) {

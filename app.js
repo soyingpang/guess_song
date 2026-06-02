@@ -40,11 +40,10 @@ const CLOUD_LIBRARY_OPTIONS = [
     loadedMessage: "已載入90年代流行曲",
   },
 ];
-const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-20";
+const APP_BUILD_VERSION = "premium-mobile-21";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -115,13 +114,6 @@ const BIRTHDAY_SONG = {
   number: "SPECIAL-BIRTHDAY",
   language: "English",
 };
-const WORD_BANK = [
-  "平安", "恩典", "愛", "信", "盼望", "喜樂", "感謝", "讚美",
-  "敬拜", "禱告", "耶穌", "天父", "聖靈", "十架", "救恩", "生命",
-  "光明", "道路", "真理", "倚靠", "同行", "保守", "安慰", "醫治",
-  "得勝", "祝福", "赦免", "榮耀", "永恆", "應許", "回家", "呼召",
-];
-
 const APPROVED_SOURCE_RULES = [
   "小羊詩歌",
   "lamb music",
@@ -188,7 +180,6 @@ const state = {
   currentClipStart: CLIP_START_SECONDS,
   playEndsAt: 0,
   playbackRevision: 0,
-  currentWord: "",
   currentQuestionId: "",
   buzzWinnerId: "",
   buzzOpen: false,
@@ -209,12 +200,9 @@ const state = {
   roomError: "",
   roomId: "",
   playerUrl: "",
-  displayUrl: "",
   peer: null,
   hostClaimTimer: null,
   roomRetryTimer: null,
-  displayConnections: new Set(),
-  displayMicBroadcastCalls: new Map(),
   playerStateRetryTimers: new Map(),
   audioBroadcastSourceStream: null,
   audioBroadcastStream: null,
@@ -261,7 +249,6 @@ const els = {
   applyLatencyCalibrationButton: document.querySelector("#applyLatencyCalibrationButton"),
   choiceModeButton: document.querySelector("#choiceModeButton"),
   buzzModeButton: document.querySelector("#buzzModeButton"),
-  wordModeButton: document.querySelector("#wordModeButton"),
   quickPick4Button: document.querySelector("#quickPick4Button"),
   quickPick6Button: document.querySelector("#quickPick6Button"),
   quickPick8Button: document.querySelector("#quickPick8Button"),
@@ -269,10 +256,6 @@ const els = {
   markCorrectButton: document.querySelector("#markCorrectButton"),
   markWrongButton: document.querySelector("#markWrongButton"),
   reopenBuzzButton: document.querySelector("#reopenBuzzButton"),
-  wordControls: document.querySelector("#wordControls"),
-  wordInput: document.querySelector("#wordInput"),
-  randomWordButton: document.querySelector("#randomWordButton"),
-  startWordButton: document.querySelector("#startWordButton"),
   teamAScore: document.querySelector("#teamAScore"),
   teamBScore: document.querySelector("#teamBScore"),
   categoryFilter: document.querySelector("#categoryFilter"),
@@ -301,7 +284,6 @@ const els = {
   songAliases: document.querySelector("#songAliases"),
   songSubmitButton: document.querySelector("#songSubmitButton"),
   songList: document.querySelector("#songList"),
-  openDisplayButton: document.querySelector("#openDisplayButton"),
   showLeaderboardButton: document.querySelector("#showLeaderboardButton"),
   showWinnerButton: document.querySelector("#showWinnerButton"),
   resetGameButton: document.querySelector("#resetGameButton"),
@@ -313,7 +295,6 @@ const els = {
   playerCount: document.querySelector("#playerCount"),
   roomStatus: document.querySelector("#roomStatus"),
   copyPlayerLinkButton: document.querySelector("#copyPlayerLinkButton"),
-  copyDisplayLinkButton: document.querySelector("#copyDisplayLinkButton"),
   hostJoinCard: document.querySelector("#hostJoinCard"),
   hostPlayerQr: document.querySelector("#hostPlayerQr"),
   hostPlayerQrStatus: document.querySelector("#hostPlayerQrStatus"),
@@ -359,18 +340,12 @@ function bindEvents() {
 
   els.choiceModeButton.addEventListener("click", () => setMode("choice"));
   els.buzzModeButton.addEventListener("click", () => setMode("buzz"));
-  els.wordModeButton.addEventListener("click", () => setMode("word"));
   els.quickPick4Button?.addEventListener("click", () => setQuickPickOptionCount(4));
   els.quickPick6Button?.addEventListener("click", () => setQuickPickOptionCount(6));
   els.quickPick8Button?.addEventListener("click", () => setQuickPickOptionCount(8));
   els.markCorrectButton.addEventListener("click", () => judgeBuzzWinner(true));
   els.markWrongButton.addEventListener("click", () => judgeBuzzWinner(false));
   els.reopenBuzzButton.addEventListener("click", () => reopenBuzz());
-  els.randomWordButton.addEventListener("click", () => {
-    els.wordInput.value = randomWord();
-    els.wordInput.focus();
-  });
-  els.startWordButton.addEventListener("click", () => startWordRound(els.wordInput.value));
 
   els.categoryFilter?.addEventListener("change", () => {
     state.category = els.categoryFilter.value;
@@ -390,12 +365,10 @@ function bindEvents() {
   });
 
   els.exportButton.addEventListener("click", exportSongs);
-  els.openDisplayButton.addEventListener("click", openDisplayWindow);
   els.showLeaderboardButton.addEventListener("click", showLeaderboard);
   els.showWinnerButton.addEventListener("click", showWinner);
   els.resetGameButton.addEventListener("click", resetGameSession);
   els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
-  els.copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
   els.audioBroadcastButton?.addEventListener("click", () => toggleAudioBroadcast("tab"));
   els.audioBroadcastMicButton?.addEventListener("click", () => toggleAudioBroadcast("mic"));
   els.cloudLibrarySelect?.addEventListener("change", () => {
@@ -416,7 +389,6 @@ async function initMultiplayer() {
       state.roomReady = false;
       state.roomId = "";
       state.playerUrl = "";
-      state.displayUrl = "";
     }
     renderPlayers();
     return;
@@ -437,7 +409,6 @@ async function initFirebaseHost() {
   if (!roomId) return false;
   state.roomId = roomId;
   state.playerUrl = buildPlayerUrl(roomId);
-  state.displayUrl = buildDisplayUrl(roomId);
   state.firebaseStartedAt = Date.now();
 
   try {
@@ -454,7 +425,6 @@ async function initFirebaseHost() {
     state.roomError = "";
     state.roomId = roomId;
     state.playerUrl = buildPlayerUrl(roomId);
-    state.displayUrl = buildDisplayUrl(roomId);
 
     await firebase.update(["meta"], {
       hostOnline: true,
@@ -485,7 +455,6 @@ async function resolveFirebaseRoomId() {
   const candidates = firebaseHostRoomCandidates();
   state.roomId = candidates[0] || DEFAULT_ROOM_ID;
   state.playerUrl = buildPlayerUrl(state.roomId);
-  state.displayUrl = buildDisplayUrl(state.roomId);
   state.roomError = hasExplicitHostRoomId()
     ? "檢查指定房間中"
     : "自動尋找空房中";
@@ -512,7 +481,6 @@ async function resolveFirebaseRoomId() {
     ? "指定房間已有主持人使用，請改房名或等對方完場"
     : "暫時未能自動分配房間，請稍後再試";
   state.playerUrl = "";
-  state.displayUrl = "";
   render();
   return "";
 }
@@ -603,7 +571,6 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     : "";
   state.roomId = roomId;
   state.playerUrl = state.firebaseReady ? buildPlayerUrl(roomId) : "";
-  state.displayUrl = state.firebaseReady ? buildDisplayUrl(roomId) : "";
   renderPlayers();
 
   const roomPeer = new Peer(roomId, PEER_OPTIONS);
@@ -615,10 +582,9 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     state.roomError = "";
     state.roomId = id;
     state.playerUrl = buildPlayerUrl(id);
-    state.displayUrl = buildDisplayUrl(id);
     localStorage.setItem(ROOM_ID_KEY, id);
     if (id !== requestedHostRoomId()) {
-      setResult("已改用備用房間", "另一個主持頁仍佔用原房間，請用這頁的新玩家連結 / 投影連結", "");
+      setResult("已改用備用房間", "另一個主持頁仍佔用原房間，請用這頁的新玩家連結", "");
     }
     render();
   });
@@ -657,7 +623,6 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
       state.roomReady = true;
       state.roomError = "";
       state.playerUrl = buildPlayerUrl(state.roomId || roomId);
-      state.displayUrl = buildDisplayUrl(state.roomId || roomId);
       render();
       return;
     }
@@ -677,7 +642,6 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
       state.roomReady = true;
       state.roomError = "";
       state.playerUrl = buildPlayerUrl(state.roomId || roomId);
-      state.displayUrl = buildDisplayUrl(state.roomId || roomId);
       render();
       return;
     }
@@ -712,7 +676,6 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
       state.roomError = "房間已經有另一個主持頁開住，請關閉同房主持頁再重新整理";
       state.roomId = roomId;
       state.playerUrl = "";
-      state.displayUrl = "";
       setResult("房間已被另一個主持頁使用", "請關閉同房主持頁，再重新整理這頁", "wrong");
       render();
       return;
@@ -788,7 +751,6 @@ function releaseHostRoom(message) {
   state.roomReady = false;
   state.roomError = message;
   state.playerUrl = "";
-  state.displayUrl = "";
   render();
 }
 
@@ -845,14 +807,6 @@ function roomFailureMessage(error) {
 function setupPlayerConnection(connection) {
   connection.on("data", (message) => handlePlayerMessage(connection, message));
   connection.on("close", () => {
-    if (connection.isDisplay) {
-      state.displayConnections.delete(connection);
-      endDisplayMicForConnection(connection.peer);
-      syncAllMicBroadcastTargets();
-      renderPlayers();
-      return;
-    }
-
     const player = findPlayerByConnection(connection);
     if (player) {
       player.connected = false;
@@ -882,11 +836,11 @@ function handlePlayerMessage(connection, message) {
   }
 
   if (message.type === "display-join") {
-    connection.isDisplay = true;
-    state.displayConnections.add(connection);
-    sendDisplayState(connection, buildDisplayState());
-    syncAllMicBroadcastTargets();
-    renderPlayers();
+    try {
+      connection.close();
+    } catch {
+      // Projection mode has been retired from the mobile-only flow.
+    }
     return;
   }
 
@@ -1004,7 +958,7 @@ function setupPlayerMicCall(call) {
   call.on("stream", (stream) => {
     player.micStream = stream;
     player.micActive = true;
-    setResult("玩家開咪", `${player.name} 正在說話，聲音送到投影畫面`, "");
+    setResult("玩家開咪", `${player.name} 正在說話`, "");
     syncPlayerMicTargets(player);
     renderPlayers();
     publishDisplayState();
@@ -1033,7 +987,6 @@ function endPlayerMic(playerId, options = {}) {
   player.micCall = null;
   player.micStream = null;
   player.micActive = false;
-  endDisplayMicForPlayer(playerId);
 
   if (closeCall && call) {
     try {
@@ -1061,102 +1014,8 @@ function syncPlayerMicTargets(sourcePlayer) {
   sendToPlayer(sourcePlayer, {
     type: "mic-targets",
     roomId: state.roomId,
-    targets: displayMicTargets(),
+    targets: [],
   });
-}
-
-function displayMicTargets() {
-  return Array.from(state.displayConnections)
-    .filter((connection) => connection?.isDisplay && connection.open && connection.peer)
-    .map((connection) => ({
-      peerId: connection.peer,
-      name: "投影畫面",
-      type: "display",
-    }));
-}
-
-function forwardPlayerMicToDisplays(sourcePlayer) {
-  state.displayConnections.forEach((connection) => {
-    forwardPlayerMicToDisplay(sourcePlayer, connection);
-  });
-}
-
-function syncAllDisplayMicsToConnection(connection) {
-  Object.values(state.players).forEach((player) => {
-    if (player.micActive && player.micStream) forwardPlayerMicToDisplay(player, connection);
-  });
-}
-
-function forwardPlayerMicToDisplay(sourcePlayer, connection) {
-  if (!shouldForwardPlayerMicToDisplay(sourcePlayer, connection)) return;
-
-  const key = displayMicBroadcastKey(connection.peer, sourcePlayer.id);
-  if (state.displayMicBroadcastCalls.has(key)) return;
-
-  try {
-    const call = state.peer.call(connection.peer, sourcePlayer.micStream, {
-      metadata: {
-        type: "display-player-mic",
-        roomId: state.roomId,
-        playerId: sourcePlayer.id,
-        playerName: sourcePlayer.name,
-      },
-    });
-    if (!call) return;
-
-    call.displayPeer = connection.peer;
-    call.sourcePlayerId = sourcePlayer.id;
-    state.displayMicBroadcastCalls.set(key, call);
-    call.on("close", () => {
-      if (state.displayMicBroadcastCalls.get(key) === call) state.displayMicBroadcastCalls.delete(key);
-    });
-    call.on("error", () => {
-      if (state.displayMicBroadcastCalls.get(key) === call) state.displayMicBroadcastCalls.delete(key);
-    });
-  } catch {
-    state.displayMicBroadcastCalls.delete(key);
-  }
-}
-
-function shouldForwardPlayerMicToDisplay(sourcePlayer, connection) {
-  return Boolean(
-    state.peer &&
-      sourcePlayer?.id &&
-      sourcePlayer.micStream &&
-      sourcePlayer.micActive &&
-      connection?.isDisplay &&
-      connection.open &&
-      connection.peer
-  );
-}
-
-function endDisplayMicForPlayer(sourcePlayerId) {
-  Array.from(state.displayMicBroadcastCalls.entries()).forEach(([key, call]) => {
-    if (call.sourcePlayerId !== sourcePlayerId) return;
-    state.displayMicBroadcastCalls.delete(key);
-    closePeerMediaCall(call);
-  });
-}
-
-function endDisplayMicForConnection(displayPeer) {
-  Array.from(state.displayMicBroadcastCalls.entries()).forEach(([key, call]) => {
-    if (call.displayPeer !== displayPeer) return;
-    state.displayMicBroadcastCalls.delete(key);
-    closePeerMediaCall(call);
-  });
-}
-
-function displayMicBroadcastKey(displayPeer, sourcePlayerId) {
-  return `${displayPeer}:${sourcePlayerId}`;
-}
-
-function closePeerMediaCall(call) {
-  if (!call) return;
-  try {
-    call.close();
-  } catch {
-    // PeerJS may already have closed the media call.
-  }
 }
 
 async function toggleAudioBroadcast(mode = "tab") {
@@ -1570,10 +1429,7 @@ function handleFirebasePlayerEvent(event, key) {
 }
 
 function publishFirebaseDisplayState(payload = buildDisplayState()) {
-  if (!state.firebaseReady || !state.firebase) return;
-  state.firebase.set(["displayState"], payload).catch(() => {
-    state.firebaseError = "Firebase 顯示同步失敗";
-  });
+  return;
 }
 
 function publishFirebasePlayerRecord(player) {
@@ -1800,7 +1656,7 @@ function scheduleRevealAutoNext() {
     state.choiceAutoNextTimer = null;
     state.revealAutoNextOpenedAt = 0;
     state.revealAutoNextEndsAt = 0;
-    if (state.mode === "word" || state.currentQuestionId !== questionId || !state.answered) return;
+    if (state.currentQuestionId !== questionId || !state.answered) return;
     startRound(null, { autoplay: true });
   }, delay);
 }
@@ -1878,55 +1734,28 @@ function handleQuickPickAnswer(player, answer) {
 }
 
 function handleBuzz(player) {
-  if (state.mode === "buzz") return;
-  if (!["buzz", "word"].includes(state.mode) || !state.buzzOpen || state.buzzWinnerId || player.answers[state.currentQuestionId]) return;
-
-  const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
-  state.buzzWinnerId = player.id;
-  state.buzzOpen = false;
-  broadcastToPlayers({
-    type: "result",
-    questionId: state.currentQuestionId,
-    winnerId: player.id,
-    message: `第一個${actionLabel}：${player.name}，等主持判定`,
-  });
-  setResult(`第一個${actionLabel}`, `${player.name}（${teamLabel(player.team)}）`, "");
-  render();
+  return;
 }
 
 function judgeBuzzWinner(isCorrect) {
   const player = state.players[state.buzzWinnerId];
   if (!player || !hasActiveQuestion()) {
-    setResult(state.mode === "word" ? "未有人搶唱" : "未有人快選", "", "");
+    setResult("未有人快選", "", "");
     return;
   }
 
   if (isCorrect) {
-    const points = state.mode === "word" ? 2 : 2;
-    if (state.mode === "word") {
-      const team = normalizeTeam(player.team);
-      state.teamScores[team] += points;
-      player.answers[state.currentQuestionId] = { answer: "word", correct: true, points: 0, teamPoints: points };
-      setResult("答中，組別加分", `${teamLabel(team)} +${points}`, "correct");
-      sendToPlayer(player, {
-        type: "result",
-        questionId: state.currentQuestionId,
-        correct: true,
-        points: 0,
-        message: `答中！${teamLabel(team)} +${points}`,
-      });
-    } else {
-      player.score += points;
-      player.answers[state.currentQuestionId] = { answer: "buzz", correct: true, points };
-      setResult("答中", `${player.name} +${points}`, "correct");
-      sendToPlayer(player, {
-        type: "result",
-        questionId: state.currentQuestionId,
-        correct: true,
-        points,
-        message: `答中 +${points}`,
-      });
-    }
+    const points = 2;
+    player.score += points;
+    player.answers[state.currentQuestionId] = { answer: "buzz", correct: true, points };
+    setResult("答中", `${player.name} +${points}`, "correct");
+    sendToPlayer(player, {
+      type: "result",
+      questionId: state.currentQuestionId,
+      correct: true,
+      points,
+      message: `答中 +${points}`,
+    });
 
     state.answered = true;
     state.revealed = true;
@@ -1941,7 +1770,7 @@ function judgeBuzzWinner(isCorrect) {
     return;
   }
 
-  const actionLabel = state.mode === "word" ? "搶唱" : "搶答";
+  const actionLabel = "搶答";
   player.answers[state.currentQuestionId] = { answer: "buzz", correct: false, points: 0 };
   state.buzzWinnerId = "";
   state.buzzOpen = hasAvailableBuzzPlayers();
@@ -1973,7 +1802,7 @@ function closeBuzzWinnerMic(player) {
 
 function reopenBuzz() {
   if (!hasActiveQuestion()) {
-    setResult(state.mode === "word" ? "未有題目可以搶唱" : "未有題目可以快選", "", "");
+    setResult("未有題目可以快選", "", "");
     return;
   }
 
@@ -1988,8 +1817,8 @@ function reopenBuzz() {
   state.showLeaderboard = false;
   state.showWinner = false;
   setResult(
-    state.mode === "word" ? "已開放搶唱" : "已開放快選估歌",
-    state.mode === "word" ? `今題主題：${state.currentWord}` : `答中 +${QUICK_PICK_CORRECT_POINTS}，答錯 ${QUICK_PICK_WRONG_POINTS}，冷卻 5 秒`,
+    "已開放快選估歌",
+    `答中 +${QUICK_PICK_CORRECT_POINTS}，答錯 ${QUICK_PICK_WRONG_POINTS}，冷卻 5 秒`,
     ""
   );
   render();
@@ -2117,11 +1946,6 @@ function saveScore() {
 }
 
 function startNextQuestion() {
-  if (state.mode === "word") {
-    startWordRound(els.wordInput.value);
-    return;
-  }
-
   if (!requirePlayersAudioReady("下一題播放")) return;
   startRound(null, { autoplay: true });
 }
@@ -2148,7 +1972,6 @@ function startRound(preferredSongId, options = {}) {
     state.fullPlayback = false;
     state.frontReady = false;
     state.playEndsAt = 0;
-    state.currentWord = "";
     state.currentQuestionId = "";
     state.buzzWinnerId = "";
     state.buzzOpen = false;
@@ -2169,7 +1992,6 @@ function startRound(preferredSongId, options = {}) {
   clearClipTimer();
   state.currentSong = song;
   state.latencyCalibrationSamples = [];
-  state.currentWord = "";
   state.currentChoices = makeChoices(
     song,
     pool,
@@ -2200,35 +2022,6 @@ function startRound(preferredSongId, options = {}) {
   render();
   renderYouTubeFrame({ autoplay });
   if (autoplay) scheduleClipStop();
-}
-
-function startWordRound(preferredWord = "") {
-  clearChoiceAutoNextTimer();
-  clearClipTimer();
-  clearRemoteAnswerWindow();
-  state.latencyCalibrationSamples = [];
-  const word = cleanWord(preferredWord) || randomWord();
-  state.currentSong = null;
-  state.currentChoices = [];
-  state.currentWord = word;
-  state.round += 1;
-  state.revealed = false;
-  state.answered = false;
-  state.hintLevel = 0;
-  state.isPlaying = false;
-  state.fullPlayback = false;
-  state.frontReady = false;
-  state.currentClipStart = CLIP_START_SECONDS;
-  state.playEndsAt = 0;
-  state.currentQuestionId = `word:${word}:${Date.now()}`;
-  state.buzzWinnerId = "";
-  state.buzzOpen = false;
-  state.showLeaderboard = false;
-  state.showWinner = false;
-  els.wordInput.value = word;
-  els.playerHost.replaceChildren();
-  setResult("主題搶唱：已準備", `今題主題：${word}，按開放搶唱開始`, "");
-  render();
 }
 
 function playableSongs() {
@@ -2279,11 +2072,6 @@ function loadCurrentVideo() {
 }
 
 function playCurrentClip() {
-  if (state.mode === "word") {
-    setResult("主題搶唱不需要播放", state.currentWord ? `今題主題：${state.currentWord}` : "", "");
-    return;
-  }
-
   if (!requirePlayersAudioReady("重播片段")) return;
 
   if (!state.currentSong) {
@@ -2315,7 +2103,6 @@ function playBirthdaySong() {
   clearRemoteAnswerWindow();
   state.currentSong = { ...BIRTHDAY_SONG };
   state.currentChoices = [];
-  state.currentWord = "";
   state.revealed = true;
   state.answered = true;
   state.hintLevel = 0;
@@ -2537,29 +2324,16 @@ function setDifficulty(difficulty) {
 function setMode(mode) {
   clearChoiceAutoNextTimer();
   clearRemoteAnswerWindow();
-  state.mode = mode;
-  if (mode === "word") {
-    clearClipTimer();
-    state.currentSong = null;
-    state.currentChoices = [];
-    state.isPlaying = false;
-    state.fullPlayback = false;
-    state.frontReady = false;
-    state.playEndsAt = 0;
-    state.currentQuestionId = "";
-    els.playerHost.replaceChildren();
-    setResult("主題搶唱模式", "抽主題或輸入大路關鍵詞開始", "");
-  } else {
-    state.currentWord = "";
-    state.currentChoices = state.currentSong
-      ? makeChoices(
-          state.currentSong,
-          playableSongs(),
-          mode === "buzz" ? state.quickPickOptionCount : CHOICE_OPTION_COUNT
-        )
-      : [];
-    setResult(mode === "choice" ? "四選一模式" : "快選估歌模式", "按下一題播放", "");
-  }
+  const nextMode = mode === "buzz" ? "buzz" : "choice";
+  state.mode = nextMode;
+  state.currentChoices = state.currentSong
+    ? makeChoices(
+        state.currentSong,
+        playableSongs(),
+        nextMode === "buzz" ? state.quickPickOptionCount : CHOICE_OPTION_COUNT
+      )
+    : [];
+  setResult(nextMode === "choice" ? "四選一模式" : "快選估歌模式", "按下一題播放", "");
   state.buzzWinnerId = "";
   state.buzzOpen = false;
   state.showLeaderboard = false;
@@ -2779,7 +2553,6 @@ function resetGameSession() {
   state.teamScores = { A: 0, B: 0 };
   state.currentSong = null;
   state.currentChoices = [];
-  state.currentWord = "";
   state.round = 0;
   state.revealed = false;
   state.answered = false;
@@ -3150,25 +2923,20 @@ function requirePlayersAudioReady(actionLabel = "開始播放") {
 
 function renderQuiz() {
   const hasSong = Boolean(state.currentSong);
-  const hasWord = state.mode === "word" && Boolean(state.currentWord);
   const roomBlocked = isRoomBlocked();
   const waitingForAudioReady = Boolean(playersMissingAudioReady().length);
   const audioReadyTitle = waitingForAudioReady ? `等待：${audioReadyGateLabel()}` : "";
   const songlistLabel = activeSonglistLabel();
   els.roundLabel.textContent = hasActiveQuestion() ? `第 ${state.round} 題` : "未有題目";
-  els.quizTitle.textContent = hasWord
-    ? `今題主題：${state.currentWord}`
-    : hasSong
-      ? state.answered
-        ? state.currentSong.title
-        : songlistLabel
-      : state.mode === "word"
-        ? "主題搶唱"
-        : state.songs.length
-          ? playableSongs().length
-            ? `${songlistLabel} 已準備`
-            : emptyPoolMessage()
-          : "先加入歌曲";
+  els.quizTitle.textContent = hasSong
+    ? state.answered
+      ? state.currentSong.title
+      : songlistLabel
+    : state.songs.length
+      ? playableSongs().length
+        ? `${songlistLabel} 已準備`
+        : emptyPoolMessage()
+      : "先加入歌曲";
 
   els.maskLabel.textContent = hasSong ? "主持預覽已靜音，只作預備和跳廣告" : "主持手機控制播放";
   els.playerMask.classList.toggle("is-hidden", hasSong);
@@ -3185,24 +2953,22 @@ function renderQuiz() {
   renderLatencyCalibrationUi();
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
-  els.wordModeButton.classList.toggle("is-active", state.mode === "word");
   els.quickPick4Button?.classList.toggle("is-active", state.quickPickOptionCount === 4);
   els.quickPick6Button?.classList.toggle("is-active", state.quickPickOptionCount === 6);
   els.quickPick8Button?.classList.toggle("is-active", state.quickPickOptionCount === 8);
   els.showLeaderboardButton.classList.toggle("is-active", state.showLeaderboard);
   els.showWinnerButton.classList.toggle("is-active", state.showWinner);
-  els.openDisplayButton.disabled = roomBlocked || !state.displayUrl;
   els.showLeaderboardButton.disabled = roomBlocked;
   els.showWinnerButton.disabled = roomBlocked;
   els.resetGameButton.disabled = roomBlocked;
   els.toggleVideoButton.disabled = roomBlocked || !hasActiveQuestion();
   els.playButton.textContent = state.isPlaying ? "播放中" : "重播片段";
   els.replayButton.textContent = "重播片段";
-  els.nextButton.textContent = state.mode === "word" ? "下一主題" : "下一題播放";
-  els.playButton.disabled = roomBlocked || waitingForAudioReady || state.mode === "word" || !hasSong || state.isPlaying;
-  els.replayButton.disabled = roomBlocked || waitingForAudioReady || state.mode === "word" || !hasSong;
+  els.nextButton.textContent = "下一題播放";
+  els.playButton.disabled = roomBlocked || waitingForAudioReady || !hasSong || state.isPlaying;
+  els.replayButton.disabled = roomBlocked || waitingForAudioReady || !hasSong;
   els.stopButton.disabled = roomBlocked || !state.isPlaying;
-  els.hintButton.disabled = roomBlocked || state.mode === "word" || !hasSong;
+  els.hintButton.disabled = roomBlocked || !hasSong;
   els.skipButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered;
   els.nextButton.disabled = roomBlocked || waitingForAudioReady;
   els.playButton.title = audioReadyTitle;
@@ -3220,31 +2986,20 @@ function renderQuiz() {
   if (els.applyLatencyCustomButton) els.applyLatencyCustomButton.disabled = roomBlocked;
   els.choiceModeButton.disabled = roomBlocked;
   els.buzzModeButton.disabled = roomBlocked;
-  els.wordModeButton.disabled = roomBlocked;
   if (els.quickPick4Button) els.quickPick4Button.disabled = roomBlocked;
   if (els.quickPick6Button) els.quickPick6Button.disabled = roomBlocked;
   if (els.quickPick8Button) els.quickPick8Button.disabled = roomBlocked;
-  els.judgeControls.hidden = !["buzz", "word"].includes(state.mode);
-  els.wordControls.hidden = state.mode !== "word";
-  els.markCorrectButton.hidden = state.mode === "buzz";
-  els.markWrongButton.hidden = state.mode === "buzz";
-  els.reopenBuzzButton.textContent = state.mode === "word"
-    ? state.buzzOpen
-      ? "搶唱已開放"
-      : state.buzzWinnerId
-        ? "重新開放搶唱"
-        : "開放搶唱"
-    : state.buzzOpen
-      ? "快選已開放"
-      : state.buzzWinnerId
-        ? "已有人估中"
-        : "開放快選";
-  els.markCorrectButton.disabled = roomBlocked || state.mode !== "word" || !state.buzzWinnerId || state.answered;
-  els.markWrongButton.disabled = roomBlocked || state.mode !== "word" || !state.buzzWinnerId || state.answered;
+  els.judgeControls.hidden = state.mode !== "buzz";
+  els.markCorrectButton.hidden = true;
+  els.markWrongButton.hidden = true;
+  els.reopenBuzzButton.textContent = state.buzzOpen
+    ? "快選已開放"
+    : state.buzzWinnerId
+      ? "已有人估中"
+      : "開放快選";
+  els.markCorrectButton.disabled = true;
+  els.markWrongButton.disabled = true;
   els.reopenBuzzButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered || state.buzzOpen;
-  els.wordInput.disabled = roomBlocked;
-  els.randomWordButton.disabled = roomBlocked;
-  els.startWordButton.disabled = roomBlocked;
 
   els.guessForm.hidden = true;
   els.choices.hidden = true;
@@ -3372,11 +3127,10 @@ function renderPlayers() {
     : state.firebaseReady
       ? `Firebase 全球房間：${state.roomId} · 可連線`
       : state.roomReady
-      ? `房間：${state.roomId} · 投影 ${state.displayConnections.size} 個 · 可連線`
+      ? `房間：${state.roomId} · 可連線`
       : `房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.roomStatus.textContent = `${baseRoomStatus}${audioReadySuffix}`;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
-  els.copyDisplayLinkButton.disabled = !state.displayUrl;
   renderHostJoinQr();
   renderAudioBroadcastUi();
   els.playerList.innerHTML = "";
@@ -3510,11 +3264,6 @@ function setResult(message, answer, tone = "") {
   els.resultBar.classList.toggle("is-wrong", tone === "wrong");
 }
 
-function openDisplayWindow() {
-  publishDisplayState();
-  window.open(state.displayUrl || "./display.html", "hymnQuizDisplay");
-}
-
 async function copyPlayerLink() {
   if (!state.playerUrl) {
     setResult("玩家連結未準備好", "請等房間建立完成", "wrong");
@@ -3532,27 +3281,6 @@ async function copyPlayerLink() {
   } finally {
     window.setTimeout(() => {
       els.copyPlayerLinkButton.textContent = originalLabel;
-    }, 1600);
-  }
-}
-
-async function copyDisplayLink() {
-  if (!state.displayUrl) {
-    setResult("投影連結未準備好", "請等房間建立完成", "wrong");
-    return;
-  }
-
-  const originalLabel = els.copyDisplayLinkButton.textContent;
-  try {
-    await writeClipboardText(state.displayUrl);
-    els.copyDisplayLinkButton.textContent = "已複製";
-    setResult("已複製投影連結", "有需要時可開大螢幕投影畫面", "correct");
-  } catch {
-    showManualCopyLink(state.displayUrl, "投影連結");
-    setResult("請手動複製投影連結", "瀏覽器未允許自動複製", "wrong");
-  } finally {
-    window.setTimeout(() => {
-      els.copyDisplayLinkButton.textContent = originalLabel;
     }, 1600);
   }
 }
@@ -3580,22 +3308,17 @@ function showManualCopyLink(link, label = "連結") {
 }
 
 function publishDisplayState() {
-  const payload = buildDisplayState();
-  localStorage.setItem(DISPLAY_STATE_KEY, JSON.stringify(payload));
-  broadcastToDisplays(payload);
-  publishFirebaseDisplayState(payload);
+  return;
 }
 
 function syncSurfaces(extraMessage = null) {
-  publishDisplayState();
   broadcastToPlayers(extraMessage);
 }
 
 function buildDisplayState() {
   const song = state.currentSong;
   const hasSong = Boolean(song);
-  const hasWord = state.mode === "word" && Boolean(state.currentWord);
-  const revealed = Boolean((song || hasWord) && state.answered);
+  const revealed = Boolean(song && state.answered);
   const hints = song ? getHints(song).slice(0, state.hintLevel) : [];
   const songlistLabel = activeSonglistLabel();
 
@@ -3609,8 +3332,7 @@ function buildDisplayState() {
     difficulty: state.difficulty,
     mode: state.mode,
     hasSong,
-    hasQuestion: hasSong || hasWord,
-    hasWord,
+    hasQuestion: hasSong,
     revealed,
     isPlaying: state.isPlaying,
     fullPlayback: state.fullPlayback,
@@ -3625,7 +3347,6 @@ function buildDisplayState() {
       : 0,
     revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
-    currentWord: state.currentWord,
     songlistLabel,
     teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
@@ -3638,10 +3359,10 @@ function buildDisplayState() {
     players: leaderboardPlayers().map(stripPlayer),
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
-    prompt: hasWord ? "主題搶唱" : hasSong ? `${songlistLabel} · 估歌名` : "等候主持開始",
+    prompt: hasSong ? `${songlistLabel} · 估歌名` : "等候主持開始",
     status: els.resultText.textContent || "",
-    answer: revealed && song ? answerLabel(song) : hasWord ? `今題主題：${state.currentWord}` : "",
-    title: hasWord ? state.currentWord : revealed && song ? song.title : songlistLabel,
+    answer: revealed && song ? answerLabel(song) : "",
+    title: revealed && song ? song.title : songlistLabel,
     videoId: song?.videoId || "",
     audioUrl: song?.audioUrl || "",
     start: song && !state.fullPlayback ? clipStart(song) : CLIP_START_SECONDS,
@@ -3656,8 +3377,7 @@ function buildDisplayState() {
 
 function buildPlayerState(player) {
   const song = state.currentSong;
-  const hasWord = state.mode === "word" && Boolean(state.currentWord);
-  const revealed = Boolean((song || hasWord) && state.answered);
+  const revealed = Boolean(song && state.answered);
   const remoteAnswerOpen = isRemoteAnswerWindowOpen();
   const remotePlayEndsAt =
     state.answerGraceQuestionId === state.currentQuestionId
@@ -3681,8 +3401,7 @@ function buildPlayerState(player) {
     round: state.round,
     mode: state.mode,
     hasSong: Boolean(song),
-    hasQuestion: Boolean(song || hasWord),
-    hasWord,
+    hasQuestion: Boolean(song),
     revealed,
     isPlaying: state.isPlaying && !state.fullPlayback,
     mediaPlaying: state.isPlaying,
@@ -3702,7 +3421,6 @@ function buildPlayerState(player) {
       : 0,
     revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
-    currentWord: state.currentWord,
     songlistLabel,
     playerName: player.name,
     team: normalizeTeam(player.team),
@@ -3712,8 +3430,8 @@ function buildPlayerState(player) {
     quickPickCooldownMs: QUICK_PICK_COOLDOWN_MS,
     quickPickCorrectPoints: QUICK_PICK_CORRECT_POINTS,
     quickPickWrongPoints: QUICK_PICK_WRONG_POINTS,
-    title: hasWord ? `今題主題：${state.currentWord}` : revealed && song ? song.title : songlistLabel,
-    answer: revealed && song ? answerLabel(song) : hasWord ? `今題主題：${state.currentWord}` : "",
+    title: revealed && song ? song.title : songlistLabel,
+    answer: revealed && song ? answerLabel(song) : "",
     meta: revealed && song
       ? [song.category, song.source, song.number ? `#${song.number}` : ""].filter(Boolean)
       : [],
@@ -3740,22 +3458,11 @@ function broadcastToPlayers(extraMessage = null) {
 }
 
 function broadcastToDisplays(payload = buildDisplayState()) {
-  state.displayConnections.forEach((connection) => {
-    if (!connection?.open) {
-      state.displayConnections.delete(connection);
-      return;
-    }
-
-    sendDisplayState(connection, payload);
-  });
+  return;
 }
 
 function sendDisplayState(connection, payload) {
-  try {
-    connection.send({ type: "display-state", state: payload });
-  } catch {
-    state.displayConnections.delete(connection);
-  }
+  return;
 }
 
 function sendPlayerState(player) {
@@ -3886,13 +3593,6 @@ function buildPlayerUrl(roomId) {
   return url.toString();
 }
 
-function buildDisplayUrl(roomId) {
-  const url = new URL("./display.html", window.location.href);
-  url.searchParams.set("room", normalizeRoomId(roomId) || DEFAULT_ROOM_ID);
-  url.searchParams.set("v", APP_BUILD_VERSION);
-  return url.toString();
-}
-
 function createSessionId() {
   try {
     if (window.crypto?.randomUUID) return window.crypto.randomUUID();
@@ -3920,15 +3620,7 @@ function teamLabel(team) {
 }
 
 function hasActiveQuestion() {
-  return Boolean(state.currentSong || (state.mode === "word" && state.currentWord));
-}
-
-function cleanWord(value) {
-  return String(value || "").trim().replace(/\s+/g, "").slice(0, 8);
-}
-
-function randomWord() {
-  return pickRandom(WORD_BANK) || "恩典";
+  return Boolean(state.currentSong);
 }
 
 function miniButton(text, title, onClick) {
