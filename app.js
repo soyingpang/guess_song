@@ -43,7 +43,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-27";
+const APP_BUILD_VERSION = "premium-mobile-28";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -232,6 +232,7 @@ const state = {
   firebaseError: "",
   firebaseStartedAt: 0,
   firebaseSeenEventKeys: new Set(),
+  firebaseInitialRosterCleanupPending: false,
   firebaseHostHeartbeatTimer: null,
   firebaseAudioPeers: new Map(),
   firebaseAudioSessionId: "",
@@ -442,6 +443,7 @@ async function initFirebaseHost() {
     state.roomError = "";
     state.roomId = roomId;
     state.playerUrl = buildPlayerUrl(roomId);
+    state.firebaseInitialRosterCleanupPending = true;
 
     await firebase.update(["meta"], {
       hostOnline: true,
@@ -1518,8 +1520,13 @@ function renderAudioBroadcastUi() {
 function handleFirebasePlayersSnapshot(playersById) {
   if (!state.firebaseReady) return;
   const rows = playersById && typeof playersById === "object" ? Object.entries(playersById) : [];
+  const prunedPlayerIds = state.firebaseInitialRosterCleanupPending
+    ? pruneInitialOfflineFirebasePlayers(rows)
+    : new Set();
+  state.firebaseInitialRosterCleanupPending = false;
 
   rows.forEach(([playerId, record]) => {
+    if (prunedPlayerIds.has(playerId)) return;
     if (!record || typeof record !== "object") return;
     const name = cleanPlayerName(record.name);
     const player = resolveJoiningPlayer(playerId, name);
@@ -1547,6 +1554,16 @@ function handleFirebasePlayersSnapshot(playersById) {
   publishDisplayState();
   broadcastToPlayers();
   if (state.audioBroadcastActive) broadcastAudioToRemotePlayers();
+}
+
+function pruneInitialOfflineFirebasePlayers(rows) {
+  const pruned = new Set();
+  rows.forEach(([playerId, record]) => {
+    if (!record || typeof record !== "object" || record.connected !== false) return;
+    pruned.add(playerId);
+    clearFirebasePlayerData(playerId);
+  });
+  return pruned;
 }
 
 function handleFirebasePlayerEvent(event, key) {
@@ -2747,13 +2764,10 @@ function resetGameSession() {
   els.guessInput.value = "";
   els.playerHost.replaceChildren();
 
-  Object.values(state.players).forEach((player) => {
-    player.score = 0;
-    player.answers = {};
-  });
+  clearAllPlayersForNewSession();
 
   saveScore();
-  setResult("分數已重置", "同一間房保留，玩家不用重新掃碼", "correct");
+  setResult("新場已清理", "舊玩家名單已清除，請用玩家連結重新加入", "correct");
   render();
 }
 
@@ -3393,14 +3407,42 @@ function removeOfflinePlayer(playerId) {
     return;
   }
 
-  endPlayerMic(playerId, { closeCall: true, render: false });
-  state.firebase?.set(["players", playerId], null).catch(() => {});
-  state.firebase?.set(["playerStates", playerId], null).catch(() => {});
-  state.firebase?.set(["messages", playerId], null).catch(() => {});
+  clearLocalPlayerRuntime(playerId);
+  clearFirebasePlayerData(playerId);
   delete state.players[playerId];
   if (state.buzzWinnerId === playerId) state.buzzWinnerId = "";
   setResult("已移除離線玩家", player.name, "");
   render();
+}
+
+function clearAllPlayersForNewSession() {
+  Object.keys(state.players).forEach((playerId) => {
+    clearLocalPlayerRuntime(playerId);
+  });
+  state.players = {};
+  state.buzzWinnerId = "";
+  state.firebaseSeenEventKeys.clear();
+
+  if (!state.firebaseReady || !state.firebase) return;
+  state.firebase.set(["players"], null).catch(() => {});
+  state.firebase.set(["playerStates"], null).catch(() => {});
+  state.firebase.set(["messages"], null).catch(() => {});
+  state.firebase.set(["rtc"], null).catch(() => {});
+  state.firebase.set(["events"], null).catch(() => {});
+}
+
+function clearLocalPlayerRuntime(playerId) {
+  if (!playerId) return;
+  endPlayerMic(playerId, { closeCall: true, render: false });
+  endAudioBroadcastForPlayer(playerId);
+}
+
+function clearFirebasePlayerData(playerId) {
+  if (!state.firebaseReady || !state.firebase || !playerId) return;
+  state.firebase.set(["players", playerId], null).catch(() => {});
+  state.firebase.set(["playerStates", playerId], null).catch(() => {});
+  state.firebase.set(["messages", playerId], null).catch(() => {});
+  state.firebase.set(["rtc", playerId], null).catch(() => {});
 }
 
 function setResult(message, answer, tone = "") {
