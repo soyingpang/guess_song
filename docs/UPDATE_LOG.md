@@ -21,6 +21,31 @@
 
 ---
 
+## 2026-06-02 23:46 HKT
+
+類型：修正 / iPhone 音訊 / 場控
+
+變更：
+- 修正 iPhone / iOS Safari 入房後容易再次顯示要開聲或聽不到主持音訊的情況：手機按「開聲並加入」後，會保持已解鎖的隱藏靜音 audio element 循環播放，不再立即 pause，等主持音訊 stream 到達時沿用同一個 audio element。
+- 隱藏 audio element 補上 `playsinline` / `webkit-playsinline` 屬性，減少 iOS 對內嵌音訊播放的限制。
+- 主持端新增音訊廣播 gate：有遠端手機玩家時，如果主持未按「廣播電腦/分頁聲音」或「用咪高峰收聲」，自動開局和手動播放都會暫停並提示先開主持音訊。
+- 主持開始音訊廣播成功後會重新檢查玩家名單自動流程，若玩家已入房且空場，才自動開始第一題。
+- 手機和主持入口 cache version 更新到 `premium-mobile-32`，PWA / service worker cache 同步更新。
+
+原因：
+- iPhone Safari 對音訊播放權限特別嚴格；之前入房時播一瞬間靜音後即刻 pause，之後主持 WebRTC 音訊到達時再 `play()`，Safari 可能視為沒有使用者手勢而擋住。
+- 另一個現場原因是主持未開始全球手機音訊廣播時，手機即使已開聲都沒有音訊來源可聽。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Browser sanity check：`index.html?room=codex-iphone-audio-...` 和 `player.html?room=...&name=Codex` 都正常載入，host 載入 `app.js?v=premium-mobile-32`，player 載入 `player.js?v=premium-mobile-32`，console error 為 0。
+
+下一步：
+- 仍需用真 iPhone Safari 測一次：先開主持頁、按「廣播電腦/分頁聲音」、再用 iPhone 掃碼入房，確認不再提示要重新開聲，並能聽到主持分頁音訊。
+
+---
+
 ## 2026-06-02 17:49 HKT
 
 類型：手機版 / 場控 / 簡化

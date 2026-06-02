@@ -43,7 +43,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-31";
+const APP_BUILD_VERSION = "premium-mobile-32";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -1112,6 +1112,7 @@ async function toggleAudioBroadcast(mode = "tab") {
     renderPlayers();
     renderAudioBroadcastUi();
     setResult(...audioBroadcastLivePrompt(broadcastMode));
+    handleRosterAutomation();
   } catch (error) {
     state.audioBroadcastStarting = false;
     state.audioBroadcastMode = "";
@@ -1591,11 +1592,13 @@ function handleRosterAutomation() {
 function maybeAutoStartAfterFirstJoin() {
   if (state.autoStartTimer) return;
   if (!connectedPlayers().length) return;
+  if (isHostAudioBroadcastRequired()) return;
   if (state.currentSong || state.currentQuestionId || state.choiceAutoNextTimer || isRoomBlocked()) return;
 
   state.autoStartTimer = window.setTimeout(() => {
     state.autoStartTimer = null;
     if (!connectedPlayers().length) return;
+    if (isHostAudioBroadcastRequired()) return;
     if (state.currentSong || state.currentQuestionId || state.choiceAutoNextTimer || isRoomBlocked()) return;
 
     if (!playableSongs().length) {
@@ -2242,13 +2245,13 @@ function saveScore() {
 }
 
 function startNextQuestion() {
-  if (!requirePlayersAudioReady("下一題播放")) return;
+  if (!requireAudioPipelineReady("下一題播放")) return;
   startRound(null, { autoplay: true });
 }
 
 function startRound(preferredSongId, options = {}) {
   const { autoplay = false, frontReady = false } = options;
-  if (autoplay && !requirePlayersAudioReady("開始播放")) return;
+  if (autoplay && !requireAudioPipelineReady("開始播放")) return;
 
   const pool = playableSongs();
 
@@ -2370,7 +2373,7 @@ function loadCurrentVideo() {
 }
 
 function playCurrentClip() {
-  if (!requirePlayersAudioReady("重播片段")) return;
+  if (!requireAudioPipelineReady("重播片段")) return;
 
   if (!state.currentSong) {
     setResult("先加入一首歌", "", "");
@@ -2394,7 +2397,7 @@ function playCurrentClip() {
 }
 
 function playBirthdaySong() {
-  if (!requirePlayersAudioReady("播放生日歌")) return;
+  if (!requireAudioPipelineReady("播放生日歌")) return;
 
   clearChoiceAutoNextTimer();
   clearClipTimer();
@@ -3249,6 +3252,14 @@ function playersMissingAudioReady() {
   return rosterPlayers().filter((player) => player.connected && player.remoteMode !== false && !player.audioReady);
 }
 
+function remoteAudioPlayers() {
+  return rosterPlayers().filter((player) => player.connected && player.remoteMode !== false);
+}
+
+function isHostAudioBroadcastRequired() {
+  return Boolean(remoteAudioPlayers().length && !state.audioBroadcastActive);
+}
+
 function audioReadyGateLabel(players = playersMissingAudioReady()) {
   if (!players.length) return "";
   const names = players.slice(0, 3).map((player) => player.name).join("、");
@@ -3263,6 +3274,19 @@ function requirePlayersAudioReady(actionLabel = "開始播放") {
   setResult("等待玩家開聲", `${audioReadyGateLabel(pending)}，${actionLabel} 已暫停`, "");
   renderPlayers();
   return false;
+}
+
+function requireHostAudioBroadcastReady(actionLabel = "開始播放") {
+  if (!isHostAudioBroadcastRequired()) return true;
+
+  setResult("等待主持音訊", `請先按「廣播電腦/分頁聲音」或「用咪高峰收聲」，${actionLabel} 已暫停`, "");
+  renderPlayers();
+  renderAudioBroadcastUi();
+  return false;
+}
+
+function requireAudioPipelineReady(actionLabel = "開始播放") {
+  return requirePlayersAudioReady(actionLabel) && requireHostAudioBroadcastReady(actionLabel);
 }
 
 function renderQuiz() {
@@ -3295,6 +3319,7 @@ function renderQuiz() {
     els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可手動輸入秒數`;
   }
   renderLatencyCalibrationUi();
+  const waitingForHostAudio = isHostAudioBroadcastRequired();
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
   els.quickPick4Button?.classList.toggle("is-active", state.quickPickOptionCount === 4);
@@ -3309,19 +3334,20 @@ function renderQuiz() {
   els.playButton.textContent = state.isPlaying ? "播放中" : "重播片段";
   els.replayButton.textContent = "重播片段";
   els.nextButton.textContent = "下一題播放";
-  els.playButton.disabled = roomBlocked || waitingForAudioReady || !hasSong || state.isPlaying;
-  els.replayButton.disabled = roomBlocked || waitingForAudioReady || !hasSong;
+  els.playButton.disabled = roomBlocked || waitingForAudioReady || waitingForHostAudio || !hasSong || state.isPlaying;
+  els.replayButton.disabled = roomBlocked || waitingForAudioReady || waitingForHostAudio || !hasSong;
   els.stopButton.disabled = roomBlocked || !state.isPlaying;
   els.hintButton.disabled = roomBlocked || !hasSong;
   els.skipButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered;
-  els.nextButton.disabled = roomBlocked || waitingForAudioReady;
-  els.playButton.title = audioReadyTitle;
-  els.replayButton.title = audioReadyTitle;
-  els.nextButton.title = audioReadyTitle;
+  els.nextButton.disabled = roomBlocked || waitingForAudioReady || waitingForHostAudio;
   if (els.birthdayButton) {
-    els.birthdayButton.disabled = waitingForAudioReady;
-    els.birthdayButton.title = audioReadyTitle;
+    els.birthdayButton.disabled = waitingForAudioReady || waitingForHostAudio;
+    els.birthdayButton.title = audioReadyTitle || (waitingForHostAudio ? "等待：主持未廣播手機音訊" : "");
   }
+  const hostAudioTitle = waitingForHostAudio ? "等待：主持未廣播手機音訊" : "";
+  els.playButton.title = audioReadyTitle || hostAudioTitle;
+  els.replayButton.title = audioReadyTitle || hostAudioTitle;
+  els.nextButton.title = audioReadyTitle || hostAudioTitle;
   if (els.playDurationInput) els.playDurationInput.disabled = roomBlocked;
   if (els.applyPlayDurationButton) els.applyPlayDurationButton.disabled = roomBlocked;
   els.startBeginningButton.disabled = roomBlocked;

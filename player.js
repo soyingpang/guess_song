@@ -1106,6 +1106,8 @@ function configureHiddenAudioElement(audio) {
   audio.controls = false;
   audio.hidden = true;
   audio.playsInline = true;
+  audio.setAttribute("playsinline", "");
+  audio.setAttribute("webkit-playsinline", "");
   return audio;
 }
 
@@ -1144,6 +1146,7 @@ function primeRemoteListening() {
     audio.pause();
     audio.srcObject = null;
     audio.src = SILENT_UNLOCK_AUDIO_URI;
+    audio.loop = true;
     audio.muted = false;
     audio.volume = 1;
     audio.currentTime = 0;
@@ -1184,8 +1187,15 @@ function finishRemoteAudioPriming(unlocked) {
 
   const audio = state.remoteUnlockAudioElement;
   if (audio && !state.hostAudioStream) {
-    audio.pause();
-    audio.currentTime = 0;
+    if (state.remoteAudioPrimed) {
+      audio.loop = true;
+      audio.muted = false;
+      audio.volume = 1;
+      if (audio.paused) audio.play().catch(() => {});
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+    }
   }
 
   if (isPhoneAudioListener() && state.joined && !state.hostAudioStream) {
@@ -1399,8 +1409,10 @@ function attachHostAudioBroadcastStream(stream) {
     return;
   }
 
-  const audio = configureHiddenAudioElement(state.remoteUnlockAudioElement || document.createElement("audio"));
+  const existingUnlockAudio = state.remoteUnlockAudioElement;
+  const audio = configureHiddenAudioElement(existingUnlockAudio || document.createElement("audio"));
   state.remoteUnlockAudioElement = audio;
+  const reusePrimedAudio = Boolean(existingUnlockAudio && audio === existingUnlockAudio && state.remoteAudioPrimed);
 
   const previousAudio = state.hostAudioElement;
   if (previousAudio && previousAudio !== audio) {
@@ -1414,10 +1426,16 @@ function attachHostAudioBroadcastStream(stream) {
   resetHostAudioHealthStats();
   state.hostAudioAttachedAt = Date.now();
 
-  audio.pause();
-  audio.srcObject = null;
-  audio.removeAttribute("src");
-  audio.load();
+  audio.onplaying = null;
+  audio.onpause = null;
+  audio.onerror = null;
+  audio.loop = false;
+  if (!reusePrimedAudio) {
+    audio.pause();
+    audio.srcObject = null;
+    audio.removeAttribute("src");
+    audio.load();
+  }
   audio.srcObject = stream;
   audio.onplaying = () => {
     if (state.hostAudioElement !== audio) return;
@@ -1767,8 +1785,16 @@ function stopHostAudioBroadcast(options = {}) {
     audio.onpause = null;
     audio.onerror = null;
     if (audio === state.remoteUnlockAudioElement) {
+      audio.loop = true;
+      audio.muted = false;
+      audio.volume = 1;
+      audio.onplaying = null;
+      audio.onpause = null;
+      audio.onerror = null;
+      audio.srcObject = null;
       audio.src = SILENT_UNLOCK_AUDIO_URI;
       if (!audio.isConnected) document.body.append(audio);
+      if (state.remoteAudioPrimed) audio.play().catch(() => {});
     } else {
       audio.remove();
     }
