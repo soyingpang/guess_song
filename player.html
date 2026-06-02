@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-30" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-31" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-30" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-31" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -2727,7 +2727,6 @@
 
       .player-body.is-joined .phone-remote-grid span,
       .player-body.is-joined .phone-remote-listen,
-      .player-body.is-joined .phone-latency-calibration,
       .player-body.is-joined.is-remote-player .phone-remote-listen,
       .player-body.is-joined .phone-remote-media {
         border-radius: 16px;
@@ -2769,54 +2768,6 @@
 
       .player-body.is-game-playing .phone-remote-listen::after {
         animation: phoneBars 850ms steps(4) infinite;
-      }
-
-      .phone-latency-calibration[hidden] {
-        display: none !important;
-      }
-
-      .player-body.is-joined .phone-latency-calibration {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
-        gap: 9px;
-        border: 1px solid rgba(216, 151, 77, 0.22);
-        padding: 8px;
-      }
-
-      .player-body.is-joined .phone-latency-calibration > div {
-        display: grid;
-        min-width: 0;
-        gap: 2px;
-      }
-
-      .player-body.is-joined .phone-latency-calibration strong {
-        color: #24765f;
-        font-size: 0.78rem;
-        font-weight: 1000;
-      }
-
-      .player-body.is-joined .phone-latency-calibration span {
-        min-width: 0;
-        overflow: hidden;
-        color: var(--phone-muted);
-        font-size: 0.7rem;
-        font-weight: 850;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .player-body.is-joined .phone-latency-calibration .ghost-button {
-        min-height: 36px;
-        border-color: rgba(47, 138, 120, 0.2);
-        color: #24765f;
-        padding: 6px 10px;
-        font-size: 0.78rem;
-        white-space: nowrap;
-      }
-
-      .player-body.is-joined .phone-latency-calibration .ghost-button:disabled {
-        opacity: 0.58;
       }
 
       .phone-modal {
@@ -3899,8 +3850,7 @@
       }
 
       .player-body.is-joined .phone-remote-grid span,
-      .player-body.is-joined .phone-remote-listen,
-      .player-body.is-joined .phone-latency-calibration {
+      .player-body.is-joined .phone-remote-listen {
         border-radius: var(--phone-radius-md);
         background: rgba(255, 255, 255, 0.66);
       }
@@ -4182,13 +4132,6 @@
               啟用收聽
             </button>
           </div>
-          <div class="phone-latency-calibration" id="phoneLatencyCalibration" hidden>
-            <div>
-              <strong>同步校準</strong>
-              <span id="phoneLatencyCalibrationStatus">聽到音樂時按一下</span>
-            </div>
-            <button class="ghost-button" id="phoneLatencyCalibrationButton" type="button">聽到音樂</button>
-          </div>
           <div class="phone-remote-media" id="phoneRemoteMedia" hidden>
             <div class="phone-remote-media-head">
               <strong>同步播放器</strong>
@@ -4352,10 +4295,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-30"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-30"></script>
+    <script src="./firebase-config.js?v=premium-mobile-31"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-31"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-30"></script>
-    <script src="./pwa.js?v=premium-mobile-30"></script>
+    <script src="./player.js?v=premium-mobile-31"></script>
+    <script src="./pwa.js?v=premium-mobile-31"></script>
   </body>
 </html>

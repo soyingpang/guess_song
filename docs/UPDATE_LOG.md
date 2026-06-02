@@ -21,6 +21,30 @@
 
 ---
 
+## 2026-06-02 17:49 HKT
+
+類型：手機版 / 場控 / 簡化
+
+變更：
+- 移除玩家手機畫面的「同步校準 / 聽到音樂」卡和按鈕。
+- `player.js` 不再 render 手機端延遲校準入口，也不再由玩家手機送出 latency calibration sample。
+- 主持端手動延遲補償設定仍保留，手機端只顯示同步狀態和按主持設定延後倒數。
+- 手機和主持入口 cache version 更新到 `premium-mobile-31`，PWA / service worker cache 同步更新。
+
+影響：
+- 玩家手機畫面更乾淨，不會誤導團友以為每題要按「聽到音樂」才可同步。
+- 延遲補償由主持統一場控，減少現場操作負擔。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check sw.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Browser sanity check：`player.html?room=codex-no-calibration-...&name=Codex` 載入 `player.js?v=premium-mobile-31`；頁面沒有 `#phoneLatencyCalibration` / `#phoneLatencyCalibrationButton` / `.phone-latency-calibration`，亦沒有「同步校準」或「聽到音樂」文字；console error 為 0。
+
+下一步：
+- 可用正式網址確認手機頁已載入 `player.js?v=premium-mobile-31`，並確認同步收聽區沒有校準按鈕。
+
+---
+
 ## 2026-06-02 17:34 HKT
 
 類型：程式 / 自動場控 / 玩家入房
