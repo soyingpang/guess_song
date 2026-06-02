@@ -43,7 +43,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-21";
+const APP_BUILD_VERSION = "premium-mobile-22";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -113,6 +113,19 @@ const BIRTHDAY_SONG = {
   hint: "用戶指定生日歌；YouTube：Birthday song | Happy Birthday song | Happy Birthday to you song remix",
   number: "SPECIAL-BIRTHDAY",
   language: "English",
+};
+const SONG_METADATA_FIXES = {
+  K8JLOx3jxoc: { title: "祢信實何廣大", aliases: ["Great Is Thy Faithfulness"] },
+  Xw471hDT2CU: { title: "灰色軌跡", aliases: [] },
+  "7icANcCws-A": { title: "河堤上的傻瓜", aliases: [] },
+  dU27W43li54: { title: "因為愛所以愛", aliases: ["因为爱所以爱"] },
+  D7JbsofNgxE: { title: "盲人", aliases: [] },
+  oKt1aIdb8bo: { title: "大孩子", aliases: [] },
+  "HqmpIQ9l-uA": { title: "大風吹", aliases: ["Simon Says"] },
+  Fo2qAf9XWUc: { title: "長相廝守", aliases: [] },
+  ck6cdBuI0qM: { title: "終止戀愛", aliases: [] },
+  "6Xu-TGL-_qk": { title: "愛在夏天－盛夏之約", aliases: ["Love In Summer"] },
+  FTOapmOLB_M: { title: "你呢", aliases: ["How About You"] },
 };
 const APPROVED_SOURCE_RULES = [
   "小羊詩歌",
@@ -1918,13 +1931,14 @@ function normalizeQuickPickOptionCount(value) {
 function cleanSong(song) {
   const videoId = parseYouTubeId(song.videoId || song.url || song.youtube || "");
   const audioUrl = String(song.audioUrl || song.audio || song.mediaUrl || song.videoUrl || "").trim();
-  const title = String(song.title || "").trim();
+  const metadataFix = SONG_METADATA_FIXES[videoId] || null;
+  const title = String(metadataFix?.title || song.title || "").trim();
   if ((!videoId && !audioUrl) || !title) return null;
 
   return {
     id: song.id || crypto.randomUUID(),
     title,
-    aliases: toList(song.aliases),
+    aliases: metadataFix ? toList(metadataFix.aliases) : toList(song.aliases),
     videoId,
     audioUrl,
     start: CLIP_START_SECONDS,

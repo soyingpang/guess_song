@@ -1,5 +1,5 @@
 (() => {
-  const BUILD_VERSION = "premium-mobile-21";
+  const BUILD_VERSION = "premium-mobile-22";
 
   if (!("serviceWorker" in navigator)) return;
   if (!window.isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") return;
