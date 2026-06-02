@@ -21,6 +21,33 @@
 
 ---
 
+## 2026-06-02 17:34 HKT
+
+類型：程式 / 自動場控 / 玩家入房
+
+變更：
+- 主持頁新增玩家名單自動流程：第一位玩家加入且房間未在出題時，會短暫延遲後自動開始第一題。
+- 當本場曾有玩家連線，但之後所有玩家離開，系統會在 4.5 秒後自動清場，重置分數、題目、已玩紀錄和玩家名單，並停止音訊廣播。
+- 每題開始時會 snapshot 當時在線玩家；遲入房玩家不能插入當前題作答，只會看到「本題已開始，請等下一首」。
+- 四選一、快選估歌、搶答可用玩家判斷都改為只計算當題合資格玩家，避免遲到玩家影響全員答完或可搶答狀態。
+- 手機端新增等下一題提示和狀態 pill，並在不合資格時隱藏當題選項 / 搶答開放狀態。
+- 手機和主持入口 cache version 更新到 `premium-mobile-30`，PWA / service worker cache 同步更新。
+
+影響：
+- 活動開始時，玩家一入房就可以自動起局，主持不用先手動按第一題。
+- 全部玩家離開後，下一批玩家加入會是乾淨新場，減少舊分數、舊玩家和舊題目殘留。
+- 中途加入的玩家不會影響當前題公平性，也不會令四選一「全部已答」判斷失準。
+
+測試：
+- `node --check app.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check sw.js`、`node --check server.js` 通過。
+- `git diff --check` 通過，只有既有 CRLF 提示。
+- 本機 Browser sanity check：`index.html?room=codex-progress-check-...` 和 `player.html?room=...&name=Codex` 均正常載入，主要 UI 可見，console error 為 0。
+
+下一步：
+- 仍建議用兩至三部真手機 / 分頁做 Firebase 實機流程測試：首位玩家自動開局、中途加入等待下一題、全員離開自動清場。
+
+---
+
 ## 2026-06-01 03:44 HKT
 
 類型：手機版 / 視覺 / 加入頁

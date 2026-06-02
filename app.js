@@ -43,7 +43,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-29";
+const APP_BUILD_VERSION = "premium-mobile-30";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -58,6 +58,8 @@ const AUDIO_BROADCAST_DISCONNECT_GRACE_MS = 6500;
 const AUDIO_BROADCAST_STATS_WARMUP_MS = 8000;
 const AUDIO_BROADCAST_STALE_STATS_LIMIT = 3;
 const AUDIO_RESTART_REQUEST_COOLDOWN_MS = 5000;
+const AUTO_START_AFTER_JOIN_MS = 350;
+const EMPTY_ROOM_RESET_DELAY_MS = 4500;
 const hostInstanceId = createSessionId();
 let hostChannel = null;
 const ICE_SERVERS = [
@@ -200,6 +202,7 @@ const state = {
   playEndsAt: 0,
   playbackRevision: 0,
   currentQuestionId: "",
+  currentQuestionEligiblePlayerIds: new Set(),
   buzzWinnerId: "",
   buzzOpen: false,
   showLeaderboard: false,
@@ -238,6 +241,9 @@ const state = {
   firebaseAudioSessionId: "",
   audioBroadcastActive: false,
   audioBroadcastStarting: false,
+  autoStartTimer: null,
+  emptyRoomResetTimer: null,
+  roomHadConnectedPlayers: false,
   players: {},
 };
 
@@ -833,6 +839,7 @@ function setupPlayerConnection(connection) {
       clearPlayerStateRetries(player.id);
       endPlayerMic(player.id, { closeCall: true, render: false });
       endAudioBroadcastForPlayer(player.id);
+      handleRosterAutomation();
       syncAllMicBroadcastTargets();
       renderPlayers();
       renderQuiz();
@@ -900,6 +907,7 @@ function handlePlayerMessage(connection, message) {
     broadcastToPlayers();
     syncAudioBroadcastToPlayer(player);
     syncAllMicBroadcastTargets();
+    handleRosterAutomation();
     return;
   }
 
@@ -920,6 +928,7 @@ function handlePlayerMessage(connection, message) {
     publishFirebasePlayerRecord(player);
     renderPlayers();
     renderQuiz();
+    handleRosterAutomation();
     return;
   }
 
@@ -1554,6 +1563,7 @@ function handleFirebasePlayersSnapshot(playersById) {
   publishDisplayState();
   broadcastToPlayers();
   if (state.audioBroadcastActive) broadcastAudioToRemotePlayers();
+  handleRosterAutomation();
 }
 
 function pruneInitialOfflineFirebasePlayers(rows) {
@@ -1564,6 +1574,87 @@ function pruneInitialOfflineFirebasePlayers(rows) {
     clearFirebasePlayerData(playerId);
   });
   return pruned;
+}
+
+function handleRosterAutomation() {
+  const connected = connectedPlayers();
+  if (connected.length) {
+    state.roomHadConnectedPlayers = true;
+    clearEmptyRoomResetTimer();
+    maybeAutoStartAfterFirstJoin();
+    return;
+  }
+
+  scheduleEmptyRoomReset();
+}
+
+function maybeAutoStartAfterFirstJoin() {
+  if (state.autoStartTimer) return;
+  if (!connectedPlayers().length) return;
+  if (state.currentSong || state.currentQuestionId || state.choiceAutoNextTimer || isRoomBlocked()) return;
+
+  state.autoStartTimer = window.setTimeout(() => {
+    state.autoStartTimer = null;
+    if (!connectedPlayers().length) return;
+    if (state.currentSong || state.currentQuestionId || state.choiceAutoNextTimer || isRoomBlocked()) return;
+
+    if (!playableSongs().length) {
+      setResult("已有玩家加入", "請先載入題庫，載入後會自動開始", "");
+      render();
+      return;
+    }
+
+    startRound(null, { autoplay: true });
+  }, AUTO_START_AFTER_JOIN_MS);
+}
+
+function scheduleEmptyRoomReset() {
+  if (!state.roomHadConnectedPlayers) return;
+  if (connectedPlayers().length) return;
+  if (state.emptyRoomResetTimer) return;
+
+  clearAutoStartTimer();
+  state.emptyRoomResetTimer = window.setTimeout(() => {
+    state.emptyRoomResetTimer = null;
+    if (connectedPlayers().length) return;
+    resetGameSession({ skipConfirm: true, reason: "empty-room" });
+  }, EMPTY_ROOM_RESET_DELAY_MS);
+}
+
+function clearAutoStartTimer() {
+  if (state.autoStartTimer) window.clearTimeout(state.autoStartTimer);
+  state.autoStartTimer = null;
+}
+
+function clearEmptyRoomResetTimer() {
+  if (state.emptyRoomResetTimer) window.clearTimeout(state.emptyRoomResetTimer);
+  state.emptyRoomResetTimer = null;
+}
+
+function connectedPlayers() {
+  return participantPlayers().filter((player) => player.connected);
+}
+
+function markEligiblePlayersForCurrentQuestion() {
+  state.currentQuestionEligiblePlayerIds = new Set(
+    connectedPlayers().map((player) => player.id)
+  );
+}
+
+function isPlayerEligibleForCurrentQuestion(player) {
+  if (!player || !state.currentQuestionId || !state.currentSong) return false;
+  return state.currentQuestionEligiblePlayerIds.has(player.id);
+}
+
+function rejectLateJoinAnswer(player) {
+  sendToPlayer(player, {
+    type: "result",
+    questionId: state.currentQuestionId,
+    correct: false,
+    points: 0,
+    message: "本題已開始，請等下一首先可以作答",
+  });
+  sendPlayerState(player);
 }
 
 function handleFirebasePlayerEvent(event, key) {
@@ -1584,6 +1675,7 @@ function handleFirebasePlayerEvent(event, key) {
     publishFirebasePlayerRecord(player);
     renderPlayers();
     renderQuiz();
+    handleRosterAutomation();
     return;
   }
 
@@ -1762,6 +1854,10 @@ function clearAllFirebaseAudioPeers() {
 function handleChoiceAnswer(player, answer) {
   if (state.mode !== "choice" || player.answers[state.currentQuestionId]) return;
   if (!state.currentSong || !isRemoteAnswerWindowOpen() || state.fullPlayback) return;
+  if (!isPlayerEligibleForCurrentQuestion(player)) {
+    rejectLateJoinAnswer(player);
+    return;
+  }
 
   const correct = normalize(answer) === normalize(state.currentSong.title);
   const points = correct ? 1 : 0;
@@ -1792,9 +1888,11 @@ function allChoicePlayersAnswered(fallbackPlayer = null) {
 }
 
 function connectedChoicePlayers(fallbackPlayer = null) {
-  const players = participantPlayers().filter((player) => player.connected);
+  const players = participantPlayers().filter(
+    (player) => player.connected && isPlayerEligibleForCurrentQuestion(player)
+  );
   if (players.length || !fallbackPlayer) return players;
-  return [fallbackPlayer];
+  return isPlayerEligibleForCurrentQuestion(fallbackPlayer) ? [fallbackPlayer] : [];
 }
 
 function autoRevealChoiceRound() {
@@ -1864,6 +1962,10 @@ function clearChoiceAutoNextTimer() {
 
 function handleQuickPickAnswer(player, answer) {
   if (state.mode !== "buzz" || !state.currentSong || state.answered || !isQuickPickAnswerWindowOpen()) return;
+  if (!isPlayerEligibleForCurrentQuestion(player)) {
+    rejectLateJoinAnswer(player);
+    return;
+  }
 
   const now = Date.now();
   const cooldownUntil = Number(player.quickPickCooldownUntil || 0);
@@ -2017,7 +2119,10 @@ function reopenBuzz() {
 function hasAvailableBuzzPlayers() {
   if (!state.currentQuestionId) return false;
   return participantPlayers().some(
-    (player) => player.connected && !player.answers?.[state.currentQuestionId]
+    (player) =>
+      player.connected &&
+      isPlayerEligibleForCurrentQuestion(player) &&
+      !player.answers?.[state.currentQuestionId]
   );
 }
 
@@ -2164,6 +2269,7 @@ function startRound(preferredSongId, options = {}) {
     state.frontReady = false;
     state.playEndsAt = 0;
     state.currentQuestionId = "";
+    state.currentQuestionEligiblePlayerIds = new Set();
     state.buzzWinnerId = "";
     state.buzzOpen = false;
     state.showLeaderboard = false;
@@ -2199,6 +2305,7 @@ function startRound(preferredSongId, options = {}) {
   state.currentClipStart = chooseClipStart(song);
   state.playEndsAt = autoplay ? Date.now() + clipDuration(song) * 1000 : 0;
   state.currentQuestionId = `${song.id}:${Date.now()}`;
+  markEligiblePlayersForCurrentQuestion();
   if (autoplay) startRemoteAnswerWindow();
   state.buzzWinnerId = "";
   state.buzzOpen = autoplay && canAutoOpenBuzz();
@@ -2303,6 +2410,7 @@ function playBirthdaySong() {
   state.currentClipStart = CLIP_START_SECONDS;
   state.playEndsAt = 0;
   state.currentQuestionId = `birthday:${Date.now()}`;
+  state.currentQuestionEligiblePlayerIds = new Set();
   state.buzzWinnerId = "";
   state.buzzOpen = false;
   state.showLeaderboard = false;
@@ -2736,7 +2844,12 @@ function showWinner() {
   render();
 }
 
-function resetGameSession() {
+function resetGameSession(options = {}) {
+  const reason = String(options?.reason || "");
+  if (options?.skipConfirm) {
+    resetGameSessionState(reason);
+    return;
+  }
   if (!confirm("重置分數同題目？房間、QR、玩家同題庫會保留。")) return;
 
   clearChoiceAutoNextTimer();
@@ -2755,19 +2868,64 @@ function resetGameSession() {
   state.currentClipStart = CLIP_START_SECONDS;
   state.playEndsAt = 0;
   state.currentQuestionId = "";
+  state.currentQuestionEligiblePlayerIds = new Set();
   state.buzzWinnerId = "";
   state.buzzOpen = false;
   state.showLeaderboard = false;
   state.showWinner = false;
   state.latencyCalibrationSamples = [];
   state.questionBag = [];
+  state.roomHadConnectedPlayers = false;
   els.guessInput.value = "";
   els.playerHost.replaceChildren();
 
+  if (reason === "empty-room") stopAudioBroadcast("", { silent: true });
   clearAllPlayersForNewSession();
 
   saveScore();
   setResult("新場已清理", "舊玩家名單已清除，請用玩家連結重新加入", "correct");
+  render();
+}
+
+function resetGameSessionState(reason = "") {
+  clearAutoStartTimer();
+  clearEmptyRoomResetTimer();
+  clearChoiceAutoNextTimer();
+  clearClipTimer();
+  clearRemoteAnswerWindow();
+  state.score = { correct: 0, total: 0, streak: 0 };
+  state.currentSong = null;
+  state.currentChoices = [];
+  state.round = 0;
+  state.revealed = false;
+  state.answered = false;
+  state.hintLevel = 0;
+  state.isPlaying = false;
+  state.fullPlayback = false;
+  state.frontReady = false;
+  state.currentClipStart = CLIP_START_SECONDS;
+  state.playEndsAt = 0;
+  state.currentQuestionId = "";
+  state.currentQuestionEligiblePlayerIds = new Set();
+  state.buzzWinnerId = "";
+  state.buzzOpen = false;
+  state.showLeaderboard = false;
+  state.showWinner = false;
+  state.latencyCalibrationSamples = [];
+  state.questionBag = [];
+  state.roomHadConnectedPlayers = false;
+  els.guessInput.value = "";
+  els.playerHost.replaceChildren();
+
+  if (reason === "empty-room") stopAudioBroadcast("", { silent: true });
+  clearAllPlayersForNewSession();
+
+  saveScore();
+  if (reason === "empty-room") {
+    setResult("本場已自動關閉", "所有玩家已離開，已清除分數、題目及已玩紀錄；下一位玩家加入會自動開始", "correct");
+  } else {
+    setResult("新場已清理", "舊玩家名單已清除，請用玩家連結重新加入", "correct");
+  }
   render();
 }
 
@@ -3576,8 +3734,14 @@ function buildPlayerState(player) {
     remotePlayEndsAt && song
       ? Math.max(0, remotePlayEndsAt - clipDuration(song) * 1000)
       : 0;
+  const answerEligible = !song || revealed || isPlayerEligibleForCurrentQuestion(player);
+  const waitingForNextQuestion = Boolean(song && !revealed && !answerEligible);
   const choiceOptions =
-    song && !revealed && (state.mode === "choice" || state.mode === "buzz") && (state.isPlaying || state.buzzOpen || remoteAnswerOpen)
+    song &&
+    !revealed &&
+    answerEligible &&
+    (state.mode === "choice" || state.mode === "buzz") &&
+    (state.isPlaying || state.buzzOpen || remoteAnswerOpen)
       ? ensureChoiceOptions(song)
       : [];
   const songlistLabel = activeSonglistLabel();
@@ -3599,7 +3763,7 @@ function buildPlayerState(player) {
     remotePlayStartsAt,
     remotePlayEndsAt,
     remoteAudioDelayMs: state.remoteAudioLatencyMs,
-    answerOpenUntil: remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,
+    answerOpenUntil: answerEligible && remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,
     playbackRevision: state.playbackRevision,
     revealAutoNextOpenedAt: revealed ? Number(state.revealAutoNextOpenedAt || 0) : 0,
     revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
@@ -3610,7 +3774,9 @@ function buildPlayerState(player) {
     clipDuration: state.playDuration,
     songlistLabel,
     playerName: player.name,
-    buzzOpen: state.buzzOpen || (state.mode === "buzz" && remoteAnswerOpen),
+    answerEligible,
+    waitingForNextQuestion,
+    buzzOpen: answerEligible && (state.buzzOpen || (state.mode === "buzz" && remoteAnswerOpen)),
     quickPickCooldownUntil: state.mode === "buzz" ? Number(player.quickPickCooldownUntil || 0) : 0,
     quickPickCooldownMs: QUICK_PICK_COOLDOWN_MS,
     quickPickCorrectPoints: QUICK_PICK_CORRECT_POINTS,

@@ -1964,6 +1964,7 @@ function updateLiveClock() {
 }
 
 function phoneStatusText(game) {
+  if (game?.waitingForNextQuestion) return "本題已開始，請等下一首";
   if (!game) return "等候主持";
   const songlistLabel = game.songlistLabel || "歌單";
   if (isCompensatedPlaybackActive(game)) return `${songlistLabel} · 播放中 · ${remainingSeconds(game)} 秒`;
@@ -2443,7 +2444,9 @@ function updatePhoneAppState(game) {
   document.body.classList.toggle("is-choice-mode", game?.mode === "choice");
 
   if (!els.phoneLivePill) return;
-  els.phoneLivePill.textContent = game?.revealed
+  els.phoneLivePill.textContent = game?.waitingForNextQuestion
+    ? "等下題"
+    : game?.revealed
     ? revealVisible
       ? "開估"
       : "同步"
@@ -3001,6 +3004,15 @@ function renderChoices(game) {
 
   if (game.mode === "choice" || game.mode === "buzz") {
     const isQuickPick = game.mode === "buzz";
+    if (game.waitingForNextQuestion || game.answerEligible === false) {
+      const wait = document.createElement("div");
+      wait.className = "phone-empty";
+      wait.textContent = "本題已開始，請等下一首開始再作答";
+      els.phoneChoices.append(wait);
+      els.phoneResult.textContent = state.lastResult || "你已入房；下一首會自動加入作答";
+      return;
+    }
+
     if (!game.choices?.length) {
       const empty = document.createElement("div");
       empty.className = "phone-empty";
