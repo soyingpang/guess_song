@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-28" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-29" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-28" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-29" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -3677,6 +3677,405 @@
         }
       }
 
+      /* Professional mobile interface polish */
+      .player-body {
+        --phone-ink: #312524;
+        --phone-muted: #725b52;
+        --phone-panel: rgba(255, 249, 241, 0.9);
+        --phone-panel-strong: rgba(255, 253, 248, 0.96);
+        --phone-line: rgba(85, 59, 50, 0.12);
+        --phone-radius-xl: 22px;
+        --phone-radius-lg: 18px;
+        --phone-radius-md: 14px;
+        --phone-touch: 54px;
+        --phone-shadow: 0 12px 32px rgba(74, 48, 38, 0.13);
+        background:
+          linear-gradient(180deg, rgba(255, 252, 247, 0.78), rgba(250, 229, 207, 0.9)),
+          linear-gradient(135deg, rgba(47, 138, 120, 0.15), transparent 42%),
+          linear-gradient(315deg, rgba(214, 108, 97, 0.12), transparent 44%),
+          url("./assets/home-fellowship-scene.svg") center / cover fixed,
+          #f5dfc8;
+        color: var(--phone-ink);
+        letter-spacing: 0;
+      }
+
+      .player-body::after {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 246, 232, 0.2)),
+          rgba(255, 244, 226, 0.18);
+      }
+
+      .phone-fx-layer {
+        display: none;
+      }
+
+      .player-shell,
+      .player-body.is-joined .player-shell {
+        width: min(calc(100% - 16px), 430px);
+        margin: 0 auto;
+      }
+
+      .player-card,
+      .player-body.is-joined .player-card {
+        padding: max(8px, env(safe-area-inset-top)) 8px max(12px, env(safe-area-inset-bottom));
+      }
+
+      .phone-app-bar {
+        min-height: 58px;
+        margin: 0 0 10px;
+        border-color: rgba(255, 255, 255, 0.62);
+        border-radius: var(--phone-radius-lg);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 245, 233, 0.82)),
+          rgba(255, 249, 241, 0.9);
+        box-shadow: 0 10px 26px rgba(74, 48, 38, 0.1);
+        padding: 8px 9px;
+      }
+
+      .phone-app-brand {
+        gap: 9px;
+      }
+
+      .phone-app-brand .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        padding: 4px;
+      }
+
+      .phone-app-bar .eyebrow {
+        font-size: 0.66rem;
+        letter-spacing: 0;
+      }
+
+      .phone-app-bar h1 {
+        font-size: 1.08rem;
+        line-height: 1.08;
+      }
+
+      .phone-live-pill {
+        min-height: 30px;
+        border-color: rgba(47, 138, 120, 0.18);
+        background: rgba(230, 247, 240, 0.9);
+        padding: 0 9px;
+        font-size: 0.72rem;
+      }
+
+      .phone-settings-button.icon-action-button {
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        border-radius: 13px;
+        font-size: 0;
+      }
+
+      .phone-settings-button.icon-action-button svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .phone-hero-card {
+        min-height: 164px;
+        border-radius: var(--phone-radius-xl);
+        box-shadow: var(--phone-shadow);
+      }
+
+      .phone-hero-note {
+        border-radius: var(--phone-radius-lg);
+      }
+
+      .phone-join-flow {
+        display: none;
+      }
+
+      .join-form {
+        gap: 10px;
+        margin-top: 10px;
+        border-radius: var(--phone-radius-xl);
+        padding: 14px;
+        box-shadow: var(--phone-shadow);
+      }
+
+      .join-form .guess-line {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+      }
+
+      .join-form input,
+      .join-form .primary-button {
+        min-height: var(--phone-touch);
+        border-radius: var(--phone-radius-md);
+        font-size: 1rem;
+      }
+
+      .join-note {
+        align-items: flex-start;
+        line-height: 1.35;
+      }
+
+      .player-status {
+        display: flex;
+        min-height: 42px;
+        align-items: center;
+        margin-top: 10px;
+        border-radius: var(--phone-radius-md);
+        padding: 8px 10px;
+        font-size: 0.84rem;
+        line-height: 1.28;
+      }
+
+      .player-body.is-joined .player-status {
+        display: none;
+      }
+
+      .player-scoreline {
+        margin-top: 10px;
+      }
+
+      .player-body.is-joined .player-scoreline {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr) 44px !important;
+        gap: 6px;
+      }
+
+      .player-body.is-joined .player-scoreline span,
+      .player-body.is-joined .leaderboard-button {
+        min-height: 46px;
+        border-radius: var(--phone-radius-md);
+        box-shadow: 0 8px 20px rgba(74, 48, 38, 0.09);
+      }
+
+      .player-body.is-joined .player-scoreline span {
+        padding: 6px 7px;
+        font-size: 0.82rem;
+      }
+
+      .player-body.is-joined .player-scoreline span em {
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      .player-body.is-joined .leaderboard-button {
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+      }
+
+      .player-body.is-joined .leaderboard-button svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .player-body.is-joined .phone-remote-panel {
+        gap: 7px;
+        margin-top: 8px;
+        border-radius: var(--phone-radius-lg);
+        padding: 9px;
+        box-shadow: 0 8px 20px rgba(47, 138, 120, 0.08);
+      }
+
+      .player-body.is-joined .phone-remote-head {
+        align-items: start;
+      }
+
+      .player-body.is-joined .phone-remote-head strong {
+        font-size: 0.9rem;
+      }
+
+      .player-body.is-joined .phone-remote-head span {
+        font-size: 0.74rem;
+        line-height: 1.2;
+      }
+
+      .phone-remote-grid,
+      .player-body.is-joined .phone-remote-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .phone-remote-grid span:nth-child(3),
+      .player-body.is-joined .phone-remote-grid span:nth-child(3) {
+        display: none;
+      }
+
+      .player-body.is-joined .phone-remote-grid span,
+      .player-body.is-joined .phone-remote-listen,
+      .player-body.is-joined .phone-latency-calibration {
+        border-radius: var(--phone-radius-md);
+        background: rgba(255, 255, 255, 0.66);
+      }
+
+      .player-body.is-joined .phone-remote-grid span {
+        min-height: 46px;
+        padding: 7px 8px;
+      }
+
+      .player-body.is-joined .phone-remote-grid small {
+        font-size: 0.67rem;
+      }
+
+      .player-body.is-joined .phone-remote-grid strong {
+        font-size: 0.9rem;
+      }
+
+      .player-body.is-joined .phone-remote-listen {
+        min-height: 48px;
+        padding: 8px 10px;
+      }
+
+      .player-body.is-joined .phone-remote-listen::after {
+        right: 10px;
+        bottom: 8px;
+        width: 30px;
+        height: 15px;
+        opacity: 0.42;
+      }
+
+      .player-body.is-joined .phone-remote-roster {
+        display: none;
+      }
+
+      .player-body.is-joined .phone-question {
+        align-content: start;
+        flex: 0 0 auto;
+        gap: 8px;
+        margin-top: 8px;
+        border-radius: var(--phone-radius-xl);
+        padding: 10px;
+        box-shadow: var(--phone-shadow);
+      }
+
+      .player-body.is-joined .phone-question p {
+        display: flex;
+        min-height: 32px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        margin: 0;
+        padding: 6px 10px;
+        font-size: 0.82rem;
+        line-height: 1.22;
+        text-align: center;
+      }
+
+      .player-body.is-joined .phone-question h2 {
+        display: flex;
+        min-height: 52px;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--phone-radius-lg);
+        margin: 0;
+        padding: 10px 12px;
+        font-size: 1.26rem;
+        line-height: 1.16;
+        text-align: center;
+      }
+
+      .player-body.is-joined .phone-hints,
+      .player-body.is-joined .phone-choices {
+        margin-top: 0;
+      }
+
+      .player-body.is-joined .phone-choices,
+      .player-body.is-joined .phone-choices.is-quick-pick {
+        flex: none;
+        gap: 7px;
+      }
+
+      .player-body.is-joined .phone-choice {
+        min-height: 58px;
+        border-radius: 15px;
+        padding: 9px 10px;
+        gap: 9px;
+        box-shadow:
+          0 6px 16px rgba(74, 48, 38, 0.07),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      }
+
+      .player-body.is-joined .phone-choice.is-quick-pick-choice {
+        min-height: 56px;
+      }
+
+      .player-body.is-joined .phone-choice-index {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+        border-radius: 11px;
+        font-size: 0.84rem;
+      }
+
+      .player-body.is-joined .phone-choice-title {
+        display: -webkit-box;
+        overflow: hidden;
+        font-size: 0.94rem;
+        line-height: 1.22;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .player-body.is-joined .phone-choice.is-selected,
+      .player-body.is-joined .phone-choice.is-selected:disabled {
+        box-shadow:
+          0 0 0 3px rgba(47, 138, 120, 0.13),
+          0 10px 22px rgba(47, 138, 120, 0.12);
+      }
+
+      .player-body.is-joined .phone-result {
+        min-height: 38px;
+        border-radius: var(--phone-radius-md);
+        padding: 8px 10px;
+        font-size: 0.8rem;
+        line-height: 1.3;
+      }
+
+      .player-body.is-joined .phone-answer-card,
+      .player-body.is-joined .phone-answer-gate,
+      .player-body.is-joined .phone-reveal-bridge,
+      .player-body.is-joined .phone-cooldown {
+        border-radius: var(--phone-radius-lg);
+      }
+
+      .player-body.is-joined .phone-answer-card strong {
+        font-size: 1.1rem;
+        line-height: 1.14;
+      }
+
+      .player-body.is-joined .buzz-button {
+        min-height: 112px;
+        border-radius: var(--phone-radius-xl);
+      }
+
+      .phone-modal-panel {
+        width: min(calc(100% - 20px), 430px);
+        border-radius: var(--phone-radius-xl);
+      }
+
+      .phone-modal-head .ghost-button {
+        min-height: 40px;
+        border-radius: var(--phone-radius-md);
+      }
+
+      @media (max-width: 360px) {
+      .phone-app-actions {
+          gap: 5px;
+        }
+
+        .phone-live-pill {
+          max-width: 72px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .player-body.is-joined .phone-choice {
+          min-height: 54px;
+          padding: 8px 9px;
+        }
+
+        .player-body.is-joined .phone-choice-title {
+          font-size: 0.88rem;
+        }
+      }
+
     </style>
   </head>
   <body class="player-body">
@@ -3953,10 +4352,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-28"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-28"></script>
+    <script src="./firebase-config.js?v=premium-mobile-29"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-29"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-28"></script>
-    <script src="./pwa.js?v=premium-mobile-28"></script>
+    <script src="./player.js?v=premium-mobile-29"></script>
+    <script src="./pwa.js?v=premium-mobile-29"></script>
   </body>
 </html>
