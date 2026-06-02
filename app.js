@@ -43,7 +43,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-26";
+const APP_BUILD_VERSION = "premium-mobile-27";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -2689,7 +2689,9 @@ function scheduleRemoteAnswerWindowClose() {
 
     state.answerGraceQuestionId = "";
     state.answerGraceEndsAt = 0;
-    if (!state.answered && state.currentQuestionId === questionId) render();
+    if (!state.answered && state.currentQuestionId === questionId && state.currentSong && !state.fullPlayback) {
+      revealCurrentSongThenAutoNext("時間到，自動開估");
+    }
   }, Math.max(0, graceEndsAt - Date.now()));
 }
 
