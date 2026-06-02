@@ -529,7 +529,7 @@ h2 {
   font-weight: 900;
 }
 
-.latency-custom-row {
+.manual-seconds-row {
   display: grid;
   grid-template-columns: auto minmax(74px, 110px) auto auto;
   align-items: center;
@@ -541,15 +541,15 @@ h2 {
   padding: 8px;
 }
 
-.latency-custom-row label,
-.latency-custom-row span {
+.manual-seconds-row label,
+.manual-seconds-row span {
   color: #6a4639;
   font-size: 0.78rem;
   font-weight: 950;
   white-space: nowrap;
 }
 
-.latency-custom-row input {
+.manual-seconds-row input {
   min-height: 38px;
   border-color: rgba(216, 151, 77, 0.24);
   background: rgba(255, 255, 255, 0.72);
@@ -558,7 +558,7 @@ h2 {
   text-align: center;
 }
 
-.latency-custom-row .ghost-button {
+.manual-seconds-row .ghost-button {
   min-height: 38px;
   white-space: nowrap;
 }

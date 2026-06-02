@@ -44,7 +44,7 @@ const DISPLAY_STATE_KEY = "cantonese-hymn-quiz-display-state-v1";
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-19";
+const APP_BUILD_VERSION = "premium-mobile-20";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -82,9 +82,10 @@ const PEER_OPTIONS = {
   },
 };
 const CLIP_START_SECONDS = 0;
-const CLIP_DURATION_SECONDS = 60;
+const MAX_PLAY_DURATION_SECONDS = 180;
+const CLIP_DURATION_SECONDS = MAX_PLAY_DURATION_SECONDS;
+const MIN_PLAY_DURATION_SECONDS = 1;
 const DEFAULT_PLAY_DURATION_SECONDS = 30;
-const PLAY_DURATIONS = [60, 30, 15];
 const PLAY_START_MODES = ["beginning", "random"];
 const CHOICE_OPTION_COUNT = 4;
 const REVEAL_AUTO_NEXT_DELAY_MS = 5000;
@@ -97,7 +98,6 @@ const DEFAULT_REMOTE_AUDIO_LATENCY_MS = 7000;
 const MIN_REMOTE_AUDIO_LATENCY_MS = 0;
 const MAX_REMOTE_AUDIO_LATENCY_MS = 15000;
 const LATENCY_STEP_MS = 500;
-const REMOTE_AUDIO_LATENCY_PRESETS = [5000, 7000, 10000];
 const RANDOM_START_MIN_SECONDS = 45;
 const RANDOM_START_MAX_END_SECONDS = 180;
 const LOCAL_VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|ogv|webm)$/i;
@@ -181,7 +181,7 @@ const state = {
   isPlaying: false,
   fullPlayback: false,
   frontReady: false,
-  playDuration: DEFAULT_PLAY_DURATION_SECONDS,
+  playDuration: savedHostSettings.playDuration,
   playStartMode: "beginning",
   remoteAudioLatencyMs: savedHostSettings.remoteAudioLatencyMs,
   quickPickOptionCount: savedHostSettings.quickPickOptionCount,
@@ -248,14 +248,10 @@ const els = {
   nextButton: document.querySelector("#nextButton"),
   birthdayButton: document.querySelector("#birthdayButton"),
   toggleVideoButton: document.querySelector("#toggleVideoButton"),
-  duration60Button: document.querySelector("#duration60Button"),
-  duration30Button: document.querySelector("#duration30Button"),
-  duration15Button: document.querySelector("#duration15Button"),
+  playDurationInput: document.querySelector("#playDurationInput"),
+  applyPlayDurationButton: document.querySelector("#applyPlayDurationButton"),
   startBeginningButton: document.querySelector("#startBeginningButton"),
   startRandomButton: document.querySelector("#startRandomButton"),
-  latency5Button: document.querySelector("#latency5Button"),
-  latency7Button: document.querySelector("#latency7Button"),
-  latency10Button: document.querySelector("#latency10Button"),
   latencyCustomInput: document.querySelector("#latencyCustomInput"),
   applyLatencyCustomButton: document.querySelector("#applyLatencyCustomButton"),
   latencyStatus: document.querySelector("#latencyStatus"),
@@ -349,14 +345,12 @@ function bindEvents() {
   els.birthdayButton?.addEventListener("click", () => playBirthdaySong());
   els.toggleVideoButton.addEventListener("click", () => toggleVideo());
 
-  els.duration60Button.addEventListener("click", () => setPlayDuration(60));
-  els.duration30Button.addEventListener("click", () => setPlayDuration(30));
-  els.duration15Button.addEventListener("click", () => setPlayDuration(15));
+  els.applyPlayDurationButton?.addEventListener("click", applyCustomPlayDuration);
+  els.playDurationInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") applyCustomPlayDuration();
+  });
   els.startBeginningButton.addEventListener("click", () => setPlayStartMode("beginning"));
   els.startRandomButton.addEventListener("click", () => setPlayStartMode("random"));
-  els.latency5Button?.addEventListener("click", () => setRemoteAudioLatency(5000));
-  els.latency7Button?.addEventListener("click", () => setRemoteAudioLatency(7000));
-  els.latency10Button?.addEventListener("click", () => setRemoteAudioLatency(10000));
   els.applyLatencyCustomButton?.addEventListener("click", applyCustomLatency);
   els.latencyCustomInput?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") applyCustomLatency();
@@ -2037,6 +2031,7 @@ function loadScore() {
 
 function loadHostSettings() {
   const fallback = {
+    playDuration: DEFAULT_PLAY_DURATION_SECONDS,
     remoteAudioLatencyMs: DEFAULT_REMOTE_AUDIO_LATENCY_MS,
     quickPickOptionCount: DEFAULT_QUICK_PICK_OPTION_COUNT,
   };
@@ -2047,6 +2042,7 @@ function loadHostSettings() {
     const settings = JSON.parse(raw) || {};
     return {
       ...fallback,
+      playDuration: normalizePlayDuration(settings.playDuration),
       remoteAudioLatencyMs: normalizeRemoteAudioLatency(settings.remoteAudioLatencyMs),
       quickPickOptionCount: normalizeQuickPickOptionCount(settings.quickPickOptionCount),
     };
@@ -2059,10 +2055,17 @@ function saveHostSettings() {
   localStorage.setItem(
     HOST_SETTINGS_KEY,
     JSON.stringify({
+      playDuration: normalizePlayDuration(state.playDuration),
       remoteAudioLatencyMs: normalizeRemoteAudioLatency(state.remoteAudioLatencyMs),
       quickPickOptionCount: normalizeQuickPickOptionCount(state.quickPickOptionCount),
     })
   );
+}
+
+function normalizePlayDuration(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return DEFAULT_PLAY_DURATION_SECONDS;
+  return Math.max(MIN_PLAY_DURATION_SECONDS, Math.min(MAX_PLAY_DURATION_SECONDS, Math.round(numeric)));
 }
 
 function normalizeRemoteAudioLatency(value) {
@@ -2096,7 +2099,7 @@ function cleanSong(song) {
     videoId,
     audioUrl,
     start: CLIP_START_SECONDS,
-    duration: CLIP_DURATION_SECONDS,
+    duration: normalizePlayDuration(song.duration || song.clipDuration || MAX_PLAY_DURATION_SECONDS),
     category: String(song.category || "").trim(),
     source: String(song.source || "").trim(),
     hint: String(song.hint || "").trim(),
@@ -2494,7 +2497,7 @@ function buildEmbedUrl(song, autoplay) {
 }
 
 function clipDuration(song) {
-  return Math.min(CLIP_DURATION_SECONDS, state.playDuration, song?.duration || CLIP_DURATION_SECONDS);
+  return Math.min(MAX_PLAY_DURATION_SECONDS, normalizePlayDuration(state.playDuration), song?.duration || MAX_PLAY_DURATION_SECONDS);
 }
 
 function clipStart() {
@@ -2565,10 +2568,16 @@ function setMode(mode) {
 }
 
 function setPlayDuration(seconds) {
-  state.playDuration = PLAY_DURATIONS.includes(seconds) ? seconds : DEFAULT_PLAY_DURATION_SECONDS;
+  state.playDuration = normalizePlayDuration(seconds);
+  saveHostSettings();
   if (state.currentSong && !state.isPlaying) state.currentClipStart = chooseClipStart(state.currentSong);
   if (state.currentSong) loadCurrentVideo();
+  setResult("播放秒數已更新", `每題播放 ${state.playDuration} 秒`, "");
   render();
+}
+
+function applyCustomPlayDuration() {
+  setPlayDuration(els.playDurationInput?.value);
 }
 
 function setPlayStartMode(mode) {
@@ -3166,17 +3175,12 @@ function renderQuiz() {
   els.playerHost.classList.remove("is-masked");
   els.toggleVideoButton.textContent = state.revealed ? "隱藏影片" : "顯示影片";
 
-  els.duration60Button.classList.toggle("is-active", state.playDuration === 60);
-  els.duration30Button.classList.toggle("is-active", state.playDuration === 30);
-  els.duration15Button.classList.toggle("is-active", state.playDuration === 15);
+  if (els.playDurationInput) els.playDurationInput.value = String(state.playDuration);
   els.startBeginningButton.classList.toggle("is-active", state.playStartMode === "beginning");
   els.startRandomButton.classList.toggle("is-active", state.playStartMode === "random");
-  els.latency5Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 5000);
-  els.latency7Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 7000);
-  els.latency10Button?.classList.toggle("is-active", state.remoteAudioLatencyMs === 10000);
   if (els.latencyCustomInput) els.latencyCustomInput.value = String(state.remoteAudioLatencyMs / 1000).replace(/\.0$/, "");
   if (els.latencyStatus) {
-    els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可用快捷鍵或自訂秒數`;
+    els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可手動輸入秒數`;
   }
   renderLatencyCalibrationUi();
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
@@ -3208,14 +3212,10 @@ function renderQuiz() {
     els.birthdayButton.disabled = waitingForAudioReady;
     els.birthdayButton.title = audioReadyTitle;
   }
-  els.duration60Button.disabled = roomBlocked;
-  els.duration30Button.disabled = roomBlocked;
-  els.duration15Button.disabled = roomBlocked;
+  if (els.playDurationInput) els.playDurationInput.disabled = roomBlocked;
+  if (els.applyPlayDurationButton) els.applyPlayDurationButton.disabled = roomBlocked;
   els.startBeginningButton.disabled = roomBlocked;
   els.startRandomButton.disabled = roomBlocked;
-  if (els.latency5Button) els.latency5Button.disabled = roomBlocked;
-  if (els.latency7Button) els.latency7Button.disabled = roomBlocked;
-  if (els.latency10Button) els.latency10Button.disabled = roomBlocked;
   if (els.latencyCustomInput) els.latencyCustomInput.disabled = roomBlocked;
   if (els.applyLatencyCustomButton) els.applyLatencyCustomButton.disabled = roomBlocked;
   els.choiceModeButton.disabled = roomBlocked;

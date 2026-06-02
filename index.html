@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-19" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-20" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-19" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-20" />
   </head>
   <body>
     <div class="app-shell">
@@ -85,10 +85,11 @@
             </button>
           </div>
 
-          <div class="mode-row three" role="group" aria-label="播放秒數">
-            <button class="segmented" id="duration60Button" type="button">60 秒</button>
-            <button class="segmented is-active" id="duration30Button" type="button">30 秒</button>
-            <button class="segmented" id="duration15Button" type="button">15 秒</button>
+          <div class="manual-seconds-row">
+            <label for="playDurationInput">播放秒數</label>
+            <input id="playDurationInput" type="number" inputmode="numeric" min="1" max="180" step="1" value="30" />
+            <span>秒</span>
+            <button class="ghost-button" id="applyPlayDurationButton" type="button">套用</button>
           </div>
 
           <div class="mode-row" role="group" aria-label="播放起點">
@@ -96,13 +97,8 @@
             <button class="segmented" id="startRandomButton" type="button">隨機中段</button>
           </div>
 
-          <div class="mode-row three latency-row" role="group" aria-label="手機延遲補償">
-            <button class="segmented" id="latency5Button" type="button">5 秒</button>
-            <button class="segmented is-active" id="latency7Button" type="button">7 秒</button>
-            <button class="segmented" id="latency10Button" type="button">10 秒</button>
-          </div>
-          <div class="latency-custom-row">
-            <label for="latencyCustomInput">自訂延遲</label>
+          <div class="manual-seconds-row">
+            <label for="latencyCustomInput">手機延遲</label>
             <input id="latencyCustomInput" type="number" inputmode="decimal" min="0" max="15" step="0.5" value="7" />
             <span>秒</span>
             <button class="ghost-button" id="applyLatencyCustomButton" type="button">套用</button>
@@ -279,11 +275,11 @@
       </main>
     </div>
 
-    <script src="./firebase-config.js?v=premium-mobile-19"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-19"></script>
+    <script src="./firebase-config.js?v=premium-mobile-20"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-20"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./local-qr.js?v=premium-mobile-19"></script>
-    <script src="./app.js?v=premium-mobile-19"></script>
-    <script src="./pwa.js?v=premium-mobile-19"></script>
+    <script src="./local-qr.js?v=premium-mobile-20"></script>
+    <script src="./app.js?v=premium-mobile-20"></script>
+    <script src="./pwa.js?v=premium-mobile-20"></script>
   </body>
 </html>
