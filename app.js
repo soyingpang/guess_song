@@ -43,7 +43,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-22";
+const APP_BUILD_VERSION = "premium-mobile-25";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -52,6 +52,12 @@ const FIREBASE_HOST_STALE_MS = 120000;
 const HOST_TAKEOVER_DELAY_MS = 350;
 const ROOM_UNAVAILABLE_RETRY_MS = 700;
 const ROOM_UNAVAILABLE_RETRY_LIMIT = 4;
+const AUDIO_BROADCAST_RETRY_MS = 1200;
+const AUDIO_BROADCAST_HEALTH_CHECK_MS = 4000;
+const AUDIO_BROADCAST_DISCONNECT_GRACE_MS = 6500;
+const AUDIO_BROADCAST_STATS_WARMUP_MS = 8000;
+const AUDIO_BROADCAST_STALE_STATS_LIMIT = 3;
+const AUDIO_RESTART_REQUEST_COOLDOWN_MS = 5000;
 const hostInstanceId = createSessionId();
 let hostChannel = null;
 const ICE_SERVERS = [
@@ -322,6 +328,7 @@ bindEvents();
 initHostTakeover();
 initMultiplayer();
 render();
+window.setInterval(checkAudioBroadcastHealth, AUDIO_BROADCAST_HEALTH_CHECK_MS);
 if (!state.songs.length) {
   loadCloudLibrary({ silent: true, libraryId: DEFAULT_CLOUD_LIBRARY_ID });
 } else {
@@ -918,6 +925,11 @@ function handlePlayerMessage(connection, message) {
     return;
   }
 
+  if (message.type === "audio-restart-request") {
+    handleAudioRestartRequest(player, message);
+    return;
+  }
+
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
   if (message.type === "latency-calibration") {
@@ -1253,6 +1265,12 @@ function syncAudioBroadcastToPlayer(player) {
     if (!call) return;
 
     call.playerId = player.id;
+    call.createdAt = Date.now();
+    call.disconnectedAt = 0;
+    call.lastBytesSent = 0;
+    call.lastPacketsSent = 0;
+    call.lastStatsAt = 0;
+    call.staleStatsCount = 0;
     state.audioBroadcastCalls.set(player.id, call);
     call.on("close", () => {
       handleAudioBroadcastCallEnd(player.id, call, { retry: true });
@@ -1312,7 +1330,7 @@ function queueAudioBroadcastRetry(playerId) {
   const timer = window.setTimeout(() => {
     state.audioBroadcastRetryTimers.delete(playerId);
     syncAudioBroadcastToPlayer(state.players[playerId]);
-  }, 1200);
+  }, AUDIO_BROADCAST_RETRY_MS);
   state.audioBroadcastRetryTimers.set(playerId, timer);
 }
 
@@ -1326,6 +1344,139 @@ function clearAudioBroadcastRetry(playerId) {
 function clearAllAudioBroadcastRetries() {
   Array.from(state.audioBroadcastRetryTimers.values()).forEach((timer) => window.clearTimeout(timer));
   state.audioBroadcastRetryTimers.clear();
+}
+
+function checkAudioBroadcastHealth() {
+  if (!state.audioBroadcastActive || !state.audioBroadcastStream) return;
+
+  const tracks = state.audioBroadcastStream.getAudioTracks?.() || [];
+  const hasLiveTrack = tracks.some((track) => track.readyState === "live");
+  if (!hasLiveTrack) {
+    stopAudioBroadcast("主持音訊已中斷，請重新分享聲音");
+    return;
+  }
+
+  Object.values(state.players).forEach((player) => {
+    if (!shouldAudioBroadcastToPlayer(player)) {
+      endAudioBroadcastForPlayer(player?.id);
+      return;
+    }
+
+    if (state.firebaseReady && player.firebase) {
+      const entry = state.firebaseAudioPeers.get(player.id);
+      if (!entry) {
+        syncFirebaseAudioBroadcastToPlayer(player);
+        return;
+      }
+      checkAudioPeerConnectionHealth(entry.peerConnection, entry, () => {
+        if (state.firebaseAudioPeers.get(player.id) === entry) restartAudioBroadcastForPlayer(player.id);
+      });
+      return;
+    }
+
+    const call = state.audioBroadcastCalls.get(player.id);
+    if (!call) {
+      syncAudioBroadcastToPlayer(player);
+      return;
+    }
+
+    checkAudioPeerConnectionHealth(audioPeerConnectionFromCall(call), call, () => {
+      if (state.audioBroadcastCalls.get(player.id) === call) restartAudioBroadcastForPlayer(player.id);
+    });
+  });
+}
+
+function audioPeerConnectionFromCall(call) {
+  return call?.peerConnection || call?._peerConnection || call?._pc || null;
+}
+
+function checkAudioPeerConnectionHealth(peerConnection, entry, restart) {
+  if (!peerConnection || typeof restart !== "function") return;
+  if (audioPeerConnectionNeedsRestart(peerConnection, entry)) {
+    restart();
+    return;
+  }
+  checkOutboundAudioStats(peerConnection, entry, restart);
+}
+
+function audioPeerConnectionNeedsRestart(peerConnection, entry = {}) {
+  const connectionState = peerConnection.connectionState || "";
+  const iceState = peerConnection.iceConnectionState || "";
+  const now = Date.now();
+
+  if (["failed", "closed"].includes(connectionState) || ["failed", "closed"].includes(iceState)) return true;
+
+  if (connectionState === "disconnected" || iceState === "disconnected") {
+    entry.disconnectedAt = Number(entry.disconnectedAt || now);
+    return now - entry.disconnectedAt >= AUDIO_BROADCAST_DISCONNECT_GRACE_MS;
+  }
+
+  entry.disconnectedAt = 0;
+  return false;
+}
+
+async function checkOutboundAudioStats(peerConnection, entry = {}, restart) {
+  if (!state.isPlaying || !peerConnection?.getStats) return;
+
+  try {
+    const report = await peerConnection.getStats();
+    let foundAudio = false;
+    let bytesSent = 0;
+    let packetsSent = 0;
+
+    report.forEach((stat) => {
+      if (stat.type !== "outbound-rtp") return;
+      if (stat.kind !== "audio" && stat.mediaType !== "audio") return;
+      foundAudio = true;
+      bytesSent += Number(stat.bytesSent || 0);
+      packetsSent += Number(stat.packetsSent || 0);
+    });
+
+    if (!foundAudio) return;
+
+    const now = Date.now();
+    const createdAt = Number(entry.createdAt || now);
+    const hasPreviousStats = Boolean(entry.lastStatsAt);
+    const stalled =
+      hasPreviousStats &&
+      bytesSent <= Number(entry.lastBytesSent || 0) &&
+      packetsSent <= Number(entry.lastPacketsSent || 0);
+
+    entry.lastBytesSent = bytesSent;
+    entry.lastPacketsSent = packetsSent;
+    entry.lastStatsAt = now;
+
+    if (now - createdAt < AUDIO_BROADCAST_STATS_WARMUP_MS) {
+      entry.staleStatsCount = 0;
+      return;
+    }
+
+    entry.staleStatsCount = stalled ? Number(entry.staleStatsCount || 0) + 1 : 0;
+    if (entry.staleStatsCount >= AUDIO_BROADCAST_STALE_STATS_LIMIT) restart();
+  } catch {
+    // Stats are best-effort only; state changes and phone requests still handle recovery.
+  }
+}
+
+function restartAudioBroadcastForPlayer(playerId) {
+  const player = state.players[playerId];
+  if (!shouldAudioBroadcastToPlayer(player)) return;
+  endAudioBroadcastForPlayer(playerId);
+  queueAudioBroadcastRetry(playerId);
+}
+
+function handleAudioRestartRequest(player, message = {}) {
+  if (!player || !state.audioBroadcastActive) return;
+
+  const requestedAt = Number(message.requestedAt || message.createdAt || Date.now());
+  if (requestedAt <= Number(player.lastAudioRestartRequestAt || 0)) return;
+
+  const now = Date.now();
+  if (now - Number(player.lastAudioRestartHandledAt || 0) < AUDIO_RESTART_REQUEST_COOLDOWN_MS) return;
+
+  player.lastAudioRestartRequestAt = requestedAt;
+  player.lastAudioRestartHandledAt = now;
+  restartAudioBroadcastForPlayer(player.id);
 }
 
 function renderAudioBroadcastUi() {
@@ -1424,6 +1575,11 @@ function handleFirebasePlayerEvent(event, key) {
     return;
   }
 
+  if (message.type === "audio-restart-request") {
+    handleAudioRestartRequest(player, message);
+    return;
+  }
+
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
   if (message.type === "latency-calibration") {
@@ -1495,6 +1651,12 @@ async function syncFirebaseAudioBroadcastToPlayer(player) {
     cleanup,
     playerId: player.id,
     sessionId,
+    createdAt: Date.now(),
+    disconnectedAt: 0,
+    lastBytesSent: 0,
+    lastPacketsSent: 0,
+    lastStatsAt: 0,
+    staleStatsCount: 0,
   };
   state.firebaseAudioPeers.set(player.id, entry);
 
@@ -1506,11 +1668,14 @@ async function syncFirebaseAudioBroadcastToPlayer(player) {
       createdAt: Date.now(),
     }).catch(() => {});
   };
-  peerConnection.onconnectionstatechange = () => {
-    if (["failed", "closed", "disconnected"].includes(peerConnection.connectionState)) {
+  const handleConnectionState = () => {
+    if (state.firebaseAudioPeers.get(player.id) !== entry) return;
+    if (audioPeerConnectionNeedsRestart(peerConnection, entry)) {
       endFirebaseAudioForPlayer(player.id, { retry: peerConnection.connectionState !== "closed" });
     }
   };
+  peerConnection.onconnectionstatechange = handleConnectionState;
+  peerConnection.oniceconnectionstatechange = handleConnectionState;
 
   state.audioBroadcastStream.getAudioTracks().forEach((track) => {
     peerConnection.addTrack(track, state.audioBroadcastStream);

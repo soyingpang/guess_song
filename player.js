@@ -57,6 +57,10 @@ const QUICK_PICK_COOLDOWN_MS = 5000;
 const AUDIO_UNLOCK_TIMEOUT_MS = 1200;
 const HOST_AUDIO_HEALTH_CHECK_MS = 2500;
 const HOST_AUDIO_RETRY_GAP_MS = 3200;
+const HOST_AUDIO_RECONNECT_REQUEST_GAP_MS = 8000;
+const HOST_AUDIO_DISCONNECT_GRACE_MS = 6500;
+const HOST_AUDIO_STATS_WARMUP_MS = 6000;
+const HOST_AUDIO_STALE_STATS_LIMIT = 3;
 const SILENT_UNLOCK_AUDIO_URI =
   "data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";
 const ENTRY_MODES = new Set(["remote"]);
@@ -160,6 +164,13 @@ const state = {
   hostAudioBlocked: false,
   hostAudioStatus: "等候主持音訊",
   hostAudioLastRetryAt: 0,
+  hostAudioReconnectRequestedAt: 0,
+  hostAudioDisconnectedAt: 0,
+  hostAudioLastBytesReceived: 0,
+  hostAudioLastPacketsReceived: 0,
+  hostAudioLastStatsAt: 0,
+  hostAudioStaleStatsCount: 0,
+  hostAudioAttachedAt: 0,
   firebase: null,
   firebaseReady: false,
   firebaseConnectedAt: 0,
@@ -1283,11 +1294,14 @@ async function handleFirebaseAudioOffer(offer) {
     }).catch(() => {});
   };
 
-  peerConnection.onconnectionstatechange = () => {
-    if (["failed", "closed", "disconnected"].includes(peerConnection.connectionState)) {
-      stopFirebaseHostAudio({ message: "主持音訊連線中斷" });
+  const handleConnectionState = () => {
+    if (state.firebaseRtcPeer !== peerConnection) return;
+    if (hostAudioPeerNeedsReconnect(peerConnection)) {
+      requestHostAudioReconnect("connection-state");
     }
   };
+  peerConnection.onconnectionstatechange = handleConnectionState;
+  peerConnection.oniceconnectionstatechange = handleConnectionState;
 
   state.firebaseRtcCleanup.push(state.firebase.onChildAdded(["rtc", state.playerId, "hostCandidates"], (payload) => {
     if (!payload || payload.sessionId !== state.firebaseRtcSessionId || !payload.candidate) return;
@@ -1336,6 +1350,7 @@ function stopFirebaseHostAudio(options = {}) {
   }
   state.firebaseRtcPeer = null;
   state.firebaseRtcSessionId = "";
+  resetHostAudioHealthStats();
 
   if (!keepStatus && state.hostAudioStream) {
     stopHostAudioBroadcast({ closeCall: false, message });
@@ -1407,6 +1422,8 @@ function attachHostAudioBroadcastStream(stream) {
 
   state.hostAudioStream = stream;
   state.hostAudioBlocked = false;
+  resetHostAudioHealthStats();
+  state.hostAudioAttachedAt = Date.now();
 
   audio.pause();
   audio.srcObject = null;
@@ -1579,16 +1596,134 @@ function checkHostAudioHealth() {
   const tracks = state.hostAudioStream.getAudioTracks?.() || [];
   const hasLiveTrack = tracks.some((track) => track.readyState === "live");
   if (!hasLiveTrack) {
-    stopHostAudioBroadcast({ closeCall: false, message: "主持音訊已中斷，等候重新接駁" });
+    if (!requestHostAudioReconnect("track-ended")) {
+      stopHostAudioBroadcast({ closeCall: false, message: "主持音訊已中斷，等候重新接駁" });
+    }
+    return;
+  }
+
+  const peerConnection = currentHostAudioPeerConnection();
+  if (hostAudioPeerNeedsReconnect(peerConnection)) {
+    requestHostAudioReconnect("connection-state");
     return;
   }
 
   const audio = state.hostAudioElement;
   const shouldRetry = state.hostAudioBlocked || audio.paused || audio.readyState === 0;
-  if (!shouldRetry) return;
-  if (Date.now() - Number(state.hostAudioLastRetryAt || 0) < HOST_AUDIO_RETRY_GAP_MS) return;
+  if (shouldRetry && Date.now() - Number(state.hostAudioLastRetryAt || 0) >= HOST_AUDIO_RETRY_GAP_MS) {
+    playHostAudioBroadcast({ quiet: true });
+  }
 
-  playHostAudioBroadcast({ quiet: true });
+  checkInboundHostAudioStats(peerConnection);
+}
+
+function currentHostAudioPeerConnection() {
+  return (
+    state.firebaseRtcPeer ||
+    state.hostAudioCall?.peerConnection ||
+    state.hostAudioCall?._peerConnection ||
+    state.hostAudioCall?._pc ||
+    null
+  );
+}
+
+function hostAudioPeerNeedsReconnect(peerConnection) {
+  if (!peerConnection) return false;
+
+  const connectionState = peerConnection.connectionState || "";
+  const iceState = peerConnection.iceConnectionState || "";
+  const now = Date.now();
+
+  if (["failed", "closed"].includes(connectionState) || ["failed", "closed"].includes(iceState)) return true;
+
+  if (connectionState === "disconnected" || iceState === "disconnected") {
+    state.hostAudioDisconnectedAt = Number(state.hostAudioDisconnectedAt || now);
+    return now - state.hostAudioDisconnectedAt >= HOST_AUDIO_DISCONNECT_GRACE_MS;
+  }
+
+  state.hostAudioDisconnectedAt = 0;
+  return false;
+}
+
+async function checkInboundHostAudioStats(peerConnection) {
+  if (!hostAudioShouldBeFlowing() || !peerConnection?.getStats) return;
+
+  try {
+    const report = await peerConnection.getStats();
+    let foundAudio = false;
+    let bytesReceived = 0;
+    let packetsReceived = 0;
+
+    report.forEach((stat) => {
+      if (stat.type !== "inbound-rtp") return;
+      if (stat.kind !== "audio" && stat.mediaType !== "audio") return;
+      foundAudio = true;
+      bytesReceived += Number(stat.bytesReceived || 0);
+      packetsReceived += Number(stat.packetsReceived || 0);
+    });
+
+    if (!foundAudio) return;
+
+    const now = Date.now();
+    const attachedAt = Number(state.hostAudioAttachedAt || now);
+    const hasPreviousStats = Boolean(state.hostAudioLastStatsAt);
+    const stalled =
+      hasPreviousStats &&
+      bytesReceived <= Number(state.hostAudioLastBytesReceived || 0) &&
+      packetsReceived <= Number(state.hostAudioLastPacketsReceived || 0);
+
+    state.hostAudioLastBytesReceived = bytesReceived;
+    state.hostAudioLastPacketsReceived = packetsReceived;
+    state.hostAudioLastStatsAt = now;
+
+    if (now - attachedAt < HOST_AUDIO_STATS_WARMUP_MS) {
+      state.hostAudioStaleStatsCount = 0;
+      return;
+    }
+
+    state.hostAudioStaleStatsCount = stalled ? Number(state.hostAudioStaleStatsCount || 0) + 1 : 0;
+    if (state.hostAudioStaleStatsCount >= HOST_AUDIO_STALE_STATS_LIMIT) {
+      requestHostAudioReconnect("inbound-stats-stale");
+    }
+  } catch {
+    // Stats are best-effort; audio.play() retries and connection events still run.
+  }
+}
+
+function hostAudioShouldBeFlowing() {
+  const game = state.game;
+  return Boolean(game?.isPlaying || game?.mediaPlaying || state.remoteCountdownWindow);
+}
+
+function resetHostAudioHealthStats() {
+  state.hostAudioDisconnectedAt = 0;
+  state.hostAudioLastBytesReceived = 0;
+  state.hostAudioLastPacketsReceived = 0;
+  state.hostAudioLastStatsAt = 0;
+  state.hostAudioStaleStatsCount = 0;
+}
+
+function requestHostAudioReconnect(reason = "health-check") {
+  if (!state.joined) return false;
+
+  const now = Date.now();
+  if (now - Number(state.hostAudioReconnectRequestedAt || 0) < HOST_AUDIO_RECONNECT_REQUEST_GAP_MS) return false;
+  state.hostAudioReconnectRequestedAt = now;
+  setHostAudioStatus("正在重新接駁主持音訊");
+
+  send({
+    type: "audio-restart-request",
+    reason,
+    requestedAt: now,
+  });
+
+  if (state.firebaseRtcPeer) {
+    stopFirebaseHostAudio({ message: "正在重新接駁主持音訊" });
+    return true;
+  }
+
+  stopHostAudioBroadcast({ closeCall: true, message: "正在重新接駁主持音訊" });
+  return true;
 }
 
 function playVoiceBroadcasts() {
@@ -1631,6 +1766,8 @@ function stopHostAudioBroadcast(options = {}) {
   state.hostAudioStream = null;
   state.hostAudioElement = null;
   state.hostAudioBlocked = false;
+  resetHostAudioHealthStats();
+  state.hostAudioAttachedAt = 0;
 
   if (closeCall) closePeerCall(call);
 
