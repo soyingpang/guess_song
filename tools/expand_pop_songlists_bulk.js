@@ -385,8 +385,16 @@ const LISTS = [
       "Ian 陳卓賢",
       "Jer 柳應廷",
       "Edan 呂爵安",
+      "呂爵安",
+      "吕爵安",
+      "Ryan 蔡俊彥",
+      "蔡俊彥",
+      "Ian 陳卓賢",
+      "陳卓賢",
+      "陈卓贤",
       "MC 張天賦",
       "AGA 江海迦",
+      "江海迦",
       "Gin Lee 李幸倪",
       "衛蘭",
       "JW 王灝兒",
@@ -396,6 +404,7 @@ const LISTS = [
       "側田",
       "薛凱琪",
       "張繼聰",
+      "張韶涵",
       "洪嘉豪",
       "Jace 陳凱詠",
       "鄭欣宜",
@@ -411,9 +420,13 @@ const LISTS = [
       "小塵埃",
       "岑寧兒",
       "雲浩影",
+      "林欣彤",
+      "李千那",
+      "徐暐翔",
       "張蔓姿",
       "張蔓莎",
       "Gareth.T",
+      "湯令山",
       "Tyson Yoshi",
       "炎明熹",
       "姚焯菲",
@@ -472,6 +485,41 @@ const LISTS = [
       "TRASH",
       "周深",
       "周琛",
+      "李佳薇",
+      "郁可唯",
+      "魏如萱",
+      "徐佳莹",
+      "卓文萱",
+      "高尔宣",
+      "杨丞琳",
+      "安溥",
+      "趙善恆",
+      "赵善恒",
+      "廖子妤",
+      "梁玉莹",
+      "樹莉²",
+      "樹莉",
+      "劉若英",
+      "刘若英",
+      "許軼",
+      "许轶",
+      "泳儿",
+      "海鸣威",
+      "TRASH樂團",
+      "TRASH乐团",
+      "顏志琳",
+      "颜志琳",
+      "譚輝智",
+      "谭辉智",
+      "邱彥筒",
+      "邱彦筒",
+      "Marf",
+      "週深",
+      "鄧麗欣",
+      "邓丽欣",
+      "Stephy Tang",
+      "薛之谦",
+      "谢安琪",
     ],
   },
 ];
@@ -490,13 +538,19 @@ const BLOCKED_KEYWORDS = [
   "精華",
   "串燒",
   "串烧",
+  "Medley",
+  "medley",
   "playlist",
   "mix",
   "nonstop",
   "演唱會",
   "演唱会",
+  "音樂會",
+  "音乐会",
   "concert",
   "live full",
+  "Live Session",
+  "Live Version",
   "full album",
   "全專輯",
   "完整專輯",
@@ -543,6 +597,8 @@ const BLOCKED_KEYWORDS = [
   "百利酒廊",
   "金曲獎",
   "金曲奖",
+  "金馬",
+  "金马",
   "頒獎",
   "颁奖",
   "典禮",
@@ -610,6 +666,114 @@ const BLOCKED_KEYWORDS = [
   "殺人事件",
   "更多影片",
   "更多視頻",
+  "Special Clip",
+  "混剪",
+  "饭制版",
+  "飯製版",
+  "自彈自唱",
+  "自弹自唱",
+  "撩星聞",
+  "撩星闻",
+  "崩潰大哭",
+  "崩溃大哭",
+  "心疼緊抱",
+  "心疼紧抱",
+  "B站跨年晚會",
+  "B站跨年晚会",
+  "晚會首唱",
+  "晚会首唱",
+  "跨年晚會",
+  "跨年晚会",
+  "線上生日趴",
+  "线上生日趴",
+  "十萬人出頭天",
+  "十万人出头天",
+  "KATCH OUR LIFE",
+  "勁歌金曲",
+  "劲歌金曲",
+  "獨家LIVE",
+  "独家LIVE",
+  "天賜的聲音",
+  "天赐的声音",
+  "原唱",
+  "精選中文好歌",
+  "精选中文好歌",
+  "中國音樂電視",
+  "中国音乐电视",
+  "經典咏流傳",
+  "经典咏流传",
+  "經典詠流傳",
+  "央視春晚",
+  "央视春晚",
+  "CCTV春晚",
+  "合唱挑戰",
+  "合唱挑战",
+  "Lamigo",
+  "不說再見版",
+  "不说再见版",
+  "代表作",
+  "金曲新人",
+  "不敢在外上廁所",
+  "不敢在外上厕所",
+  "Official Live Video",
+  "Live Video",
+  "花西子",
+  "Florasis",
+  "創作MV",
+  "创作MV",
+  "myVideo獨家線上直播",
+  "myVideo独家线上直播",
+  "首播",
+  "海外巡演",
+  "女兒睡醒",
+  "女儿睡醒",
+  "好失落",
+  "安安姐",
+  "懷舊金曲之夜",
+  "怀旧金曲之夜",
+  "一首歌的時間",
+  "一首歌的时间",
+  "情人节限定",
+  "情人節限定",
+  "最強大腦",
+  "最强大脑",
+  "絕對音準",
+  "绝对音准",
+  "身後事務所",
+  "喬家的兒女",
+  "乔家的儿女",
+  "The Bond",
+  "Threads上的台灣人",
+  "Threads上的台湾人",
+  "這麼自卑",
+  "这么自卑",
+  "毛病",
+  "最惨歌后",
+  "最慘歌后",
+  "初登舞台",
+  "大佬戲耍",
+  "大佬戏耍",
+  "華納最強喊包",
+  "华纳最强喊包",
+  "唱功差天共地",
+  "Play大明星",
+  "骨灰粉",
+  "音樂鬼才",
+  "音乐鬼才",
+  "臺北時裝週",
+  "台北时装周",
+  "VOGUE FNO",
+  "歌手‧門",
+  "歌手・門",
+  "Indie一姐",
+  "天貓雙11晚會",
+  "天猫双11晚会",
+  "雙11晚會",
+  "双11晚会",
+  "十強粉絲見面會",
+  "十强粉丝见面会",
+  "琅琊榜",
+  "手游",
   "短劇",
   "動畫",
   "電影解說",
@@ -621,6 +785,8 @@ const BLOCKED_KEYWORDS = [
   "聲夢傳奇",
   "声梦传奇",
   "STARS ACADEMY",
+  "全民造星",
+  "Good Night Show",
   "全球華語音樂盛典",
   "全球华语音乐盛典",
   "音樂盛典",
@@ -638,6 +804,45 @@ const BLOCKED_KEYWORDS = [
   "直通春晚",
   "現場直擊",
   "现场直击",
+  "經典回顧",
+  "经典回顾",
+  "蒙面唱將",
+  "蒙面唱将",
+  "Masked Singer",
+  "央視中秋晚會",
+  "央视中秋晚会",
+  "秋晚榜中榜",
+  "老表",
+  "Mnet Asian Music Awards",
+  "無台標",
+  "无台标",
+  "CreatorSpotlight",
+  "KKBOX 音樂風雲榜",
+  "KKBOX 音乐风云榜",
+  "KKBOX香港風雲榜",
+  "理娱打挺疼",
+  "內娛歌后",
+  "内娱歌后",
+  "試映劇場",
+  "试映剧场",
+  "試當真",
+  "试当真",
+  "緊張挫賽",
+  "紧张挫赛",
+  "熱舞超嗨",
+  "热舞超嗨",
+  "神仙打架",
+  "你喜欢谁的风格",
+  "你喜歡誰的風格",
+  "大港開唱",
+  "大港开唱",
+  "溫柔演唱",
+  "温柔演唱",
+  "唱哭台下",
+  "盛世鬧元宵",
+  "盛世闹元宵",
+  "世界巧克力大賞",
+  "世界巧克力大赏",
 ];
 
 let youtubeiConfig = null;
@@ -732,22 +937,31 @@ function hasNonSongTitleToken(value) {
   const text = String(value || "");
   return (
     /^[12]\d{3}/.test(text) ||
+    /[\u3040-\u30ff]/.test(text) ||
+    /^\d+\s*完整/.test(text.trim()) ||
     (hasChinese(text) && /\s/.test(text.trim()) && [...text.trim()].length > 12) ||
     /\b(?:4k|hd|480p|720p|1080p)\b/i.test(text) ||
     /\.(?:mp4|mkv|mov|avi)$/i.test(text) ||
     /第\s*\d+\s*(屆|届|期)/.test(text) ||
-    /^(合唱|粵語|粤语|國語|国语|國語版|国语版|獨家|独家|獨家首播|独家首播|聲樂|声乐|經典好歌|经典好歌|唱跳經典|唱跳经典|開場表演|开场表演|在台灣所謂的英雄都是挺身而出的凡人|anitamui|anita\s+mui)$/i.test(text.trim()) ||
-    /頒獎|颁奖|典禮|典礼|金鐘|金钟|伴唱|字幕|教唱|學習一首|学习一首|大合唱|精選|精选|合集|串燒|串烧|playlist|mix|karaoke|ktv|辱包|懷念家駒|怀念家驹|comrades|almost a love story|電影|电影|電視劇|电视剧|劇集|剧集|韓劇|韩剧|偶像劇|偶像剧|影集|片頭曲|片头曲|片尾曲|合唱團|合唱团|熱光溶脂|热光溶脂|swiss reju|特務肥姜|特务肥姜|雪山飞狐|一杯熱奶茶的等待|一杯热奶茶的等待|我的麻吉4個鬼|我的麻吉4个鬼|劇集 無用的謊言|剧集 无用的谎言|開唱大小|开唱大小|歌手演唱|還珠格格|还珠格格|周思齊|周思齐|絕對音樂|绝对音乐|時光音樂會|时光音乐会|我要上春晚|直通春晚|台北女子圖鑑|台北女子图鉴|大頭針|大头针|綜藝|综艺|明星歌會|明星歌会|全球華語音樂盛典|全球华语音乐盛典|不然你來主持看看啊|不然你来主持看看啊|佢老公正廢柴|歡迎訂閱咪咕|欢迎订阅咪咕|把所有問題都自己扛|穿山越嶺的另一邊|聆聽妳的溫柔來整理我的思緒|如果我還剩一件事情可以做|總是一個人在練習一個人/i.test(text)
+    /^(合唱|粵語|粤语|國語|国语|國語版|国语版|獨家|独家|獨家首播|独家首播|聲樂|声乐|經典好歌|经典好歌|經典回顧|经典回顾|唱跳經典|唱跳经典|開場表演|开场表演|無台標|无台标|理娱打挺疼|在台灣所謂的英雄都是挺身而出的凡人|anitamui|anita\s+mui)$/i.test(text.trim()) ||
+    /頒獎|颁奖|典禮|典礼|金鐘|金钟|金馬|金马|伴唱|字幕|教唱|學習一首|学习一首|大合唱|精選|精选|合集|串燒|串烧|medley|playlist|mix|karaoke|ktv|辱包|懷念家駒|怀念家驹|comrades|almost a love story|混剪|饭制版|飯製版|天星銀行|Airstar|樂劇主題曲|乐剧主题曲|電影|电影|電視劇|电视剧|劇集|剧集|戲劇|戏剧|韓劇|韩剧|偶像劇|偶像剧|影集|片頭曲|片头曲|片尾曲|合唱團|合唱团|樂團|乐团|熱光溶脂|热光溶脂|swiss reju|特務肥姜|特务肥姜|雪山飞狐|一杯熱奶茶的等待|一杯热奶茶的等待|我的麻吉4個鬼|我的麻吉4个鬼|劇集 無用的謊言|剧集 无用的谎言|衛視中文台|卫视中文台|開唱大小|开唱大小|歌手演唱|還珠格格|还珠格格|周思齊|周思齐|絕對音樂|绝对音乐|時光音樂會|时光音乐会|我要上春晚|直通春晚|台北女子圖鑑|台北女子图鉴|大頭針|大头针|綜藝|综艺|明星歌會|明星歌会|全球華語音樂盛典|全球华语音乐盛典|蒙面唱將|蒙面唱将|央視中秋晚會|央视中秋晚会|秋晚榜中榜|神仙打架|你喜歡誰的風格|你喜欢谁的风格|大港開唱|大港开唱|溫柔演唱|温柔演唱|唱哭台下|盛世鬧元宵|盛世闹元宵|世界巧克力大賞|世界巧克力大赏|理娱打挺疼|緊張挫賽|紧张挫赛|熱舞超嗨|热舞超嗨|試映劇場|试映剧场|試當真|试当真|不然你來主持看看啊|不然你来主持看看啊|佢老公正廢柴|歡迎訂閱咪咕|欢迎订阅咪咕|把所有問題都自己扛|穿山越嶺的另一邊|聆聽妳的溫柔來整理我的思緒|如果我還剩一件事情可以做|總是一個人在練習一個人/i.test(text)
   );
 }
 
 function cleanBracketValue(value) {
-  const next = String(value || "")
+  const raw = String(value || "").trim();
+  if (/電影|电影|紀錄片|纪录片|電視劇|电视剧|劇集|剧集|戲劇|戏剧|韓劇|韩剧|偶像劇|偶像剧|影集|主題曲|主题曲|片頭曲|片头曲|片尾曲|插曲/.test(raw)) return "";
+  const next = raw
+    .trim()
     .replace(/\b(?:Official|Office|Music Video|MV|Lyric Video|Lyrics?|Audio|HD|4K)\b.*$/i, "")
+    .replace(/^([A-Za-z][A-Za-z\s'().-]{1,40})\s+([\p{Script=Han}][\p{Script=Han}\d·．‧•!?！？?？の\s]{1,20})(?:\s+[A-Za-z].*)?$/u, "$2")
+    .replace(/^(我就是個樸實無華的)\s*Bass手.*$/i, "$1Bass手")
     .replace(/^([\p{Script=Han}\d·．‧•!?！？?？の\s]{2,20})\s+[A-Za-z].*$/u, "$1")
     .replace(/^([\p{Script=Han}\d·．‧•!?！？?？の\s]{2,20})[A-Za-z].*$/u, "$1")
+    .replace(/^我就是個樸實無華的$/u, "我就是個樸實無華的Bass手")
     .replace(/\s*\/\s*[A-Za-z][^/]+$/, "")
     .trim();
+  if (next === "我就是個樸實無華的Bass手") return next;
   if ([...next].length > 10 || (/\s/.test(next) && [...next].length > 8)) return "";
   if (!next || !hasChinese(next) || hasNonSongTitleToken(next) || titleHasBlockedKeyword(next)) return "";
   return next;
@@ -762,15 +976,15 @@ function titleAppearsAsFilmName(title, text) {
   if (!value) return false;
   const escaped = escapeRegExp(value);
   const sourceTitle = youtubeTitleFromHint(text) || String(text || "");
-  const filmTerms = ["電影", "电影", "電視劇", "电视剧", "劇集", "剧集", "韓劇", "韩剧", "偶像劇", "偶像剧", "影集"];
+  const filmTerms = ["電影", "电影", "紀錄片", "纪录片", "電視劇", "电视剧", "劇集", "剧集", "戲劇", "戏剧", "韓劇", "韩剧", "偶像劇", "偶像剧", "影集", "劇", "剧"];
   const sourceKey = normalize(sourceTitle);
   const directFilmNameInTitle = filmTerms.some((term) =>
     [`${term}${value}`, `${term}《${value}》`, `${term}「${value}」`, `${term}『${value}』`].some((needle) => sourceTitle.includes(needle) || sourceKey.includes(normalize(needle)))
   );
   const filmNameInTitle =
     directFilmNameInTitle ||
-    new RegExp(`(?:電影|电影|電視劇|电视剧|劇集|剧集|韓劇|韩剧|偶像劇|偶像剧|影集)[^《「『]{0,12}[《「『]\\s*${escaped}\\s*[》」』]`).test(sourceTitle) ||
-    new RegExp(`[《「『]\\s*${escaped}\\s*[》」』][^電影电视電視劇剧集劇集韓韩偶像影集]{0,12}(?:電影|电影|電視劇|电视剧|劇集|剧集|韓劇|韩剧|偶像劇|偶像剧|影集)`).test(sourceTitle);
+    new RegExp(`(?:電影|电影|紀錄片|纪录片|電視劇|电视剧|劇集|剧集|戲劇|戏剧|韓劇|韩剧|偶像劇|偶像剧|影集|劇|剧)[^《「『]{0,12}[《「『]\\s*${escaped}\\s*[》」』]`).test(sourceTitle) ||
+    new RegExp(`[《「『]\\s*${escaped}\\s*[》」』][^電影电影紀錄纪录電視电视劇剧集戲戏韓韩偶像影集]{0,12}(?:電影|电影|紀錄片|纪录片|電視劇|电视剧|劇集|剧集|戲劇|戏剧|韓劇|韩剧|偶像劇|偶像剧|影集|劇|剧)`).test(sourceTitle);
   if (!filmNameInTitle) return false;
   const alternateTitle = cleanTitle(sourceTitle, LISTS.flatMap((list) => list.artists));
   return Boolean(
@@ -915,6 +1129,52 @@ function allArtistKeys() {
       "李幸倪",
       "蔡詩芸",
       "蔡诗芸",
+      "張韶涵",
+      "张韶涵",
+      "李千那",
+      "側田",
+      "侧田",
+      "江海迦",
+      "吳碧霞",
+      "吴碧霞",
+      "鞠紅川",
+      "鞠红川",
+      "林欣彤",
+      "Mag Lam",
+      "Ryan 蔡俊彥",
+      "蔡俊彥",
+      "李佳薇",
+      "郁可唯",
+      "魏如萱",
+      "waa wei",
+      "徐佳莹",
+      "徐佳瑩",
+      "湯令山",
+      "卓文萱",
+      "高尔宣",
+      "高爾宣",
+      "杨丞琳",
+      "楊丞琳",
+      "安溥",
+      "anpu",
+      "趙善恆",
+      "赵善恒",
+      "廖子妤",
+      "梁玉莹",
+      "梁玉瑩",
+      "樹莉²",
+      "樹莉",
+      "譚輝智",
+      "谭辉智",
+      "邱彥筒",
+      "邱彦筒",
+      "Marf",
+      "週深",
+      "鄧麗欣",
+      "邓丽欣",
+      "Stephy Tang",
+      "薛之谦",
+      "谢安琪",
     ];
     allArtistKeys.cache = new Set([...LISTS.flatMap((list) => list.artists), ...aliases].map((artist) => normalize(artist)));
   }
@@ -923,6 +1183,16 @@ function allArtistKeys() {
 
 function isArtistTitle(title) {
   return allArtistKeys().has(normalize(title));
+}
+
+function looksLikeArtistPrefixedTitle(title, remainder) {
+  const titleKey = normalize(title);
+  const remainderKey = normalize(remainder);
+  if (!titleKey || !remainderKey) return false;
+  for (const artistKey of allArtistKeys()) {
+    if (artistKey && titleKey === `${artistKey}${remainderKey}`) return true;
+  }
+  return false;
 }
 
 function csvEscape(value) {
@@ -1022,14 +1292,14 @@ function removeArtistPrefix(title, artists) {
   let next = title.trim();
   for (const artist of artists) {
     const escaped = artist.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const prefixMatch = next.match(new RegExp(`^${escaped}(?:\\s+|\\s*[-–—－~～:：｜|／/‧•·．.]\\s*)(.+)$`, "i"));
-    if (prefixMatch?.[1] && [...prefixMatch[1].trim()].length >= 2) {
+    const prefixMatch = next.match(new RegExp(`^${escaped}(?:\\s+|\\s*[-–—－~～:：;；｜|／/‧•·．.]\\s*)(.+)$`, "i"));
+    if (prefixMatch?.[1] && ([...prefixMatch[1].trim()].length >= 2 || hasChinese(prefixMatch[1]))) {
       next = prefixMatch[1].trim();
     }
-    next = next.replace(new RegExp(`\\s*[-–—－~～:：｜|／/‧•·．.]*\\s*${escaped}$`, "i"), "").trim();
+    next = next.replace(new RegExp(`\\s*[-–—－~～:：;；｜|／/‧•·．.]*\\s*${escaped}$`, "i"), "").trim();
     const pos = next.indexOf(artist);
     if (pos >= 0 && pos <= 16) {
-      const remainder = next.slice(pos + artist.length).replace(/^[\s\-–—－~～:：｜|／/‧•·．.]+/, "").trim();
+      const remainder = next.slice(pos + artist.length).replace(/^[\s\-–—－~～:：;；｜|／/‧•·．.]+/, "").trim();
       if ([...remainder].length >= 2) next = remainder;
     }
   }
@@ -1062,7 +1332,7 @@ function removeArtistSuffixByKnownName(title) {
 function bracketHasFilmContext(text, index, length = 0) {
   const fullText = String(text || "");
   const before = fullText.slice(Math.max(0, index - 24), index);
-  const filmMatches = [...before.matchAll(/電影|电影|電視劇|电视剧|劇集|剧集|韓劇|韩剧|偶像劇|偶像剧|影集/g)];
+  const filmMatches = [...before.matchAll(/電影|电影|紀錄片|纪录片|電視劇|电视剧|劇集|剧集|戲劇|戏剧|韓劇|韩剧|偶像劇|偶像剧|影集|劇|剧/g)];
   const roleMatches = [...before.matchAll(/主題曲|主题曲|插曲|片頭曲|片头曲|片尾曲/g)];
   const lastFilmIndex = filmMatches.at(-1)?.index ?? -1;
   const lastRoleIndex = roleMatches.at(-1)?.index ?? -1;
@@ -1080,12 +1350,14 @@ function firstCleanBracket(text, regex) {
 
 function bracketTitle(rawTitle) {
   const text = String(rawTitle || "");
-  const square = firstCleanBracket(text, /【([^】]{1,50})】/g);
+  const square = firstCleanBracket(text, /【([^】]{1,120})】/g);
   if (square) return square;
-  const cornerSquare = firstCleanBracket(text, /〖([^〗]{1,50})〗/g);
+  const cornerSquare = firstCleanBracket(text, /〖([^〗]{1,120})〗/g);
   if (cornerSquare) return cornerSquare;
-  const asciiSquare = firstCleanBracket(text, /\[([^\]]{1,50})\]/g);
+  const asciiSquare = firstCleanBracket(text, /\[([^\]]{1,120})\]/g);
   if (asciiSquare) return asciiSquare;
+  const angle = firstCleanBracket(text, /〈([^〉]{1,80})〉/g);
+  if (angle) return angle;
   const book = firstCleanBracket(text, /《([^》]{1,40})》/g);
   if (book) return book;
   const quoteOf = text.match(/[「『][^」』]{1,40}[」』]\s*之\s*[「『]([^」』]{1,40})[」』]/);
@@ -1129,7 +1401,9 @@ function bestDelimitedTitle(title, artists) {
 }
 
 function cleanTitle(rawTitle, artists) {
-  let title = bracketTitle(rawTitle) || String(rawTitle || "");
+  const rawText = String(rawTitle || "").replace(/^〔[^〕]{1,50}〕\s*[-–—－]?\s*/u, "");
+  const keepDnaTitle = /決定我愛你\s+D\.N\.A\.?/i.test(rawText);
+  let title = bracketTitle(rawText) || rawText;
   title = title
     .replace(/^([\p{Script=Han}\d·．‧•!?！？?？の\s]{2,16})\s*\([^)]*(?:國|国|粵|粤|國語|国语|粵語|粤语)[^)]*\)\s*[-–—－].*$/u, "$1")
     .replace(/\[[^\]]*(official|mv|lyrics?|audio|hd|4k|歌詞|字幕)[^\]]*\]/gi, "")
@@ -1155,12 +1429,15 @@ function cleanTitle(rawTitle, artists) {
     .replace(/\s+歌詞.*$/i, "")
     .replace(/\s+歌词.*$/i, "")
     .replace(/\s+live.*$/i, "")
+    .replace(/\s*\((?:featuring|feat\.?|ft\.?)[^)]+\)\s*/gi, " ")
     .replace(/\b(?:4k|hd|480p|720p|1080p)\b.*$/i, "")
     .replace(/\.(?:mp4|mkv|mov|avi)$/i, "")
     .replace(/\s*[-–—－]\s*華納.*$/i, "")
     .replace(/\s*[-–—－]\s*华纳.*$/i, "")
     .replace(/^\(?nine one one\)?\s*[-–—－]\s*/i, "")
     .replace(/^lala\s*/i, "")
+    .replace(/^雞丁(?=\p{Script=Han}{2,})/u, "")
+    .replace(/^鸡丁(?=\p{Script=Han}{2,})/u, "")
     .replace(/^(?:dave\s+wang\s*)?王[傑杰]\s+/i, "")
     .replace(/^(coco\s+lee|jace\s+chan|mayday|jay\s+chou|will\s+pan|anita\s+mui|leslie\s+cheung|ekin\s+cheng|osn)\s*[-–—－]?\s*/i, "")
     .replace(/高清.*$/i, "")
@@ -1169,19 +1446,23 @@ function cleanTitle(rawTitle, artists) {
     .replace(/插曲.*$/i, "")
     .replace(/^#+\s*/g, "")
     .replace(/^只有情歌\s*\d+\s*/i, "")
+    .replace(/^(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\s*/g, "")
     .replace(/^\d{4}\s*版\s*/g, "")
     .replace(/^\d{4}\s+/g, "")
     .replace(/^\d{1,3}\s+(?=\p{Script=Han})/u, "")
     .replace(/^[：:]\s*/g, "")
     .replace(/^[‧•·．.]\s*/g, "")
     .replace(/^[\s\-–—－~～]+/g, "")
+    .replace(/\s*[【《「『〈〖\[].*$/u, "")
     .replace(/[【】《》「」『』〈〉〖〗]/g, "")
+    .replace(/^['"“”‘’]+|['"“”‘’]+$/g, "")
     .trim();
 
   title = removeArtistPrefix(title, artists);
   title = title.replace(/^[\s\-–—－~～:：｜|／/‧•·．.]+/g, "").trim();
   title = removeArtistSuffixByKnownName(title);
   title = bestDelimitedTitle(title, artists);
+  if (keepDnaTitle) title = "決定我愛你 D.N.A";
 
   title = title.replace(/^([A-Za-z0-9 .&'()]{2,24})\s*[-–—－]\s*(.+)$/u, (match, prefix, rest) => {
     return hasChinese(rest) ? rest.trim() : match;
@@ -1210,7 +1491,9 @@ function cleanTitle(rawTitle, artists) {
 
   title = title
     .split(/\s*[|｜┃]\s*/)[0]
+    .split(/\s*[;；]\s*/)[0]
     .split(/\s*[／/]\s*/)[0]
+    .replace(/\s*[【《「『〈〖\[].*$/u, "")
     .replace(/\s+feat\..*$/i, "")
     .replace(/\s+ft\..*$/i, "")
     .replace(/\s*\([^)]*\)\s*$/g, "")
@@ -1219,6 +1502,7 @@ function cleanTitle(rawTitle, artists) {
     .replace(/（[^）]*$/g, "")
     .replace(/[()（）]+$/g, "")
     .replace(/\s+(?:原版|新版|舊版|旧版)\s*$/i, "")
+    .replace(/\s+(?:原裝|原装)\s*$/i, "")
     .replace(/\s+(?:國語版|国语版|粵語版|粤语版|國語|国语|粵語|粤语)\s*$/i, "")
     .replace(/^(.{2,16})\s+歡樂今宵$/u, "$1")
     .replace(/\s+(?:吳青峰|吴青峰|陳芳語|陈芳语|陳零九|陈零九|孫燕姿|孙燕姿|林俊傑|林俊杰|任賢齊|任贤齐|周華健|周华健|林志穎|林志颖|黃耀明|黄耀明|鄭智化|郑智化|周杰倫|周杰伦|張天賦|张天赋|MC\s*張天賦|MC\s*张天赋|張國榮|张国荣|梅艷芳|梅艳芳|譚詠麟|谭咏麟|齊秦|齐秦|趙傳|赵传|蔣志光|蒋志光|韋綺珊|韦懿珊|蘇永康|苏永康|陳奕迅|陈奕迅|劉德華|刘德华|李建復|李建复|葉璦菱|叶璦菱|叶瑷菱|潘越雲|潘越云|杭嬌|杭娇|鄧麗君|邓丽君)\s*$/i, "")
@@ -1226,8 +1510,11 @@ function cleanTitle(rawTitle, artists) {
     .replace(/\s+(?:19|20)\d{2}\s*$/i, "")
     .replace(/(?<=\p{Script=Han})\s*\d$/u, "")
     .replace(/^(?=[^\p{Script=Han}]*\p{Script=Latin})[^\p{Script=Han}]{2,60}\s*([\p{Script=Han}][\p{Script=Han}\d·．‧•!?！？?？\s]{1,20})$/u, "$1")
-    .replace(/^([\p{Script=Han}\d·．‧•!?！？?？の\s]+)\s+[A-Za-z].*$/u, "$1")
+    .replace(/^([\p{Script=Han}\d·．‧•!?！？?？の\s]+)\s+(?!D\.N\.A\.?$)[A-Za-z].*$/u, "$1")
     .replace(/^([\p{Script=Han}\d·．‧•!?！？?？の\s]+)[A-Za-z].*$/u, "$1")
+    .replace(/^我就是個樸實無華的$/u, "我就是個樸實無華的Bass手")
+    .replace(/^['"“”‘’]+|['"“”‘’]+$/g, "")
+    .replace(/[\s\-–—－~～:：｜|／/‧•·．.]+$/g, "")
     .replace(/\s{2,}/g, " ")
     .trim();
 
@@ -1250,10 +1537,16 @@ function cleanedExistingSong(song, artists) {
   const sourceTitle = youtubeTitleFromHint(song.hint);
   if (sourceTitle) {
     const sourceCleanedTitle = cleanTitle(sourceTitle, artists);
-    if (sourceCleanedTitle) {
+    if (sourceCleanedTitle && hasChinese(sourceCleanedTitle)) {
       const sourceSong = { ...song, title: sourceCleanedTitle };
       const sourceReason = existingRejectReason(sourceSong);
-      const weakStoredTitle = [...String(candidateSong.title || "").trim()].length <= 1 || isArtistTitle(candidateSong.title);
+      const weakStoredTitle =
+        [...String(candidateSong.title || "").trim()].length <= 1 ||
+        isArtistTitle(candidateSong.title) ||
+        looksLikeArtistPrefixedTitle(candidateSong.title, sourceCleanedTitle) ||
+        (/[A-Za-z]/.test(sourceCleanedTitle) &&
+          normalize(sourceCleanedTitle).startsWith(normalize(candidateSong.title)) &&
+          normalize(sourceCleanedTitle) !== normalize(candidateSong.title));
       if (!sourceReason && sourceCleanedTitle !== candidateSong.title && (reason || weakStoredTitle)) {
         return {
           song: sourceSong,
@@ -1412,7 +1705,7 @@ function nextNumberFor(rows, prefix) {
 
 async function expandList(list, globalVideoIds, reportRows) {
   const rows = readJson(list.path, []);
-  const usableRows = [];
+  let usableRows = [];
   for (const song of rows) {
     const titleArtists = [...list.artists, ...(song.aliases || [])].filter(Boolean);
     const { song: candidateSong, reason, cleaned } = cleanedExistingSong(song, titleArtists);
@@ -1426,6 +1719,28 @@ async function expandList(list, globalVideoIds, reportRows) {
     }
     usableRows.push(candidateSong);
   }
+  const dedupedRows = [];
+  const titleIndexes = new Map();
+  for (const song of usableRows) {
+    const titleKey = normalize(song.title);
+    if (!titleKey) {
+      dedupedRows.push(song);
+      continue;
+    }
+    const existingIndex = titleIndexes.get(titleKey);
+    if (existingIndex == null) {
+      titleIndexes.set(titleKey, dedupedRows.length);
+      dedupedRows.push(song);
+      continue;
+    }
+    const existing = dedupedRows[existingIndex];
+    const keepNew = Number(song.viewCount || 0) > Number(existing.viewCount || 0);
+    const removed = keepNew ? existing : song;
+    if (keepNew) dedupedRows[existingIndex] = song;
+    reportRows.push({ list: list.category, status: "removed", reason: "duplicate-title", title: removed.title, number: removed.number, videoId: removed.videoId, views: removed.viewCount, channel: removed.source, youtubeTitle: removed.hint });
+    if (removed.videoId) globalVideoIds.delete(removed.videoId);
+  }
+  usableRows = dedupedRows;
   if (usableRows.length !== rows.length && !DRY_RUN) writeJson(list.path, usableRows);
   rows.length = 0;
   rows.push(...usableRows);
