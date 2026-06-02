@@ -43,7 +43,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-25";
+const APP_BUILD_VERSION = "premium-mobile-26";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -214,7 +214,6 @@ const state = {
   revealAutoNextEndsAt: 0,
   editingId: null,
   questionBag: [],
-  teamScores: { A: 0, B: 0 },
   roomReady: false,
   roomError: "",
   roomId: "",
@@ -275,8 +274,6 @@ const els = {
   markCorrectButton: document.querySelector("#markCorrectButton"),
   markWrongButton: document.querySelector("#markWrongButton"),
   reopenBuzzButton: document.querySelector("#reopenBuzzButton"),
-  teamAScore: document.querySelector("#teamAScore"),
-  teamBScore: document.querySelector("#teamBScore"),
   categoryFilter: document.querySelector("#categoryFilter"),
   categoryGrid: document.querySelector("#categoryGrid"),
   guessForm: document.querySelector("#guessForm"),
@@ -871,7 +868,6 @@ function handlePlayerMessage(connection, message) {
     const previousConnection = player.connection;
 
     player.name = uniquePlayerName(name, player.id);
-    player.team = normalizeTeam(player.team);
     player.connected = true;
     player.connection = connection;
     player.remoteMode = true;
@@ -1528,7 +1524,6 @@ function handleFirebasePlayersSnapshot(playersById) {
     const name = cleanPlayerName(record.name);
     const player = resolveJoiningPlayer(playerId, name);
     player.name = uniquePlayerName(name, player.id);
-    player.team = normalizeTeam(player.team || record.team);
     player.connected = Boolean(record.connected);
     player.firebase = true;
     player.remoteMode = true;
@@ -1606,7 +1601,7 @@ function publishFirebasePlayerRecord(player) {
   state.firebase.update(["players", player.id], {
     id: player.id,
     name: player.name,
-    team: normalizeTeam(player.team),
+    team: null,
     score: Number(player.score || 0),
     connected: Boolean(player.connected),
     remoteMode: true,
@@ -2729,7 +2724,6 @@ function resetGameSession() {
   clearClipTimer();
   clearRemoteAnswerWindow();
   state.score = { correct: 0, total: 0, streak: 0 };
-  state.teamScores = { A: 0, B: 0 };
   state.currentSong = null;
   state.currentChoices = [];
   state.round = 0;
@@ -2944,7 +2938,6 @@ function clearLibrary() {
   if (!confirm("清空歌單同分數？")) return;
   state.songs = [];
   state.score = { correct: 0, total: 0, streak: 0 };
-  state.teamScores = { A: 0, B: 0 };
   state.editingId = null;
   saveSongs();
   saveScore();
@@ -2986,8 +2979,6 @@ function renderScore() {
   els.scoreCorrect.textContent = state.score.correct;
   els.scoreTotal.textContent = state.score.total;
   els.scoreStreak.textContent = state.score.streak;
-  els.teamAScore.textContent = state.teamScores.A;
-  els.teamBScore.textContent = state.teamScores.B;
 }
 
 function renderCategoryFilter() {
@@ -3330,7 +3321,7 @@ function renderPlayers() {
     const name = document.createElement("strong");
     const meta = document.createElement("span");
     name.textContent = `${index + 1}. ${player.name}`;
-    meta.textContent = `${teamLabel(player.team)} · 手機版 · ${player.connected ? "已連線" : "離線"}`;
+    meta.textContent = `手機版 · ${player.connected ? "已連線" : "離線"}`;
     info.append(name, meta);
 
     const audioStatus = document.createElement("b");
@@ -3345,43 +3336,17 @@ function renderPlayers() {
     const actions = document.createElement("div");
     actions.className = "player-actions";
 
-    const teamSelect = document.createElement("select");
-    teamSelect.className = "mini-select";
-    teamSelect.setAttribute("aria-label", `${player.name} 組別`);
-    ["A", "B"].forEach((team) => {
-      const option = document.createElement("option");
-      option.value = team;
-      option.textContent = `${team} 組`;
-      teamSelect.append(option);
-    });
-    teamSelect.value = normalizeTeam(player.team);
-    teamSelect.addEventListener("change", () => setPlayerTeam(player.id, teamSelect.value));
-
     const remove = miniButton("移", "移除離線玩家", () => removeOfflinePlayer(player.id));
     remove.classList.add("delete");
     remove.disabled = Boolean(player.connected);
     remove.title = player.connected ? "玩家仍在線，不能移除" : "移除離線玩家";
 
-    actions.append(teamSelect);
     actions.append(remove);
 
     item.append(info, score, actions);
 
     els.playerList.append(item);
   });
-}
-
-function setPlayerTeam(playerId, team) {
-  const player = state.players[playerId];
-  if (!player) return;
-
-  const nextTeam = normalizeTeam(team);
-  if (normalizeTeam(player.team) === nextTeam) return;
-
-  player.team = nextTeam;
-  setResult("已更新玩家組別", `${player.name} → ${teamLabel(nextTeam)}`, "correct");
-  renderPlayers();
-  syncSurfaces();
 }
 
 function renderHostJoinQr() {
@@ -3527,7 +3492,6 @@ function buildDisplayState() {
     revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
     songlistLabel,
-    teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen,
     roomReady: state.roomReady,
     roomError: state.roomError,
@@ -3602,8 +3566,6 @@ function buildPlayerState(player) {
     clipDuration: state.playDuration,
     songlistLabel,
     playerName: player.name,
-    team: normalizeTeam(player.team),
-    teamScores: { ...state.teamScores },
     buzzOpen: state.buzzOpen || (state.mode === "buzz" && remoteAnswerOpen),
     quickPickCooldownUntil: state.mode === "buzz" ? Number(player.quickPickCooldownUntil || 0) : 0,
     quickPickCooldownMs: QUICK_PICK_COOLDOWN_MS,
@@ -3654,7 +3616,6 @@ function sendJoinAck(player) {
     type: "join-ack",
     roomId: state.roomId,
     playerName: player.name,
-    team: normalizeTeam(player.team),
   });
 }
 
@@ -3701,7 +3662,6 @@ function stripPlayer(player) {
   return {
     id: player.id,
     name: player.name,
-    team: normalizeTeam(player.team),
     score: player.score,
     connected: Boolean(player.connected),
     micActive: false,
@@ -3725,7 +3685,6 @@ function resolveJoiningPlayer(playerId, name) {
   return {
     id: playerId,
     name,
-    team: balancedJoiningTeam(),
     score: 0,
     answers: {},
     micActive: false,
@@ -3736,17 +3695,6 @@ function resolveJoiningPlayer(playerId, name) {
     audioReady: false,
     quickPickCooldownUntil: 0,
   };
-}
-
-function balancedJoiningTeam() {
-  const counts = { A: 0, B: 0 };
-  Object.values(state.players).forEach((player) => {
-    counts[normalizeTeam(player.team)] += 1;
-  });
-
-  if (counts.A < counts.B) return "A";
-  if (counts.B < counts.A) return "B";
-  return Math.random() < 0.5 ? "A" : "B";
 }
 
 function uniquePlayerName(name, playerId) {
@@ -3788,14 +3736,6 @@ function cleanPlayerName(name) {
 
 function normalizePlayerName(name) {
   return String(name || "").trim().replace(/\s+/g, " ").toLowerCase();
-}
-
-function normalizeTeam(team) {
-  return String(team || "A").trim().toUpperCase() === "B" ? "B" : "A";
-}
-
-function teamLabel(team) {
-  return `${normalizeTeam(team)} 組`;
 }
 
 function hasActiveQuestion() {

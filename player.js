@@ -113,7 +113,6 @@ const state = {
   playerId: localStorage.getItem(PLAYER_ID_KEY) || crypto.randomUUID(),
   name: urlName || "",
   displayName: "",
-  team: "A",
   entryNameReady: false,
   joined: false,
   connecting: false,
@@ -824,7 +823,6 @@ function handleMessage(message) {
 
   if (message.type === "join-ack") {
     state.displayName = message.playerName || state.name;
-    state.team = normalizeTeam(message.team);
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
@@ -845,7 +843,6 @@ function handleMessage(message) {
     updateRemoteCountdownWindow(gameMessage, previousQuestionId);
     state.game = gameMessage;
     state.displayName = gameMessage.playerName || state.name;
-    state.team = normalizeTeam(gameMessage.team);
     state.joined = true;
     state.connecting = false;
     state.reconnectAttempts = 0;
@@ -944,7 +941,7 @@ function renderJoinedWaiting() {
   renderRevealBridge(null);
   renderAnswerCountdown(null);
   renderAnswerGate(null);
-  els.playerRound.textContent = `隊伍：${teamLabel(state.team)}`;
+  els.playerRound.textContent = "準備中";
   els.phoneStatus.textContent = "已加入遊戲";
   els.phoneTitle.textContent = "等候主持開始";
   els.phoneHints.replaceChildren();
@@ -1987,15 +1984,22 @@ function renderRemotePanel(game) {
   renderHostAudioBroadcastUi();
   renderLatencyCalibration(game);
 
-  const teamScores = game?.teamScores || {};
-  els.phoneRemoteTeams.textContent = `A ${Number(teamScores.A || 0)} · B ${Number(teamScores.B || 0)}`;
-
   const players = (game?.leaderboard || []).filter(Boolean);
+  els.phoneRemoteTeams.textContent = remoteTopScoreText(players);
   const livePlayers = players.filter((player) => player.micActive);
   els.phoneRemoteMic.textContent = liveMicSummary(livePlayers);
 
   renderRemoteMedia(game);
   renderRemoteRoster(players);
+}
+
+function remoteTopScoreText(players) {
+  if (!players.length) return "0 分";
+  const leader = players.reduce((top, player) =>
+    Number(player?.score || 0) > Number(top?.score || 0) ? player : top
+  , players[0]);
+  const score = Number(leader?.score || 0);
+  return `${score} 分`;
 }
 
 function liveMicSummary(players) {
@@ -2375,7 +2379,7 @@ function renderRemoteRoster(players) {
     name.textContent = player.name || "玩家";
 
     const meta = document.createElement("small");
-    meta.textContent = `${player.team || "A"} 組 · ${Number(player.score || 0)} 分`;
+    meta.textContent = `${Number(player.score || 0)} 分`;
 
     item.append(name, meta);
 
@@ -2400,8 +2404,8 @@ function renderGame() {
   updateLatencySettingUi(game);
   renderPlayerScore(game);
   els.playerRound.textContent = game.hasQuestion
-    ? `第 ${game.round} 題 · ${teamLabel(game.team)}`
-    : `未開始 · ${teamLabel(state.team)}`;
+    ? `第 ${game.round} 題`
+    : "未開始";
   els.phoneStatus.textContent = phoneStatusText(game);
   els.phoneTitle.textContent = game.revealed
     ? revealVisible
@@ -2424,7 +2428,7 @@ function renderGame() {
   renderChoices(game);
   renderAnswerGate(game);
   renderCooldown(game);
-  renderLeaderboard(game.leaderboard || [], game.teamScores || {});
+  renderLeaderboard(game.leaderboard || []);
   if (!ONSITE_ONLY) renderRemotePanel(game);
 }
 
@@ -3129,9 +3133,8 @@ function scheduleQuickPickCooldownRender(remainingMs) {
   }, Math.max(150, nextTick));
 }
 
-function renderLeaderboard(players, teamScores = {}) {
+function renderLeaderboard(players) {
   els.phoneLeaderboard.replaceChildren();
-  els.phoneLeaderboard.append(renderPhoneTeamSummary(teamScores));
 
   if (!players.length) {
     resetLeaderboardMotion();
@@ -3143,7 +3146,7 @@ function renderLeaderboard(players, teamScores = {}) {
   }
 
   const rankedPlayers = players.filter(Boolean).slice(0, 10);
-  els.phoneLeaderboard.append(renderPhoneSettlementHero(players, teamScores));
+  els.phoneLeaderboard.append(renderPhoneSettlementHero(players));
   const movements = resolveLeaderboardMovements(players);
   els.phoneLeaderboard.append(renderPhoneLeaderboardPodium(rankedPlayers, movements));
 
@@ -3158,7 +3161,6 @@ function renderLeaderboard(players, teamScores = {}) {
     item.className = "phone-rank";
     item.classList.toggle("is-leader", index === 0);
     item.classList.toggle("is-self", isCurrentLeaderboardPlayer(player));
-    item.dataset.team = normalizeTeam(player.team);
     item.style.setProperty("--rank-progress", scoreValue > 0 ? Math.min(1, scoreValue / topScore).toFixed(3) : "0");
     applyLeaderboardMovement(item, movement);
 
@@ -3173,11 +3175,7 @@ function renderLeaderboard(players, teamScores = {}) {
     const name = document.createElement("strong");
     name.className = "phone-rank-name";
     name.textContent = player.name || "玩家";
-    const teamChip = document.createElement("small");
-    teamChip.className = "phone-team-chip";
-    teamChip.dataset.team = normalizeTeam(player.team);
-    teamChip.textContent = teamLabel(player.team);
-    titleLine.append(name, teamChip);
+    titleLine.append(name);
     if (isCurrentLeaderboardPlayer(player)) {
       const selfChip = document.createElement("small");
       selfChip.className = "phone-self-chip";
@@ -3258,7 +3256,7 @@ function resolveLeaderboardMovements(players) {
 }
 
 function leaderboardPlayerKey(player, index = 0) {
-  return String(player?.id || `${normalizePlayerName(player?.name || "player")}:${normalizeTeam(player?.team)}:${index}`);
+  return String(player?.id || `${normalizePlayerName(player?.name || "player")}:${index}`);
 }
 
 function applyLeaderboardMovement(item, movement) {
@@ -3307,11 +3305,6 @@ function renderPhoneLeaderboardPodium(players, movements) {
     const name = document.createElement("strong");
     name.textContent = player?.name || "玩家";
 
-    const teamChip = document.createElement("small");
-    teamChip.className = "phone-team-chip";
-    teamChip.dataset.team = normalizeTeam(player?.team);
-    teamChip.textContent = teamLabel(player?.team);
-
     const score = document.createElement("em");
     score.textContent = `${Number(player?.score || 0)} 分`;
 
@@ -3321,21 +3314,17 @@ function renderPhoneLeaderboardPodium(players, movements) {
     delta.hidden = !movement?.label;
     delta.textContent = movement?.label || "";
 
-    card.append(medal, name, teamChip, score, delta);
+    card.append(medal, name, score, delta);
     podium.append(card);
   });
 
   return podium;
 }
 
-function renderPhoneSettlementHero(players, teamScores = {}) {
+function renderPhoneSettlementHero(players) {
   const top = players[0] || {};
-  const aScore = Number(teamScores.A || 0);
-  const bScore = Number(teamScores.B || 0);
-  const teamStatus = aScore === bScore ? "分組暫時平手" : `${aScore > bScore ? "A" : "B"} 組領先`;
   const hero = document.createElement("div");
   hero.className = "phone-settlement-hero";
-  hero.dataset.team = normalizeTeam(top.team);
   hero.classList.toggle("is-self", isCurrentLeaderboardPlayer(top));
 
   const badge = document.createElement("b");
@@ -3345,7 +3334,7 @@ function renderPhoneSettlementHero(players, teamScores = {}) {
   const name = document.createElement("strong");
   name.textContent = top.name ? `${top.name} 暫列第一` : "暫未有領先玩家";
   const meta = document.createElement("small");
-  meta.textContent = teamStatus;
+  meta.textContent = "個人排行榜";
   copy.append(name, meta);
 
   const score = document.createElement("em");
@@ -3355,37 +3344,12 @@ function renderPhoneSettlementHero(players, teamScores = {}) {
   return hero;
 }
 
-function renderPhoneTeamSummary(teamScores) {
-  const aScore = Number(teamScores.A || 0);
-  const bScore = Number(teamScores.B || 0);
-  const topScore = Math.max(1, aScore, bScore);
-  const summary = document.createElement("div");
-  summary.className = "phone-team-summary";
-  const teams = [
-    ["A", aScore],
-    ["B", bScore],
-  ];
-  teams.forEach(([team, score]) => {
-    const item = document.createElement("span");
-    item.classList.toggle("is-leading", score > (team === "A" ? bScore : aScore));
-    item.style.setProperty("--team-progress", score > 0 ? Math.min(1, score / topScore).toFixed(3) : "0");
-    const label = document.createElement("b");
-    label.textContent = `${team} 組`;
-    const value = document.createElement("strong");
-    value.textContent = String(score);
-    const meter = document.createElement("i");
-    item.append(label, value, meter);
-    summary.append(item);
-  });
-  return summary;
-}
-
 function isCurrentLeaderboardPlayer(player) {
   if (!player) return false;
   if (player.id && player.id === state.playerId) return true;
   const playerName = normalizePlayerName(player.name || "");
   const displayName = normalizePlayerName(state.displayName || state.name || "");
-  return Boolean(playerName && displayName && playerName === displayName && normalizeTeam(player.team) === normalizeTeam(state.team));
+  return Boolean(playerName && displayName && playerName === displayName);
 }
 
 function sameChoice(left, right) {
@@ -3434,14 +3398,6 @@ function joinedStatus() {
 
 function normalizePlayerName(name) {
   return String(name || "").trim().replace(/\s+/g, " ").toLowerCase();
-}
-
-function normalizeTeam(team) {
-  return String(team || "A").trim().toUpperCase() === "B" ? "B" : "A";
-}
-
-function teamLabel(team) {
-  return `${normalizeTeam(team)} 組`;
 }
 
 function remainingSeconds(game) {

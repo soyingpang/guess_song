@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔 · 玩家</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-25" />
+    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-26" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-25" />
+    <link rel="stylesheet" href="./styles.css?v=premium-mobile-26" />
     <style>
       .phone-remote-listen {
         display: grid;
@@ -2922,73 +2922,6 @@
         text-align: center;
       }
 
-      #phoneLeaderboard .phone-team-summary {
-        gap: 9px;
-      }
-
-      #phoneLeaderboard .phone-team-summary span {
-        position: relative;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 5px 8px;
-        overflow: hidden;
-        border: 1px solid rgba(93, 66, 57, 0.1);
-        border-radius: 18px;
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 243, 228, 0.76)),
-          rgba(255, 250, 242, 0.78);
-        padding: 10px;
-        color: var(--phone-muted);
-        font-size: 0.78rem;
-        font-weight: 950;
-      }
-
-      #phoneLeaderboard .phone-team-summary span::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          linear-gradient(90deg, rgba(47, 138, 120, 0.12), rgba(244, 163, 72, 0.1));
-        opacity: 0;
-      }
-
-      #phoneLeaderboard .phone-team-summary span.is-leading::before {
-        opacity: 1;
-      }
-
-      #phoneLeaderboard .phone-team-summary strong {
-        position: relative;
-        color: #7d4a2a;
-        font-size: 1.02rem;
-        line-height: 1;
-      }
-
-      #phoneLeaderboard .phone-team-summary b {
-        position: relative;
-        font-weight: 1000;
-      }
-
-      #phoneLeaderboard .phone-team-summary i {
-        position: relative;
-        grid-column: 1 / -1;
-        display: block;
-        height: 6px;
-        overflow: hidden;
-        border-radius: 999px;
-        background: rgba(93, 66, 57, 0.1);
-      }
-
-      #phoneLeaderboard .phone-team-summary i::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--phone-teal), var(--phone-gold));
-        transform: scaleX(var(--team-progress));
-        transform-origin: left center;
-        transition: transform 260ms ease;
-      }
-
       .phone-podium {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3056,7 +2989,6 @@
       .phone-podium-card strong,
       .phone-podium-card small,
       .phone-podium-card em,
-      .phone-podium-card .phone-team-chip,
       .phone-podium-delta {
         position: relative;
         z-index: 1;
@@ -3180,7 +3112,6 @@
         white-space: nowrap;
       }
 
-      .phone-team-chip,
       .phone-self-chip {
         display: inline-flex;
         flex: 0 0 auto;
@@ -3192,11 +3123,6 @@
         font-size: 0.64rem;
         font-weight: 1000;
         line-height: 1;
-      }
-
-      .phone-team-chip[data-team="B"] {
-        background: rgba(214, 108, 97, 0.12);
-        color: #9b473d;
       }
 
       .phone-self-chip {
@@ -3326,8 +3252,7 @@
         animation: phoneRankSweep 620ms ease-out;
       }
 
-      .phone-rank.is-leader .phone-rank-badge,
-      .phone-team-summary span.is-leading {
+      .phone-rank.is-leader .phone-rank-badge {
         background: linear-gradient(180deg, rgba(251, 191, 36, 0.3), rgba(47, 138, 120, 0.12));
         color: #8a551b;
       }
@@ -3399,10 +3324,6 @@
         font-size: 1.08rem;
         font-style: normal;
         font-weight: 1000;
-      }
-
-      .phone-team-summary span {
-        border-radius: 18px;
       }
 
       @keyframes phoneLeaderboardModalEnter {
@@ -3845,8 +3766,8 @@
               <strong id="phoneRemoteCountdown">--</strong>
             </span>
             <span>
-              <small>組分</small>
-              <strong id="phoneRemoteTeams">A 0 · B 0</strong>
+              <small>最高分</small>
+              <strong id="phoneRemoteTeams">0 分</strong>
             </span>
             <span>
               <small>開咪</small>
@@ -4032,10 +3953,10 @@
       </div>
     </main>
 
-    <script src="./firebase-config.js?v=premium-mobile-25"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-25"></script>
+    <script src="./firebase-config.js?v=premium-mobile-26"></script>
+    <script src="./firebase-sync.js?v=premium-mobile-26"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./player.js?v=premium-mobile-25"></script>
-    <script src="./pwa.js?v=premium-mobile-25"></script>
+    <script src="./player.js?v=premium-mobile-26"></script>
+    <script src="./pwa.js?v=premium-mobile-26"></script>
   </body>
 </html>
