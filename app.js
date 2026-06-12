@@ -16,10 +16,40 @@ const CLOUD_LIBRARY_OPTIONS = [
     loadedMessage: "已載入詩歌",
   },
   {
-    id: "recentPop25",
-    label: "近25年熱門新歌",
-    url: "./songlists/pop-recent-25.json",
-    loadedMessage: "已載入近25年熱門新歌",
+    id: "allCantonese",
+    label: "全部粵語歌",
+    url: "./songlists/all-cantonese.json",
+    loadedMessage: "已載入全部粵語歌",
+  },
+  {
+    id: "allMandarin",
+    label: "全部國語歌",
+    url: "./songlists/all-mandarin.json",
+    loadedMessage: "已載入全部國語歌",
+  },
+  {
+    id: "popCantonese",
+    label: "粵語流行曲",
+    url: "./songlists/pop-cantonese.json",
+    loadedMessage: "已載入粵語流行曲",
+  },
+  {
+    id: "popMandarin",
+    label: "國語流行曲",
+    url: "./songlists/pop-mandarin.json",
+    loadedMessage: "已載入國語流行曲",
+  },
+  {
+    id: "pop00s",
+    label: "00後流行曲",
+    url: "./songlists/pop-00s.json",
+    loadedMessage: "已載入00後流行曲",
+  },
+  {
+    id: "recentPop15",
+    label: "最近15年流行曲",
+    url: "./songlists/pop-recent-15.json",
+    loadedMessage: "已載入最近15年流行曲",
   },
   {
     id: "allPop",
@@ -43,7 +73,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-32";
+const APP_BUILD_VERSION = "premium-mobile-33";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -2233,6 +2263,7 @@ function cleanSong(song) {
     hint: String(song.hint || "").trim(),
     number: String(song.number || "").trim(),
     language: String(song.language || "粵語").trim(),
+    eraTags: toList(song.eraTags),
   };
 }
 
@@ -2329,7 +2360,7 @@ function playableSongs() {
   const approved = approvedSongs();
   const selected = activeCategorySet();
   if (!selected.size) return approved;
-  return approved.filter((song) => selected.has(song.category));
+  return approved.filter((song) => songFilterTags(song).some((tag) => selected.has(tag)));
 }
 
 function approvedSongs() {
@@ -3159,7 +3190,7 @@ function renderScore() {
 }
 
 function renderCategoryFilter() {
-  const categories = Array.from(new Set(approvedSongs().map((song) => song.category).filter(Boolean))).sort();
+  const categories = Array.from(new Set(approvedSongs().flatMap(songFilterTags).filter(Boolean))).sort();
   const previous = els.categoryFilter.value || state.category;
   if (els.categoryFilter) els.categoryFilter.innerHTML = "";
 
@@ -3232,7 +3263,13 @@ function compareCategoryLabels(left, right) {
 }
 
 function categorySortKey(category) {
+  if (category === "粵語") return 1;
+  if (category === "國語") return 2;
   if (category.includes("詩歌")) return 10;
+  if (category.includes("80年代")) return 80;
+  if (category.includes("90年代")) return 90;
+  if (category.includes("00後")) return 100;
+  if (category.includes("最近15年")) return 115;
   const match = category.match(/(\d{2,4})/);
   if (!match) return 900;
   const value = Number(match[1]);
@@ -3241,7 +3278,12 @@ function categorySortKey(category) {
 
 function shortCategoryLabel(category) {
   if (/^\d+年代/.test(category)) return category.replace("流行曲", "");
+  if (category === "粵語" || category === "國語") return category;
   return category.replace("熱門新歌", "新歌").replace("流行曲", "");
+}
+
+function songFilterTags(song) {
+  return [song.language, ...toList(song.eraTags), song.category].filter(Boolean);
 }
 
 function isRoomBlocked() {

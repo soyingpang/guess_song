@@ -57,10 +57,10 @@ https://soyingpang.github.io/guess_song/index.html?room=fellowship-b
 - 手機端全部視為遠距手機玩家；Firebase 配好後會收聽主持廣播的分頁聲音或咪高峰聲音，手機本身不再播放 YouTube
 - 四選一答中加 1 分；全部在線玩家已選後會自動開估，只顯示文字答案 5 秒，不播完整歌曲，然後自動播放下一題；快選估歌可選 4 / 6 / 8 個歌名，答中 +5 分、答錯 -1 分並冷卻 5 秒，答中後同樣顯示答案再自動下一題
 - 主持頁可按「排行榜」，玩家手機會看到排名
-- 線上歌單已合併詩歌、80年代流行曲、90年代流行曲和近25年熱門新歌，可直接用「線上歌單」或「只玩歌單 / 分類」切換玩法
+- 線上歌單已合併詩歌、80年代流行曲、90年代流行曲和 00 後 / 最近15年流行曲，可直接用「線上歌單」或「只玩語言 / 年代 / 分類」切換玩法
 - 隨機抽題只會使用已批准來源；待審來源會保留在題庫，但不會被抽中
 - 題庫會存在同一部裝置嘅瀏覽器 localStorage
-- `songlists/all-songlists.json` 是預設線上歌單，會把詩歌、80年代流行曲、90年代流行曲和近25年熱門新歌一併載入
+- `songlists/all-songlists.json` 是預設線上歌單，會把詩歌、80年代流行曲、90年代流行曲和 00 後流行曲一併載入；主持亦可直接載入粵語 / 國語或最近15年歌單
 
 ## 玩家手機
 
@@ -105,7 +105,7 @@ http://localhost:5173
 
 ## 線上歌單
 
-想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 JSON 歌單。格式同上面一樣。更新後 push 到 GitHub，網站會載入 `songlists/all-songlists.json`，主持可用「只玩歌單 / 分類」選擇今次玩邊個歌單。
+想所有人開同一條 GitHub Pages link 都有同一批題目，可以更新 repo 入面嘅 JSON 歌單。格式同上面一樣。更新後 push 到 GitHub，網站會載入 `songlists/all-songlists.json`，主持可用「只玩語言 / 年代 / 分類」選擇今次玩邊個歌單。
 
 目前線上歌單包括：
 
@@ -113,10 +113,15 @@ http://localhost:5173
 - `hymns.json`：詩歌，183 首
 - `songlists/pop-80s.json`：80年代流行曲，552 首
 - `songlists/pop-90s.json`：90年代流行曲，894 首
-- `songlists/pop-recent-25.json`：近25年熱門新歌，1900 首
+- `songlists/pop-00s.json`：00後流行曲，1900 首
+- `songlists/pop-recent-15.json`：最近15年流行曲，1874 首
+- `songlists/pop-cantonese.json`：粵語流行曲，1633 首
+- `songlists/pop-mandarin.json`：國語流行曲，1713 首
+- `songlists/all-cantonese.json`：全部粵語歌，1721 首
+- `songlists/all-mandarin.json`：全部國語歌，1808 首
 - `songlists/pop-all.json`：全部流行曲，3346 首
 
-目前線上歌單只保留現有 `viewCount` metadata 達 50 萬或以上的歌曲；完整清理報告見 `docs/YOUTUBE_VIEW_FILTER_2026-06-12_500K.md`。
+目前線上歌單只保留現有 `viewCount` metadata 達 50 萬或以上的歌曲；完整清理報告見 `docs/YOUTUBE_VIEW_FILTER_2026-06-12_500K.md`。語言 / 年代拆分 audit 見 `docs/SONGLIST_LANGUAGE_ERA_SPLIT_2026-06-12.md`。
 
 目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、玻璃海樂團 Worship Nations、讚美之泉 Stream of Praise、建道神學院新祢呈敬拜隊、泥土音樂 Clay Music、約書亞樂團 Joshua Band、團契遊樂園、HKACM 香港基督徒音樂事工協會、YouTube、流行曲題庫。其他來源會先標示為「待審」。
 

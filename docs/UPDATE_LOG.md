@@ -21,6 +21,36 @@
 
 ---
 
+## 2026-06-12 23:07 HKT
+
+類型：題庫 / 語言年代拆分 / 主持 UI
+
+變更：
+- 新增 `tools/rebuild_songlist_splits.js`，由現有 50 萬以上正式題庫重建語言和年代派生歌單。
+- 補回流行曲 `language`，並新增 `eraTags` 支援一首歌同時屬於 `00後流行曲` 和 `最近15年流行曲`。
+- 新增語言歌單：`songlists/pop-cantonese.json` 1633 首、`songlists/pop-mandarin.json` 1713 首、`songlists/all-cantonese.json` 1721 首、`songlists/all-mandarin.json` 1808 首。
+- 新增年代歌單：`songlists/pop-00s.json` 1900 首、`songlists/pop-recent-15.json` 1874 首；`00後流行曲` 代表原近25年 / 2000年後整包，`最近15年流行曲` 是較近 subset。
+- 主持頁線上歌單下拉新增「全部粵語歌」「全部國語歌」「粵語流行曲」「國語流行曲」「00後流行曲」「最近15年流行曲」。
+- 主持頁 chips 由「年代 / 分類」改為「語言 / 年代 / 分類」，可直接按 `粵語` / `國語` 篩選已載入題庫。
+- 主持和手機入口 cache version 推進到 `premium-mobile-33`，service worker cache 同步更新。
+- 新增拆分 audit：`docs/SONGLIST_LANGUAGE_ERA_SPLIT_2026-06-12.md` 和 `docs/SONGLIST_LANGUAGE_ERA_SPLIT_2026-06-12.csv`。
+
+影響：
+- 預設 `songlists/all-songlists.json` 仍是 3529 首，但題目 metadata 現在可支援語言和年代切換。
+- 語言分類先用既有 `language`，再用 artist / channel / source 規則判斷；如之後發現個別歌分錯，可用 audit CSV 精準修正。
+
+測試：
+- 已跑 `node tools/rebuild_songlist_splits.js`：12 個輸出 JSON 全部 `badViews=0`。
+- 已跑 `node --check app.js`、`node --check tools/rebuild_songlist_splits.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check sw.js`。
+- 已跑 JSON parse/count validation：12 個輸出 JSON 都 `badViews=0` / `badLang=0`。
+- 已跑本機靜態載入檢查：`http://localhost:5173/` 可 200 載入 12 個正式 JSON。
+- 已跑本機 Browser host UI 檢查：主持頁載入 `app.js?v=premium-mobile-33`，下拉有全部粵語 / 全部國語 / 粵語流行曲 / 國語流行曲 / 00後 / 最近15年，chips 有 `粵語` / `國語` / `00後` / `最近15年`，載入 `國語流行曲` 顯示 1713/1713 可出題，按 `粵語` chip 可 active 並開新題，console error 0。
+
+下一步：
+- Push 後驗證 GitHub Pages 正式 JSON 和主持入口 cache version。
+
+---
+
 ## 2026-06-12 22:31 HKT
 
 類型：題庫 / 清理
