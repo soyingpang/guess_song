@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-06-12 22:31 HKT
+
+類型：題庫 / 清理
+
+變更：
+- 按用戶要求，把正式線上題庫清理成只保留現有 `viewCount` metadata 達 50 萬或以上的歌曲。
+- `hymns.json` 由 500 首減至 183 首。
+- `songlists/pop-80s.json` 由 1019 首減至 552 首。
+- `songlists/pop-90s.json` 由 1398 首減至 894 首。
+- `songlists/pop-recent-25.json` 由 2143 首減至 1900 首。
+- 重建 `songlists/pop-all.json`，全部流行曲共 3346 首。
+- 重建 `songlists/all-songlists.json`，全部正式題庫共 3529 首。
+- 新增清理報告 `docs/YOUTUBE_VIEW_FILTER_2026-06-12_500K.md` 和逐首 CSV `docs/YOUTUBE_VIEW_FILTER_2026-06-12_500K.csv`。
+- 更新 `README.md` 和 `docs/AI_HANDOFF.md` 的題庫數量與 50 萬門檻規則。
+
+影響：
+- 主持頁預設載入的歌單會少了低觀看數 / 較冷門歌曲，出題更偏向大路和較多人認得的版本。
+- 今次使用 repo 內現有 `viewCount` / `viewCheckedAt` metadata 過濾，沒有即時重新抓 YouTube 最新觀看數。
+
+測試：
+- 已驗證 `hymns.json`、`songlists/pop-80s.json`、`songlists/pop-90s.json`、`songlists/pop-recent-25.json`、`songlists/pop-all.json`、`songlists/all-songlists.json` 每首保留歌曲都有 `viewCount >= 500000`，最低保留觀看數為 500,131。
+- 已跑 JSON parse/count validation：6 個正式歌單皆可解析，且 `bad=0`。
+- 已跑 `node --check app.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check sw.js`。
+- 已跑本機靜態載入檢查：`http://localhost:5173/` 可 200 載入 6 個正式 JSON，且每個回應都 `bad=0`。
+- 已跑 `git diff --check`，只出現既有 Windows CRLF 提示，沒有 whitespace error。
+
+下一步：
+- 如要用最新 YouTube 觀看數再精準篩一次，可用工具重新抓取 view count 後再跑同一個 50 萬門檻。
+
+---
+
 ## 2026-06-02 23:46 HKT
 
 類型：修正 / iPhone 音訊 / 場控

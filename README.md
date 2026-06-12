@@ -109,12 +109,14 @@ http://localhost:5173
 
 目前線上歌單包括：
 
-- `songlists/all-songlists.json`：全部歌單
-- `hymns.json`：詩歌
-- `songlists/pop-80s.json`：80年代流行曲
-- `songlists/pop-90s.json`：90年代流行曲
-- `songlists/pop-recent-25.json`：近25年熱門新歌
-- `songlists/pop-all.json`：全部流行曲
+- `songlists/all-songlists.json`：全部歌單，3529 首
+- `hymns.json`：詩歌，183 首
+- `songlists/pop-80s.json`：80年代流行曲，552 首
+- `songlists/pop-90s.json`：90年代流行曲，894 首
+- `songlists/pop-recent-25.json`：近25年熱門新歌，1900 首
+- `songlists/pop-all.json`：全部流行曲，3346 首
+
+目前線上歌單只保留現有 `viewCount` metadata 達 50 萬或以上的歌曲；完整清理報告見 `docs/YOUTUBE_VIEW_FILTER_2026-06-12_500K.md`。
 
 目前自動出題白名單包括：小羊詩歌、同心圓敬拜福音平台 One Circle、角聲使團 The Heralders、原始和聲 Raw Harmony、基恩敬拜 Amazing Grace Worship、播道神學院 Evangel Seminary、鹹蛋音樂事工 Salted Egg Music Ministry、玻璃海樂團 Worship Nations、讚美之泉 Stream of Praise、建道神學院新祢呈敬拜隊、泥土音樂 Clay Music、約書亞樂團 Joshua Band、團契遊樂園、HKACM 香港基督徒音樂事工協會、YouTube、流行曲題庫。其他來源會先標示為「待審」。
 

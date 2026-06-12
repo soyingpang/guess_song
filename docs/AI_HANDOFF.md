@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-06-02 23:46 HKT
+更新時間：2026-06-12 22:31 HKT
 
 ## 必讀順序
 
@@ -29,6 +29,7 @@
 - 手機玩家畫面不應顯示「同步校準 / 聽到音樂」按鈕；延遲補償由主持端統一設定和場控。
 - iPhone / iOS Safari 音訊要特別小心：玩家按「開聲並加入」後，`player.js` 會保持已解鎖的隱藏靜音 audio element 循環播放，等主持音訊 stream 到達時沿用同一 element。不要改回入房後立即 pause，否則 iPhone 可能又會要求再按開聲。
 - 有遠端手機玩家時，主持未開始「廣播電腦/分頁聲音」或「用咪高峰收聲」前不應自動開題或播放；否則手機已開聲也沒有音訊來源。
+- 最新題庫規則：線上歌單只保留現有 `viewCount` metadata 達 50 萬或以上的歌曲；低於 50 萬或沒有觀看數 metadata 的歌曲不進正式題庫。
 
 ## 最新玩法方向
 
@@ -74,7 +75,7 @@
 - 四選一可答題並加分；所有在線玩家都答完後，主持頁會自動開估，文字顯示答案 5 秒後自動下一題播放。
 - 快選估歌可自動判分：答中 +5，答錯 -1，答錯後該玩家冷卻 5 秒；有人答中時只顯示文字答案 5 秒，不播放完整歌曲，然後自動下一題。
 - 排行榜可顯示。
-- 題庫已擴充和重整；目前 `hymns.json` 約 500 首，`songlists/all-songlists.json` 約 2513 首。
+- 題庫已按 50 萬 YouTube 瀏覽量門檻清理；目前 `hymns.json` 183 首，`songlists/pop-all.json` 3346 首，`songlists/all-songlists.json` 3529 首。
 - 已加入並啟用 Firebase 全球手機模式：Project ID 是 `guess-song-260531`，Realtime Database 是 `https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`。Firebase Realtime Database 負責房間、玩家、題目狀態、搶答事件和 WebRTC signaling；聲音仍由 WebRTC 傳送。
 
 ## 重要狀態提醒
