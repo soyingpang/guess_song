@@ -45,9 +45,11 @@
 - 已跑 JSON parse/count validation：12 個輸出 JSON 都 `badViews=0` / `badLang=0`。
 - 已跑本機靜態載入檢查：`http://localhost:5173/` 可 200 載入 12 個正式 JSON。
 - 已跑本機 Browser host UI 檢查：主持頁載入 `app.js?v=premium-mobile-33`，下拉有全部粵語 / 全部國語 / 粵語流行曲 / 國語流行曲 / 00後 / 最近15年，chips 有 `粵語` / `國語` / `00後` / `最近15年`，載入 `國語流行曲` 顯示 1713/1713 可出題，按 `粵語` chip 可 active 並開新題，console error 0。
+- 已驗證 GitHub raw `main`：6 個新增派生 JSON count 正確。
+- 已驗證 GitHub Pages 正式網址：`index.html?v=0c1b241-check1` 已載入 `premium-mobile-33`，`pop-cantonese` 1633、`pop-mandarin` 1713、`pop-00s` 1900、`pop-recent-15` 1874、`all-cantonese` 1721、`all-mandarin` 1808 都可 200 載入。
 
 下一步：
-- Push 後驗證 GitHub Pages 正式 JSON 和主持入口 cache version。
+- 如發現個別歌曲語言分類不準，按 `docs/SONGLIST_LANGUAGE_ERA_SPLIT_2026-06-12.csv` 修正規則後重跑 `node tools/rebuild_songlist_splits.js`。
 
 ---
 
