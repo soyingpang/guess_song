@@ -36,6 +36,7 @@
 - 已跑 `git diff --check`。
 - 已用同版 filter 規則驗證 `songlists/all-songlists.json`：只揀 `粵語` 會有 1615 首、`詩歌` 0 首；`粵語 + 詩歌` 會有 88 首粵語詩歌；`粵語 + 00後` 會有 24 首粵語 00後流行曲。
 - 已用本機 Browser 檢查主持頁載入 `app.js?v=premium-mobile-35`，分類選項有 `粵語` 和 `詩歌` 分開存在。
+- 已驗證 GitHub Pages 正式網址：`index.html?v=cc8f320-filter-check2` 已包含 `premium-mobile-35`，`app.js?v=cc8f320-filter-check2` 載入 `premium-mobile-35` 並包含新分維度 filter。
 
 ---
 
