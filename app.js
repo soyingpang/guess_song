@@ -73,7 +73,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-34";
+const APP_BUILD_VERSION = "premium-mobile-35";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -2360,7 +2360,37 @@ function playableSongs() {
   const approved = approvedSongs();
   const selected = activeCategorySet();
   if (!selected.size) return approved;
-  return approved.filter((song) => songFilterTags(song).some((tag) => selected.has(tag)));
+  return approved.filter((song) => songMatchesSelectedFilters(song, selected));
+}
+
+function songMatchesSelectedFilters(song, selected) {
+  const languages = selectedFilterLanguages(selected);
+  const categories = selectedFilterCategories(selected);
+  const languageMatch = !languages.size || languages.has(song.language);
+  const categoryMatch = categories.size
+    ? songCategoryTags(song).some((tag) => categories.has(tag))
+    : !isHymnSong(song);
+  return languageMatch && categoryMatch;
+}
+
+function selectedFilterLanguages(selected) {
+  return new Set([...selected].filter(isLanguageFilter));
+}
+
+function selectedFilterCategories(selected) {
+  return new Set([...selected].filter((tag) => !isLanguageFilter(tag)));
+}
+
+function isLanguageFilter(tag) {
+  return tag === "粵語" || tag === "國語";
+}
+
+function isHymnSong(song) {
+  return song.category === "詩歌";
+}
+
+function songCategoryTags(song) {
+  return [...toList(song.eraTags), song.category].filter(Boolean);
 }
 
 function approvedSongs() {

@@ -21,6 +21,24 @@
 
 ---
 
+## 2026-06-18 19:28 HKT
+
+類型：修正 / 主持 UI / 題庫篩選
+
+變更：
+- 修正主持頁「只玩語言 / 年代 / 分類」的篩選邏輯：語言和分類 / 年代改為分維度處理，不再用任何 tag 命中就入池的 OR 邏輯。
+- 只揀 `粵語` 或 `國語` 時，預設只篩非詩歌題庫；詩歌要另外揀 `詩歌` 才會進入題池。
+- 如同時揀 `粵語` + `詩歌`，會變成只玩粵語詩歌；同時揀 `粵語` + `00後`，會變成只玩粵語 00後流行曲。
+- 主持和手機入口 cache version 推進到 `premium-mobile-35`。
+
+測試：
+- 已跑 `node --check app.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check sw.js`。
+- 已跑 `git diff --check`。
+- 已用同版 filter 規則驗證 `songlists/all-songlists.json`：只揀 `粵語` 會有 1615 首、`詩歌` 0 首；`粵語 + 詩歌` 會有 88 首粵語詩歌；`粵語 + 00後` 會有 24 首粵語 00後流行曲。
+- 已用本機 Browser 檢查主持頁載入 `app.js?v=premium-mobile-35`，分類選項有 `粵語` 和 `詩歌` 分開存在。
+
+---
+
 ## 2026-06-18 19:18 HKT
 
 類型：題庫 / 修正 / 主持 UI
