@@ -41,9 +41,9 @@ const CLOUD_LIBRARY_OPTIONS = [
   },
   {
     id: "pop00s",
-    label: "00後流行曲",
+    label: "00後（2000-2010）",
     url: "./songlists/pop-00s.json",
-    loadedMessage: "已載入00後流行曲",
+    loadedMessage: "已載入00後（2000-2010）流行曲",
   },
   {
     id: "recentPop15",
@@ -73,7 +73,7 @@ const CLOUD_LIBRARY_OPTIONS = [
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-33";
+const APP_BUILD_VERSION = "premium-mobile-34";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -3270,6 +3270,7 @@ function categorySortKey(category) {
   if (category.includes("90年代")) return 90;
   if (category.includes("00後")) return 100;
   if (category.includes("最近15年")) return 115;
+  if (category.includes("未核實")) return 130;
   const match = category.match(/(\d{2,4})/);
   if (!match) return 900;
   const value = Number(match[1]);

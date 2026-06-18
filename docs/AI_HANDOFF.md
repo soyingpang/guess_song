@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-06-12 23:07 HKT
+更新時間：2026-06-18 19:18 HKT
 
 ## 必讀順序
 
@@ -23,7 +23,7 @@
 - `display.html` 只保留做可選投影畫面；有大電視 / 投影時才開，不應成為手機全球版必需流程。
 - 現在沒有現場版分支；所有玩家手機都視為遠距手機玩家，輸入名字後直接加入並收聽主持廣播的電腦/分頁聲音或咪高峰聲音。
 - 約 10 位團友參與。
-- 題庫已支援粵語 / 國語分開載入和分開篩選；原本近25年熱門新歌已拆成 `00後流行曲` 和 `最近15年流行曲` 兩個入口。
+- 題庫已支援粵語 / 國語分開載入和分開篩選；年代入口已改為嚴格且不重疊：80年代、90年代、00後（2000-2010）、最近15年（2011-2026）只收有年份證據的歌，其他流行曲保留在全部歌單並標記為 `年代未核實`。
 - 預設使用自動分房，重開一局只重置分數，不重新開房。主持直接開首頁時，系統會用 Firebase 佔房和主持心跳找第一間空房：原房、`-2`、`-3` 如此類推；如要固定活動房名，可在主持頁 URL 加 `?room=fellowship-a`。
 - 最新自動場控：第一位玩家加入空場會自動開始第一題；全部玩家離開後會自動清場，下一位玩家加入時重新開始。
 - 最新公平性規則：每題只讓題目開始時已在線的玩家作答；中途加入玩家要等下一首，避免影響當題「全部已答」或快選搶答判斷。
@@ -31,6 +31,7 @@
 - iPhone / iOS Safari 音訊要特別小心：玩家按「開聲並加入」後，`player.js` 會保持已解鎖的隱藏靜音 audio element 循環播放，等主持音訊 stream 到達時沿用同一 element。不要改回入房後立即 pause，否則 iPhone 可能又會要求再按開聲。
 - 有遠端手機玩家時，主持未開始「廣播電腦/分頁聲音」或「用咪高峰收聲」前不應自動開題或播放；否則手機已開聲也沒有音訊來源。
 - 最新題庫規則：線上歌單只保留現有 `viewCount` metadata 達 50 萬或以上的歌曲；低於 50 萬或沒有觀看數 metadata 的歌曲不進正式題庫。
+- 最新年代規則：不要再用 YouTube 搜尋清單名硬判年代；重跑 `tools/rebuild_songlist_splits.js` 時只用原始 matched CSV、歌曲 `year`、`年代：YYYY` hint 或明確手動修正映射入年代歌單。
 
 ## 最新玩法方向
 
@@ -76,7 +77,7 @@
 - 四選一可答題並加分；所有在線玩家都答完後，主持頁會自動開估，文字顯示答案 5 秒後自動下一題播放。
 - 快選估歌可自動判分：答中 +5，答錯 -1，答錯後該玩家冷卻 5 秒；有人答中時只顯示文字答案 5 秒，不播放完整歌曲，然後自動下一題。
 - 排行榜可顯示。
-- 題庫已按 50 萬 YouTube 瀏覽量門檻清理；目前 `hymns.json` 183 首，`songlists/pop-all.json` 3346 首，`songlists/all-songlists.json` 3529 首。語言拆分為 `songlists/all-cantonese.json` 1721 首、`songlists/all-mandarin.json` 1808 首；流行曲拆分為粵語 1633 首、國語 1713 首；年代入口為 `songlists/pop-00s.json` 1900 首、`songlists/pop-recent-15.json` 1874 首。
+- 題庫已按 50 萬 YouTube 瀏覽量門檻清理；目前 `hymns.json` 183 首，`songlists/pop-all.json` 3320 首，`songlists/all-songlists.json` 3503 首。語言拆分為 `songlists/all-cantonese.json` 1703 首、`songlists/all-mandarin.json` 1800 首；流行曲拆分為粵語 1615 首、國語 1705 首；嚴格年代入口為 `songlists/pop-80s.json` 40 首、`songlists/pop-90s.json` 66 首、`songlists/pop-00s.json` 30 首、`songlists/pop-recent-15.json` 48 首；未能用本地年份證據核實的 3136 首流行曲在 `songlists/pop-era-unverified.json`。
 - 已加入並啟用 Firebase 全球手機模式：Project ID 是 `guess-song-260531`，Realtime Database 是 `https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`。Firebase Realtime Database 負責房間、玩家、題目狀態、搶答事件和 WebRTC signaling；聲音仍由 WebRTC 傳送。
 
 ## 重要狀態提醒
@@ -87,7 +88,7 @@
 
 2026-05-31 已加入手機延遲補償；2026-06-01 已改成主持可調 5 / 7 / 10 秒，預設 7 秒。主持端用 `state.remoteAudioLatencyMs` 保留遠距答題 grace window，手機端用 player state 的 `remoteAudioDelayMs` 令倒數延後才開始扣。player state 包含 `remoteAudioDelayMs`、`remotePlayStartsAt`、`remotePlayEndsAt`、`answerOpenUntil`。最新行為是：補償期間玩家可先看四選一 / 快選選項，但按鈕會鎖住，到手機預期聽到音樂時自動開放，避免未聽到歌前亂撳。
 
-2026-06-01 已開始手機 premium app UI 改造：`player.html` 新增頂部 app bar、狀態 pill、設定 modal、動態背景光層和更 app-like 的主答題面板；`player.js` 新增手機 UI 設定 localStorage、動態特效 / 觸感 / 精簡畫面控制、haptic feedback 和 body 狀態 class。手機入口 cache version 已推進至 `premium-mobile-33`，主持入口也是 `premium-mobile-33`，投影入口仍是 `mobile-delay-1`。第二輪已加 `phoneMoment` 高峰彈層：答中、答錯 / 冷卻、開估答案會有 app-like 彈層；排行榜 modal 也有冠軍 badge 和分組領先 highlight。第三輪已加開估「正確答案」卡、快選答錯冷卻倒數條、排行榜頂部第一名 / 分組領先摘要。第四輪已加主持可調手機延遲補償 5 / 7 / 10 秒，手機設定頁同步顯示實際補償秒數。第五輪曾加手機「聽到音樂」校準回報；2026-06-02 已按用戶要求從手機畫面移除玩家可按的同步校準入口，延遲主要由主持設定控制。第六輪已加 PWA app 外殼：`manifest.webmanifest`、app icon PNG/SVG、Apple mobile web app metadata、`pwa.js` 和 network-first `sw.js`。第七輪已加手機分數升降動畫：`phoneScoreBurst`、加分 pulse、扣分 shake。第八輪已加手機排行榜名次升跌動畫：上一輪名次快照、升跌 / 新上榜 / 同名次分數變化 chip、打開排行榜時重播動畫。第九輪已加手機題目轉場 cue：回合開始、播放開始、開估、下一題會在題目卡內顯示短暫玻璃質感 cue，並把底下內容淡出。第十輪已加答案展示倒數 ring：主持同步 `revealAutoNextEndsAt` / `revealAutoNextDelayMs`，手機答案卡右上角顯示 5 秒 ring 倒數。第十一輪已把開估答案展示接上手機音訊延遲：主持自動下一題會等待 `remoteAudioLatencyMs + 5 秒`，手機到最後 5 秒才顯示答案卡和倒數 ring。第十二輪已加 `phoneRevealBridge`：在延遲期間顯示「同步聲音中」玻璃卡、聲波和進度條，不爆答案，過渡到最後 5 秒答案卡。第十三輪已加答案揭曉 micro-interaction：`is-answer-revealing` 答案卡進場、光帶掃過、倒數圈彈入、題目卡 bloom 和一次短觸感 pulse。第十四輪已打磨手機答題手感：選項按下/確認 class、光帶掃過、冷卻鎖定樣式和冷卻卡進場。第十五輪已加 `phoneAnswerGate`：7 秒補償期間顯示答題準備卡、聲波、倒數 badge 和同步進度條，並暫時收起重複的 `phoneResult` 文字。第十六輪已重做排行榜 modal：top 3 podium、冠軍 hero、分組進度、排名分數 meter、自己玩家高亮和 podium/list 動效。第十七輪已重做加入頁 onboarding：房間 pill、玩家預覽卡、名字 avatar、三格流程狀態、輸入即時預覽和加入按鈕光帶動效。
+2026-06-01 已開始手機 premium app UI 改造：`player.html` 新增頂部 app bar、狀態 pill、設定 modal、動態背景光層和更 app-like 的主答題面板；`player.js` 新增手機 UI 設定 localStorage、動態特效 / 觸感 / 精簡畫面控制、haptic feedback 和 body 狀態 class。手機入口 cache version 已推進至 `premium-mobile-34`，主持入口也是 `premium-mobile-34`，投影入口仍是 `mobile-delay-1`。第二輪已加 `phoneMoment` 高峰彈層：答中、答錯 / 冷卻、開估答案會有 app-like 彈層；排行榜 modal 也有冠軍 badge 和分組領先 highlight。第三輪已加開估「正確答案」卡、快選答錯冷卻倒數條、排行榜頂部第一名 / 分組領先摘要。第四輪已加主持可調手機延遲補償 5 / 7 / 10 秒，手機設定頁同步顯示實際補償秒數。第五輪曾加手機「聽到音樂」校準回報；2026-06-02 已按用戶要求從手機畫面移除玩家可按的同步校準入口，延遲主要由主持設定控制。第六輪已加 PWA app 外殼：`manifest.webmanifest`、app icon PNG/SVG、Apple mobile web app metadata、`pwa.js` 和 network-first `sw.js`。第七輪已加手機分數升降動畫：`phoneScoreBurst`、加分 pulse、扣分 shake。第八輪已加手機排行榜名次升跌動畫：上一輪名次快照、升跌 / 新上榜 / 同名次分數變化 chip、打開排行榜時重播動畫。第九輪已加手機題目轉場 cue：回合開始、播放開始、開估、下一題會在題目卡內顯示短暫玻璃質感 cue，並把底下內容淡出。第十輪已加答案展示倒數 ring：主持同步 `revealAutoNextEndsAt` / `revealAutoNextDelayMs`，手機答案卡右上角顯示 5 秒 ring 倒數。第十一輪已把開估答案展示接上手機音訊延遲：主持自動下一題會等待 `remoteAudioLatencyMs + 5 秒`，手機到最後 5 秒才顯示答案卡和倒數 ring。第十二輪已加 `phoneRevealBridge`：在延遲期間顯示「同步聲音中」玻璃卡、聲波和進度條，不爆答案，過渡到最後 5 秒答案卡。第十三輪已加答案揭曉 micro-interaction：`is-answer-revealing` 答案卡進場、光帶掃過、倒數圈彈入、題目卡 bloom 和一次短觸感 pulse。第十四輪已打磨手機答題手感：選項按下/確認 class、光帶掃過、冷卻鎖定樣式和冷卻卡進場。第十五輪已加 `phoneAnswerGate`：7 秒補償期間顯示答題準備卡、聲波、倒數 badge 和同步進度條，並暫時收起重複的 `phoneResult` 文字。第十六輪已重做排行榜 modal：top 3 podium、冠軍 hero、分組進度、排名分數 meter、自己玩家高亮和 podium/list 動效。第十七輪已重做加入頁 onboarding：房間 pill、玩家預覽卡、名字 avatar、三格流程狀態、輸入即時預覽和加入按鈕光帶動效。
 
 2026-06-02 最新自動場控改動：`app.js` 加入 `handleRosterAutomation()`，有玩家首次加入空場會自動 `startRound(null, { autoplay: true })`；所有玩家離開後會自動 `resetGameSession({ skipConfirm: true, reason: "empty-room" })`，清走分數、題目、已玩紀錄和玩家名單。每題開始時用 `currentQuestionEligiblePlayerIds` 記錄當時在線玩家；中途加入者 `buildPlayerState()` 會收到 `answerEligible: false` / `waitingForNextQuestion: true`，手機顯示等下一首，主持端亦會拒絕當題答案。
 
@@ -129,7 +130,7 @@
 - 遠端投影已支援：主持頁有 `displayConnections`，`display.html?room=...` 會送 `display-join`，主持頁用 `display-state` 推送 `buildDisplayState()`。這是 optional，不是手機全球版主流程。
 - 投影畫面不再有 `#stageSoundButton` 或 `soundUnlocked` 流程；`display.js` 預設投影就是有聲播放，YouTube iframe 不加 `mute`，並保持 `autoplay=1`、`controls=0`。
 - 預設房間 ID 是 `soyingpang-guess-song-fellowship-room`，由 `DEFAULT_ROOM_ID` 控制；自動分房會加 `-2`、`-3` 等後綴，最多檢查 `AUTO_ROOM_MAX_CANDIDATES`。主持頁可用 `?room=custom-room` 開指定場。不要再用 `makeRoomId()` 或 random room 作為預設。
-- 介面已做多輪美化。手機入口和主持入口最新 cache version 是 `premium-mobile-33`，投影入口是 `mobile-delay-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm`、`.webmanifest` MIME type。PWA 外殼檔案包括 `manifest.webmanifest`、`pwa.js`、`sw.js`、`assets/app-icon.svg` 和 PNG icon。
+- 介面已做多輪美化。手機入口和主持入口最新 cache version 是 `premium-mobile-34`，投影入口是 `mobile-delay-1`。三個入口頁都載入 `assets/worship-crest.svg`；背景和遮罩使用 `assets/fellowship-main-visual-manhwa.png`、`assets/fellowship-pattern.svg`、`assets/home-fellowship-scene.svg`、`assets/warm-fabric-pattern.svg`、`assets/string-lights.svg`、`assets/soft-garland-corners.svg`、`assets/paper-grain.svg`。手機頁另外用 `assets/home-fellowship-scene.svg` 做暖色團契主視覺卡。本機 `server.js` 已加入 `.svg`、`.mp4`、`.m4v`、`.mov`、`.ogv`、`.webm`、`.webmanifest` MIME type。PWA 外殼檔案包括 `manifest.webmanifest`、`pwa.js`、`sw.js`、`assets/app-icon.svg` 和 PNG icon。
 - 最新美術方向是「都會團契的家 / 韓式漫畫手繪主視覺 / 明亮暖白紙卡 / lounge 活動套件」：城市窗景、暖燈、木桌、詩歌本、杯、植物、結他、柔和燈串、花葉角落和紙卡質感。用戶明確不想要黑色風格，所以不要再用大片黑底或黑色 overlay。投影遮罩仍必須是實色，不可改回半透明，也不要退回只靠簡單 SVG 圖示裝飾。
 
 仍要留意：程式曾在較早版本做過「後台有聲 / 全首播放」，如見到舊文件或舊 commit，不要當成最新需求。

@@ -21,6 +21,35 @@
 
 ---
 
+## 2026-06-18 19:18 HKT
+
+類型：題庫 / 修正 / 主持 UI
+
+變更：
+- 重寫 `tools/rebuild_songlist_splits.js` 的年代分流規則，80年代、90年代、00後和最近15年改為嚴格且不重疊；只有原始 matched CSV、歌曲 `year`、`年代：YYYY` hint 或明確手動修正能證明年份時，歌曲才會進入年代歌單。
+- 未能確認年份的流行曲不再被硬塞入 80/90/00/最近15年，改為保留在 `songlists/pop-era-unverified.json` 並在全部歌單標記為「年代未核實」。
+- 重建歌單後：`songlists/pop-80s.json` 40 首、`songlists/pop-90s.json` 66 首、`songlists/pop-00s.json` 30 首、`songlists/pop-recent-15.json` 48 首、`songlists/pop-era-unverified.json` 3136 首、`songlists/pop-all.json` 3320 首、`songlists/all-songlists.json` 3503 首。
+- 主持下拉將 00 後入口標示為「00後（2000-2010）」，主持和手機入口 cache version 推進到 `premium-mobile-34`。
+- 新增年代重檢 audit：`docs/SONGLIST_ERA_AUDIT_2026-06-18.md` 和 `docs/SONGLIST_ERA_AUDIT_2026-06-18.csv`。
+
+影響：
+- 按 80年代 / 90年代 / 00後 / 最近15年時，只會抽到年份落在該範圍的已核實歌曲；例如 `海闊天空`、`光輝歲月`、`灰色軌跡`、`只想一生跟你走` 在 90年代，`夜曲`、`七里香`、`青花瓷` 在 00後。
+- 「全部流行曲」仍保留大部分 50 萬以上歌曲，但年代未核實歌曲會清楚標示，方便日後逐首補年份。
+
+測試：
+- 已跑 `node tools/rebuild_songlist_splits.js`：13 個輸出 JSON 全部 `badViews=0`。
+- 已跑年代 range validation：`pop-80s` / `pop-90s` / `pop-00s` / `pop-recent-15` 全部 `badYear=0`。
+- 已做 spot check：`海闊天空`、`光輝歲月`、`灰色軌跡`、`只想一生跟你走` 在 90年代；`夜曲`、`七里香`、`青花瓷`、`人質`、`十面埋伏` 在 00後；`後來的我們`、`慢慢喜歡你`、`我們` 在最近15年。
+- 已跑 `node --check app.js`、`node --check tools/rebuild_songlist_splits.js`、`node --check player.js`、`node --check display.js`、`node --check firebase-sync.js`、`node --check sw.js`。
+- 已跑 `git diff --check`。
+- 已用本機 `server.js` 檢查 `http://127.0.0.1:5173/`：13 個輸出 JSON 全部 200、count 正確、`badViews=0`。
+- 已用本機 Browser 檢查主持頁載入 `app.js?v=premium-mobile-34`：下拉有 `00後（2000-2010）`；載入全部歌單後 rows 3503，chips 有 `00後` / `最近15年` / `年代未核實`；載入 `00後（2000-2010）` 後 rows 30，chips 只剩 `粵語` / `國語` / `00後`。
+
+後續：
+- 如要擴大嚴格年代歌單，可逐批為 `songlists/pop-era-unverified.json` 補可靠年份，再重跑 `node tools/rebuild_songlist_splits.js`。
+
+---
+
 ## 2026-06-12 23:07 HKT
 
 類型：題庫 / 語言年代拆分 / 主持 UI
