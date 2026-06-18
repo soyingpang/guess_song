@@ -44,6 +44,7 @@
 - 已跑 `git diff --check`。
 - 已用本機 `server.js` 檢查 `http://127.0.0.1:5173/`：13 個輸出 JSON 全部 200、count 正確、`badViews=0`。
 - 已用本機 Browser 檢查主持頁載入 `app.js?v=premium-mobile-34`：下拉有 `00後（2000-2010）`；載入全部歌單後 rows 3503，chips 有 `00後` / `最近15年` / `年代未核實`；載入 `00後（2000-2010）` 後 rows 30，chips 只剩 `粵語` / `國語` / `00後`。
+- 已驗證 GitHub raw `main` 和 GitHub Pages 正式網址：`app.js` 載入 `premium-mobile-34`，`songlists/pop-00s.json` 為 30 首、`songlists/pop-recent-15.json` 為 48 首、`songlists/pop-era-unverified.json` 為 3136 首；正式頁 `index.html?v=c9fffdb-era-check` 已包含 `premium-mobile-34`。
 
 後續：
 - 如要擴大嚴格年代歌單，可逐批為 `songlists/pop-era-unverified.json` 補可靠年份，再重跑 `node tools/rebuild_songlist_splits.js`。
