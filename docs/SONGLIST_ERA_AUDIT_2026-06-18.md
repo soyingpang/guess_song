@@ -7,18 +7,18 @@ All generated lists keep the existing 500,000 view-count floor.
 | List | Count |
 | --- | ---: |
 | hymns.json | 183 |
-| songlists/pop-80s.json | 40 |
+| songlists/pop-80s.json | 39 |
 | songlists/pop-90s.json | 66 |
 | songlists/pop-00s.json | 30 |
 | songlists/pop-recent-15.json | 48 |
 | songlists/pop-recent-25.json | 78 |
-| songlists/pop-era-unverified.json | 3136 |
-| songlists/pop-all.json | 3320 |
-| songlists/pop-cantonese.json | 1615 |
-| songlists/pop-mandarin.json | 1705 |
-| songlists/all-songlists.json | 3503 |
-| songlists/all-cantonese.json | 1703 |
-| songlists/all-mandarin.json | 1800 |
+| songlists/pop-era-unverified.json | 3133 |
+| songlists/pop-all.json | 3316 |
+| songlists/pop-cantonese.json | 1589 |
+| songlists/pop-mandarin.json | 1727 |
+| songlists/all-songlists.json | 3499 |
+| songlists/all-cantonese.json | 1677 |
+| songlists/all-mandarin.json | 1822 |
 
 ## Rules
 

@@ -21,6 +21,28 @@
 
 ---
 
+## 2026-06-18 19:50 HKT
+
+類型：題庫 / 修正 / 歌名審核
+
+變更：
+- 新增 `tools/song_answer_title_corrections.json`，以 `videoId` 保存 54 條高信心答案修正，覆蓋歌手名、電影 / 節目名、截斷歌名、版本字眼，以及影片實際指向另一首歌的情況。
+- 更新 `tools/rebuild_songlist_splits.js`，重建前會自動套用答案歌名、語言、少量年份修正，避免下次 rebuild 又回復錯答案。
+- 重建全部派生歌單，輸出 `docs/SONGLIST_TITLE_AUDIT_2026-06-18.md` / `.csv` 作為答案修正審核紀錄。
+- 修正後有 2 條題目因變成既有正確歌名而被去重合併：`搭錯車 -> 酒干倘賣無`、`鄭中基 -> 無賴`。
+
+驗證：
+- `node --check tools/rebuild_songlist_splits.js`
+- `node tools/rebuild_songlist_splits.js`
+- 重建結果：`hymns.json` 183、`songlists/pop-all.json` 3316、`songlists/all-songlists.json` 3499、`songlists/pop-cantonese.json` 1589、`songlists/pop-mandarin.json` 1727、所有輸出 `badViews=0`。
+- 抽查已修正：`雨一直下`、`一路向北`、`晴天`、`倩影`、`Lemon Tree`、`膽小鬼`、`我最親愛的`、`夢回神都`。
+- 網上核實抽查使用 YouTube / 搜尋結果確認：`酒干倘賣無` 是《搭錯車》歌曲，`蔡楓華 - 倩影`、`周杰倫 - 一路向北`、`周杰倫 - 晴天`、`張宇 - 雨一直下`、`梁詠琪 - 膽小鬼`、`張惠妹 - 我最親愛的`、`周深 - 夢回神都`。
+
+後續：
+- 如要進一步收緊，可做第二輪「語言 metadata 全量審核」，因今次主要聚焦答案必須是歌名。
+
+---
+
 ## 2026-06-18 19:28 HKT
 
 類型：修正 / 主持 UI / 題庫篩選

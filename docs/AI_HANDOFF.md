@@ -1,6 +1,6 @@
 # AI 交接摘要
 
-更新時間：2026-06-18 19:28 HKT
+更新時間：2026-06-18 19:50 HKT
 
 ## 必讀順序
 
@@ -33,6 +33,7 @@
 - 最新題庫規則：線上歌單只保留現有 `viewCount` metadata 達 50 萬或以上的歌曲；低於 50 萬或沒有觀看數 metadata 的歌曲不進正式題庫。
 - 最新年代規則：不要再用 YouTube 搜尋清單名硬判年代；重跑 `tools/rebuild_songlist_splits.js` 時只用原始 matched CSV、歌曲 `year`、`年代：YYYY` hint 或明確手動修正映射入年代歌單。
 - 最新主持篩選規則：語言和分類 / 年代是分維度相交；只揀 `粵語` 或 `國語` 不會自動包括詩歌，要揀 `詩歌` 才會玩詩歌。`粵語 + 詩歌` 代表粵語詩歌，`粵語 + 00後` 代表粵語 00後流行曲。
+- 最新答案規則：答案 `title` 必須是歌名，不應是歌手名、電影名、節目名、版本字眼或截斷歌名；`tools/song_answer_title_corrections.json` 保存 54 條高信心 `videoId` 修正，`tools/rebuild_songlist_splits.js` 會在重建前自動套用。
 
 ## 最新玩法方向
 

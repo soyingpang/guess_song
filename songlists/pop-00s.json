@@ -160,6 +160,27 @@
     ]
   },
   {
+    "title": "晴天",
+    "aliases": [
+      "周杰倫",
+      "周杰倫 Jay Chou"
+    ],
+    "videoId": "DYptgVvkVLQ",
+    "start": 0,
+    "duration": 60,
+    "category": "00後流行曲",
+    "source": "周杰倫 Jay Chou / YouTube",
+    "hint": "熱門近25年熱門新歌；YouTube：周杰倫 Jay Chou【晴天 Sunny Day】-Official Music Video",
+    "number": "POP00-009",
+    "language": "國語",
+    "viewCount": 93453072,
+    "viewCheckedAt": "2026-05-26",
+    "eraTags": [
+      "00後流行曲"
+    ],
+    "year": 2003
+  },
+  {
     "title": "愛與誠",
     "aliases": [
       "古巨基"
@@ -170,7 +191,7 @@
     "category": "00後流行曲",
     "source": "Timeless Music Hong Kong天碟 / YouTube / 流行曲題庫",
     "hint": "歌手：古巨基；年代：2004；YouTube：古巨基 Leo Ku -《愛與誠》Official MV",
-    "number": "POP00-009",
+    "number": "POP00-010",
     "language": "粵語",
     "viewCount": 8895911,
     "viewCheckedAt": "2026-05-26",
@@ -190,7 +211,7 @@
     "category": "00後流行曲",
     "source": "Timeless Music Hong Kong天碟 / YouTube / 流行曲題庫",
     "hint": "歌手：楊千嬅；年代：2004；YouTube：楊千嬅 Miriam Yeung -《小城大事》Official MV",
-    "number": "POP00-010",
+    "number": "POP00-011",
     "language": "粵語",
     "viewCount": 1082904,
     "viewCheckedAt": "2026-05-26",
@@ -210,7 +231,7 @@
     "category": "00後流行曲",
     "source": "PopSong Lyrics / YouTube / 流行曲題庫",
     "hint": "歌手：薛凱琪；年代：2004；YouTube：[粵][MP3] Fiona 薛凱琪 - 奇洛李維斯回信 [歌詞同步]",
-    "number": "POP00-011",
+    "number": "POP00-012",
     "language": "粵語",
     "viewCount": 1138395,
     "viewCheckedAt": "2026-05-26",
@@ -220,7 +241,7 @@
     ]
   },
   {
-    "title": "七里香",
+    "title": "一路向北",
     "aliases": [
       "周杰倫",
       "周杰倫 Jay Chou"
@@ -231,14 +252,14 @@
     "category": "00後流行曲",
     "source": "周杰倫 Jay Chou / YouTube",
     "hint": "熱門近25年熱門新歌；YouTube：周杰倫 Jay Chou【一路向北 All the Way North】-Official Music Video",
-    "number": "POP00-012",
+    "number": "POP00-013",
     "language": "國語",
     "viewCount": 104453881,
     "viewCheckedAt": "2026-05-26",
     "eraTags": [
       "00後流行曲"
     ],
-    "year": 2004
+    "year": 2005
   },
   {
     "title": "無賴",
@@ -251,7 +272,7 @@
     "category": "00後流行曲",
     "source": "Timeless Music Hong Kong天碟 / YouTube / 流行曲題庫",
     "hint": "歌手：鄭中基；年代：2005；YouTube：鄭中基 Ronald Cheng -《無賴》Official MV (國：怪胎)",
-    "number": "POP00-013",
+    "number": "POP00-014",
     "language": "粵語",
     "viewCount": 5062512,
     "viewCheckedAt": "2026-05-26",
@@ -272,7 +293,7 @@
     "category": "00後流行曲",
     "source": "周杰倫 Jay Chou / YouTube",
     "hint": "熱門近25年熱門新歌；YouTube：周杰倫 Jay Chou【夜曲 Nocturne】-Official Music Video",
-    "number": "POP00-014",
+    "number": "POP00-015",
     "language": "國語",
     "viewCount": 101536002,
     "viewCheckedAt": "2026-05-26",
@@ -292,7 +313,7 @@
     "category": "00後流行曲",
     "source": "Timeless Music Hong Kong天碟 / YouTube / 流行曲題庫",
     "hint": "歌手：古巨基；年代：2006；YouTube：古巨基 Leo Ku -《愛得太遲》Official MV",
-    "number": "POP00-015",
+    "number": "POP00-016",
     "language": "粵語",
     "viewCount": 1108075,
     "viewCheckedAt": "2026-05-26",
@@ -312,7 +333,7 @@
     "category": "00後流行曲",
     "source": "HongKongSongs / YouTube / 流行曲題庫",
     "hint": "歌手：陳奕迅；年代：2006；YouTube：陳奕迅 - 最佳損友 HD",
-    "number": "POP00-016",
+    "number": "POP00-017",
     "language": "粵語",
     "viewCount": 4952109,
     "viewCheckedAt": "2026-05-26",
@@ -332,7 +353,7 @@
     "category": "00後流行曲",
     "source": "英皇娛樂 eeg music / YouTube / 流行曲題庫",
     "hint": "歌手：泳兒；年代：2006；YouTube：泳兒 Vincy《感應》[Official MV]",
-    "number": "POP00-017",
+    "number": "POP00-018",
     "language": "粵語",
     "viewCount": 975022,
     "viewCheckedAt": "2026-05-26",
@@ -353,7 +374,7 @@
     "category": "00後流行曲",
     "source": "Timeless Music / YouTube",
     "hint": "熱門近25年熱門新歌；YouTube：張惠妹 A-Mei - 人質 Hostage (official 官方完整版MV)",
-    "number": "POP00-018",
+    "number": "POP00-019",
     "language": "國語",
     "viewCount": 26923077,
     "viewCheckedAt": "2026-05-26",
@@ -374,7 +395,7 @@
     "category": "00後流行曲",
     "source": "HinsLiveinPassion / YouTube",
     "hint": "熱門近25年熱門新歌；YouTube：張敬軒 Hins Cheung - 酷愛 (Hins Live in Passion 2014)",
-    "number": "POP00-019",
+    "number": "POP00-020",
     "language": "粵語",
     "viewCount": 6596375,
     "viewCheckedAt": "2026-05-26",
@@ -394,7 +415,7 @@
     "category": "00後流行曲",
     "source": "Timeless Music Hong Kong天碟 / YouTube / 流行曲題庫",
     "hint": "歌手：鄧麗欣；年代：2007；YouTube：鄧麗欣 Stephy Tang -《電燈膽》Official MV",
-    "number": "POP00-020",
+    "number": "POP00-021",
     "language": "粵語",
     "viewCount": 4299997,
     "viewCheckedAt": "2026-05-26",
@@ -402,27 +423,6 @@
     "eraTags": [
       "00後流行曲"
     ]
-  },
-  {
-    "title": "青花瓷",
-    "aliases": [
-      "周杰倫",
-      "周杰倫 Jay Chou"
-    ],
-    "videoId": "DYptgVvkVLQ",
-    "start": 0,
-    "duration": 60,
-    "category": "00後流行曲",
-    "source": "周杰倫 Jay Chou / YouTube",
-    "hint": "熱門近25年熱門新歌；YouTube：周杰倫 Jay Chou【晴天 Sunny Day】-Official Music Video",
-    "number": "POP00-021",
-    "language": "國語",
-    "viewCount": 93453072,
-    "viewCheckedAt": "2026-05-26",
-    "eraTags": [
-      "00後流行曲"
-    ],
-    "year": 2007
   },
   {
     "title": "富士山下",

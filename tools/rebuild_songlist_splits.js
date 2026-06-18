@@ -20,8 +20,11 @@ const ALL_MANDARIN_PATH = "songlists/all-mandarin.json";
 
 const POP_MATCHES_CSV = "docs/POP_YOUTUBE_MATCHES_2026-05-22.csv";
 const RECENT_MATCHES_CSV = "docs/POP_RECENT_25_YOUTUBE_MATCHES_2026-05-23.csv";
+const TITLE_CORRECTIONS_PATH = "tools/song_answer_title_corrections.json";
 const REPORT_PATH = `docs/SONGLIST_ERA_AUDIT_${RUN_DATE}.md`;
 const CSV_PATH = `docs/SONGLIST_ERA_AUDIT_${RUN_DATE}.csv`;
+const TITLE_REPORT_PATH = `docs/SONGLIST_TITLE_AUDIT_${RUN_DATE}.md`;
+const TITLE_CSV_PATH = `docs/SONGLIST_TITLE_AUDIT_${RUN_DATE}.csv`;
 
 const LABEL_HYMN = "詩歌";
 const LABEL_CANTONESE = "粵語";
@@ -184,6 +187,16 @@ function readJson(path) {
   return JSON.parse(fs.readFileSync(path, "utf8"));
 }
 
+function readTitleCorrections() {
+  if (!fs.existsSync(TITLE_CORRECTIONS_PATH)) return [];
+  return readJson(TITLE_CORRECTIONS_PATH).filter((correction) => correction.videoId && correction.title);
+}
+
+const SONG_TITLE_CORRECTIONS = readTitleCorrections();
+const SONG_TITLE_CORRECTIONS_BY_VIDEO_ID = new Map(
+  SONG_TITLE_CORRECTIONS.map((correction) => [correction.videoId, correction])
+);
+
 function writeJson(path, value) {
   fs.writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
@@ -243,6 +256,26 @@ function normalizeTitle(value) {
 
 function titleKey(song) {
   return normalizeTitle(song.title);
+}
+
+function correctionLanguageLabel(value) {
+  if (value === LABEL_CANTONESE || value === "cantonese") return LABEL_CANTONESE;
+  if (value === LABEL_MANDARIN || value === "mandarin") return LABEL_MANDARIN;
+  return null;
+}
+
+function applySongTitleCorrection(song) {
+  const correction = SONG_TITLE_CORRECTIONS_BY_VIDEO_ID.get(song.videoId);
+  if (!correction) return song;
+
+  const next = { ...song, title: correction.title };
+  const language = correctionLanguageLabel(correction.language);
+  if (language) next.language = language;
+
+  const year = Number(correction.year);
+  if (Number.isFinite(year)) next.year = year;
+
+  return next;
 }
 
 function addTitleYear(yearsByTitle, title, year) {
@@ -408,11 +441,13 @@ function compareRows(left, right) {
 }
 
 function readPopSource() {
+  let source;
   if (fs.existsSync(POP_ALL_PATH)) {
     const popAll = readJson(POP_ALL_PATH);
-    if (Array.isArray(popAll) && popAll.length > 1000) return popAll;
+    if (Array.isArray(popAll) && popAll.length > 1000) source = popAll;
   }
-  return [POP_80S_PATH, POP_90S_PATH, POP_RECENT_25_PATH].flatMap((path) => readJson(path));
+  if (!source) source = [POP_80S_PATH, POP_90S_PATH, POP_RECENT_25_PATH].flatMap((path) => readJson(path));
+  return source.map(applySongTitleCorrection);
 }
 
 function buildSongRows(popSource, evidence) {
@@ -529,6 +564,47 @@ function writeAudit(rows, summary) {
   fs.writeFileSync(REPORT_PATH, `${lines.join("\n")}\n`, "utf8");
 }
 
+function writeTitleCorrectionAudit(corrections) {
+  const headers = ["videoId", "oldTitle", "title", "language", "year", "note", "url"];
+  const rows = corrections.map((correction) => ({
+    videoId: correction.videoId,
+    oldTitle: correction.oldTitle || "",
+    title: correction.title || "",
+    language: correction.language || "",
+    year: correction.year || "",
+    note: correction.note || "",
+    url: `https://www.youtube.com/watch?v=${correction.videoId}`,
+  }));
+
+  fs.writeFileSync(
+    TITLE_CSV_PATH,
+    `${headers.join(",")}\n${rows.map((row) => headers.map((header) => toCsvValue(row[header])).join(",")).join("\n")}\n`,
+    "utf8"
+  );
+
+  const lines = [
+    "# Songlist Answer Title Audit (2026-06-18)",
+    "",
+    `Applied ${corrections.length} high-confidence corrections before regenerating the songlists.`,
+    "",
+    "These corrections target answers that were singer names, movie/show/context names, partial titles, version labels, or a different song title than the linked YouTube video.",
+    "",
+    "## Corrected Answers",
+    "",
+    "| Old answer | Correct answer | Language | Year | YouTube | Note |",
+    "| --- | --- | --- | ---: | --- | --- |",
+    ...rows.map(
+      (row) =>
+        `| ${row.oldTitle || ""} | ${row.title} | ${row.language || ""} | ${row.year || ""} | ${row.url} | ${row.note || ""} |`
+    ),
+    "",
+    `Full CSV: \`${TITLE_CSV_PATH}\`.`,
+    "",
+  ];
+
+  fs.writeFileSync(TITLE_REPORT_PATH, `${lines.join("\n")}\n`, "utf8");
+}
+
 function countBadViews(rows) {
   return rows.filter((song) => !Number.isFinite(Number(song.viewCount)) || Number(song.viewCount) < MIN_VIEWS).length;
 }
@@ -595,6 +671,7 @@ function main() {
   ];
 
   writeAudit(auditRows, summary);
+  writeTitleCorrectionAudit(SONG_TITLE_CORRECTIONS);
 
   for (const [path, rows] of outputs) {
     const bad = countBadViews(rows);
@@ -603,6 +680,8 @@ function main() {
   }
   console.log(`${REPORT_PATH}: written`);
   console.log(`${CSV_PATH}: written`);
+  console.log(`${TITLE_REPORT_PATH}: written`);
+  console.log(`${TITLE_CSV_PATH}: written`);
 }
 
 main();
