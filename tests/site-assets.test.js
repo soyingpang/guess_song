@@ -13,7 +13,7 @@ function checkLocalReference(reference, owner) {
 }
 
 test("HTML entry points reference files included in the site", () => {
-  for (const name of ["index.html", "player.html", "solo.html", "display.html"]) {
+  for (const name of ["index.html", "player.html", "display.html"]) {
     const html = fs.readFileSync(path.join(root, name), "utf8");
     for (const [, reference] of html.matchAll(/(?:src|href)="(\.\/[^"#]+(?:\?[^\"]*)?)"/g)) {
       checkLocalReference(reference, name);

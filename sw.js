@@ -1,21 +1,18 @@
-const CACHE_NAME = "guess-song-shell-onsite-v3";
+const CACHE_NAME = "guess-song-shell-onsite-v4";
 const SHELL_ASSETS = [
   "./",
-  "./solo.html",
   "./index.html",
   "./player.html",
-  "./styles.css?v=onsite-v3",
-  "./player.css?v=onsite-v3",
-  "./app.js?v=onsite-v3",
-  "./game-core.js?v=onsite-v3",
-  "./player.js?v=onsite-v3",
-  "./guess-song-config.js?v=nas-solo-1",
-  "./solo.js?v=nas-solo-1",
-  "./pwa.js?v=onsite-v3",
-  "./firebase-config.js?v=onsite-v3",
-  "./firebase-sync.js?v=onsite-v3",
-  "./local-qr.js?v=onsite-v3",
-  "./manifest.webmanifest?v=onsite-v3",
+  "./styles.css?v=onsite-v4",
+  "./player.css?v=onsite-v4",
+  "./app.js?v=onsite-v4",
+  "./game-core.js?v=onsite-v4",
+  "./player.js?v=onsite-v4",
+  "./pwa.js?v=onsite-v4",
+  "./firebase-config.js?v=onsite-v4",
+  "./firebase-sync.js?v=onsite-v4",
+  "./local-qr.js?v=onsite-v4",
+  "./manifest.webmanifest?v=onsite-v4",
   "./songlists/pop-cantonese.json",
   "./assets/app-icon.svg",
   "./assets/app-icon-192.png",
@@ -68,7 +65,7 @@ async function networkFirst(request) {
     if (cached) return cached;
 
     if (request.mode === "navigate") {
-      return (await cache.match("./solo.html")) || (await cache.match("./player.html")) || (await cache.match("./index.html"));
+      return (await cache.match("./index.html")) || (await cache.match("./player.html"));
     }
 
     throw new Error("Offline and no cached response");

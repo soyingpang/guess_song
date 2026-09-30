@@ -1,5 +1,5 @@
 (() => {
-  const BUILD_VERSION = "onsite-v3";
+  const BUILD_VERSION = "onsite-v4";
 
   if (!("serviceWorker" in navigator)) return;
   if (!window.isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") return;

@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
       - name: Check JavaScript syntax
         run: |
-          for file in app.js player.js display.js solo.js firebase-sync.js game-core.js sw.js pwa.js; do
+          for file in app.js player.js display.js firebase-sync.js game-core.js sw.js pwa.js; do
             node --check "$file"
           done
       - name: Run web tests

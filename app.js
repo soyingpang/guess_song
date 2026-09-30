@@ -77,7 +77,7 @@ const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_SESSION_ROOM_KEY = "guess-song-onsite-room-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "onsite-v3";
+const APP_BUILD_VERSION = "onsite-v4";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -2282,6 +2282,7 @@ function cleanSong(song) {
     duration: normalizePlayDuration(song.duration || song.clipDuration || MAX_PLAY_DURATION_SECONDS),
     category: String(song.category || "").trim(),
     source: String(song.source || "").trim(),
+    ...(song.approved === true ? { approved: true } : {}),
     hint: String(song.hint || "").trim(),
     number: String(song.number || "").trim(),
     language: String(song.language || "粵語").trim(),
@@ -2451,7 +2452,7 @@ function songCategoryTags(song) {
 
 function approvedSongs() {
   if (state.approvedSongsRevision === state.libraryRevision) return state.approvedSongsCache;
-  state.approvedSongsCache = state.songs.filter((song) => isApprovedSource(song.source));
+  state.approvedSongsCache = state.songs.filter((song) => song.approved === true || isApprovedSource(song.source));
   state.approvedSongsRevision = state.libraryRevision;
   return state.approvedSongsCache;
 }
@@ -3155,6 +3156,7 @@ function saveSongFromForm() {
     category: els.songCategory.value,
     number: els.songNumber.value,
     source: els.songSource.value,
+    approved: true,
     hint: els.songHint.value,
     aliases: els.songAliases.value
       .split(",")
@@ -3694,7 +3696,7 @@ function renderLibrary() {
 
   const fragment = document.createDocumentFragment();
   shown.forEach(({ song, index }) => {
-    const approved = isApprovedSource(song.source);
+    const approved = song.approved === true || isApprovedSource(song.source);
     const item = document.createElement("article");
     item.className = "song-item";
     item.classList.toggle("is-locked", blindRound);
