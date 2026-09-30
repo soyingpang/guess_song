@@ -77,7 +77,7 @@ const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
 const HOST_SESSION_ROOM_KEY = "guess-song-onsite-room-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "onsite-v4";
+const APP_BUILD_VERSION = "display-sync-v1";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -294,6 +294,12 @@ const state = {
   players: {},
 };
 
+let pendingDisplayState = null;
+let pendingDisplaySignature = "";
+let publishedDisplaySignature = "";
+let writingDisplaySignature = "";
+let displayWriteInFlight = false;
+
 const els = {
   playerHost: document.querySelector("#playerHost"),
   playerMask: document.querySelector("#playerMask"),
@@ -370,6 +376,7 @@ const els = {
   playerCount: document.querySelector("#playerCount"),
   roomStatus: document.querySelector("#roomStatus"),
   copyPlayerLinkButton: document.querySelector("#copyPlayerLinkButton"),
+  openDisplayButton: document.querySelector("#openDisplayButton"),
   hostJoinCard: document.querySelector("#hostJoinCard"),
   hostPlayerQr: document.querySelector("#hostPlayerQr"),
   hostPlayerQrStatus: document.querySelector("#hostPlayerQrStatus"),
@@ -445,6 +452,7 @@ function bindEvents() {
   els.showWinnerButton.addEventListener("click", showWinner);
   els.resetGameButton.addEventListener("click", resetGameSession);
   els.copyPlayerLinkButton.addEventListener("click", copyPlayerLink);
+  els.openDisplayButton.addEventListener("click", openDisplay);
   els.audioBroadcastButton?.addEventListener("click", () => toggleAudioBroadcast("tab"));
   els.audioBroadcastMicButton?.addEventListener("click", () => toggleAudioBroadcast("mic"));
   els.cloudLibrarySelect?.addEventListener("change", () => {
@@ -591,6 +599,7 @@ function startFirebaseHostHeartbeat() {
     }).catch(() => {
       state.firebaseError = "Firebase 主持心跳失敗";
     });
+    publishDisplayState();
   };
 
   sendHeartbeat();
@@ -1740,7 +1749,41 @@ function handleFirebasePlayerEvent(event, key) {
 }
 
 function publishFirebaseDisplayState(payload = buildDisplayState()) {
-  return;
+  if (!state.firebaseReady || !state.firebase) return;
+  const { updatedAt, ...stableState } = payload;
+  const signature = JSON.stringify(stableState);
+  if (signature === pendingDisplaySignature) return;
+  if (displayWriteInFlight && signature === writingDisplaySignature) {
+    pendingDisplayState = null;
+    pendingDisplaySignature = "";
+    return;
+  }
+  if (!displayWriteInFlight && signature === publishedDisplaySignature) return;
+  pendingDisplayState = payload;
+  pendingDisplaySignature = signature;
+  if (!displayWriteInFlight) void flushFirebaseDisplayState();
+}
+
+async function flushFirebaseDisplayState() {
+  displayWriteInFlight = true;
+  while (pendingDisplayState && state.firebaseReady && state.firebase) {
+    const payload = pendingDisplayState;
+    const signature = pendingDisplaySignature;
+    pendingDisplayState = null;
+    pendingDisplaySignature = "";
+    writingDisplaySignature = signature;
+    try {
+      await state.firebase.set(["displayState"], payload);
+      publishedDisplaySignature = signature;
+    } catch (error) {
+      state.firebaseError = "Firebase 投影同步失敗";
+      console.warn("Firebase display sync failed", error);
+      break;
+    }
+    writingDisplaySignature = "";
+  }
+  writingDisplaySignature = "";
+  displayWriteInFlight = false;
 }
 
 function publishFirebasePlayerRecord(player) {
@@ -3761,6 +3804,7 @@ function renderPlayers() {
       : `房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
   els.roomStatus.textContent = baseRoomStatus;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
+  els.openDisplayButton.disabled = !state.firebaseReady || !state.roomId;
   renderHostJoinQr();
   els.playerList.innerHTML = "";
 
@@ -3913,6 +3957,13 @@ async function copyPlayerLink() {
   }
 }
 
+function openDisplay() {
+  if (!state.firebaseReady || !state.roomId) return;
+  const url = new URL("./display.html", window.location.href);
+  url.searchParams.set("room", state.roomId);
+  window.open(url.toString(), "_blank", "noopener");
+}
+
 async function writeClipboardText(text) {
   if (navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(text);
@@ -3936,10 +3987,11 @@ function showManualCopyLink(link, label = "連結") {
 }
 
 function publishDisplayState() {
-  return;
+  publishFirebaseDisplayState();
 }
 
 function syncSurfaces(extraMessage = null) {
+  publishDisplayState();
   broadcastToPlayers(extraMessage);
 }
 
@@ -3990,8 +4042,8 @@ function buildDisplayState() {
           : "等候主持開始",
     answer: revealed && song ? answerLabel(song) : "",
     title: revealed && song ? song.title : songlistLabel,
-    videoId: song?.videoId || "",
-    audioUrl: song?.audioUrl || "",
+    videoId: revealed ? song?.videoId || "" : "",
+    audioUrl: revealed ? song?.audioUrl || "" : "",
     start: song && !state.fullPlayback ? clipStart(song) : CLIP_START_SECONDS,
     end: song && !state.fullPlayback ? clipStart(song) + clipDuration(song) : 0,
     hints,
@@ -4066,6 +4118,7 @@ function buildPlayerState(player) {
 }
 
 function broadcastToPlayers(extraMessage = null) {
+  publishDisplayState();
   Object.values(state.players).forEach((player) => {
     if (extraMessage) sendToPlayer(player, extraMessage);
     sendPlayerState(player);
@@ -4073,7 +4126,7 @@ function broadcastToPlayers(extraMessage = null) {
 }
 
 function broadcastToDisplays(payload = buildDisplayState()) {
-  return;
+  publishFirebaseDisplayState(payload);
 }
 
 function sendDisplayState(connection, payload) {

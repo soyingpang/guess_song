@@ -38,6 +38,10 @@ const { initializeTestEnvironment, assertFails, assertSucceeds } = require('@fir
     await assertSucceeds(player.ref(`${base}/playerStates/player-1`).once('value'));
     await assertFails(stranger.ref(`${base}/playerStates/player-1`).once('value'));
     await assertFails(player.ref(`${base}/playerStates/player-1`).set({ score: 999 }));
+    await assertFails(anon.ref(`${base}/displayState`).once('value'));
+    await assertSucceeds(host.ref(`${base}/displayState`).set({ roomId: 'test-room', round: 1, revealed: false }));
+    await assertSucceeds(player.ref(`${base}/displayState`).once('value'));
+    await assertFails(player.ref(`${base}/displayState`).set({ revealed: true }));
     await assertSucceeds(player.ref(`${base}/events`).push({
       playerId: 'player-1', type: 'answer', message: { type: 'answer', questionId: 'q1', answer: 'Test' },
     }));

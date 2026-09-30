@@ -104,10 +104,10 @@
       return firebase.push(roomRef(parts), value);
     }
 
-    function onValue(parts, callback) {
+    function onValue(parts, callback, onError) {
       return track(firebase.onValue(roomRef(parts), (snapshot) => {
         callback(snapshot.val(), snapshot.key);
-      }));
+      }, onError));
     }
 
     function onChildAdded(parts, callback) {

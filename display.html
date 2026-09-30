@@ -112,8 +112,6 @@
     </style>
   </head>
   <body class="display-body">
-    <button class="youtube-login-chip" id="youtubeLoginOpenButton" type="button">YouTube Premium 登入</button>
-
     <main class="stage-shell">
       <section class="stage-hero" aria-live="polite">
         <div class="stage-top">
@@ -136,9 +134,6 @@
             <strong id="stagePrompt">等候主持開始</strong>
             <span id="stageSubPrompt">請望住大畫面，聽片段估歌名</span>
           </div>
-          <button class="stage-sound-button" id="stageSoundButton" type="button" hidden>
-            啟用投影聲音
-          </button>
         </div>
 
         <div class="stage-info">
@@ -163,21 +158,9 @@
       </aside>
     </main>
 
-    <section class="youtube-login-prompt" id="youtubeLoginPrompt" role="dialog" aria-modal="true" aria-labelledby="youtubeLoginTitle" hidden>
-      <div class="youtube-login-panel">
-        <h2 id="youtubeLoginTitle">先登入 YouTube Premium</h2>
-        <p>為了減少 YouTube 廣告，請先用這個 Chrome 視窗登入有 Premium 的 YouTube 帳號。登入完成後回到這個投影畫面，按「我已登入」重新載入。</p>
-        <p class="youtube-login-note">登入頁會用 YouTube 官方新視窗開啟。這個 App 不能直接讀取或儲存你的 Google 帳號資料。</p>
-        <div class="youtube-login-actions">
-          <a class="primary" id="youtubeLoginButton" href="https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com%2F" target="_blank" rel="noopener">開啟 YouTube 登入</a>
-          <button id="youtubeLoginReadyButton" type="button">我已登入，重新載入投影</button>
-          <button id="youtubeLoginSkipButton" type="button">略過今次</button>
-        </div>
-      </div>
-    </section>
-
-    <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./local-qr.js?v=mobile-delay-1"></script>
-    <script src="./display.js?v=mobile-delay-1"></script>
+    <script src="./firebase-config.js?v=display-sync-v1"></script>
+    <script src="./firebase-sync.js?v=display-sync-v1"></script>
+    <script src="./local-qr.js?v=display-sync-v1"></script>
+    <script src="./display.js?v=display-sync-v1"></script>
   </body>
 </html>

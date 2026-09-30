@@ -68,6 +68,8 @@ https://soyingpang.github.io/guess_song/index.html?room=fellowship-b
 
 現場手機模式用 Firebase Realtime Database 同步房間、題目選項、作答和分數；音訊完全不經 Firebase、PeerJS 或手機。未開估前的手機 payload 不包含 YouTube ID、媒體 URL 或播放起點。Firebase 設定見 `docs/FIREBASE_SETUP.md`。
 
+需要大螢幕時，在主持頁按「開啟投影畫面」。按鈕會帶上目前房號；投影頁透過 Firebase 同步題目、提示、分數和開估結果，音訊仍由主持電腦播放。手動開啟投影頁時要用 `display.html?room=<目前房號>`，否則可能連到舊房間。
+
 如日後將 `firebase-config.js` 改回 `enabled: false`，多人連線仍會使用原本瀏覽器 WebRTC / PeerJS 後備；主持頁要保持開住，因為分數同房間狀態由主持頁管理。
 
 ## 本機開始

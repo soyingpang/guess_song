@@ -1,16 +1,18 @@
-const CACHE_NAME = "guess-song-shell-onsite-v4";
+const CACHE_NAME = "guess-song-shell-display-sync-v1";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
   "./player.html",
+  "./display.html",
   "./styles.css?v=onsite-v4",
   "./player.css?v=onsite-v4",
-  "./app.js?v=onsite-v4",
+  "./app.js?v=display-sync-v1",
+  "./display.js?v=display-sync-v1",
   "./game-core.js?v=onsite-v4",
   "./player.js?v=onsite-v4",
   "./pwa.js?v=onsite-v4",
   "./firebase-config.js?v=onsite-v4",
-  "./firebase-sync.js?v=onsite-v4",
+  "./firebase-sync.js?v=display-sync-v1",
   "./local-qr.js?v=onsite-v4",
   "./manifest.webmanifest?v=onsite-v4",
   "./songlists/pop-cantonese.json",

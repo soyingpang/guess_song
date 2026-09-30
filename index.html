@@ -142,6 +142,7 @@
             <div class="room-status" id="roomStatus">房間建立中</div>
             <div class="room-tools">
               <button class="ghost-button" id="copyPlayerLinkButton" type="button">複製玩家連結</button>
+              <button class="ghost-button" id="openDisplayButton" type="button">開啟投影畫面</button>
             </div>
             <div class="host-join-card" id="hostJoinCard" hidden>
               <img id="hostPlayerQr" alt="玩家加入 QR code" />
@@ -242,11 +243,11 @@
     </div>
 
     <script src="./firebase-config.js?v=onsite-v4"></script>
-    <script src="./firebase-sync.js?v=onsite-v4"></script>
+    <script src="./firebase-sync.js?v=display-sync-v1"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
     <script src="./local-qr.js?v=onsite-v4"></script>
     <script src="./game-core.js?v=onsite-v4"></script>
-    <script src="./app.js?v=onsite-v4"></script>
+    <script src="./app.js?v=display-sync-v1"></script>
     <script src="./pwa.js?v=onsite-v4"></script>
   </body>
 </html>

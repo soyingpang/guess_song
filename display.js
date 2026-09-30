@@ -86,6 +86,7 @@ let latestPlaybackState = null;
 let latestPlaybackRevision = 0;
 let latestRemoteState = null;
 let currentDisplayState = null;
+let displayHostHeartbeatAt = 0;
 let stageAudioUnlocked = false;
 let stagePlaybackBlocked = false;
 const stageMic = {
@@ -109,18 +110,16 @@ els.youtubeLoginSkipButton?.addEventListener("click", () => finishYouTubeLoginPr
 
 initYouTubeLoginPrompt();
 
-window.addEventListener("storage", (event) => {
-  if (event.key === DISPLAY_STATE_KEY && !latestRemoteState) renderFromStorage();
-});
-
-if (roomId) {
-  connectToHostDisplay({ resetAttempts: true });
-} else {
-  renderFromStorage();
-}
+if (roomId) void connectToFirebaseDisplay();
+else renderWaiting("未能連接房間", "請用主持提供的投影連結開啟此頁");
 
 window.setInterval(() => {
-  updateLiveDisplay(latestRemoteState || readDisplayState());
+  if (displayHostHeartbeatAt && Date.now() - displayHostHeartbeatAt > 35000) {
+    displayHostHeartbeatAt = 0;
+    latestRemoteState = null;
+    renderWaiting("主持連線中斷", `等待房間 ${roomId} 重新連接`);
+  }
+  updateLiveDisplay(latestRemoteState);
 }, 700);
 
 function renderFromStorage() {
@@ -190,6 +189,47 @@ function renderState(state) {
   renderLeaderboard(state);
   renderRoster(state);
   renderQr(state);
+}
+
+async function connectToFirebaseDisplay() {
+  if (!window.GuessSongFirebase?.isConfigured?.()) {
+    renderWaiting("未能連接房間", "Firebase 設定未載入，請重新整理");
+    return;
+  }
+
+  renderWaiting("連接主持中", `房間：${roomId}`);
+  try {
+    const firebase = await window.GuessSongFirebase.createRoomClient({ roomId, role: "player" });
+    if (!firebase) throw new Error("Firebase room client unavailable");
+
+    let hostOnline = false;
+    const onError = (error) => {
+      console.warn("Firebase display subscription failed", error);
+      renderWaiting("投影同步失敗", "請檢查網絡及房間連結，然後重新整理");
+    };
+
+    firebase.onValue(["meta"], (meta) => {
+      hostOnline = meta?.hostOnline === true;
+      displayHostHeartbeatAt = hostOnline ? Number(meta.hostHeartbeatAt || 0) : 0;
+      if (!hostOnline) {
+        latestRemoteState = null;
+        renderWaiting("等待主持連線", `房間：${roomId}`);
+      } else if (latestRemoteState) {
+        renderState(latestRemoteState);
+      } else {
+        renderWaiting("已連接房間", "等待主持同步畫面");
+      }
+    }, onError);
+
+    firebase.onValue(["displayState"], (payload) => {
+      if (!payload || payload.roomId !== roomId) return;
+      latestRemoteState = payload;
+      if (hostOnline) renderState(payload);
+    }, onError);
+  } catch (error) {
+    console.warn("Firebase display connection failed", error);
+    renderWaiting("未能連接房間", "Firebase 登入或網絡連線失敗，請重新整理");
+  }
 }
 
 function updateLiveDisplay(state) {
@@ -563,6 +603,7 @@ function renderFrame(state) {
 function renderLocalMedia(state) {
   const media = document.createElement(isVideoMediaUrl(state.audioUrl) ? "video" : "audio");
   media.src = state.audioUrl;
+  media.muted = true;
   media.autoplay = Boolean(state.isPlaying);
   media.controls = true;
   media.preload = "metadata";
@@ -631,6 +672,7 @@ function buildEmbedUrl(state) {
   url.searchParams.set("start", String(Math.floor(currentPlaybackTime(state))));
   if (state.end) url.searchParams.set("end", String(state.end));
   url.searchParams.set("autoplay", state.isPlaying ? "1" : "0");
+  url.searchParams.set("mute", "1");
   url.searchParams.set("controls", state.frontReady && !state.revealed ? "1" : "0");
   url.searchParams.set("enablejsapi", "1");
   url.searchParams.set("origin", window.location.origin);
