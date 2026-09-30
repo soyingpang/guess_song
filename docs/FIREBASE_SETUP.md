@@ -1,6 +1,6 @@
-# Firebase 全球手機模式設定
+# Firebase 現場答題同步設定
 
-本功能用 Firebase Realtime Database 做全球房間、玩家狀態、搶答事件和 WebRTC signaling。聲音仍然用 WebRTC；Firebase 不直接傳音訊。
+本功能用 Firebase Realtime Database 同步現場房間、玩家狀態、答案和分數。聲音只由主持電腦在現場播放，不經 Firebase、WebRTC 或玩家手機。
 
 ## 建立 Firebase 專案
 
@@ -10,7 +10,8 @@
 - Web app：`Guess Song Web`
 - Realtime Database：`https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`
 - 本 repo 已加入 `.firebaserc`、`firebase.json` 和 `database.rules.json`
-- `firebase-config.js` 已改為 `enabled: true`
+- `firebase-config.js` 已設為 `enabled: true`、`anonymousAuth: true`
+- Authentication 的 Anonymous 登入方式已啟用
 
 1. 在 Firebase Console 建立 project。
 2. 新增 Web app。
@@ -20,6 +21,7 @@
 ```js
 window.GUESS_SONG_FIREBASE_CONFIG = {
   enabled: true,
+  anonymousAuth: true,
   sdkVersion: "12.7.0",
   apiKey: "你的 apiKey",
   authDomain: "你的 project.firebaseapp.com",
@@ -29,22 +31,9 @@ window.GUESS_SONG_FIREBASE_CONFIG = {
 };
 ```
 
-## 測試用 Database Rules
+## 目前的 Database Rules
 
-以下 rules 已部署到目前 Firebase project，只適合私人測試。公開活動前應加入更嚴格的房間碼或登入驗證。
-
-```json
-{
-  "rules": {
-    "rooms": {
-      "$room": {
-        ".read": true,
-        ".write": true
-      }
-    }
-  }
-}
-```
+正式專案於 2026-09-30 已部署 `database.rules.json` 的角色規則。主持以獨立匿名 UID 建立房間、寫入題目及分數；玩家以自己的匿名 UID 加入、寫自己的連線資料與答案事件，只讀自己的題目狀態。未登入請求不能讀房間。`firebase.json` 預設指向這份安全規則，日後一般部署不會意外還原成公開讀寫。
 
 如要重新部署 rules：
 
@@ -52,16 +41,24 @@ window.GUESS_SONG_FIREBASE_CONFIG = {
 firebase deploy --only database --project guess-song-260531
 ```
 
+## 權限與驗證
+
+主持與玩家即使在同一瀏覽器來源開不同分頁，也使用分開的 Firebase app 身分。規則已在本機 emulator 測試允許及拒絕情況，並在公開 GitHub Pages 網址驗證新房、玩家答題、自動開估和計分。正式規則與 repo 內容一致；未登入讀取房間會收到 HTTP 401。
+
+舊版瀏覽器若仍用公開讀寫流程，必須重新載入到 `onsite-v4` 才可入房。
+
+本機覆核規則可執行 `npm ci`、`npm run test:rules`。測試使用 `demo-guess-song` 專案 ID，只連本機 emulator。
+
 ## 使用流程
 
 1. 主持人開 `index.html`。
-2. 玩家開玩家連結，輸入名字後選「我不在現場」。
-3. 主持人按「開始現場聲音廣播」，允許咪高峰。
-4. 主持人用同一部或旁邊裝置播放 YouTube Premium，讓主持咪收到聲音。
-5. 玩家手機如見到「開聲」按鈕，按一次啟用收聽。
+2. 主持電腦接好現場喇叭，確認瀏覽器／Windows 音量。
+3. 玩家掃主持頁 QR，輸入名字後按「加入遊戲」。
+4. 主持確認玩家名單，再按「開始第一題」。
+5. 手機只顯示答案選項、結果和排行榜，不需要音訊或咪高峰權限。
 
 ## 限制
 
-- B1 是用主持咪收聲，不是擷取 YouTube 內部音訊。
-- 主持端是一對多 WebRTC 上傳；5 至 10 人可先試，更多人要考慮 LiveKit / Agora 之類音訊伺服器。
-- 如果 Firebase 未配置或 `enabled: false`，現有 PeerJS / 本機玩法仍會照常運作。
+- 匿名登入可保護玩家之間的資料操作，但房間仍可被知道房名的人嘗試加入；活動時請使用主持頁產生的隨機房名。
+- 如果 Firebase 未配置或 `enabled: false`，PeerJS data channel 仍可作房間狀態／答題後備，但不會傳音訊。
+- YouTube 影片可能被下架、禁嵌入或出現廣告；正式活動前應試播所選歌單，重要歌曲宜改用已授權本地媒體 URL。

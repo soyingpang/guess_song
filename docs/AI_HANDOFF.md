@@ -2,6 +2,20 @@
 
 更新時間：2026-06-18 19:50 HKT
 
+## 2026-08-29 最新方向（最高優先）
+
+- 產品已改成現場專用：主持電腦直接出聲，手機只掃 QR、加入、選答案、看結果／分數。
+- 不再使用手機收聽、分頁聲音廣播、主持／玩家咪高峰、音訊校準或 7 秒延遲補償。
+- 第一題及其後每題都由主持手動開始；全員答完可以自動開估，但不會 5 秒後自動跳題。
+- 玩家加入不會自動開第一題；全部玩家短暫離線亦不會自動清場。
+- 主持分頁使用隨機 session 房名；指定 `?room=` 仍可用。
+- `buildPlayerState()` 不得把 `videoId`、`audioUrl`、`start`、`end` 或遠距音訊時間欄位送去手機。
+- `player.html` 不應重新加入播放器、收聽、開咪、聲音同步或延遲設定介面。
+- 現場資料同步仍以 Firebase 為主、PeerJS data channel 為後備；兩者都不傳音訊。
+- 目前 cache version 是 `onsite-v4`；Firebase Anonymous Auth 和角色規則已在正式專案啟用，部署狀態見 `docs/FIREBASE_SETUP.md`。
+
+以下舊紀錄保留作歷史背景；任何與本段衝突的「全球手機聲音／遠距／投影／自動開題」描述都已失效。
+
 ## 必讀順序
 
 後續 AI 或開發者接手時，請按以下順序讀文件：
@@ -79,7 +93,7 @@
 - 四選一可答題並加分；所有在線玩家都答完後，主持頁會自動開估，文字顯示答案 5 秒後自動下一題播放。
 - 快選估歌可自動判分：答中 +5，答錯 -1，答錯後該玩家冷卻 5 秒；有人答中時只顯示文字答案 5 秒，不播放完整歌曲，然後自動下一題。
 - 排行榜可顯示。
-- 題庫已按 50 萬 YouTube 瀏覽量門檻清理；目前 `hymns.json` 183 首，`songlists/pop-all.json` 3320 首，`songlists/all-songlists.json` 3503 首。語言拆分為 `songlists/all-cantonese.json` 1703 首、`songlists/all-mandarin.json` 1800 首；流行曲拆分為粵語 1615 首、國語 1705 首；嚴格年代入口為 `songlists/pop-80s.json` 40 首、`songlists/pop-90s.json` 66 首、`songlists/pop-00s.json` 30 首、`songlists/pop-recent-15.json` 48 首；未能用本地年份證據核實的 3136 首流行曲在 `songlists/pop-era-unverified.json`。
+- 題庫已按 50 萬 YouTube 瀏覽量門檻清理；目前 `hymns.json` 183 首，`songlists/pop-all.json` 3310 首，`songlists/all-songlists.json` 3493 首。語言拆分為 `songlists/all-cantonese.json` 1670 首、`songlists/all-mandarin.json` 1823 首；流行曲拆分為粵語 1582 首、國語 1728 首；嚴格年代入口為 `songlists/pop-80s.json` 39 首、`songlists/pop-90s.json` 68 首、`songlists/pop-00s.json` 31 首、`songlists/pop-recent-15.json` 49 首；未能用本地年份證據核實的 3123 首流行曲在 `songlists/pop-era-unverified.json`。
 - 已加入並啟用 Firebase 全球手機模式：Project ID 是 `guess-song-260531`，Realtime Database 是 `https://guess-song-260531-default-rtdb.asia-southeast1.firebasedatabase.app`。Firebase Realtime Database 負責房間、玩家、題目狀態、搶答事件和 WebRTC signaling；聲音仍由 WebRTC 傳送。
 
 ## 重要狀態提醒

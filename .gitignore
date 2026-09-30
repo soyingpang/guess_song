@@ -2,6 +2,8 @@
 gcm-diagnose.log
 node_modules/
 .cache/
+database-debug.log
 dist/
 .DS_Store
 Thumbs.db
+nas-api/config.php
