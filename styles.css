@@ -890,6 +890,15 @@ select:focus {
   border-color: rgba(255, 129, 117, 0.64);
 }
 
+.storage-warning {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 129, 117, 0.64);
+  border-radius: 8px;
+  background: #321a1d;
+  color: #ffc1bb;
+}
+
 #answerText {
   color: var(--accent-2);
   text-align: right;
@@ -922,6 +931,25 @@ select:focus {
   max-height: 520px;
   overflow: auto;
   padding-right: 4px;
+}
+
+.library-browser {
+  display: grid;
+  gap: 6px;
+  margin: 14px 0 10px;
+}
+
+.library-browser label {
+  font-weight: 700;
+}
+
+.library-browser span {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+#loadMoreSongsButton {
+  margin-top: 10px;
 }
 
 .players-panel {

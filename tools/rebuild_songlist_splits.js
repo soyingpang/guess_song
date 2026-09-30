@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const RUN_DATE = "2026-06-18";
+const RUN_DATE = "2026-08-29";
 const MIN_VIEWS = 500000;
 const CURRENT_YEAR = 2026;
 
@@ -542,7 +542,7 @@ function writeAudit(rows, summary) {
   );
 
   const lines = [
-    "# Songlist Era Audit (2026-06-18)",
+    `# Songlist Era Audit (${RUN_DATE})`,
     "",
     `All generated lists keep the existing ${MIN_VIEWS.toLocaleString("en-US")} view-count floor.`,
     "",
@@ -583,7 +583,7 @@ function writeTitleCorrectionAudit(corrections) {
   );
 
   const lines = [
-    "# Songlist Answer Title Audit (2026-06-18)",
+    `# Songlist Answer Title Audit (${RUN_DATE})`,
     "",
     `Applied ${corrections.length} high-confidence corrections before regenerating the songlists.`,
     "",

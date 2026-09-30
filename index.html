@@ -10,10 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="估歌仔" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>估歌仔</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=premium-mobile-35" />
+    <link rel="manifest" href="./manifest.webmanifest?v=onsite-v3" />
     <link rel="icon" type="image/svg+xml" href="./assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=premium-mobile-35" />
+    <link rel="stylesheet" href="./styles.css?v=onsite-v3" />
   </head>
   <body>
     <div class="app-shell">
@@ -78,7 +78,7 @@
             <button class="ghost-button" id="stopButton" type="button">停止</button>
             <button class="ghost-button" id="hintButton" type="button">提示</button>
             <button class="ghost-button" id="skipButton" type="button">開估</button>
-            <button class="ghost-button" id="nextButton" type="button">下一題播放</button>
+            <button class="ghost-button" id="nextButton" type="button">開始第一題</button>
             <button class="icon-button mystery-button" id="birthdayButton" type="button" title="生日驚喜" aria-label="生日驚喜">
               <span class="birthday-icon" aria-hidden="true"></span>
             </button>
@@ -94,23 +94,6 @@
           <div class="mode-row" role="group" aria-label="播放起點">
             <button class="segmented is-active" id="startBeginningButton" type="button">由頭播</button>
             <button class="segmented" id="startRandomButton" type="button">隨機中段</button>
-          </div>
-
-          <div class="manual-seconds-row">
-            <label for="latencyCustomInput">手機延遲</label>
-            <input id="latencyCustomInput" type="number" inputmode="decimal" min="0" max="15" step="0.5" value="7" />
-            <span>秒</span>
-            <button class="ghost-button" id="applyLatencyCustomButton" type="button">套用</button>
-          </div>
-          <p class="mode-helper" id="latencyStatus">手機倒數延遲 7 秒</p>
-          <div class="latency-calibration-card" id="latencyCalibrationCard" hidden>
-            <div>
-              <strong id="latencyCalibrationTitle">校準手機延遲</strong>
-              <span id="latencyCalibrationMeta">播放中等候手機回報</span>
-            </div>
-            <button class="ghost-button" id="applyLatencyCalibrationButton" type="button" disabled>
-              套用建議
-            </button>
           </div>
 
           <div class="mode-row" role="group" aria-label="答題模式">
@@ -144,6 +127,7 @@
             <span id="resultText">加入歌曲後就可以開始</span>
             <strong id="answerText"></strong>
           </div>
+          <div class="storage-warning" id="storageWarning" role="alert" hidden></div>
         </section>
 
         <aside class="library-panel control-sidebar" aria-label="主持側欄">
@@ -166,13 +150,6 @@
                 <span id="hostPlayerQrStatus">房間建立中</span>
               </div>
             </div>
-            <div class="audio-broadcast-card">
-              <div class="audio-broadcast-actions">
-                <button class="primary-button" id="audioBroadcastButton" type="button">廣播電腦/分頁聲音</button>
-                <button class="ghost-button" id="audioBroadcastMicButton" type="button">用咪高峰收聲</button>
-              </div>
-              <span id="audioBroadcastStatus">全球手機聲音：未廣播</span>
-            </div>
             <div class="player-list" id="playerList"></div>
           </section>
 
@@ -190,7 +167,7 @@
             </div>
           </section>
 
-          <details class="library-drawer">
+          <details class="library-drawer" id="libraryDrawer">
             <summary>
               <div>
                 <p class="eyebrow">線上 / 自訂歌單</p>
@@ -252,17 +229,24 @@
               <button class="danger-button" id="resetButton" type="button">清空</button>
             </div>
 
+            <div class="library-browser">
+              <label for="librarySearch">搜尋題庫</label>
+              <input id="librarySearch" type="search" placeholder="歌名、來源、分類或編號" autocomplete="off" />
+              <span id="libraryListStatus" role="status"></span>
+            </div>
             <div class="song-list" id="songList"></div>
+            <button class="ghost-button full-width" id="loadMoreSongsButton" type="button" hidden>顯示更多歌曲</button>
           </details>
         </aside>
       </main>
     </div>
 
-    <script src="./firebase-config.js?v=premium-mobile-35"></script>
-    <script src="./firebase-sync.js?v=premium-mobile-35"></script>
+    <script src="./firebase-config.js?v=onsite-v3"></script>
+    <script src="./firebase-sync.js?v=onsite-v3"></script>
     <script src="./vendor/peerjs.min.js?v=1.5.5"></script>
-    <script src="./local-qr.js?v=premium-mobile-35"></script>
-    <script src="./app.js?v=premium-mobile-35"></script>
-    <script src="./pwa.js?v=premium-mobile-35"></script>
+    <script src="./local-qr.js?v=onsite-v3"></script>
+    <script src="./game-core.js?v=onsite-v3"></script>
+    <script src="./app.js?v=onsite-v3"></script>
+    <script src="./pwa.js?v=onsite-v3"></script>
   </body>
 </html>

@@ -1,5 +1,6 @@
 window.GUESS_SONG_FIREBASE_CONFIG = {
   enabled: true,
+  anonymousAuth: true,
   sdkVersion: "12.7.0",
   apiKey: "AIzaSyCuc0c7OHqApp9qbWoaNg-226xDZuEFHYg",
   authDomain: "guess-song-260531.firebaseapp.com",

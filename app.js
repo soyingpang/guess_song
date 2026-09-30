@@ -1,4 +1,7 @@
 const STORAGE_KEY = "guess-song-library-v14";
+const LIBRARY_DATA_VERSION_KEY = "guess-song-library-data-version-v1";
+const LIBRARY_DATA_VERSION = "2026-08-29-title-audit-2";
+const CUSTOM_LIBRARY_VERSION = "custom";
 const SCORE_KEY = "cantonese-hymn-quiz-score-v2";
 const HOST_SETTINGS_KEY = "guess-song-host-settings-v1";
 const DEFAULT_CLOUD_LIBRARY_ID = "allSonglists";
@@ -71,9 +74,10 @@ const CLOUD_LIBRARY_OPTIONS = [
   },
 ];
 const ROOM_ID_KEY = "cantonese-hymn-quiz-room-id-v1";
+const HOST_SESSION_ROOM_KEY = "guess-song-onsite-room-v1";
 const HOST_INSTANCE_KEY = "cantonese-hymn-quiz-host-instance-v1";
 const HOST_CHANNEL_NAME = "cantonese-hymn-quiz-host-channel-v1";
-const APP_BUILD_VERSION = "premium-mobile-35";
+const APP_BUILD_VERSION = "onsite-v3";
 const DEFAULT_ROOM_ID = "soyingpang-guess-song-fellowship-room";
 const ROOM_ID_MAX_LENGTH = 80;
 const AUTO_ROOM_MAX_CANDIDATES = 30;
@@ -88,10 +92,12 @@ const AUDIO_BROADCAST_DISCONNECT_GRACE_MS = 6500;
 const AUDIO_BROADCAST_STATS_WARMUP_MS = 8000;
 const AUDIO_BROADCAST_STALE_STATS_LIMIT = 3;
 const AUDIO_RESTART_REQUEST_COOLDOWN_MS = 5000;
-const AUTO_START_AFTER_JOIN_MS = 350;
 const EMPTY_ROOM_RESET_DELAY_MS = 4500;
 const hostInstanceId = createSessionId();
 let hostChannel = null;
+let generatedSessionRoomId = "";
+let youtubeApiPromise = null;
+let activeYouTubePlayer = null;
 const ICE_SERVERS = [
   { urls: "stun:stun.l.google.com:19302" },
   { urls: "stun:stun1.l.google.com:19302" },
@@ -125,13 +131,14 @@ const MIN_PLAY_DURATION_SECONDS = 1;
 const DEFAULT_PLAY_DURATION_SECONDS = 30;
 const PLAY_START_MODES = ["beginning", "random"];
 const CHOICE_OPTION_COUNT = 4;
+const LIBRARY_PAGE_SIZE = 80;
 const REVEAL_AUTO_NEXT_DELAY_MS = 5000;
 const DEFAULT_QUICK_PICK_OPTION_COUNT = 6;
 const QUICK_PICK_OPTION_COUNTS = [4, 6, 8];
 const QUICK_PICK_CORRECT_POINTS = 5;
 const QUICK_PICK_WRONG_POINTS = -1;
 const QUICK_PICK_COOLDOWN_MS = 5000;
-const DEFAULT_REMOTE_AUDIO_LATENCY_MS = 7000;
+const DEFAULT_REMOTE_AUDIO_LATENCY_MS = 0;
 const MIN_REMOTE_AUDIO_LATENCY_MS = 0;
 const MAX_REMOTE_AUDIO_LATENCY_MS = 15000;
 const LATENCY_STEP_MS = 500;
@@ -217,6 +224,15 @@ const state = {
   category: "all",
   selectedCategories: [],
   cloudLibraryId: DEFAULT_CLOUD_LIBRARY_ID,
+  libraryRevision: 0,
+  libraryVisibleCount: LIBRARY_PAGE_SIZE,
+  renderedLibraryKey: "",
+  storageErrors: new Set(),
+  approvedSongsRevision: -1,
+  approvedSongsCache: [],
+  categoryOptionsRevision: -1,
+  categoryOptions: [],
+  categoryGridKey: "",
   round: 0,
   revealed: false,
   answered: false,
@@ -226,7 +242,7 @@ const state = {
   frontReady: false,
   playDuration: savedHostSettings.playDuration,
   playStartMode: "beginning",
-  remoteAudioLatencyMs: savedHostSettings.remoteAudioLatencyMs,
+  remoteAudioLatencyMs: 0,
   quickPickOptionCount: savedHostSettings.quickPickOptionCount,
   currentClipStart: CLIP_START_SECONDS,
   playEndsAt: 0,
@@ -266,6 +282,7 @@ const state = {
   firebaseStartedAt: 0,
   firebaseSeenEventKeys: new Set(),
   firebaseInitialRosterCleanupPending: false,
+  firebaseStateSignatures: new Map(),
   firebaseHostHeartbeatTimer: null,
   firebaseAudioPeers: new Map(),
   firebaseAudioSessionId: "",
@@ -318,6 +335,7 @@ const els = {
   choices: document.querySelector("#choices"),
   hintStack: document.querySelector("#hintStack"),
   resultBar: document.querySelector("#resultBar"),
+  storageWarning: document.querySelector("#storageWarning"),
   resultText: document.querySelector("#resultText"),
   answerText: document.querySelector("#answerText"),
   scoreCorrect: document.querySelector("#scoreCorrect"),
@@ -337,6 +355,10 @@ const els = {
   songAliases: document.querySelector("#songAliases"),
   songSubmitButton: document.querySelector("#songSubmitButton"),
   songList: document.querySelector("#songList"),
+  libraryDrawer: document.querySelector("#libraryDrawer"),
+  librarySearch: document.querySelector("#librarySearch"),
+  libraryListStatus: document.querySelector("#libraryListStatus"),
+  loadMoreSongsButton: document.querySelector("#loadMoreSongsButton"),
   showLeaderboardButton: document.querySelector("#showLeaderboardButton"),
   showWinnerButton: document.querySelector("#showWinnerButton"),
   resetGameButton: document.querySelector("#resetGameButton"),
@@ -362,8 +384,8 @@ bindEvents();
 initHostTakeover();
 initMultiplayer();
 render();
-window.setInterval(checkAudioBroadcastHealth, AUDIO_BROADCAST_HEALTH_CHECK_MS);
-if (!state.songs.length) {
+loadYouTubeIframeApi().catch(() => {});
+if (shouldRefreshBundledLibrary(state.songs)) {
   loadCloudLibrary({ silent: true, libraryId: DEFAULT_CLOUD_LIBRARY_ID });
 } else {
   setResult("準備開始", `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
@@ -432,6 +454,21 @@ function bindEvents() {
   els.cloudButton?.addEventListener("click", () => loadCloudLibrary({ silent: false }));
   els.importInput.addEventListener("change", importSongs);
   els.resetButton.addEventListener("click", clearLibrary);
+  els.libraryDrawer.addEventListener("toggle", () => {
+    if (els.libraryDrawer.open) renderLibrary();
+    else {
+      els.songList.replaceChildren();
+      state.renderedLibraryKey = "";
+    }
+  });
+  els.librarySearch.addEventListener("input", () => {
+    state.libraryVisibleCount = LIBRARY_PAGE_SIZE;
+    renderLibrary();
+  });
+  els.loadMoreSongsButton.addEventListener("click", () => {
+    state.libraryVisibleCount += LIBRARY_PAGE_SIZE;
+    renderLibrary();
+  });
 }
 
 async function initMultiplayer() {
@@ -480,6 +517,7 @@ async function initFirebaseHost() {
     state.roomId = roomId;
     state.playerUrl = buildPlayerUrl(roomId);
     state.firebaseInitialRosterCleanupPending = true;
+    state.firebaseStateSignatures.clear();
 
     await firebase.update(["meta"], {
       hostOnline: true,
@@ -524,7 +562,7 @@ async function resolveFirebaseRoomId() {
 
   if (claim?.roomId) {
     const roomId = normalizeRoomId(claim.roomId) || DEFAULT_ROOM_ID;
-    localStorage.setItem(ROOM_ID_KEY, roomId);
+    writeStorage(ROOM_ID_KEY, roomId);
     if (!hasExplicitHostRoomId() && roomId !== DEFAULT_ROOM_ID) {
       setResult("已自動開新房", `${roomId} · 玩家掃這頁 QR 即可加入`, "correct");
     }
@@ -566,12 +604,36 @@ function clearFirebaseHostHeartbeat() {
 
 function resolveRoomId() {
   const roomId = requestedHostRoomId();
-  localStorage.setItem(ROOM_ID_KEY, roomId);
+  writeStorage(ROOM_ID_KEY, roomId);
   return roomId;
 }
 
 function requestedHostRoomId() {
-  return explicitHostRoomId() || DEFAULT_ROOM_ID;
+  return explicitHostRoomId() || sessionHostRoomId();
+}
+
+function sessionHostRoomId() {
+  if (generatedSessionRoomId) return generatedSessionRoomId;
+  let stored = "";
+  try {
+    stored = normalizeRoomId(sessionStorage.getItem(HOST_SESSION_ROOM_KEY));
+  } catch {
+    // Session storage can be disabled in private browsing.
+  }
+  if (stored) {
+    generatedSessionRoomId = stored;
+    return stored;
+  }
+
+  const suffix = createSessionId().replace(/[^a-z0-9]/gi, "").slice(-10).toLowerCase();
+  const roomId = normalizeRoomId(`${DEFAULT_ROOM_ID}-${suffix}`);
+  generatedSessionRoomId = roomId;
+  try {
+    sessionStorage.setItem(HOST_SESSION_ROOM_KEY, roomId);
+  } catch {
+    // The generated room still works for this page session.
+  }
+  return roomId;
 }
 
 function explicitHostRoomId() {
@@ -605,9 +667,10 @@ function firebaseHostRoomCandidates() {
 }
 
 function autoRoomCandidates() {
+  const baseRoomId = sessionHostRoomId();
   return Array.from({ length: AUTO_ROOM_MAX_CANDIDATES }, (_, index) => {
-    if (index === 0) return DEFAULT_ROOM_ID;
-    return `${DEFAULT_ROOM_ID}-${index + 1}`;
+    if (index === 0) return baseRoomId;
+    return `${baseRoomId}-${index + 1}`;
   });
 }
 
@@ -637,7 +700,7 @@ function createRoomPeer(roomId, candidateIndex = 0, retryAttempt = 0) {
     state.roomError = "";
     state.roomId = id;
     state.playerUrl = buildPlayerUrl(id);
-    localStorage.setItem(ROOM_ID_KEY, id);
+    writeStorage(ROOM_ID_KEY, id);
     if (id !== requestedHostRoomId()) {
       setResult("已改用備用房間", "另一個主持頁仍佔用原房間，請用這頁的新玩家連結", "");
     }
@@ -770,7 +833,7 @@ function claimHostRoom(roomId = currentHostRoomId()) {
   };
 
   try {
-    localStorage.setItem(HOST_INSTANCE_KEY, JSON.stringify(payload));
+    writeStorage(HOST_INSTANCE_KEY, JSON.stringify(payload));
   } catch {
     // A blocked storage write should not stop the room from opening.
   }
@@ -909,9 +972,9 @@ function handlePlayerMessage(connection, message) {
     player.name = uniquePlayerName(name, player.id);
     player.connected = true;
     player.connection = connection;
-    player.remoteMode = true;
+    player.remoteMode = false;
     player.speakerMode = false;
-    player.audioReady = Boolean(message.audioReady);
+    player.audioReady = true;
     player.micActive = false;
     player.quickPickCooldownUntil = Number(player.quickPickCooldownUntil || 0);
     state.players[player.id] = player;
@@ -935,8 +998,6 @@ function handlePlayerMessage(connection, message) {
     renderQuiz();
     publishDisplayState();
     broadcastToPlayers();
-    syncAudioBroadcastToPlayer(player);
-    syncAllMicBroadcastTargets();
     handleRosterAutomation();
     return;
   }
@@ -952,27 +1013,11 @@ function handlePlayerMessage(connection, message) {
     return;
   }
 
-  if (message.type === "audio-ready") {
-    player.audioReady = Boolean(message.audioReady);
-    player.updatedAt = Date.now();
-    publishFirebasePlayerRecord(player);
-    renderPlayers();
-    renderQuiz();
-    handleRosterAutomation();
-    return;
-  }
-
-  if (message.type === "audio-restart-request") {
-    handleAudioRestartRequest(player, message);
-    return;
-  }
+  if (message.type === "audio-ready" || message.type === "audio-restart-request") return;
 
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
-  if (message.type === "latency-calibration") {
-    handleLatencyCalibration(player, message);
-    return;
-  }
+  if (message.type === "latency-calibration") return;
 
   if (message.type === "answer") {
     if (state.mode === "buzz") {
@@ -1569,13 +1614,13 @@ function handleFirebasePlayersSnapshot(playersById) {
     if (prunedPlayerIds.has(playerId)) return;
     if (!record || typeof record !== "object") return;
     const name = cleanPlayerName(record.name);
-    const player = resolveJoiningPlayer(playerId, name);
+    const player = resolveJoiningPlayer(playerId, name, { reuseOfflineName: false });
     player.name = uniquePlayerName(name, player.id);
     player.connected = Boolean(record.connected);
     player.firebase = true;
-    player.remoteMode = true;
+    player.remoteMode = false;
     player.speakerMode = false;
-    player.audioReady = Boolean(record.audioReady);
+    player.audioReady = true;
     player.quickPickCooldownUntil = Number(player.quickPickCooldownUntil || 0);
     state.players[player.id] = player;
   });
@@ -1585,7 +1630,6 @@ function handleFirebasePlayersSnapshot(playersById) {
     const record = playersById?.[player.id];
     if (!record) {
       player.connected = false;
-      endAudioBroadcastForPlayer(player.id);
     }
   });
 
@@ -1593,7 +1637,6 @@ function handleFirebasePlayersSnapshot(playersById) {
   renderQuiz();
   publishDisplayState();
   broadcastToPlayers();
-  if (state.audioBroadcastActive) broadcastAudioToRemotePlayers();
   handleRosterAutomation();
 }
 
@@ -1612,33 +1655,11 @@ function handleRosterAutomation() {
   if (connected.length) {
     state.roomHadConnectedPlayers = true;
     clearEmptyRoomResetTimer();
-    maybeAutoStartAfterFirstJoin();
+    clearAutoStartTimer();
     return;
   }
 
-  scheduleEmptyRoomReset();
-}
-
-function maybeAutoStartAfterFirstJoin() {
-  if (state.autoStartTimer) return;
-  if (!connectedPlayers().length) return;
-  if (isHostAudioBroadcastRequired()) return;
-  if (state.currentSong || state.currentQuestionId || state.choiceAutoNextTimer || isRoomBlocked()) return;
-
-  state.autoStartTimer = window.setTimeout(() => {
-    state.autoStartTimer = null;
-    if (!connectedPlayers().length) return;
-    if (isHostAudioBroadcastRequired()) return;
-    if (state.currentSong || state.currentQuestionId || state.choiceAutoNextTimer || isRoomBlocked()) return;
-
-    if (!playableSongs().length) {
-      setResult("已有玩家加入", "請先載入題庫，載入後會自動開始", "");
-      render();
-      return;
-    }
-
-    startRound(null, { autoplay: true });
-  }, AUTO_START_AFTER_JOIN_MS);
+  clearEmptyRoomResetTimer();
 }
 
 function scheduleEmptyRoomReset() {
@@ -1702,27 +1723,11 @@ function handleFirebasePlayerEvent(event, key) {
   const message = event.message || event;
   if (!player || !message || typeof message !== "object") return;
 
-  if (message.type === "audio-ready") {
-    player.audioReady = Boolean(message.audioReady);
-    player.updatedAt = Date.now();
-    publishFirebasePlayerRecord(player);
-    renderPlayers();
-    renderQuiz();
-    handleRosterAutomation();
-    return;
-  }
-
-  if (message.type === "audio-restart-request") {
-    handleAudioRestartRequest(player, message);
-    return;
-  }
+  if (message.type === "audio-ready" || message.type === "audio-restart-request") return;
 
   if (!hasActiveQuestion() || message.questionId !== state.currentQuestionId) return;
 
-  if (message.type === "latency-calibration") {
-    handleLatencyCalibration(player, message);
-    return;
-  }
+  if (message.type === "latency-calibration") return;
 
   if (message.type === "answer") {
     if (state.mode === "buzz") {
@@ -1746,8 +1751,6 @@ function publishFirebasePlayerRecord(player) {
     team: null,
     score: Number(player.score || 0),
     connected: Boolean(player.connected),
-    remoteMode: true,
-    audioReady: Boolean(player.audioReady),
     updatedAt: Date.now(),
   }).catch(() => {
     state.firebaseError = "Firebase 玩家同步失敗";
@@ -1756,7 +1759,14 @@ function publishFirebasePlayerRecord(player) {
 
 function publishFirebasePlayerState(player) {
   if (!state.firebaseReady || !state.firebase || !player?.id) return;
-  state.firebase.set(["playerStates", player.id], buildPlayerState(player)).catch(() => {
+  const payload = buildPlayerState(player);
+  const signature = JSON.stringify(payload);
+  if (state.firebaseStateSignatures.get(player.id) === signature) return;
+  state.firebaseStateSignatures.set(player.id, signature);
+  state.firebase.set(["playerStates", player.id], payload).catch(() => {
+    if (state.firebaseStateSignatures.get(player.id) === signature) {
+      state.firebaseStateSignatures.delete(player.id);
+    }
     state.firebaseError = "Firebase 題目同步失敗";
   });
 }
@@ -1891,6 +1901,7 @@ function handleChoiceAnswer(player, answer) {
     rejectLateJoinAnswer(player);
     return;
   }
+  if (!window.GuessSongCore.isChoiceAnswerAllowed(answer, ensureChoiceOptions(state.currentSong))) return;
 
   const correct = normalize(answer) === normalize(state.currentSong.title);
   const points = correct ? 1 : 0;
@@ -1947,8 +1958,6 @@ function isQuickPickAnswerWindowOpen() {
 
 function revealCurrentSongThenAutoNext(message, detail = "") {
   if (!state.currentSong || state.answered) return;
-  const revealedAt = Date.now();
-  const autoNextDelayMs = revealAutoNextTotalDelayMs();
 
   state.answered = true;
   state.revealed = true;
@@ -1958,14 +1967,13 @@ function revealCurrentSongThenAutoNext(message, detail = "") {
   state.playEndsAt = 0;
   state.buzzOpen = false;
   state.playbackRevision += 1;
-  state.revealAutoNextOpenedAt = revealedAt;
-  state.revealAutoNextEndsAt = revealedAt + autoNextDelayMs;
+  state.revealAutoNextOpenedAt = 0;
+  state.revealAutoNextEndsAt = 0;
   clearClipTimer();
   clearRemoteAnswerWindow();
-  setResult(message, detail || `${answerLabel(state.currentSong)} · ${Math.ceil(autoNextDelayMs / 1000)} 秒後下一題`, "correct");
+  setResult(message, detail || `${answerLabel(state.currentSong)} · 等主持開始下一題`, "correct");
   render();
   renderYouTubeFrame({ autoplay: false });
-  scheduleRevealAutoNext();
 }
 
 function scheduleRevealAutoNext() {
@@ -1983,7 +1991,7 @@ function scheduleRevealAutoNext() {
 }
 
 function revealAutoNextTotalDelayMs() {
-  return REVEAL_AUTO_NEXT_DELAY_MS + Math.max(0, Number(state.remoteAudioLatencyMs || 0));
+  return REVEAL_AUTO_NEXT_DELAY_MS;
 }
 
 function clearChoiceAutoNextTimer() {
@@ -2035,7 +2043,7 @@ function handleQuickPickAnswer(player, answer) {
     });
     revealCurrentSongThenAutoNext(
       `${player.name} 已估中`,
-      `${answerLabel(state.currentSong)} · +${points} 分 · 5 秒後下一題`
+      `${answerLabel(state.currentSong)} · +${points} 分 · 等主持開始下一題`
     );
     return;
   }
@@ -2164,7 +2172,7 @@ function hasConnectedPlayers() {
 }
 
 function loadSongs() {
-  const raw = localStorage.getItem(STORAGE_KEY);
+  const raw = readStorage(STORAGE_KEY);
   if (!raw) return [];
 
   try {
@@ -2176,7 +2184,7 @@ function loadSongs() {
 }
 
 function loadScore() {
-  const raw = localStorage.getItem(SCORE_KEY);
+  const raw = readStorage(SCORE_KEY);
   if (!raw) return { correct: 0, total: 0, streak: 0 };
 
   try {
@@ -2186,13 +2194,27 @@ function loadScore() {
   }
 }
 
+function shouldRefreshBundledLibrary(songs) {
+  if (!songs.length) return true;
+
+  const savedVersion = readStorage(LIBRARY_DATA_VERSION_KEY);
+  if (savedVersion === LIBRARY_DATA_VERSION || savedVersion === CUSTOM_LIBRARY_VERSION) return false;
+
+  const bundledSongs = songs.filter((song) => /^(?:HYMN|POP)/u.test(String(song.number || ""))).length;
+  return songs.length >= 1000 && bundledSongs / songs.length >= 0.95;
+}
+
+function markLibraryAsCustom() {
+  writeStorage(LIBRARY_DATA_VERSION_KEY, CUSTOM_LIBRARY_VERSION);
+}
+
 function loadHostSettings() {
   const fallback = {
     playDuration: DEFAULT_PLAY_DURATION_SECONDS,
     remoteAudioLatencyMs: DEFAULT_REMOTE_AUDIO_LATENCY_MS,
     quickPickOptionCount: DEFAULT_QUICK_PICK_OPTION_COUNT,
   };
-  const raw = localStorage.getItem(HOST_SETTINGS_KEY);
+  const raw = readStorage(HOST_SETTINGS_KEY);
   if (!raw) return fallback;
 
   try {
@@ -2209,7 +2231,7 @@ function loadHostSettings() {
 }
 
 function saveHostSettings() {
-  localStorage.setItem(
+  writeStorage(
     HOST_SETTINGS_KEY,
     JSON.stringify({
       playDuration: normalizePlayDuration(state.playDuration),
@@ -2268,11 +2290,42 @@ function cleanSong(song) {
 }
 
 function saveSongs() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.songs));
+  state.libraryRevision += 1;
+  return writeStorage(STORAGE_KEY, JSON.stringify(state.songs));
 }
 
 function saveScore() {
-  localStorage.setItem(SCORE_KEY, JSON.stringify(state.score));
+  writeStorage(SCORE_KEY, JSON.stringify(state.score));
+}
+
+function readStorage(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeStorage(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    state.storageErrors.delete(key);
+    return true;
+  } catch {
+    state.storageErrors.add(key);
+    return false;
+  }
+}
+
+function removeStorage(key) {
+  try {
+    localStorage.removeItem(key);
+    state.storageErrors.delete(key);
+    return true;
+  } catch {
+    state.storageErrors.add(key);
+    return false;
+  }
 }
 
 function startNextQuestion() {
@@ -2319,15 +2372,18 @@ function startRound(preferredSongId, options = {}) {
     pool.find((item) => item.id === preferredSongId) ||
     takeNextSong(pool) ||
     pool[0];
+  const optionCount = state.mode === "buzz" ? state.quickPickOptionCount : CHOICE_OPTION_COUNT;
+  const choices = makeChoices(song, pool, optionCount);
+  if (choices.length < optionCount) {
+    setResult("歌名選項不足", `需要至少 ${optionCount} 首不同歌名；請加入更多已批准來源的歌曲`, "wrong");
+    render();
+    return;
+  }
 
   clearClipTimer();
   state.currentSong = song;
   state.latencyCalibrationSamples = [];
-  state.currentChoices = makeChoices(
-    song,
-    pool,
-    state.mode === "buzz" ? state.quickPickOptionCount : CHOICE_OPTION_COUNT
-  );
+  state.currentChoices = choices;
   state.round += 1;
   state.revealed = false;
   state.answered = false;
@@ -2394,7 +2450,10 @@ function songCategoryTags(song) {
 }
 
 function approvedSongs() {
-  return state.songs.filter((song) => isApprovedSource(song.source));
+  if (state.approvedSongsRevision === state.libraryRevision) return state.approvedSongsCache;
+  state.approvedSongsCache = state.songs.filter((song) => isApprovedSource(song.source));
+  state.approvedSongsRevision = state.libraryRevision;
+  return state.approvedSongsCache;
 }
 
 function isApprovedSource(source) {
@@ -2534,7 +2593,7 @@ function finishRound(isCorrect, label = null) {
   saveScore();
   revealCurrentSongThenAutoNext(
     label || (isCorrect ? "答中" : "未中"),
-    `${answerLabel(state.currentSong)} · 5 秒後下一題`
+    `${answerLabel(state.currentSong)} · 等主持開始下一題`
   );
 }
 
@@ -2589,6 +2648,14 @@ function answerLabel(song) {
 }
 
 function renderYouTubeFrame({ autoplay }) {
+  if (activeYouTubePlayer) {
+    try {
+      activeYouTubePlayer.destroy();
+    } catch {
+      // The prior iframe may already have been removed.
+    }
+    activeYouTubePlayer = null;
+  }
   if (state.currentSong.audioUrl) {
     renderHostLocalMedia({ autoplay });
     return;
@@ -2602,26 +2669,103 @@ function renderYouTubeFrame({ autoplay }) {
   iframe.allowFullscreen = true;
   iframe.referrerPolicy = "strict-origin-when-cross-origin";
   els.playerHost.replaceChildren(iframe);
+  observeYouTubeFrame(iframe, autoplay);
+}
+
+function loadYouTubeIframeApi() {
+  if (window.YT?.Player) return Promise.resolve(window.YT);
+  if (youtubeApiPromise) return youtubeApiPromise;
+
+  let script;
+  youtubeApiPromise = new Promise((resolve, reject) => {
+    script = document.createElement("script");
+    const timeout = window.setTimeout(() => reject(new Error("YouTube API timeout")), 8000);
+    script.src = "https://www.youtube.com/iframe_api";
+    script.async = true;
+    script.onerror = () => {
+      window.clearTimeout(timeout);
+      reject(new Error("YouTube API unavailable"));
+    };
+    window.onYouTubeIframeAPIReady = () => {
+      window.clearTimeout(timeout);
+      resolve(window.YT);
+    };
+    document.head.append(script);
+  }).catch((error) => {
+    script?.remove();
+    youtubeApiPromise = null;
+    throw error;
+  });
+  return youtubeApiPromise;
+}
+
+async function observeYouTubeFrame(iframe, autoplay) {
+  try {
+    const youtube = await loadYouTubeIframeApi();
+    if (els.playerHost.firstChild !== iframe) return;
+    activeYouTubePlayer = new youtube.Player(iframe, {
+      events: {
+        onError: (event) => reportYouTubeFailure(iframe, event.data),
+        onAutoplayBlocked: () => {
+          if (autoplay) reportYouTubeFailure(iframe, "autoplay");
+        },
+      },
+    });
+  } catch {
+    if (autoplay && els.playerHost.firstChild === iframe) {
+      setResult("請確認影片已播放", "YouTube 無法回報播放狀態；請目視確認畫面及聲音，必要時按「重播片段」", "");
+    }
+  }
+}
+
+function reportYouTubeFailure(iframe, errorCode) {
+  if (els.playerHost.firstChild !== iframe) return;
+  reportMediaFailure("YouTube 播放失敗", window.GuessSongCore.youtubeFailureDetail(errorCode));
 }
 
 function renderHostLocalMedia({ autoplay }) {
   const media = document.createElement(isVideoMediaUrl(state.currentSong.audioUrl) ? "video" : "audio");
-  const shouldMute = state.audioBroadcastMode !== "tab" || !state.audioBroadcastActive;
   media.src = state.currentSong.audioUrl;
   media.controls = true;
-  media.muted = shouldMute;
-  media.volume = shouldMute ? 0 : 1;
+  media.muted = false;
+  media.volume = 1;
   media.preload = "metadata";
   if (media.tagName === "VIDEO") media.playsInline = true;
+  media.addEventListener("error", () => reportLocalMediaFailure(media, media.error));
   media.addEventListener(
     "loadedmetadata",
     () => {
-      media.currentTime = clipStart(state.currentSong);
-      if (autoplay) media.play().catch(() => {});
+      if (els.playerHost.firstChild !== media) return;
+      try {
+        media.currentTime = clipStart(state.currentSong);
+      } catch (error) {
+        reportLocalMediaFailure(media, error);
+        return;
+      }
+      if (autoplay) media.play().catch((error) => reportLocalMediaFailure(media, error));
     },
     { once: true }
   );
   els.playerHost.replaceChildren(media);
+}
+
+function reportLocalMediaFailure(media, error) {
+  if (els.playerHost.firstChild !== media) return;
+  const blocked = error?.name === "NotAllowedError";
+  reportMediaFailure(
+    "播放失敗",
+    blocked ? "瀏覽器阻止自動播放，請按「重播片段」" : "媒體檔無法播放，請檢查連結或按「下一題播放」"
+  );
+}
+
+function reportMediaFailure(title, detail) {
+  clearClipTimer();
+  clearRemoteAnswerWindow();
+  state.isPlaying = false;
+  state.playEndsAt = 0;
+  state.buzzOpen = false;
+  setResult(title, detail, "wrong");
+  render();
 }
 
 function isVideoMediaUrl(url) {
@@ -2631,7 +2775,6 @@ function isVideoMediaUrl(url) {
 function buildEmbedUrl(song, autoplay) {
   const url = new URL(`https://www.youtube.com/embed/${song.videoId}`);
   const start = state.fullPlayback ? CLIP_START_SECONDS : clipStart(song);
-  const shouldMute = state.audioBroadcastMode !== "tab" || !state.audioBroadcastActive;
   url.searchParams.set("start", String(start));
   if (!state.fullPlayback) url.searchParams.set("end", String(start + clipDuration(song)));
   url.searchParams.set("autoplay", autoplay ? "1" : "0");
@@ -2641,8 +2784,8 @@ function buildEmbedUrl(song, autoplay) {
   url.searchParams.set("rel", "0");
   url.searchParams.set("modestbranding", "1");
   url.searchParams.set("playsinline", "1");
-  url.searchParams.set("mute", shouldMute ? "1" : "0");
-  url.searchParams.set("volume", shouldMute ? "0" : "100");
+  url.searchParams.set("mute", "0");
+  url.searchParams.set("volume", "100");
   return url.toString();
 }
 
@@ -2986,7 +3129,7 @@ function resetGameSessionState(reason = "") {
 
   saveScore();
   if (reason === "empty-room") {
-    setResult("本場已自動關閉", "所有玩家已離開，已清除分數、題目及已玩紀錄；下一位玩家加入會自動開始", "correct");
+    setResult("本場已自動關閉", "所有玩家已離開，已清除分數、題目及已玩紀錄；等主持按開始第一題", "correct");
   } else {
     setResult("新場已清理", "舊玩家名單已清除，請用玩家連結重新加入", "correct");
   }
@@ -3035,7 +3178,7 @@ function saveSongFromForm() {
   state.editingId = null;
   state.category = song.category || "all";
   state.selectedCategories = song.category ? [song.category] : [];
-  saveSongs();
+  if (saveSongs()) markLibraryAsCustom();
   resetForm();
   render();
   startRound(song.id, { autoplay: true });
@@ -3063,7 +3206,7 @@ function editSong(songId) {
 function deleteSong(songId) {
   state.songs = state.songs.filter((item) => item.id !== songId);
   if (state.editingId === songId) resetForm();
-  saveSongs();
+  if (saveSongs()) markLibraryAsCustom();
   if (state.currentSong?.id === songId) startRound(null, { autoplay: true });
   render();
 }
@@ -3096,7 +3239,7 @@ async function importSongs(event) {
     if (!songs.length) throw new Error("No songs");
 
     mergeSongs(songs);
-    saveSongs();
+    if (saveSongs()) markLibraryAsCustom();
     setResult("已匯入題庫", `${approvedSongs().length}/${state.songs.length} 首可出題`, "");
     render();
     startRound();
@@ -3154,7 +3297,7 @@ async function loadCloudLibrary({ silent, libraryId } = {}) {
     state.category = "all";
     state.selectedCategories = [];
     state.questionBag = [];
-    saveSongs();
+    if (saveSongs()) writeStorage(LIBRARY_DATA_VERSION_KEY, LIBRARY_DATA_VERSION);
     setResult(library.loadedMessage, `${approvedSongs().length}/${state.songs.length} 首可出題，按下一題播放開始`, "");
     render();
   } catch {
@@ -3177,6 +3320,7 @@ function clearLibrary() {
   state.songs = [];
   state.score = { correct: 0, total: 0, streak: 0 };
   state.editingId = null;
+  removeStorage(LIBRARY_DATA_VERSION_KEY);
   saveSongs();
   saveScore();
   resetForm();
@@ -3184,9 +3328,12 @@ function clearLibrary() {
 }
 
 function makeChoices(correctSong, pool, total = CHOICE_OPTION_COUNT) {
-  const optionCount = Math.max(CHOICE_OPTION_COUNT, Number(total || CHOICE_OPTION_COUNT));
-  const otherSongs = shuffle(pool.filter((song) => song.id !== correctSong.id)).slice(0, optionCount - 1);
-  return shuffle([correctSong, ...otherSongs]).map((song) => song.title);
+  return window.GuessSongCore.createChoiceTitles(
+    correctSong,
+    pool,
+    total,
+    approvedSongs().filter((song) => song.language === correctSong.language)
+  );
 }
 
 function ensureChoiceOptions(song) {
@@ -3204,6 +3351,7 @@ function ensureChoiceOptions(song) {
 
 function render() {
   renderScore();
+  renderStorageWarning();
   renderCategoryFilter();
   renderQuiz();
   renderHints();
@@ -3219,27 +3367,45 @@ function renderScore() {
   els.scoreStreak.textContent = state.score.streak;
 }
 
+function renderStorageWarning() {
+  const hasError = state.storageErrors.size > 0;
+  els.storageWarning.hidden = !hasError;
+  els.storageWarning.textContent = hasError
+    ? "本機儲存失敗；重新整理後，自訂題庫或分數可能遺失。請先匯出題庫備份。"
+    : "";
+}
+
 function renderCategoryFilter() {
-  const categories = Array.from(new Set(approvedSongs().flatMap(songFilterTags).filter(Boolean))).sort();
-  const previous = els.categoryFilter.value || state.category;
-  if (els.categoryFilter) els.categoryFilter.innerHTML = "";
+  if (state.categoryOptionsRevision !== state.libraryRevision) {
+    const categories = Array.from(new Set(approvedSongs().flatMap(songFilterTags).filter(Boolean))).sort();
+    const previous = els.categoryFilter.value || state.category;
+    if (els.categoryFilter) els.categoryFilter.replaceChildren();
 
-  const all = document.createElement("option");
-  all.value = "all";
-  all.textContent = "全部歌單";
-  els.categoryFilter?.append(all);
+    const all = document.createElement("option");
+    all.value = "all";
+    all.textContent = "全部歌單";
+    els.categoryFilter?.append(all);
 
-  categories.forEach((category) => {
-    const option = document.createElement("option");
-    option.value = category;
-    option.textContent = category;
-    els.categoryFilter?.append(option);
-  });
+    categories.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category;
+      option.textContent = category;
+      els.categoryFilter?.append(option);
+    });
 
-  state.category = categories.includes(previous) ? previous : "all";
-  state.selectedCategories = state.selectedCategories.filter((category) => categories.includes(category));
-  if (els.categoryFilter) els.categoryFilter.value = state.category;
-  renderCategoryGrid(categories);
+    state.category = categories.includes(previous) ? previous : "all";
+    state.selectedCategories = state.selectedCategories.filter((category) => categories.includes(category));
+    if (els.categoryFilter) els.categoryFilter.value = state.category;
+    state.categoryOptions = categories;
+    state.categoryOptionsRevision = state.libraryRevision;
+    state.categoryGridKey = "";
+  }
+
+  const gridKey = `${state.categoryOptionsRevision}:${state.selectedCategories.slice().sort().join("|")}`;
+  if (state.categoryGridKey !== gridKey) {
+    renderCategoryGrid(state.categoryOptions);
+    state.categoryGridKey = gridKey;
+  }
 }
 
 function renderCategoryGrid(categories) {
@@ -3359,14 +3525,12 @@ function requireHostAudioBroadcastReady(actionLabel = "開始播放") {
 }
 
 function requireAudioPipelineReady(actionLabel = "開始播放") {
-  return requirePlayersAudioReady(actionLabel) && requireHostAudioBroadcastReady(actionLabel);
+  return true;
 }
 
 function renderQuiz() {
   const hasSong = Boolean(state.currentSong);
   const roomBlocked = isRoomBlocked();
-  const waitingForAudioReady = Boolean(playersMissingAudioReady().length);
-  const audioReadyTitle = waitingForAudioReady ? `等待：${audioReadyGateLabel()}` : "";
   const songlistLabel = activeSonglistLabel();
   els.roundLabel.textContent = hasActiveQuestion() ? `第 ${state.round} 題` : "未有題目";
   els.quizTitle.textContent = hasSong
@@ -3379,7 +3543,7 @@ function renderQuiz() {
         : emptyPoolMessage()
       : "先加入歌曲";
 
-  els.maskLabel.textContent = hasSong ? "主持預覽已靜音，只作預備和跳廣告" : "主持手機控制播放";
+  els.maskLabel.textContent = hasSong ? "現場電腦播放中；畫面答案已遮住" : "現場電腦負責播歌";
   els.playerMask.classList.toggle("is-hidden", hasSong);
   els.playerHost.classList.remove("is-masked");
   els.toggleVideoButton.textContent = state.revealed ? "隱藏影片" : "顯示影片";
@@ -3391,8 +3555,6 @@ function renderQuiz() {
   if (els.latencyStatus) {
     els.latencyStatus.textContent = `手機倒數延遲 ${formatLatencySeconds(state.remoteAudioLatencyMs)}；可手動輸入秒數`;
   }
-  renderLatencyCalibrationUi();
-  const waitingForHostAudio = isHostAudioBroadcastRequired();
   els.choiceModeButton.classList.toggle("is-active", state.mode === "choice");
   els.buzzModeButton.classList.toggle("is-active", state.mode === "buzz");
   els.quickPick4Button?.classList.toggle("is-active", state.quickPickOptionCount === 4);
@@ -3406,21 +3568,20 @@ function renderQuiz() {
   els.toggleVideoButton.disabled = roomBlocked || !hasActiveQuestion();
   els.playButton.textContent = state.isPlaying ? "播放中" : "重播片段";
   els.replayButton.textContent = "重播片段";
-  els.nextButton.textContent = "下一題播放";
-  els.playButton.disabled = roomBlocked || waitingForAudioReady || waitingForHostAudio || !hasSong || state.isPlaying;
-  els.replayButton.disabled = roomBlocked || waitingForAudioReady || waitingForHostAudio || !hasSong;
+  els.nextButton.textContent = hasActiveQuestion() ? "下一題播放" : "開始第一題";
+  els.playButton.disabled = roomBlocked || !hasSong || state.isPlaying;
+  els.replayButton.disabled = roomBlocked || !hasSong;
   els.stopButton.disabled = roomBlocked || !state.isPlaying;
   els.hintButton.disabled = roomBlocked || !hasSong;
   els.skipButton.disabled = roomBlocked || !hasActiveQuestion() || state.answered;
-  els.nextButton.disabled = roomBlocked || waitingForAudioReady || waitingForHostAudio;
+  els.nextButton.disabled = roomBlocked;
   if (els.birthdayButton) {
-    els.birthdayButton.disabled = waitingForAudioReady || waitingForHostAudio;
-    els.birthdayButton.title = audioReadyTitle || (waitingForHostAudio ? "等待：主持未廣播手機音訊" : "");
+    els.birthdayButton.disabled = roomBlocked;
+    els.birthdayButton.title = "";
   }
-  const hostAudioTitle = waitingForHostAudio ? "等待：主持未廣播手機音訊" : "";
-  els.playButton.title = audioReadyTitle || hostAudioTitle;
-  els.replayButton.title = audioReadyTitle || hostAudioTitle;
-  els.nextButton.title = audioReadyTitle || hostAudioTitle;
+  els.playButton.title = "";
+  els.replayButton.title = "";
+  els.nextButton.title = "";
   if (els.playDurationInput) els.playDurationInput.disabled = roomBlocked;
   if (els.applyPlayDurationButton) els.applyPlayDurationButton.disabled = roomBlocked;
   els.startBeginningButton.disabled = roomBlocked;
@@ -3495,19 +3656,44 @@ function renderHints() {
 function renderLibrary() {
   const approvedCount = approvedSongs().length;
   els.songCount.textContent = `${approvedCount}/${state.songs.length} 可出題`;
-  els.songList.innerHTML = "";
+  if (!els.libraryDrawer.open) return;
+
+  const blindRound = Boolean(state.currentSong && !state.answered);
+  const query = window.GuessSongCore.normalizeTitle(els.librarySearch.value);
+  const renderKey = `${state.libraryRevision}:${blindRound}:${query}:${state.libraryVisibleCount}`;
+  if (state.renderedLibraryKey === renderKey) return;
+  state.renderedLibraryKey = renderKey;
+  els.songList.replaceChildren();
 
   if (!state.songs.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
     empty.textContent = "未有題目。貼一條 YouTube 連結，就可以開始建立歌單。";
     els.songList.append(empty);
+    els.libraryListStatus.textContent = "0 首";
+    els.loadMoreSongsButton.hidden = true;
     return;
   }
 
-  const blindRound = Boolean(state.currentSong && !state.answered);
+  const matches = state.songs
+    .map((song, index) => ({ song, index }))
+    .filter(({ song }) => !query || window.GuessSongCore.normalizeTitle(
+      [song.title, song.source, song.category, song.number].join(" ")
+    ).includes(query));
+  const shown = matches.slice(0, state.libraryVisibleCount);
+  els.libraryListStatus.textContent = `顯示 ${shown.length}/${matches.length} 首`;
+  els.loadMoreSongsButton.hidden = shown.length >= matches.length;
 
-  state.songs.forEach((song, index) => {
+  if (!matches.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = "找不到符合搜尋的歌曲";
+    els.songList.append(empty);
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  shown.forEach(({ song, index }) => {
     const approved = isApprovedSource(song.source);
     const item = document.createElement("article");
     item.className = "song-item";
@@ -3556,26 +3742,24 @@ function renderLibrary() {
     }
 
     item.append(info, actions);
-    els.songList.append(item);
+    fragment.append(item);
   });
+  els.songList.append(fragment);
 }
 
 function renderPlayers() {
   const players = rosterPlayers();
-  const pendingAudio = playersMissingAudioReady();
-  const audioReadySuffix = pendingAudio.length ? ` · 等 ${audioReadyGateLabel(pendingAudio)}` : "";
   els.playerCount.textContent = `${players.length} 位`;
   const baseRoomStatus = state.roomError
     ? state.roomError
     : state.firebaseReady
-      ? `Firebase 全球房間：${state.roomId} · 可連線`
+      ? `Firebase 現場房間：${state.roomId} · 可連線`
       : state.roomReady
-      ? `房間：${state.roomId} · 可連線`
+      ? `現場房間：${state.roomId} · 可連線`
       : `房間建立中：${state.roomId || DEFAULT_ROOM_ID}`;
-  els.roomStatus.textContent = `${baseRoomStatus}${audioReadySuffix}`;
+  els.roomStatus.textContent = baseRoomStatus;
   els.copyPlayerLinkButton.disabled = !state.playerUrl;
   renderHostJoinQr();
-  renderAudioBroadcastUi();
   els.playerList.innerHTML = "";
 
   if (!players.length) {
@@ -3596,11 +3780,6 @@ function renderPlayers() {
     name.textContent = `${index + 1}. ${player.name}`;
     meta.textContent = `手機版 · ${player.connected ? "已連線" : "離線"}`;
     info.append(name, meta);
-
-    const audioStatus = document.createElement("b");
-    audioStatus.className = `player-audio-ready ${player.audioReady ? "is-ready" : "is-pending"}`;
-    audioStatus.textContent = player.audioReady ? "已開聲" : "未開聲";
-    info.append(audioStatus);
 
     const score = document.createElement("strong");
     score.className = "player-score";
@@ -3677,6 +3856,7 @@ function clearAllPlayersForNewSession() {
     clearLocalPlayerRuntime(playerId);
   });
   state.players = {};
+  state.firebaseStateSignatures.clear();
   state.buzzWinnerId = "";
   state.firebaseSeenEventKeys.clear();
 
@@ -3696,6 +3876,7 @@ function clearLocalPlayerRuntime(playerId) {
 
 function clearFirebasePlayerData(playerId) {
   if (!state.firebaseReady || !state.firebase || !playerId) return;
+  state.firebaseStateSignatures.delete(playerId);
   state.firebase.set(["players", playerId], null).catch(() => {});
   state.firebase.set(["playerStates", playerId], null).catch(() => {});
   state.firebase.set(["messages", playerId], null).catch(() => {});
@@ -3785,12 +3966,6 @@ function buildDisplayState() {
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
     playbackRevision: state.playbackRevision,
-    revealAutoNextOpenedAt: revealed ? Number(state.revealAutoNextOpenedAt || 0) : 0,
-    revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
-    revealAutoNextStartsAt: revealed && state.revealAutoNextEndsAt
-      ? Number(state.revealAutoNextEndsAt) - REVEAL_AUTO_NEXT_DELAY_MS
-      : 0,
-    revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
     songlistLabel,
     buzzOpen: state.buzzOpen,
@@ -3804,7 +3979,13 @@ function buildDisplayState() {
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
     prompt: hasSong ? `${songlistLabel} · 估歌名` : "等候主持開始",
-    status: els.resultText.textContent || "",
+    status: revealed
+      ? "已開估"
+      : state.isPlaying
+        ? "現場播放中"
+        : state.frontReady
+          ? "主持已預備"
+          : "等候主持開始",
     answer: revealed && song ? answerLabel(song) : "",
     title: revealed && song ? song.title : songlistLabel,
     videoId: song?.videoId || "",
@@ -3822,17 +4003,7 @@ function buildDisplayState() {
 function buildPlayerState(player) {
   const song = state.currentSong;
   const revealed = Boolean(song && state.answered);
-  const remoteAnswerOpen = isRemoteAnswerWindowOpen();
-  const remotePlayEndsAt =
-    state.answerGraceQuestionId === state.currentQuestionId
-      ? Number(state.answerGraceEndsAt || 0)
-      : state.playEndsAt
-        ? Number(state.playEndsAt) + state.remoteAudioLatencyMs
-        : 0;
-  const remotePlayStartsAt =
-    remotePlayEndsAt && song
-      ? Math.max(0, remotePlayEndsAt - clipDuration(song) * 1000)
-      : 0;
+  const answerWindowOpen = isRemoteAnswerWindowOpen();
   const answerEligible = !song || revealed || isPlayerEligibleForCurrentQuestion(player);
   const waitingForNextQuestion = Boolean(song && !revealed && !answerEligible);
   const choiceOptions =
@@ -3840,7 +4011,7 @@ function buildPlayerState(player) {
     !revealed &&
     answerEligible &&
     (state.mode === "choice" || state.mode === "buzz") &&
-    (state.isPlaying || state.buzzOpen || remoteAnswerOpen)
+    (state.isPlaying || state.buzzOpen || answerWindowOpen)
       ? ensureChoiceOptions(song)
       : [];
   const songlistLabel = activeSonglistLabel();
@@ -3859,23 +4030,13 @@ function buildPlayerState(player) {
     frontReady: state.frontReady,
     playDuration: state.playDuration,
     playEndsAt: state.playEndsAt,
-    remotePlayStartsAt,
-    remotePlayEndsAt,
-    remoteAudioDelayMs: state.remoteAudioLatencyMs,
-    answerOpenUntil: answerEligible && remoteAnswerOpen ? Number(state.answerGraceEndsAt || 0) : 0,
     playbackRevision: state.playbackRevision,
-    revealAutoNextOpenedAt: revealed ? Number(state.revealAutoNextOpenedAt || 0) : 0,
-    revealAutoNextEndsAt: revealed ? Number(state.revealAutoNextEndsAt || 0) : 0,
-    revealAutoNextStartsAt: revealed && state.revealAutoNextEndsAt
-      ? Number(state.revealAutoNextEndsAt) - REVEAL_AUTO_NEXT_DELAY_MS
-      : 0,
-    revealAutoNextDelayMs: REVEAL_AUTO_NEXT_DELAY_MS,
     clipDuration: state.playDuration,
     songlistLabel,
     playerName: player.name,
     answerEligible,
     waitingForNextQuestion,
-    buzzOpen: answerEligible && (state.buzzOpen || (state.mode === "buzz" && remoteAnswerOpen)),
+    buzzOpen: answerEligible && (state.buzzOpen || (state.mode === "buzz" && answerWindowOpen)),
     quickPickCooldownUntil: state.mode === "buzz" ? Number(player.quickPickCooldownUntil || 0) : 0,
     quickPickCooldownMs: QUICK_PICK_COOLDOWN_MS,
     quickPickCorrectPoints: QUICK_PICK_CORRECT_POINTS,
@@ -3885,14 +4046,16 @@ function buildPlayerState(player) {
     meta: revealed && song
       ? [song.category, song.source, song.number ? `#${song.number}` : ""].filter(Boolean)
       : [],
-    status: els.resultText.textContent || "",
+    status: revealed
+      ? "已開估"
+      : state.isPlaying
+        ? "現場播放中"
+        : state.frontReady
+          ? "主持已預備"
+          : "等候主持開始",
     score: player.score,
     choices: choiceOptions,
     hints: song ? getHints(song).slice(0, state.hintLevel) : [],
-    videoId: song?.videoId || "",
-    audioUrl: song?.audioUrl || "",
-    start: song && !state.fullPlayback ? clipStart(song) : CLIP_START_SECONDS,
-    end: song && !state.fullPlayback ? clipStart(song) + clipDuration(song) : 0,
     leaderboard: leaderboardPlayers().map(stripPlayer),
     buzzWinner: state.buzzWinnerId ? stripPlayer(state.players[state.buzzWinnerId]) : null,
     answered: Boolean(player.answers[state.currentQuestionId]),
@@ -3973,8 +4136,6 @@ function stripPlayer(player) {
     name: player.name,
     score: player.score,
     connected: Boolean(player.connected),
-    micActive: false,
-    audioReady: Boolean(player.audioReady),
   };
 }
 
@@ -3982,11 +4143,11 @@ function findPlayerByConnection(connection) {
   return Object.values(state.players).find((player) => player.connection === connection) || null;
 }
 
-function resolveJoiningPlayer(playerId, name) {
+function resolveJoiningPlayer(playerId, name, { reuseOfflineName = true } = {}) {
   const existingById = state.players[playerId];
   if (existingById) return existingById;
 
-  const offlineSameName = Object.values(state.players).find(
+  const offlineSameName = reuseOfflineName && Object.values(state.players).find(
     (player) => !player.connected && normalizePlayerName(player.name) === normalizePlayerName(name)
   );
   if (offlineSameName) return offlineSameName;
@@ -3999,9 +4160,9 @@ function resolveJoiningPlayer(playerId, name) {
     micActive: false,
     micCall: null,
     micStream: null,
-    remoteMode: true,
+    remoteMode: false,
     speakerMode: false,
-    audioReady: false,
+    audioReady: true,
     quickPickCooldownUntil: 0,
   };
 }

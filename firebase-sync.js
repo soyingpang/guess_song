@@ -1,6 +1,6 @@
 (function () {
   const DEFAULT_SDK_VERSION = "12.7.0";
-  let initPromise = null;
+  const initPromises = new Map();
 
   function config() {
     return window.GUESS_SONG_FIREBASE_CONFIG || {};
@@ -23,19 +23,23 @@
       .slice(0, 180);
   }
 
-  async function loadFirebase() {
+  async function loadFirebase(role = "host") {
     if (!isConfigured()) return null;
-    if (initPromise) return initPromise;
+    const clientRole = role === "player" ? "player" : "host";
+    if (initPromises.has(clientRole)) return initPromises.get(clientRole);
 
-    initPromise = (async () => {
+    const initPromise = (async () => {
       const current = config();
       const version = current.sdkVersion || DEFAULT_SDK_VERSION;
-      const [appModule, databaseModule] = await Promise.all([
+      const [appModule, databaseModule, authModule] = await Promise.all([
         import(`https://www.gstatic.com/firebasejs/${version}/firebase-app.js`),
         import(`https://www.gstatic.com/firebasejs/${version}/firebase-database.js`),
+        current.anonymousAuth
+          ? import(`https://www.gstatic.com/firebasejs/${version}/firebase-auth.js`)
+          : Promise.resolve(null),
       ]);
 
-      const appName = "guess-song-global";
+      const appName = `guess-song-${clientRole}`;
       const existingApp = appModule.getApps().find((item) => item.name === appName);
       const app = existingApp || appModule.initializeApp(
         {
@@ -48,17 +52,30 @@
         appName
       );
 
+      let authUid = "";
+      if (authModule) {
+        const auth = authModule.getAuth(app);
+        const credential = auth.currentUser || (await authModule.signInAnonymously(auth)).user;
+        authUid = credential.uid;
+      }
+
       return {
         database: databaseModule.getDatabase(app),
+        authUid,
         ...databaseModule,
       };
     })();
 
-    return initPromise;
+    const ready = initPromise.catch((error) => {
+      if (initPromises.get(clientRole) === ready) initPromises.delete(clientRole);
+      throw error;
+    });
+    initPromises.set(clientRole, ready);
+    return ready;
   }
 
   async function createRoomClient({ roomId, role }) {
-    const firebase = await loadFirebase();
+    const firebase = await loadFirebase(role);
     if (!firebase) return null;
 
     const roomKey = firebaseKey(roomId);
@@ -114,16 +131,11 @@
       }
     }
 
-    await updateValue(["meta"], {
-      roomId,
-      role,
-      updatedAt: Date.now(),
-    });
-
     return {
       enabled: true,
       roomId,
       roomKey,
+      authUid: firebase.authUid,
       set: setValue,
       update: updateValue,
       push: pushValue,
@@ -135,7 +147,7 @@
   }
 
   async function claimHostRoom({ roomIds, instanceId, buildVersion, staleMs }) {
-    const firebase = await loadFirebase();
+    const firebase = await loadFirebase("host");
     if (!firebase) return null;
 
     const candidates = Array.isArray(roomIds) ? roomIds : [roomIds];
@@ -170,6 +182,7 @@
               buildVersion,
               hostOnline: true,
               hostInstanceId: ownerId,
+              ...(firebase.authUid ? { hostUid: firebase.authUid } : {}),
               hostHeartbeatAt: now,
               updatedAt: now,
             };

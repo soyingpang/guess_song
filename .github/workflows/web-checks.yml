@@ -1,0 +1,29 @@
+name: Web checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Check JavaScript syntax
+        run: |
+          for file in app.js player.js display.js solo.js firebase-sync.js game-core.js sw.js pwa.js; do
+            node --check "$file"
+          done
+      - name: Run web tests
+        run: npm test
+      - name: Check secure room rules
+        run: npm run test:rules

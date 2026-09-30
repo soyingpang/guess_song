@@ -1,17 +1,17 @@
 {
-  "name": "估歌仔 · 全球手機版",
+  "name": "估歌仔",
   "short_name": "估歌仔",
-  "description": "團契和朋友聚會用的手機估歌遊戲，支援全球房間、搶答、計分和聲音同步。",
+  "description": "手機自用估歌遊戲：反轉向下播歌，反轉向上顯示答案。",
   "lang": "zh-Hant",
   "dir": "ltr",
-  "id": "./player.html",
-  "start_url": "./player.html?source=pwa",
+  "id": "./solo.html",
+  "start_url": "./solo.html?source=pwa",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "browser"],
   "orientation": "portrait-primary",
-  "background_color": "#fff4e6",
-  "theme_color": "#fff4e6",
+  "background_color": "#050505",
+  "theme_color": "#050505",
   "categories": ["games", "entertainment", "music"],
   "icons": [
     {
@@ -41,15 +41,9 @@
   ],
   "shortcuts": [
     {
-      "name": "加入手機房間",
-      "short_name": "加入",
-      "url": "./player.html?source=shortcut",
-      "icons": [{ "src": "./assets/app-icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "主持開場",
-      "short_name": "主持",
-      "url": "./index.html?source=shortcut",
+      "name": "估歌仔",
+      "short_name": "開始",
+      "url": "./solo.html?source=shortcut",
       "icons": [{ "src": "./assets/app-icon-192.png", "sizes": "192x192" }]
     }
   ]

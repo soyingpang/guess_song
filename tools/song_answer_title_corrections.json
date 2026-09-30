@@ -380,6 +380,154 @@
     "oldTitle": "檸檬樹",
     "title": "Lemon Tree",
     "language": "國語",
+    "year": 1996,
     "note": "Official YouTube title uses the English song title."
+  },
+  {
+    "videoId": "v43upKPqS94",
+    "oldTitle": "傻女 1989 日本",
+    "title": "傻女",
+    "language": "粵語",
+    "note": "Removed the year and location text appended to the song title."
+  },
+  {
+    "videoId": "1meTpVwz_n0",
+    "oldTitle": "粤语 557630",
+    "title": "皇后大道東",
+    "language": "粵語",
+    "year": 1991,
+    "note": "Old answer was upload metadata; the video title identifies 皇后大道東."
+  },
+  {
+    "videoId": "hBysFrqqrmI",
+    "oldTitle": "ni wa wa 泥",
+    "title": "泥娃娃",
+    "language": "國語",
+    "note": "Old answer mixed romanization with a truncated Chinese title."
+  },
+  {
+    "videoId": "qjPEeBNnXfQ",
+    "oldTitle": "中職明星賽現場演唱",
+    "title": "Lemon Tree",
+    "language": "國語",
+    "year": 1996,
+    "note": "Old answer was event context; the video is Su Huilun performing Lemon Tree."
+  },
+  {
+    "videoId": "bKiuU3EpbEY",
+    "oldTitle": "午夜前的十分鐘 23",
+    "title": "午夜前的十分鐘",
+    "language": "國語",
+    "note": "Removed a truncated 23:50 subtitle from the official song title."
+  },
+  {
+    "videoId": "amLM8pxaSx0",
+    "oldTitle": "831老媽最常說的十句話",
+    "title": "老媽最常說的十句話",
+    "language": "國語",
+    "year": 2016,
+    "note": "Removed the band's 831 name prefix from the answer."
+  },
+  {
+    "videoId": "5z-ICPhWXKA",
+    "oldTitle": "薜凱琪 奇洛李維斯回信",
+    "title": "奇洛李維斯回信",
+    "language": "粵語",
+    "note": "Removed the singer-name prefix and corrected the language classification."
+  },
+  {
+    "videoId": "N0Wqhbq1Q7Y",
+    "oldTitle": "李荣浩全新自作曲不遗憾",
+    "title": "不遺憾",
+    "language": "國語",
+    "note": "Old answer was a promotional headline; the song title is 不遺憾."
+  },
+  {
+    "videoId": "UUWCKavWpGU",
+    "oldTitle": "💎创造营2021",
+    "title": "起風了",
+    "language": "國語",
+    "note": "Old answer was the show name; the performance is 起風了."
+  },
+  {
+    "videoId": "sRCJ4T4EL9k",
+    "oldTitle": "老蕭演唱王妃氣勢驚人　小",
+    "title": "王妃",
+    "language": "國語",
+    "year": 2009,
+    "note": "Old answer was a truncated news headline; the performance is 王妃."
+  },
+  {
+    "videoId": "RLMTildbLYM",
+    "oldTitle": "高胜美 千年等一回",
+    "title": "千年等一回",
+    "language": "國語",
+    "note": "Removed the singer-name prefix and corrected the language classification."
+  },
+  {
+    "videoId": "XjwlXOUjAug",
+    "oldTitle": "比高音 比低音",
+    "title": "我要和天一樣高／情人的眼淚",
+    "language": "國語",
+    "note": "Old answer described the segment; the clip contains these two named songs."
+  },
+  {
+    "videoId": "W0PpODrYm0E",
+    "oldTitle": "中国好声音 第四季",
+    "title": "剪愛／Hero",
+    "language": "國語",
+    "note": "Old answer was the show name; the linked battle is a two-song medley."
+  },
+  {
+    "videoId": "7jpMwwn4V04",
+    "oldTitle": "廿四味 24",
+    "title": "Wonderland",
+    "language": "粵語",
+    "note": "Old answer was the artist name; the official video title identifies Wonderland."
+  },
+  {
+    "videoId": "KoipVUiX-Gs",
+    "oldTitle": "大丈夫 華納",
+    "title": "大丈夫",
+    "language": "國語",
+    "note": "Removed the record-label suffix from the answer."
+  },
+  {
+    "videoId": "Wmb8twEjlgg",
+    "oldTitle": "謝謝你的愛1999",
+    "title": "謝謝你的愛1999",
+    "language": "國語",
+    "note": "Language-only correction confirmed by the official video title."
+  },
+  {
+    "videoId": "8lTeVlxgj9s",
+    "oldTitle": "伤心1999",
+    "title": "傷心1999",
+    "language": "國語",
+    "note": "Normalized the title to Traditional Chinese and corrected the language classification."
+  },
+  {
+    "videoId": "av1-_SjPb2E",
+    "oldTitle": "皇后大道東",
+    "title": "皇后大道東",
+    "language": "粵語",
+    "year": 1991,
+    "note": "Corrected the language and year for the retained higher-view TVB version."
+  },
+  {
+    "videoId": "ivoxDQLM7nw",
+    "oldTitle": "老媽最常說的十句話",
+    "title": "老媽最常說的十句話",
+    "language": "國語",
+    "year": 2016,
+    "note": "Added the release year so duplicate live and official versions can be consolidated."
+  },
+  {
+    "videoId": "qnDlH_S4Fak",
+    "oldTitle": "王妃",
+    "title": "王妃",
+    "language": "國語",
+    "year": 2009,
+    "note": "Added the release year so the higher-view official MV is retained during deduplication."
   }
 ]
